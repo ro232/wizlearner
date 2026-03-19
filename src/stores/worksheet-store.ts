@@ -20,6 +20,7 @@ interface WorksheetState {
   setBackgroundPattern: (pattern: BackgroundPattern) => void;
   setGuideColor: (color: GuideColor) => void;
   setRowsPerPage: (rows: number) => void;
+  setRepetitionsPerItem: (reps: number) => void;
   toggleGuideLines: () => void;
   toggleArrows: () => void;
   toggleEmoji: () => void;
@@ -86,6 +87,7 @@ export const useWorksheetStore = create<WorksheetState>((set) => ({
   setBackgroundPattern: (backgroundPattern) => set((state) => ({ config: { ...state.config, backgroundPattern } })),
   setGuideColor: (guideColor) => set((state) => ({ config: { ...state.config, guideColor } })),
   setRowsPerPage: (rowsPerPage) => set((state) => ({ config: { ...state.config, rowsPerPage } })),
+  setRepetitionsPerItem: (repetitionsPerItem) => set((state) => ({ config: { ...state.config, repetitionsPerItem } })),
   toggleGuideLines: () => set((state) => ({ config: { ...state.config, showGuideLines: !state.config.showGuideLines } })),
   toggleArrows: () => set((state) => ({ config: { ...state.config, showDirectionalArrows: !state.config.showDirectionalArrows } })),
   toggleEmoji: () => set((state) => ({ config: { ...state.config, showLetterIcons: !state.config.showLetterIcons } })),

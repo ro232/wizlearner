@@ -89,6 +89,7 @@ export default function CustomNamePage() {
       showGuideLines: true,
       dateField: true,
       rowsPerPage: 6,
+      repetitionsPerItem: 3,
     };
     generateWorksheetPDF(config, 'free');
   };

@@ -57,9 +57,23 @@ export function Navbar() {
         {/* Right side */}
         <div className="flex items-center gap-3">
           {!isLanding && (
-            <Badge variant="outline" className={cn('text-xs font-medium', tier === 'free' && 'border-blue-200 text-blue-700 bg-blue-50/50', tier === 'starter' && 'border-green-200 text-green-700 bg-green-50/50', tier === 'full' && 'border-orange-200 text-orange-700 bg-orange-50/50')}>
-              {tier === 'free' ? 'Free Tier' : tier === 'starter' ? 'Starter' : 'Full Access'}
-            </Badge>
+            <div className="flex items-center gap-1">
+              <Badge variant="outline" className={cn('text-xs font-medium', tier === 'free' && 'border-blue-200 text-blue-700 bg-blue-50/50', tier === 'starter' && 'border-green-200 text-green-700 bg-green-50/50', tier === 'full' && 'border-orange-200 text-orange-700 bg-orange-50/50')}>
+                {tier === 'free' ? 'Free Tier' : tier === 'starter' ? 'Starter' : 'Full Access'}
+              </Badge>
+              <button
+                onClick={() => {
+                  const tiers: Array<'free' | 'starter' | 'full'> = ['free', 'starter', 'full'];
+                  const currentIdx = tiers.indexOf(tier);
+                  const nextTier = tiers[(currentIdx + 1) % tiers.length];
+                  useWorksheetStore.getState().setTier(nextTier);
+                }}
+                className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors"
+                title="Click to cycle tier (dev mode)"
+              >
+                🔓
+              </button>
+            </div>
           )}
 
           {/* Auth buttons */}

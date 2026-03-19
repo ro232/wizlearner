@@ -18,11 +18,12 @@ export const SheetContentBar = () => {
   const { totalRows, estimatedPages } = useMemo(() => {
     const itemsPerRow = ITEMS_PER_ROW[config.letterSize] || 5;
     const selectedCount = config.selectedItems.length;
-    const totalRows = selectedCount === 0 ? 0 : Math.ceil(selectedCount / itemsPerRow);
+    const reps = config.repetitionsPerItem || 1;
+    const totalRows = selectedCount === 0 ? 0 : Math.ceil(selectedCount / itemsPerRow) * reps;
     const estimatedPages = Math.max(1, Math.ceil(totalRows / config.rowsPerPage));
 
     return { totalRows, estimatedPages };
-  }, [config.letterSize, config.selectedItems.length, config.rowsPerPage]);
+  }, [config.letterSize, config.selectedItems.length, config.rowsPerPage, config.repetitionsPerItem]);
 
   const isEmpty = config.selectedItems.length === 0;
 
@@ -49,7 +50,7 @@ export const SheetContentBar = () => {
             ) : (
               <div>
                 <p className="text-gray-700 font-medium text-sm">
-                  {config.selectedItems.length} item{config.selectedItems.length !== 1 ? 's' : ''} ~ {estimatedPages} page{estimatedPages !== 1 ? 's' : ''} ({sizeName}, {totalRows} row{totalRows !== 1 ? 's' : ''}/page)
+                  {config.selectedItems.length} item{config.selectedItems.length !== 1 ? 's' : ''} ~ {estimatedPages} page{estimatedPages !== 1 ? 's' : ''} ({sizeName}, {totalRows} row{totalRows !== 1 ? 's' : ''}/page){config.repetitionsPerItem > 1 ? `, ${config.repetitionsPerItem} rows each` : ''}
                 </p>
 
                 {/* Item tags/pills */}

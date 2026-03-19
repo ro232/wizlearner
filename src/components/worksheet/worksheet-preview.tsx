@@ -145,37 +145,44 @@ export function WorksheetPreview({ config, className }: WorksheetPreviewProps) {
     }
 
     // ─── LAYOUT CALCULATION ───
-    // Letter sizes in pixels on the canvas
     const letterSizes: Record<string, number> = { small: 32, medium: 48, large: 72 };
     const sz = letterSizes[letterSize] || 48;
+    const reps = config.repetitionsPerItem || 1;
 
-    // Margins
     const marginX = 16;
     const marginTop = contentTop + 12;
     const rewardHeight = showRewardSection ? 60 : 10;
     const usableWidth = w - marginX * 2;
     const usableHeight = h - marginTop - rewardHeight;
 
-    // Calculate columns that fit
     const cellPadding = 8;
     const emojiExtra = showLetterIcons ? 16 : 0;
     const cellWidth = sz + cellPadding + emojiExtra;
     const cols = Math.max(1, Math.floor(usableWidth / cellWidth));
 
-    // Calculate row height and rows that fit
-    const rowHeight = sz + 12;
+    const rowHeight = sz + 10;
     const maxVisibleRows = Math.min(rowsPerPage, Math.floor(usableHeight / rowHeight));
 
-    // Items for first page only
-    const itemsPerPage = cols * maxVisibleRows;
-    const itemsToShow = selectedItems.slice(0, itemsPerPage);
+    // Build expanded list: each item repeated `reps` times
+    // Each entry knows which rep it is (0 = model row, 1+ = practice rows)
+    const expandedItems: Array<{ letter: string; rep: number }> = [];
+    for (const item of selectedItems) {
+      for (let r = 0; r < reps; r++) {
+        expandedItems.push({ letter: item, rep: r });
+      }
+    }
 
-    // Center the grid horizontally
+    const itemsPerPage = cols * maxVisibleRows;
+    const expandedToShow = expandedItems.slice(0, itemsPerPage);
+    const totalPages = Math.max(1, Math.ceil(expandedItems.length / itemsPerPage));
+
     const totalGridWidth = cols * cellWidth;
     const offsetX = marginX + (usableWidth - totalGridWidth) / 2;
 
     // ─── DRAW ITEMS ───
-    itemsToShow.forEach((letter, i) => {
+    expandedToShow.forEach((entry, i) => {
+      const letter = entry.letter;
+      const isRepeatRow = entry.rep > 0;
       const col = i % cols;
       const row = Math.floor(i / cols);
       const x = offsetX + col * cellWidth;
@@ -196,7 +203,9 @@ export function WorksheetPreview({ config, className }: WorksheetPreviewProps) {
 
       // Extract display letter
       const displayLetter = letter.length === 2 ? letter[0] : letter.toUpperCase();
-      const alpha = tracingVisibility / 10;
+      // Model row uses full visibility, repeat rows use reduced visibility for practice
+      const baseAlpha = tracingVisibility / 10;
+      const alpha = isRepeatRow ? baseAlpha * 0.5 : baseAlpha;
 
       // Draw letter
       ctx.save();
@@ -257,16 +266,15 @@ export function WorksheetPreview({ config, className }: WorksheetPreviewProps) {
       }
     });
 
-    // ─── PAGE INDICATOR (if more items than fit) ───
-    if (selectedItems.length > itemsPerPage) {
-      const remaining = selectedItems.length - itemsPerPage;
-      const totalPages = Math.ceil(selectedItems.length / itemsPerPage);
+    // ─── PAGE INDICATOR ───
+    if (totalPages > 1) {
+      const remainingItems = expandedItems.length - expandedToShow.length;
       ctx.save();
-      ctx.fillStyle = 'rgba(30, 58, 95, 0.08)';
-      ctx.beginPath(); ctx.roundRect(w / 2 - 80, h - rewardHeight - 28, 160, 22, 11); ctx.fill();
+      ctx.fillStyle = 'rgba(30, 58, 95, 0.1)';
+      ctx.beginPath(); ctx.roundRect(w / 2 - 90, h - rewardHeight - 30, 180, 24, 12); ctx.fill();
       ctx.font = "bold 10px 'Inter', system-ui, sans-serif";
-      ctx.fillStyle = '#64748B'; ctx.textAlign = 'center';
-      ctx.fillText(`Page 1 of ${totalPages} — ${remaining} more items`, w / 2, h - rewardHeight - 14);
+      ctx.fillStyle = '#475569'; ctx.textAlign = 'center';
+      ctx.fillText(`📄 Page 1 of ${totalPages}  •  ${remainingItems} more rows`, w / 2, h - rewardHeight - 15);
       ctx.restore();
     }
 

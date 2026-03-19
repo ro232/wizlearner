@@ -30,6 +30,7 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
     setBackgroundPattern,
     setGuideColor,
     setRowsPerPage,
+    setRepetitionsPerItem,
     toggleGuideLines,
     toggleArrows,
     toggleEmoji,
@@ -461,6 +462,28 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
         <div className="flex justify-between text-xs text-slate-600">
           <span>3</span>
           <span>8</span>
+        </div>
+      </div>
+
+      {/* Repetitions per Item */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+            Rows per Letter
+          </label>
+          <Badge variant="secondary">{config.repetitionsPerItem}</Badge>
+        </div>
+        <input
+          type="range"
+          min="1"
+          max="5"
+          value={config.repetitionsPerItem}
+          onChange={(e) => setRepetitionsPerItem(Number(e.target.value))}
+          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+        />
+        <div className="flex justify-between text-xs text-slate-600">
+          <span>1 row</span>
+          <span>5 rows</span>
         </div>
       </div>
 

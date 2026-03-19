@@ -29,6 +29,7 @@ export interface WorksheetConfig {
   guideColor: GuideColor;
   backgroundPattern: BackgroundPattern;
   rowsPerPage: number;
+  repetitionsPerItem: number; // how many rows of practice per letter/item (1-5)
 
   // Features
   showGuideLines: boolean;
@@ -92,6 +93,7 @@ export const DEFAULT_CONFIG: WorksheetConfig = {
   guideColor: 'gray',
   backgroundPattern: 'guides',
   rowsPerPage: 6,
+  repetitionsPerItem: 1,
   showGuideLines: true,
   showDirectionalArrows: true,
   showLetterIcons: true,
