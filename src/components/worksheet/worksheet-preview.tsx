@@ -4,7 +4,7 @@ import { useRef, useEffect, useCallback } from 'react';
 import { WorksheetConfig } from '@/types';
 import { EMOJI_MAP } from '@/lib/constants';
 
-// SVG path data for traceable letter outlines
+// SVG path data for traceable letter outlines (within 80x80 coordinate space)
 const LETTER_PATHS: Record<string, string> = {
   A: "M10,80 L40,10 L70,80 M22,55 L58,55",
   B: "M15,10 L15,80 M15,10 L50,10 Q70,10 70,25 Q70,42 50,42 L15,42 M15,42 L55,42 Q75,42 75,60 Q75,80 55,80 L15,80",
@@ -34,7 +34,6 @@ const LETTER_PATHS: Record<string, string> = {
   Z: "M15,10 L65,10 L15,80 L65,80",
 };
 
-// Number paths (1-9, 0)
 const NUMBER_PATHS: Record<string, string> = {
   "1": "M25,20 L40,10 L40,80 M25,80 L55,80",
   "2": "M15,25 Q15,10 40,10 Q65,10 65,25 Q65,40 40,55 L15,80 L65,80",
@@ -56,165 +55,6 @@ interface WorksheetPreviewProps {
 export function WorksheetPreview({ config, className }: WorksheetPreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const drawBackgroundPattern = useCallback(
-    (ctx: CanvasRenderingContext2D, w: number, h: number, pattern: string, guideColor: string) => {
-      const headerHeight = 59;
-      const contentHeight = h - headerHeight;
-      const contentTop = headerHeight;
-
-      // Guide color map
-      const guideColorMap: Record<string, string> = {
-        gray: '#cbd5e1',
-        green: '#86efac',
-        orange: '#fdba74',
-        purple: '#c4b5fd',
-      };
-      const gc = guideColorMap[guideColor] || '#cbd5e1';
-
-      switch (pattern) {
-        case 'blank': {
-          // Just solid background, no pattern
-          break;
-        }
-
-        case 'grid': {
-          // Small grid pattern (5mm squares, roughly)
-          const gridSize = 16;
-          ctx.strokeStyle = '#e2e8f0';
-          ctx.lineWidth = 0.5;
-
-          for (let x = 0; x <= w; x += gridSize) {
-            ctx.beginPath();
-            ctx.moveTo(x, contentTop);
-            ctx.lineTo(x, h);
-            ctx.stroke();
-          }
-
-          for (let y = contentTop; y <= h; y += gridSize) {
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(w, y);
-            ctx.stroke();
-          }
-          break;
-        }
-
-        case 'guides': {
-          // Horizontal guide lines with adjustable spacing
-          const lineSpacing = 35;
-          ctx.strokeStyle = gc;
-          ctx.lineWidth = 0.8;
-
-          for (let y = contentTop + lineSpacing; y < h; y += lineSpacing) {
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(w, y);
-            ctx.stroke();
-          }
-          break;
-        }
-
-        case 'patratele': {
-          // Romanian math grid (squares with cross lines)
-          const cellSize = 18;
-          ctx.strokeStyle = '#cbd5e1';
-          ctx.lineWidth = 0.6;
-
-          // Vertical lines
-          for (let x = 0; x <= w; x += cellSize) {
-            ctx.beginPath();
-            ctx.moveTo(x, contentTop);
-            ctx.lineTo(x, h);
-            ctx.stroke();
-          }
-
-          // Horizontal lines
-          for (let y = contentTop; y <= h; y += cellSize) {
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(w, y);
-            ctx.stroke();
-          }
-
-          // Diagonal lines (lighter)
-          ctx.strokeStyle = '#e2e8f0';
-          ctx.lineWidth = 0.4;
-          for (let i = 0; i < w + contentHeight; i += cellSize) {
-            // \ diagonals
-            ctx.beginPath();
-            ctx.moveTo(i, contentTop);
-            ctx.lineTo(i - contentHeight, h);
-            ctx.stroke();
-
-            // / diagonals
-            ctx.beginPath();
-            ctx.moveTo(i, contentTop);
-            ctx.lineTo(i + contentHeight, h);
-            ctx.stroke();
-          }
-          break;
-        }
-
-        case 'dictando': {
-          // Romanian dictation lines (3 blue lines + red margin line on left)
-          const lineHeight = 20;
-          ctx.lineWidth = 1;
-
-          // Left red margin
-          ctx.strokeStyle = '#ef4444';
-          ctx.beginPath();
-          ctx.moveTo(18, contentTop);
-          ctx.lineTo(18, h);
-          ctx.stroke();
-
-          // Horizontal blue lines for writing
-          ctx.strokeStyle = '#3b82f6';
-          for (let y = contentTop + lineHeight; y < h; y += lineHeight) {
-            ctx.beginPath();
-            ctx.moveTo(25, y);
-            ctx.lineTo(w - 15, y);
-            ctx.stroke();
-          }
-
-          // Light spacing lines between (lighter blue)
-          ctx.strokeStyle = '#bfdbfe';
-          ctx.lineWidth = 0.5;
-          for (let y = contentTop + lineHeight / 2; y < h; y += lineHeight) {
-            ctx.beginPath();
-            ctx.moveTo(25, y);
-            ctx.lineTo(w - 15, y);
-            ctx.stroke();
-          }
-          break;
-        }
-
-        case 'lines': {
-          // Simple horizontal lines for writing (like notebook lines)
-          const lineSpacing = 22;
-          ctx.strokeStyle = '#cbd5e1';
-          ctx.lineWidth = 0.7;
-
-          for (let y = contentTop + lineSpacing; y < h; y += lineSpacing) {
-            ctx.beginPath();
-            ctx.moveTo(15, y);
-            ctx.lineTo(w - 15, y);
-            ctx.stroke();
-          }
-
-          // Left margin line
-          ctx.strokeStyle = '#94a3b8';
-          ctx.lineWidth = 0.8;
-          ctx.beginPath();
-          ctx.moveTo(15, contentTop);
-          ctx.lineTo(15, h);
-          ctx.stroke();
-          break;
-        }
-      }
-    },
-    [],
-  );
-
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -224,72 +64,77 @@ export function WorksheetPreview({ config, className }: WorksheetPreviewProps) {
     const w = canvas.width;
     const h = canvas.height;
     const {
-      selectedItems,
-      fontStyle,
-      tracingVisibility,
-      backgroundPattern,
-      showGuideLines,
-      guideColor,
-      showDirectionalArrows,
-      showRewardSection,
-      childName,
-      letterSize,
-      showLetterIcons,
-      customTitle,
+      selectedItems, fontStyle, tracingVisibility, backgroundPattern,
+      showGuideLines, guideColor, showDirectionalArrows, showRewardSection,
+      childName, letterSize, showLetterIcons, customTitle, rowsPerPage,
     } = config;
 
-    // Clear & paper texture background
+    // Clear canvas
     ctx.fillStyle = '#FFFFFE';
     ctx.fillRect(0, 0, w, h);
 
-    // Subtle paper noise texture
-    for (let i = 0; i < 2000; i++) {
-      ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.01})`;
+    // Subtle paper texture
+    for (let i = 0; i < 1500; i++) {
+      ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.008})`;
       ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1);
     }
 
-    // Draw background pattern
-    drawBackgroundPattern(ctx, w, h, backgroundPattern, guideColor);
-
-    // Header with gradient
+    // ─── HEADER ───
+    const headerH = 52;
     const grad = ctx.createLinearGradient(0, 0, w, 0);
-    grad.addColorStop(0, '#1e3a5f');
-    grad.addColorStop(1, '#2E5C8A');
+    grad.addColorStop(0, '#1e3a5f'); grad.addColorStop(1, '#2E5C8A');
     ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, w, 56);
+    ctx.fillRect(0, 0, w, headerH);
 
-    // Accent gradient line below header
+    // Accent line
     const ag = ctx.createLinearGradient(0, 0, w, 0);
-    ag.addColorStop(0, '#E8913A');
-    ag.addColorStop(1, '#F59E0B');
+    ag.addColorStop(0, '#E8913A'); ag.addColorStop(1, '#F59E0B');
     ctx.fillStyle = ag;
-    ctx.fillRect(0, 56, w, 3);
+    ctx.fillRect(0, headerH, w, 2.5);
 
-    // Header text: Child name or custom title
+    // Header text
     ctx.fillStyle = '#fff';
-    ctx.font = "bold 15px 'Inter', system-ui, sans-serif";
+    ctx.font = "bold 13px 'Inter', system-ui, sans-serif";
     ctx.textAlign = 'left';
-    const headerTitle = childName ? `${childName}'s Worksheet` : customTitle || 'My Worksheet';
-    ctx.fillText(headerTitle, 18, 26);
-
-    // Date
-    ctx.font = "11px 'Inter', system-ui, sans-serif";
+    ctx.fillText(childName ? `${childName}'s Worksheet` : customTitle || 'My Worksheet', 14, 22);
+    ctx.font = "10px 'Inter', system-ui, sans-serif";
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    const dateStr = new Date().toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-    ctx.fillText(dateStr, 18, 44);
-
-    // Brand text (top right)
+    ctx.fillText(new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), 14, 40);
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = "bold 9px 'Inter', system-ui, sans-serif";
+    ctx.font = "bold 8px 'Inter', system-ui, sans-serif";
     ctx.textAlign = 'right';
-    ctx.fillText('WorksheetWiz', w - 18, 44);
+    ctx.fillText('WorksheetWiz', w - 14, 40);
     ctx.textAlign = 'left';
 
-    // Empty state
+    // ─── BACKGROUND PATTERN ───
+    const contentTop = headerH + 3;
+    const guideColorMap: Record<string, string> = { gray: '#cbd5e1', green: '#86efac', orange: '#fdba74', purple: '#c4b5fd' };
+    const gc = guideColorMap[guideColor] || '#cbd5e1';
+
+    if (backgroundPattern === 'grid' || backgroundPattern === 'patratele') {
+      const sz = backgroundPattern === 'patratele' ? 16 : 18;
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 0.4;
+      for (let x = 0; x < w; x += sz) { ctx.beginPath(); ctx.moveTo(x, contentTop); ctx.lineTo(x, h); ctx.stroke(); }
+      for (let y = contentTop; y < h; y += sz) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+    } else if (backgroundPattern === 'dictando') {
+      ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.moveTo(16, contentTop); ctx.lineTo(16, h); ctx.stroke();
+      ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 0.6;
+      for (let y = contentTop + 18; y < h; y += 18) { ctx.beginPath(); ctx.moveTo(20, y); ctx.lineTo(w - 10, y); ctx.stroke(); }
+    } else if (backgroundPattern === 'lines') {
+      ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 0.5;
+      for (let y = contentTop + 20; y < h; y += 20) { ctx.beginPath(); ctx.moveTo(12, y); ctx.lineTo(w - 12, y); ctx.stroke(); }
+    } else if (backgroundPattern === 'guides') {
+      ctx.strokeStyle = gc; ctx.lineWidth = 0.6;
+      for (let y = contentTop + 30; y < h - 20; y += 60) {
+        ctx.beginPath(); ctx.moveTo(12, y); ctx.lineTo(w - 12, y); ctx.stroke();
+        ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(12, y + 20); ctx.lineTo(w - 12, y + 20); ctx.stroke();
+        ctx.setLineDash([]); ctx.beginPath(); ctx.moveTo(12, y + 40); ctx.lineTo(w - 12, y + 40); ctx.stroke();
+      }
+    }
+    ctx.setLineDash([]);
+
+    // ─── EMPTY STATE ───
     if (selectedItems.length === 0) {
       ctx.fillStyle = '#94A3B8';
       ctx.font = "14px 'Inter', system-ui, sans-serif";
@@ -299,238 +144,161 @@ export function WorksheetPreview({ config, className }: WorksheetPreviewProps) {
       return;
     }
 
-    // Layout calculations
-    const sizes: Record<string, number> = { small: 45, medium: 60, large: 80 };
-    const sz = sizes[letterSize] || 60;
-    const showEm = showLetterIcons;
-    const itemWidth = showEm ? sz + 30 : sz + 20;
-    const cols = Math.max(1, Math.floor((w - 50) / itemWidth));
-    const itemSpacing = itemWidth;
-    const itemVerticalSpacing = sz + 30;
+    // ─── LAYOUT CALCULATION ───
+    // Letter sizes in pixels on the canvas
+    const letterSizes: Record<string, number> = { small: 32, medium: 48, large: 72 };
+    const sz = letterSizes[letterSize] || 48;
 
-    // Draw each selected item
-    selectedItems.forEach((letter, i) => {
+    // Margins
+    const marginX = 16;
+    const marginTop = contentTop + 12;
+    const rewardHeight = showRewardSection ? 60 : 10;
+    const usableWidth = w - marginX * 2;
+    const usableHeight = h - marginTop - rewardHeight;
+
+    // Calculate columns that fit
+    const cellPadding = 8;
+    const emojiExtra = showLetterIcons ? 16 : 0;
+    const cellWidth = sz + cellPadding + emojiExtra;
+    const cols = Math.max(1, Math.floor(usableWidth / cellWidth));
+
+    // Calculate row height and rows that fit
+    const rowHeight = sz + 12;
+    const maxVisibleRows = Math.min(rowsPerPage, Math.floor(usableHeight / rowHeight));
+
+    // Items for first page only
+    const itemsPerPage = cols * maxVisibleRows;
+    const itemsToShow = selectedItems.slice(0, itemsPerPage);
+
+    // Center the grid horizontally
+    const totalGridWidth = cols * cellWidth;
+    const offsetX = marginX + (usableWidth - totalGridWidth) / 2;
+
+    // ─── DRAW ITEMS ───
+    itemsToShow.forEach((letter, i) => {
       const col = i % cols;
       const row = Math.floor(i / cols);
-      const x = 30 + col * itemSpacing;
-      const y = 78 + row * itemVerticalSpacing;
+      const x = offsetX + col * cellWidth;
+      const y = marginTop + row * rowHeight;
 
-      // Check if item would go off bottom
-      if (y + sz > h - (showRewardSection ? 80 : 20)) return;
+      if (y + sz > h - rewardHeight) return;
 
-      // Draw guide lines for this letter if enabled
+      // Guide lines per letter
       if (showGuideLines) {
-        const guideColorMap: Record<string, string> = {
-          gray: '#cbd5e1',
-          green: '#86efac',
-          orange: '#fdba74',
-          purple: '#c4b5fd',
-        };
-        const gc = guideColorMap[guideColor] || '#cbd5e1';
-
-        ctx.strokeStyle = gc;
-        ctx.lineWidth = 0.6;
-
-        const lx = x - 3;
-        const rx = x + sz + (showEm ? 20 : 3);
-
-        // Top line
-        ctx.beginPath();
-        ctx.moveTo(lx, y);
-        ctx.lineTo(rx, y);
-        ctx.stroke();
-
-        // Bottom line
-        ctx.beginPath();
-        ctx.moveTo(lx, y + sz);
-        ctx.lineTo(rx, y + sz);
-        ctx.stroke();
-
-        // Middle dashed line (baseline helper)
-        ctx.setLineDash([3, 3]);
-        ctx.beginPath();
-        ctx.moveTo(lx, y + sz / 2);
-        ctx.lineTo(rx, y + sz / 2);
-        ctx.stroke();
+        ctx.strokeStyle = gc; ctx.lineWidth = 0.5;
+        const lx = x - 2, rx = x + sz + emojiExtra + 2;
+        ctx.beginPath(); ctx.moveTo(lx, y); ctx.lineTo(rx, y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(lx, y + sz); ctx.lineTo(rx, y + sz); ctx.stroke();
+        ctx.setLineDash([2, 2]);
+        ctx.beginPath(); ctx.moveTo(lx, y + sz / 2); ctx.lineTo(rx, y + sz / 2); ctx.stroke();
         ctx.setLineDash([]);
       }
 
-      // Extract letter (in case of paired letters like "Aa")
+      // Extract display letter
       const displayLetter = letter.length === 2 ? letter[0] : letter.toUpperCase();
-
-      // Tracing visibility as opacity
       const alpha = tracingVisibility / 10;
 
-      // Save canvas state for transformation
+      // Draw letter
       ctx.save();
       ctx.translate(x, y);
       ctx.scale(sz / 80, sz / 80);
 
-      // Get path for letter or number
       const path = LETTER_PATHS[displayLetter] || NUMBER_PATHS[displayLetter];
-
       if (path) {
-        // Draw path-based letter
         ctx.strokeStyle = `rgba(30, 58, 95, ${alpha})`;
         ctx.lineWidth = fontStyle === 'outline' ? 2.5 : 3;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        if (fontStyle === 'dashed') ctx.setLineDash([8, 6]);
+        else if (fontStyle === 'dotted') ctx.setLineDash([2, 4]);
+        else ctx.setLineDash([]);
 
-        // Set dash pattern based on font style
-        if (fontStyle === 'dashed') {
-          ctx.setLineDash([8, 6]);
-        } else if (fontStyle === 'dotted') {
-          ctx.setLineDash([2, 4]);
-        } else {
-          ctx.setLineDash([]);
-        }
-
-        // Parse and render SVG path commands
         const commands = path.split(/(?=[MLQ])/);
         ctx.beginPath();
-
         commands.forEach((cmd) => {
-          const trimmed = cmd.trim();
-          const numbers = trimmed
-            .slice(1)
-            .split(/[, ]+/)
-            .map(Number);
-
-          if (trimmed.startsWith('M')) {
-            ctx.moveTo(numbers[0], numbers[1]);
-          } else if (trimmed.startsWith('L')) {
-            ctx.lineTo(numbers[0], numbers[1]);
-          } else if (trimmed.startsWith('Q')) {
-            ctx.quadraticCurveTo(numbers[0], numbers[1], numbers[2], numbers[3]);
-          }
+          const t = cmd.trim();
+          const nums = t.slice(1).split(/[, ]+/).map(Number);
+          if (t.startsWith('M')) ctx.moveTo(nums[0], nums[1]);
+          else if (t.startsWith('L')) ctx.lineTo(nums[0], nums[1]);
+          else if (t.startsWith('Q')) ctx.quadraticCurveTo(nums[0], nums[1], nums[2], nums[3]);
         });
-
         ctx.stroke();
         ctx.setLineDash([]);
       } else {
-        // Fallback: render as text with stroke
         ctx.globalAlpha = alpha;
         ctx.strokeStyle = '#1e3a5f';
         ctx.lineWidth = 2;
-
-        if (fontStyle === 'dashed') {
-          ctx.setLineDash([6, 4]);
-        } else if (fontStyle === 'dotted') {
-          ctx.setLineDash([1.5, 3]);
-        }
-
-        ctx.font = `bold ${sz * 0.75}px 'Inter', system-ui, sans-serif`;
-        ctx.strokeText(displayLetter, 5, sz * 0.75);
+        if (fontStyle === 'dashed') ctx.setLineDash([6, 4]);
+        else if (fontStyle === 'dotted') ctx.setLineDash([1.5, 3]);
+        ctx.font = `bold ${64}px 'Inter', system-ui, sans-serif`;
+        ctx.strokeText(displayLetter, 5, 68);
         ctx.setLineDash([]);
         ctx.globalAlpha = 1;
       }
-
-      // Restore canvas state
       ctx.restore();
 
-      // Directional arrow indicator (number "1")
+      // Directional arrow
       if (showDirectionalArrows && path) {
         ctx.save();
         ctx.fillStyle = `rgba(232,145,58,${alpha})`;
-        ctx.beginPath();
-        ctx.arc(x + 12, y + 12, 6, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.font = "bold 7px 'Inter', system-ui, sans-serif";
-        ctx.fillStyle = '#fff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('1', x + 12, y + 12);
+        ctx.beginPath(); ctx.arc(x + 8, y + 8, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.font = "bold 6px 'Inter', system-ui, sans-serif";
+        ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('1', x + 8, y + 8);
         ctx.restore();
       }
 
-      // Emoji icon next to letter
-      if (showEm && EMOJI_MAP[displayLetter]) {
+      // Emoji
+      if (showLetterIcons && EMOJI_MAP[displayLetter]) {
         ctx.save();
-        ctx.font = `${sz * 0.3}px sans-serif`;
+        ctx.font = `${sz * 0.35}px sans-serif`;
         ctx.textAlign = 'left';
-        ctx.fillText(EMOJI_MAP[displayLetter], x + sz + 2, y + sz * 0.6);
+        ctx.fillText(EMOJI_MAP[displayLetter], x + sz + 2, y + sz * 0.65);
         ctx.restore();
       }
     });
 
-    // Reward section at bottom
+    // ─── PAGE INDICATOR (if more items than fit) ───
+    if (selectedItems.length > itemsPerPage) {
+      const remaining = selectedItems.length - itemsPerPage;
+      const totalPages = Math.ceil(selectedItems.length / itemsPerPage);
+      ctx.save();
+      ctx.fillStyle = 'rgba(30, 58, 95, 0.08)';
+      ctx.beginPath(); ctx.roundRect(w / 2 - 80, h - rewardHeight - 28, 160, 22, 11); ctx.fill();
+      ctx.font = "bold 10px 'Inter', system-ui, sans-serif";
+      ctx.fillStyle = '#64748B'; ctx.textAlign = 'center';
+      ctx.fillText(`Page 1 of ${totalPages} — ${remaining} more items`, w / 2, h - rewardHeight - 14);
+      ctx.restore();
+    }
+
+    // ─── REWARD SECTION ───
     if (showRewardSection) {
-      const ry = h - 68;
-      const rw = w - 30;
-
-      // Reward box background gradient
-      const rg = ctx.createLinearGradient(15, ry, w - 15, ry);
-      rg.addColorStop(0, '#FEF3C7');
-      rg.addColorStop(1, '#FFFBEB');
+      const ry = h - 56;
+      const rg = ctx.createLinearGradient(12, ry, w - 12, ry);
+      rg.addColorStop(0, '#FEF3C7'); rg.addColorStop(1, '#FFFBEB');
       ctx.fillStyle = rg;
-      ctx.beginPath();
-      ctx.roundRect(15, ry, rw, 54, 10);
-      ctx.fill();
-
-      // Reward box border
-      ctx.strokeStyle = '#FBBF24';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Reward title
-      ctx.fillStyle = '#92400E';
-      ctx.font = "bold 11px 'Inter', system-ui, sans-serif";
+      ctx.beginPath(); ctx.roundRect(12, ry, w - 24, 44, 8); ctx.fill();
+      ctx.strokeStyle = '#FBBF24'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillStyle = '#92400E'; ctx.font = "bold 10px 'Inter', system-ui, sans-serif";
       ctx.textAlign = 'left';
-      ctx.fillText('Great job! You earned a sticker!', 28, ry + 24);
-
-      // Reward subtitle
-      ctx.font = "9px 'Inter', system-ui, sans-serif";
-      ctx.fillStyle = '#B45309';
-      ctx.fillText('Collect 5 stickers for a reward!', 28, ry + 40);
-
-      // Sticker boxes
+      ctx.fillText('Great job! You earned a sticker!', 22, ry + 18);
+      ctx.font = "8px 'Inter', system-ui, sans-serif"; ctx.fillStyle = '#B45309';
+      ctx.fillText('Collect 5 stickers for a reward!', 22, ry + 32);
       for (let i = 0; i < 5; i++) {
-        const sx = w - 175 + i * 30;
-        const sy = ry + 12;
-
-        ctx.strokeStyle = '#D97706';
-        ctx.lineWidth = 1.2;
-        ctx.setLineDash([3, 2]);
-        ctx.beginPath();
-        ctx.roundRect(sx, sy, 24, 24, 4);
-        ctx.stroke();
-
-        // Draw stars in first 2 boxes
-        if (i < 2) {
-          ctx.setLineDash([]);
-          ctx.font = '16px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('⭐', sx + 12, sy + 12);
-        }
+        ctx.strokeStyle = '#D97706'; ctx.lineWidth = 1; ctx.setLineDash([2, 2]);
+        ctx.beginPath(); ctx.roundRect(w - 145 + i * 24, ry + 8, 18, 18, 3); ctx.stroke();
+        if (i < 2) { ctx.setLineDash([]); ctx.font = '12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('⭐', w - 136 + i * 24, ry + 21); }
       }
       ctx.setLineDash([]);
     }
-  }, [config, drawBackgroundPattern]);
+  }, [config]);
 
-  // Redraw whenever config changes
-  useEffect(() => {
-    draw();
-  }, [draw]);
+  useEffect(() => { draw(); }, [draw]);
 
   return (
     <div className={`relative group ${className || ''}`}>
-      <div
-        className="absolute -inset-2 rounded-2xl opacity-40 group-hover:opacity-70 transition-all duration-700"
-        style={{
-          background: 'linear-gradient(135deg, #dbeafe 0%, #fed7aa 50%, #ddd6fe 100%)',
-          filter: 'blur(8px)',
-        }}
-      />
+      <div className="absolute -inset-2 rounded-2xl opacity-40 group-hover:opacity-70 transition-all duration-700" style={{ background: 'linear-gradient(135deg, #dbeafe 0%, #fed7aa 50%, #ddd6fe 100%)', filter: 'blur(8px)' }} />
       <div className="relative rounded-xl overflow-hidden shadow-xl ring-1 ring-black/5">
-        <canvas
-          ref={canvasRef}
-          width={420}
-          height={580}
-          className="w-full h-auto"
-          style={{ maxWidth: 420, background: '#fff' }}
-        />
+        <canvas ref={canvasRef} width={420} height={580} className="w-full h-auto" style={{ maxWidth: 420, background: '#fff' }} />
       </div>
     </div>
   );
