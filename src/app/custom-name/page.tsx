@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Download, ArrowRight } from 'lucide-react';
+import { generateWorksheetPDF } from '@/lib/pdf/generate-pdf';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Navbar } from '@/components/layout/navbar';
@@ -61,9 +62,35 @@ export default function CustomNamePage() {
   }, [name]);
 
   const handleDownloadPDF = () => {
-    // Placeholder for PDF download functionality
-    console.log('Download PDF:', { name, style, size });
-    alert(`Downloading "${name}" worksheet with ${style} style and ${size} size`);
+    const config = {
+      category: 'letters' as const,
+      letterMode: 'uppercase' as const,
+      selectedItems: nameLetters,
+      customWords: [name],
+      difficulty: 'beginner' as const,
+      fontStyle: style,
+      pageSize: 'a4' as const,
+      orientation: 'portrait' as const,
+      letterSize: size,
+      tracingVisibility: 7,
+      rowSpacing: 'normal' as const,
+      guideColor: 'gray' as const,
+      backgroundPattern: 'guides' as const,
+      showLetterIcons: false,
+      showDirectionalArrows: true,
+      showRewardSection: true,
+      fullPageMode: false,
+      leftHandedMode: false,
+      childName: name,
+      customTitle: `${name}'s Name Worksheet`,
+      schoolName: '',
+      showDate: true,
+      showHeader: true,
+      showGuideLines: true,
+      dateField: true,
+      rowsPerPage: 6,
+    };
+    generateWorksheetPDF(config, 'free');
   };
 
   return (

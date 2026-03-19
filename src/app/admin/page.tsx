@@ -173,7 +173,7 @@ export default function AdminPage() {
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleAuth()}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
                       placeholder="Enter admin password"
                       className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />

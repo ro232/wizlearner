@@ -71,11 +71,23 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
 
   const allItems = getAllItems();
   const freeItems = getFreeItems();
-  const isItemFree = (item: string) => freeItems.includes(item);
+  const isItemFree = (item: string) => {
+    if (config.category === 'letters') {
+      const base = item[0].toUpperCase();
+      return freeItems.includes(base);
+    }
+    return freeItems.includes(item);
+  };
 
   // Handle adding all free items
   const handleAddAllFree = () => {
-    addItems(freeItems);
+    const freeFiltered = allItems.filter((item) => {
+      if (config.category === 'letters') {
+        return freeItems.includes(item[0].toUpperCase());
+      }
+      return freeItems.includes(item);
+    });
+    addItems(freeFiltered);
   };
 
   // Handle adding custom word
@@ -316,7 +328,7 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
             type="text"
             value={customWordInput}
             onChange={(e) => setCustomWordInput(e.target.value)}
-            onKeyPress={(e) => {
+            onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 handleAddCustomWord();
               }

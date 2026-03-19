@@ -388,7 +388,7 @@ function PricingSection() {
               <CardContent className="flex-1 space-y-6">
                 <div>
                   <span className="text-5xl font-bold text-slate-900">{tier.price}</span>
-                  {tier.price !== '$0' && <span className="text-slate-600 ml-2">/month</span>}
+                  {tier.price !== '$0' && <span className="text-slate-600 ml-2">one-time</span>}
                 </div>
 
                 <ul className="space-y-3">
@@ -425,7 +425,6 @@ function PricingSection() {
 
         <div className="text-center mt-12">
           <p className="text-slate-600">
-            All plans include a 7-day free trial.{' '}
             <button className="text-blue-600 font-semibold hover:underline">No credit card required.</button>
           </p>
         </div>

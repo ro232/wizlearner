@@ -105,10 +105,12 @@ const sortOptions = [
 export default function CommunityPage() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>('all');
   const [sortBy, setSortBy] = useState('popular');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredTemplates = selectedCategory === 'all'
+  const filteredTemplates = (selectedCategory === 'all'
     ? mockTemplates
-    : mockTemplates.filter((t) => t.category === selectedCategory);
+    : mockTemplates.filter((t) => t.category === selectedCategory)
+  ).filter(t => searchQuery === '' || t.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const sortedTemplates = [...filteredTemplates].sort((a, b) => {
     switch (sortBy) {
@@ -165,25 +167,34 @@ export default function CommunityPage() {
             </div>
           </div>
 
-          {/* Sort Dropdown */}
-          <div className="flex justify-between items-center mb-8">
-            <h3 className="text-sm font-semibold text-slate-600">
-              Showing {sortedTemplates.length} template{sortedTemplates.length !== 1 ? 's' : ''}
-            </h3>
-            <div className="flex items-center gap-3">
-              <label className="text-sm font-medium text-slate-600">Sort by:</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium bg-white focus:outline-none focus:ring-2"
-                style={{ outlineColor: THEME.primary }}
-              >
-                {sortOptions.map((opt) => (
-                  <option key={opt.id} value={opt.id}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+          {/* Search and Sort Controls */}
+          <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search templates..."
+              className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-200 flex-1"
+            />
+            <div className="flex justify-between items-center gap-3">
+              <h3 className="text-sm font-semibold text-slate-600">
+                Showing {sortedTemplates.length} template{sortedTemplates.length !== 1 ? 's' : ''}
+              </h3>
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-medium text-slate-600">Sort by:</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium bg-white focus:outline-none focus:ring-2"
+                  style={{ outlineColor: THEME.primary }}
+                >
+                  {sortOptions.map((opt) => (
+                    <option key={opt.id} value={opt.id}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
