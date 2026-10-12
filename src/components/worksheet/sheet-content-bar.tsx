@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { Card } from '@/components/ui/card';
 import { hintFor } from '@/lib/glyphs/data';
+import { PATTERN_ICONS, isPatternId } from '@/lib/glyphs/patterns';
 import { countWorksheetPages } from '@/lib/worksheet/layout';
 
 export const SheetContentBar = () => {
@@ -49,7 +50,7 @@ export const SheetContentBar = () => {
                 {/* Item tags/pills */}
                 <div className="flex flex-wrap gap-2 mt-4">
                   {config.selectedItems.map((item) => {
-                    const emoji = hintFor(item, config.alphabet ?? 'en')?.emoji || '✨';
+                    const emoji = isPatternId(item) ? PATTERN_ICONS[item] : hintFor(item, config.alphabet ?? 'en')?.emoji || '✨';
                     return (
                       <button
                         key={item}

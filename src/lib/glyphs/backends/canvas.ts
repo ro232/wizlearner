@@ -110,7 +110,15 @@ function drawOp(ctx: CanvasRenderingContext2D, op: FlatOp): void {
       ctx.fillStyle = op.fill;
       ctx.textAlign = op.align ?? 'left';
       ctx.textBaseline = op.baseline ?? 'alphabetic';
-      ctx.fillText(op.text, op.x, op.y);
+      if (op.rotate) {
+        ctx.save();
+        ctx.translate(op.x, op.y);
+        ctx.rotate((-op.rotate * Math.PI) / 180);
+        ctx.fillText(op.text, 0, 0);
+        ctx.restore();
+      } else {
+        ctx.fillText(op.text, op.x, op.y);
+      }
       break;
     }
   }

@@ -36,6 +36,7 @@ export const FREE_LIMITS = {
   letters: ['A', 'B', 'C', 'D', 'E'], // diacritic forms of a free letter (Ă, Â) are free too
   numbers: ['0', '1', '2', '3', '4', '5'],
   shapes: ['circle', 'square', 'triangle'],
+  prewrite: ['vertical', 'horizontal', 'zigzag'],
   maxDownloadsPerDay: 2,
   maxCloudSave: 0,
   templates: 2,
@@ -54,7 +55,7 @@ export const CATEGORY_TABS = [
   { id: 'letters' as const, label: 'Aa Letters', icon: '✏️' },
   { id: 'numbers' as const, label: '123', icon: '🔢' },
   { id: 'shapes' as const, label: 'Shapes', icon: '◆' },
-  { id: 'prewrite' as const, label: 'Pre-Write', icon: '〰', locked: true, minTier: 'full' as const },
+  { id: 'prewrite' as const, label: 'Pre-Write', icon: '〰' },
   { id: 'math' as const, label: 'Math', icon: '🧮', locked: true, minTier: 'full' as const },
   { id: 'games' as const, label: 'Games', icon: '🎮', locked: true, minTier: 'full' as const },
   { id: 'wordsearch' as const, label: 'Word Search', icon: '🔍', locked: true, minTier: 'full' as const },

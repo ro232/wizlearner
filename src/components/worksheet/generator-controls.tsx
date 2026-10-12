@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { CATEGORY_TABS, FREE_LIMITS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
 import { uppercaseLetters, lowercaseLetters, pairedLetters, baseLetter, hintFor } from '@/lib/glyphs/data';
+import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Lock, RotateCcw, Printer, Download, Plus, X } from 'lucide-react';
@@ -61,6 +62,9 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
     if (config.category === 'shapes') {
       return tier === 'free' ? [...FREE_LIMITS.shapes] : [...SHAPES];
     }
+    if (config.category === 'prewrite') {
+      return tier === 'free' ? [...FREE_LIMITS.prewrite] : [...PATTERN_IDS];
+    }
     return [];
   };
 
@@ -73,6 +77,7 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
     }
     if (config.category === 'numbers') return [...NUMBERS];
     if (config.category === 'shapes') return [...SHAPES];
+    if (config.category === 'prewrite') return [...PATTERN_IDS];
     return [];
   };
 
@@ -303,7 +308,14 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
                   {emoji && config.showLetterIcons && (
                     <span className="text-xs mb-0.5">{emoji}</span>
                   )}
-                  <span>{item}</span>
+                  {isPatternId(item) ? (
+                    <>
+                      <span className="text-base leading-none">{PATTERN_ICONS[item]}</span>
+                      <span className="text-[9px] font-medium leading-tight text-center mt-1">{PATTERN_LABELS[alphabet][item]}</span>
+                    </>
+                  ) : (
+                    <span>{item}</span>
+                  )}
                 </div>
                 {!isFree && tier === 'free' && (
                   <div className="absolute top-0.5 right-0.5">

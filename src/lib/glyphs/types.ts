@@ -85,6 +85,8 @@ export type DrawOp =
       baseline?: 'alphabetic' | 'middle' | 'top';
       /** Emoji can only be drawn by screen backends; PDF skips them. */
       emoji?: boolean;
+      /** Rotation in degrees, counter-clockwise, around (x, y). */
+      rotate?: number;
     }
   | { t: 'group'; tx: number; ty: number; scale: number; ops: DrawOp[] };
 

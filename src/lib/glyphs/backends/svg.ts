@@ -55,9 +55,10 @@ export function opToSvg(op: FlatOp, fontFamily: string): string {
     case 'text': {
       const anchor = op.align === 'center' ? 'middle' : op.align === 'right' ? 'end' : 'start';
       const baseline = op.baseline === 'middle' ? 'central' : op.baseline === 'top' ? 'hanging' : 'alphabetic';
+      const rot = op.rotate ? ` transform="rotate(${fmt(-op.rotate)} ${fmt(op.x)} ${fmt(op.y)})"` : '';
       return `<text x="${fmt(op.x)}" y="${fmt(op.y)}" font-size="${fmt(op.size)}" font-family="${fontFamily}" font-weight="${
         op.weight ?? 'normal'
-      }" text-anchor="${anchor}" dominant-baseline="${baseline}" fill="${op.fill}">${esc(op.text)}</text>`;
+      }" text-anchor="${anchor}" dominant-baseline="${baseline}" fill="${op.fill}"${rot}>${esc(op.text)}</text>`;
     }
   }
 }
