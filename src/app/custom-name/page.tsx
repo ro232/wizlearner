@@ -9,6 +9,8 @@ import { Card } from '@/components/ui/card';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { THEME } from '@/lib/constants';
+import { DEFAULT_CONFIG } from '@/types';
+import { lettersOfWord } from '@/lib/glyphs/data';
 
 type StyleType = 'dashed' | 'dotted' | 'outline' | 'cursive';
 type SizeType = 'small' | 'medium' | 'large';
@@ -57,41 +59,27 @@ export default function CustomNamePage() {
   const [style, setStyle] = useState<StyleType>('dashed');
   const [size, setSize] = useState<SizeType>('medium');
 
-  const nameLetters = useMemo(() => {
-    return name.toUpperCase().split('').filter(char => /[A-Z]/.test(char));
-  }, [name]);
+  // Letters of the name we can draw (Romanian diacritics included), in order.
+  const nameLetters = useMemo(() => lettersOfWord(name, 'uppercase'), [name]);
 
-  const handleDownloadPDF = () => {
-    const config = {
-      category: 'letters' as const,
-      letterMode: 'uppercase' as const,
-      selectedItems: nameLetters,
-      customWords: [name],
-      difficulty: 'beginner' as const,
-      fontStyle: style,
-      pageSize: 'a4' as const,
-      orientation: 'portrait' as const,
-      letterSize: size,
-      tracingVisibility: 7,
-      rowSpacing: 'normal' as const,
-      guideColor: 'gray' as const,
-      backgroundPattern: 'guides' as const,
-      showLetterIcons: false,
-      showDirectionalArrows: true,
-      showRewardSection: true,
-      fullPageMode: false,
-      leftHandedMode: false,
-      childName: name,
-      customTitle: `${name}'s Name Worksheet`,
-      schoolName: '',
-      showDate: true,
-      showHeader: true,
-      showGuideLines: true,
-      dateField: true,
-      rowsPerPage: 6,
-      repetitionsPerItem: 3,
-    };
-    generateWorksheetPDF(config, 'free');
+  const handleDownloadPDF = async () => {
+    await generateWorksheetPDF(
+      {
+        ...DEFAULT_CONFIG,
+        category: 'letters',
+        letterMode: 'uppercase',
+        selectedItems: nameLetters,
+        customWords: [name],
+        fontStyle: style,
+        letterSize: size,
+        showLetterIcons: false,
+        childName: name,
+        customTitle: `${name}'s Name Worksheet`,
+        rowsPerPage: 6,
+        repetitionsPerItem: 3,
+      },
+      'free'
+    );
   };
 
   return (

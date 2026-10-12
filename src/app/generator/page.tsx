@@ -11,6 +11,7 @@ import { SheetContentBar } from '@/components/worksheet/sheet-content-bar';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { generateWorksheetPDF } from '@/lib/pdf/generate-pdf';
+import { countWorksheetPages } from '@/lib/worksheet/layout';
 
 export default function GeneratorPage() {
   const [showPaywall, setShowPaywall] = useState(false);
@@ -18,16 +19,15 @@ export default function GeneratorPage() {
   const config = useWorksheetStore((s) => s.config);
   const tier = useWorksheetStore((s) => s.tier);
 
-  // Calculate estimated pages
-  const sizes: Record<string, number> = { small: 8, medium: 5, large: 3 };
-  const itemsPerRow = sizes[config.letterSize] || 5;
-  const totalRows = Math.ceil(config.selectedItems.length / itemsPerRow);
-  const estimatedPages = Math.max(1, Math.ceil(totalRows / config.rowsPerPage));
+  // Exact page count from the shared layout (same as preview and PDF)
+  const estimatedPages = countWorksheetPages(config, tier);
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     setIsGenerating(true);
     try {
-      generateWorksheetPDF(config, tier);
+      await generateWorksheetPDF(config, tier);
+    } catch (err) {
+      console.error('PDF generation failed', err);
     } finally {
       setIsGenerating(false);
     }
@@ -75,7 +75,7 @@ export default function GeneratorPage() {
                 </div>
               </CardHeader>
               <CardContent className="p-6 flex justify-center" style={{ background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)' }}>
-                <WorksheetPreview config={config} />
+                <WorksheetPreview config={config} tier={tier} />
               </CardContent>
             </Card>
 
