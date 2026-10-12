@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
-import { CATEGORY_TABS, EMOJI_MAP, FREE_LIMITS, UPPERCASE_LETTERS, LOWERCASE_LETTERS, PAIRED_LETTERS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
+import { CATEGORY_TABS, FREE_LIMITS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
+import { uppercaseLetters, lowercaseLetters, pairedLetters, baseLetter, hintFor } from '@/lib/glyphs/data';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Lock, RotateCcw, Printer, Download, Plus, X } from 'lucide-react';
@@ -18,11 +19,13 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
     config,
     tier,
     setCategory,
+    setAlphabet,
     setLetterMode,
     toggleItem,
     addItems,
     removeAllItems,
     addCustomWord,
+    removeCustomWord,
     setDifficulty,
     setFontStyle,
     setLetterSize,
@@ -33,6 +36,7 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
     setRepetitionsPerItem,
     toggleGuideLines,
     toggleArrows,
+    toggleStartDots,
     toggleEmoji,
     toggleReward,
     toggleFullPage,
@@ -44,10 +48,12 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
   const [customWordInput, setCustomWordInput] = useState('');
   const [childNameInput, setChildNameInput] = useState(config.childName);
 
+  const alphabet = config.alphabet ?? 'en';
+
   // Determine free items based on tier and category
   const getFreeItems = (): string[] => {
     if (config.category === 'letters') {
-      return tier === 'free' ? [...FREE_LIMITS.letters] : [...UPPERCASE_LETTERS];
+      return tier === 'free' ? [...FREE_LIMITS.letters] : uppercaseLetters(alphabet).map(baseLetter);
     }
     if (config.category === 'numbers') {
       return tier === 'free' ? [...FREE_LIMITS.numbers] : [...NUMBERS];
@@ -61,9 +67,9 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
   // Get all items for the current category
   const getAllItems = (): string[] => {
     if (config.category === 'letters') {
-      if (config.letterMode === 'uppercase') return [...UPPERCASE_LETTERS];
-      if (config.letterMode === 'lowercase') return [...LOWERCASE_LETTERS];
-      if (config.letterMode === 'paired') return [...PAIRED_LETTERS];
+      if (config.letterMode === 'uppercase') return uppercaseLetters(alphabet);
+      if (config.letterMode === 'lowercase') return lowercaseLetters(alphabet);
+      if (config.letterMode === 'paired') return pairedLetters(alphabet);
     }
     if (config.category === 'numbers') return [...NUMBERS];
     if (config.category === 'shapes') return [...SHAPES];
@@ -74,20 +80,15 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
   const freeItems = getFreeItems();
   const isItemFree = (item: string) => {
     if (config.category === 'letters') {
-      const base = item[0].toUpperCase();
-      return freeItems.includes(base);
+      // Ă and Â count as A, Î as I, Ș as S, Ț as T.
+      return freeItems.includes(baseLetter(item[0]));
     }
     return freeItems.includes(item);
   };
 
   // Handle adding all free items
   const handleAddAllFree = () => {
-    const freeFiltered = allItems.filter((item) => {
-      if (config.category === 'letters') {
-        return freeItems.includes(item[0].toUpperCase());
-      }
-      return freeItems.includes(item);
-    });
+    const freeFiltered = allItems.filter((item) => isItemFree(item));
     addItems(freeFiltered);
   };
 
@@ -110,14 +111,7 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
 
   // Get emoji for letter
   const getEmoji = (item: string) => {
-    if (config.letterMode === 'paired') {
-      const letter = item[0];
-      return EMOJI_MAP[letter] || '✨';
-    }
-    if (config.category === 'letters') {
-      const letter = item.toUpperCase();
-      return EMOJI_MAP[letter] || '✨';
-    }
+    if (config.category === 'letters') return hintFor(item, alphabet)?.emoji || '✨';
     return null;
   };
 
@@ -221,6 +215,34 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
           })}
         </div>
       </div>
+
+      {/* Alphabet (for letters category) */}
+      {config.category === 'letters' && (
+        <div className="space-y-2">
+          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+            Alphabet
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { value: 'ro' as const, label: 'Română', display: 'A Ă Â Î Ș Ț · 31 litere' },
+              { value: 'en' as const, label: 'English', display: 'A–Z · 26 letters' },
+            ].map(({ value, label, display }) => (
+              <button
+                key={value}
+                onClick={() => setAlphabet(value)}
+                className={`p-2 rounded-lg border-2 transition-all text-center ${
+                  alphabet === value
+                    ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold'
+                    : 'border-slate-200 text-slate-700 hover:border-slate-300'
+                }`}
+              >
+                <div className="text-sm font-bold">{label}</div>
+                <div className="text-xs text-slate-600">{display}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Letter Mode Toggle (for letters category) */}
       {config.category === 'letters' && (
@@ -334,7 +356,7 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
                 handleAddCustomWord();
               }
             }}
-            placeholder="e.g., CAT, DOG"
+            placeholder={alphabet === 'ro' ? 'ex. MAMA, ȘTEFAN' : 'e.g., CAT, DOG'}
             className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <Button
@@ -352,9 +374,7 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
                 key={word}
                 variant="secondary"
                 className="flex items-center gap-1 cursor-pointer hover:bg-slate-300"
-                onClick={() => {
-                  // This would need a removeCustomWord action in the store
-                }}
+                onClick={() => removeCustomWord(word)}
               >
                 {word}
                 <X className="w-3 h-3" />
@@ -396,8 +416,8 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
         <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
           Font Style
         </label>
-        <div className="grid grid-cols-2 gap-2">
-          {(['dashed', 'dotted', 'outline', 'cursive'] as const).map((style) => (
+        <div className="grid grid-cols-3 gap-2">
+          {(['dashed', 'dotted', 'outline'] as const).map((style) => (
             <button
               key={style}
               onClick={() => setFontStyle(style)}
@@ -573,6 +593,11 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
             label: 'Directional Arrows',
             checked: config.showDirectionalArrows,
             onChange: toggleArrows,
+          },
+          {
+            label: 'Numbered Start Dots',
+            checked: config.showStartDots !== false,
+            onChange: toggleStartDots,
           },
           { label: 'Guide Lines', checked: config.showGuideLines, onChange: toggleGuideLines },
           {

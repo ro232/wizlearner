@@ -25,15 +25,16 @@ export const EMOJI_MAP: Record<string, string> = {
   Y: '🧶', Z: '⚡',
 };
 
+// Letter lists per alphabet live in @/lib/glyphs/data (ALPHABETS); these are the English defaults.
 export const UPPERCASE_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 export const LOWERCASE_LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split('');
 export const PAIRED_LETTERS = UPPERCASE_LETTERS.map((l, i) => `${l}${LOWERCASE_LETTERS[i]}`);
-export const NUMBERS = Array.from({ length: 20 }, (_, i) => String(i + 1));
+export const NUMBERS = Array.from({ length: 21 }, (_, i) => String(i));
 export const SHAPES = ['circle', 'square', 'triangle', 'rectangle', 'oval', 'diamond', 'star', 'heart', 'hexagon', 'pentagon'];
 
 export const FREE_LIMITS = {
-  letters: ['A', 'B', 'C', 'D', 'E'],
-  numbers: ['1', '2', '3', '4', '5'],
+  letters: ['A', 'B', 'C', 'D', 'E'], // diacritic forms of a free letter (Ă, Â) are free too
+  numbers: ['0', '1', '2', '3', '4', '5'],
   shapes: ['circle', 'square', 'triangle'],
   maxDownloadsPerDay: 2,
   maxCloudSave: 0,

@@ -3,27 +3,20 @@
 import React, { useMemo } from 'react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { Card } from '@/components/ui/card';
-import { EMOJI_MAP } from '@/lib/constants';
-
-const ITEMS_PER_ROW: Record<string, number> = {
-  small: 8,
-  medium: 5,
-  large: 3,
-};
+import { hintFor } from '@/lib/glyphs/data';
+import { countWorksheetPages } from '@/lib/worksheet/layout';
 
 export const SheetContentBar = () => {
   const config = useWorksheetStore((state) => state.config);
+  const tier = useWorksheetStore((state) => state.tier);
   const toggleItem = useWorksheetStore((state) => state.toggleItem);
 
   const { totalRows, estimatedPages } = useMemo(() => {
-    const itemsPerRow = ITEMS_PER_ROW[config.letterSize] || 5;
-    const selectedCount = config.selectedItems.length;
     const reps = config.repetitionsPerItem || 1;
-    const totalRows = selectedCount === 0 ? 0 : Math.ceil(selectedCount / itemsPerRow) * reps;
-    const estimatedPages = Math.max(1, Math.ceil(totalRows / config.rowsPerPage));
-
+    const totalRows = config.selectedItems.length * reps;
+    const estimatedPages = countWorksheetPages(config, tier);
     return { totalRows, estimatedPages };
-  }, [config.letterSize, config.selectedItems.length, config.rowsPerPage, config.repetitionsPerItem]);
+  }, [config, tier]);
 
   const isEmpty = config.selectedItems.length === 0;
 
@@ -56,7 +49,7 @@ export const SheetContentBar = () => {
                 {/* Item tags/pills */}
                 <div className="flex flex-wrap gap-2 mt-4">
                   {config.selectedItems.map((item) => {
-                    const emoji = EMOJI_MAP[item] || '✨';
+                    const emoji = hintFor(item, config.alphabet ?? 'en')?.emoji || '✨';
                     return (
                       <button
                         key={item}

@@ -20,6 +20,30 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Tracing glyph engine (`src/lib/glyphs`)
+
+Letters, digits and shapes are **vector strokes**, not fonts. Each glyph in
+`data.ts` lists its strokes in the order a child is taught to write them
+(cap height = 100 units, x-height = 50, baseline = 100, descender = 135):
+
+```
+A: ['M 40 0 L 0 100', 'M 40 0 L 80 100', 'M 14 65 L 66 65']
+Ă: A + 'A 40 -30 16 10 200 -20'   // breve drawn last
+```
+
+- `geometry.ts` – stroke DSL (`M L C A l`), arcs → cubic béziers, lengths, bounding boxes
+- `render.ts` – one glyph → draw-ops: solid / dashed / dotted / outline strokes,
+  **numbered start dots** and **direction arrows**
+- `backends/` – the same draw-ops rendered to **canvas** (live preview), **jsPDF**
+  (download) and **SVG**
+- `src/lib/worksheet/layout.ts` – rows (model letter + fading copies), guides,
+  header, reward box → identical pages for preview and PDF
+
+The Romanian alphabet (`ALPHABETS.ro`) includes Ă Â Î Ș Ț in upper and lower
+case; `ş`/`ţ` (cedilla) input is normalised to the comma-below letters.
+Header text is set in Nunito (`public/fonts`, SIL OFL), embedded in the PDF so
+diacritics print correctly.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
