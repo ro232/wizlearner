@@ -44,6 +44,20 @@ case; `ş`/`ţ` (cedilla) input is normalised to the comma-below letters.
 Header text is set in Nunito (`public/fonts`, SIL OFL), embedded in the PDF so
 diacritics print correctly.
 
+## KDP book mode (`src/lib/book`, page `/book`)
+
+Composes a complete print-ready workbook for Amazon KDP from the same glyph
+engine: title page, colophon, parent instructions, pre-writing section (9
+patterns from `src/lib/glyphs/patterns.ts`), one page per letter, alphabet
+review, one page per number (with counting stars), numbers review, certificate.
+
+- `spec.ts` – KDP geometry: trim sizes, bleed (0.125 in), gutter by page count,
+  spine width per paper type, full-wrap cover size
+- `interior.ts` – page builders with mirrored margins (gutter on the inside),
+  even page count, optional preview watermark
+- `cover.ts` – back cover + spine + front cover in one page, barcode corner left clear
+- `src/lib/pdf/generate-book.ts` – interior and cover PDFs (Nunito embedded)
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

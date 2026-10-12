@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Pencil, Trophy, Users, LogIn, LogOut, User } from 'lucide-react';
+import { Pencil, Trophy, Users, LogIn, LogOut, User, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/use-auth';
 
 const navLinks = [
   { href: '/generator', label: 'Generator', icon: Pencil },
+  { href: '/book', label: 'Book', icon: BookOpen },
   { href: '/dashboard', label: 'Dashboard', icon: Trophy },
   { href: '/community', label: 'Community', icon: Users },
 ];

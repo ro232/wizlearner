@@ -118,6 +118,7 @@ function drawOp(doc: jsPDF, op: FlatOp, font: PdfFontSet): void {
       doc.text(text, op.x, op.y, {
         align: op.align ?? 'left',
         baseline: op.baseline === 'middle' ? 'middle' : op.baseline === 'top' ? 'top' : 'alphabetic',
+        angle: op.rotate ?? 0,
       });
       break;
     }

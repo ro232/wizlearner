@@ -21,6 +21,10 @@ export interface GlyphStyle {
   paper: string;
   /** Lower bound for the start-dot radius (glyph units), so numbers stay legible on small letters. */
   minDotRadius?: number;
+  /** Only number the first N strokes (patterns made of many identical strokes). */
+  maxDots?: number;
+  /** Draw at most N arrows in total. */
+  maxArrows?: number;
 }
 
 export const DEFAULT_GLYPH_STYLE: GlyphStyle = {
@@ -74,8 +78,13 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
 
   // 2. arrows
   if (style.arrows) {
+    let count = 0;
+    const limit = style.maxArrows ?? Infinity;
     for (const stroke of glyph.strokes) {
-      for (const { p, dir } of arrowPositions(stroke)) ops.push(arrowHead(p, dir, w, style.accent));
+      for (const { p, dir } of arrowPositions(stroke)) {
+        if (count++ >= limit) break;
+        ops.push(arrowHead(p, dir, w, style.accent));
+      }
     }
   }
 
@@ -84,6 +93,7 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
     const r = Math.max(w * 0.85, style.minDotRadius ?? 0);
     const placed: Pt[] = [];
     glyph.strokes.forEach((stroke, i) => {
+      if (i >= (style.maxDots ?? Infinity)) return;
       const p = dotPosition(stroke, placed, r);
       placed.push(p);
       ops.push({ t: 'circle', cx: p.x, cy: p.y, r, fill: style.accent, stroke: style.paper, strokeWidth: w * 0.18 });
