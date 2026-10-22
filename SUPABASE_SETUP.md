@@ -33,7 +33,7 @@ All 10 required integration files have been created for WorksheetWiz. Here's wha
   - Google OAuth sign-in
   - Email/password authentication
   - Magic link (passwordless) sign-in
-  - Access code redemption
+  - Access code redemption (server-side, via `redeem_access_code`)
   - Profile management
   
 - **`src/hooks/use-worksheets.ts`** - Worksheet management hook with:
@@ -72,7 +72,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
 ### 3. Initialize Database
-Copy the contents of `src/lib/supabase/schema.sql` and run it in your Supabase SQL Editor:
+Copy the contents of `src/lib/supabase/schema.sql` and run it in your Supabase SQL Editor,
+then run every file in `supabase/migrations/` in name order (they are safe to re-run).
+**Existing database:** run only the migrations — `20261023000000_securizare_acces.sql` closes
+the access-code and tier holes. Create access codes from the SQL Editor with
+`SELECT * FROM generate_access_codes('starter', 10);`
 ```
 https://app.supabase.com/project/[YOUR_PROJECT_ID]/sql/new
 ```
@@ -111,7 +115,7 @@ const { data } = await supabase.from('saved_worksheets').select('*');
 ## File Paths Reference
 
 ```
-/sessions/ecstatic-compassionate-johnson/worksheetwiz-app/
+wizlearner/
 ├── .env.local                              # Environment variables
 ├── src/
 │   ├── lib/supabase/

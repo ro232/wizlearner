@@ -3,6 +3,7 @@ import type { DrawOp, Glyph, PageOps } from '@/lib/glyphs/types';
 import { getGlyph, hintFor, normalizeKey, type Alphabet } from '@/lib/glyphs/data';
 import type { TraceVariant } from '@/lib/glyphs/render';
 import { isPatternId, type PatternId } from '@/lib/glyphs/patterns';
+import { isItemAllowed } from '@/lib/access';
 import {
   INK,
   ACCENT,
@@ -92,10 +93,11 @@ export function glyphsForItem(item: string, category: WorksheetConfig['category'
   return out;
 }
 
-export function rowItems(config: WorksheetConfig): RowItem[] {
+export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[] {
   const reps = Math.max(1, config.repetitionsPerItem || 1);
   const rows: RowItem[] = [];
   for (const item of config.selectedItems) {
+    if (!isItemAllowed(item, config.category, tier)) continue;
     if (config.category === 'prewrite') {
       if (!isPatternId(item)) continue;
       for (let r = 0; r < reps; r++) rows.push({ item, glyphs: [], pattern: item });
@@ -129,7 +131,7 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
   const contentTop = margin + headerH;
   const contentBottom = H - margin - rewardH - footerH;
 
-  const rows = rowItems(config);
+  const rows = rowItems(config, tier);
   const maxRows = Math.max(1, config.rowsPerPage || 6);
   const variant: TraceVariant = config.fontStyle === 'cursive' ? 'dashed' : (config.fontStyle as TraceVariant);
   const vis = Math.max(1, Math.min(10, config.tracingVisibility || 7)) / 10;

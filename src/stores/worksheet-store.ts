@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
 import { ALPHABETS, lettersOfWord, normalizeKey } from '@/lib/glyphs/data';
+import { isItemAllowed } from '@/lib/access';
 
 interface WorksheetState {
   config: WorksheetConfig;
@@ -81,7 +82,7 @@ export const useWorksheetStore = create<WorksheetState>((set) => ({
       customWords: state.config.customWords.includes(word) ? state.config.customWords : [...state.config.customWords, word],
       selectedItems: Array.from(new Set([
         ...state.config.selectedItems,
-        ...lettersOfWord(word, state.config.letterMode),
+        ...lettersOfWord(word, state.config.letterMode).filter((l) => isItemAllowed(l, 'letters', state.tier)),
       ])),
     }
   })),

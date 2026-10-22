@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Pencil, Trophy, Users, LogIn, LogOut, User, BookOpen } from 'lucide-react';
+import { Pencil, LogIn, LogOut, User, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -12,8 +12,6 @@ import { useAuth } from '@/hooks/use-auth';
 const navLinks = [
   { href: '/generator', label: 'Generator', icon: Pencil },
   { href: '/book', label: 'Book', icon: BookOpen },
-  { href: '/dashboard', label: 'Dashboard', icon: Trophy },
-  { href: '/community', label: 'Community', icon: Users },
 ];
 
 export function Navbar() {
@@ -41,7 +39,6 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
             <Link href="/generator" className="hover:text-blue-600 transition-colors">Features</Link>
             <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
-            <Link href="/community" className="hover:text-blue-600 transition-colors">Community</Link>
           </div>
         ) : (
           <div className="hidden md:flex items-center gap-1">
@@ -57,24 +54,26 @@ export function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {!isLanding && (
+          {!isLanding && user && (
             <div className="flex items-center gap-1">
               <Badge variant="outline" className={cn('text-xs font-medium', tier === 'free' && 'border-blue-200 text-blue-700 bg-blue-50/50', tier === 'starter' && 'border-green-200 text-green-700 bg-green-50/50', tier === 'full' && 'border-orange-200 text-orange-700 bg-orange-50/50')}>
                 {tier === 'free' ? 'Free Tier' : tier === 'starter' ? 'Starter' : 'Full Access'}
               </Badge>
-              <button
-                onClick={() => {
-                  const tiers: Array<'free' | 'starter' | 'full'> = ['free', 'starter', 'full'];
-                  const currentIdx = tiers.indexOf(tier);
-                  const nextTier = tiers[(currentIdx + 1) % tiers.length];
-                  useWorksheetStore.getState().setTier(nextTier);
-                }}
-                className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors"
-                title="Click to cycle tier (dev mode)"
-              >
-                🔓
-              </button>
             </div>
+          )}
+          {/* Local development only: cycle the tier to test locked content. Never shipped to visitors. */}
+          {process.env.NODE_ENV === 'development' && !isLanding && (
+            <button
+              onClick={() => {
+                const tiers: Array<'free' | 'starter' | 'full'> = ['free', 'starter', 'full'];
+                const nextTier = tiers[(tiers.indexOf(tier) + 1) % tiers.length];
+                useWorksheetStore.getState().setTier(nextTier);
+              }}
+              className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors"
+              title="Dev only: cycle tier"
+            >
+              🔓 {tier}
+            </button>
           )}
 
           {/* Auth buttons */}

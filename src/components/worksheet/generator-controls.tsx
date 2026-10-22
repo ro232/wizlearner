@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
-import { CATEGORY_TABS, FREE_LIMITS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
-import { uppercaseLetters, lowercaseLetters, pairedLetters, baseLetter, hintFor } from '@/lib/glyphs/data';
+import { CATEGORY_TABS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
+import { isItemAllowed } from '@/lib/access';
+import { uppercaseLetters, lowercaseLetters, pairedLetters, hintFor } from '@/lib/glyphs/data';
 import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -51,23 +52,6 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
 
   const alphabet = config.alphabet ?? 'en';
 
-  // Determine free items based on tier and category
-  const getFreeItems = (): string[] => {
-    if (config.category === 'letters') {
-      return tier === 'free' ? [...FREE_LIMITS.letters] : uppercaseLetters(alphabet).map(baseLetter);
-    }
-    if (config.category === 'numbers') {
-      return tier === 'free' ? [...FREE_LIMITS.numbers] : [...NUMBERS];
-    }
-    if (config.category === 'shapes') {
-      return tier === 'free' ? [...FREE_LIMITS.shapes] : [...SHAPES];
-    }
-    if (config.category === 'prewrite') {
-      return tier === 'free' ? [...FREE_LIMITS.prewrite] : [...PATTERN_IDS];
-    }
-    return [];
-  };
-
   // Get all items for the current category
   const getAllItems = (): string[] => {
     if (config.category === 'letters') {
@@ -82,14 +66,8 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
   };
 
   const allItems = getAllItems();
-  const freeItems = getFreeItems();
-  const isItemFree = (item: string) => {
-    if (config.category === 'letters') {
-      // Ă and Â count as A, Î as I, Ș as S, Ț as T.
-      return freeItems.includes(baseLetter(item[0]));
-    }
-    return freeItems.includes(item);
-  };
+  const isItemFree = (item: string) => isItemAllowed(item, config.category, tier);
+  const freeCount = allItems.filter(isItemFree).length;
 
   // Handle adding all free items
   const handleAddAllFree = () => {
@@ -335,10 +313,10 @@ export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: Genera
             onClick={handleAddAllFree}
             className="flex-1 text-xs"
           >
-            Add All Free
-            {freeItems.length > 0 && (
+            {tier === 'free' ? 'Add All Free' : 'Add All'}
+            {freeCount > 0 && (
               <Badge variant="secondary" className="ml-2 text-xs">
-                {freeItems.length}
+                {freeCount}
               </Badge>
             )}
           </Button>

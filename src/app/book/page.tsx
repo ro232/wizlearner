@@ -33,7 +33,7 @@ export default function BookPage() {
   const [view, setView] = useState<'interior' | 'cover'>('interior');
   const [busy, setBusy] = useState<'interior' | 'cover' | null>(null);
 
-  const effective = useMemo<BookConfig>(() => ({ ...config, watermark: tier === 'free' }), [config, tier]);
+  const effective = useMemo<BookConfig>(() => ({ ...config, watermark: tier !== 'full' }), [config, tier]);
   const pages = useMemo(() => buildBookPages(effective), [effective]);
   const cover = useMemo(() => buildCoverPage(effective, pages.length), [effective, pages.length]);
   const geometry = coverGeometry(effective.trim, pages.length, effective.paper);
@@ -73,7 +73,7 @@ export default function BookPage() {
                   </h2>
                   <p className="text-xs text-slate-500 mt-1">A complete tracing workbook, ready to upload to Amazon KDP.</p>
                 </div>
-                {tier === 'free' && <Badge variant="secondary">Preview watermark</Badge>}
+                {tier !== 'full' && <Badge variant="secondary">Preview watermark</Badge>}
               </div>
 
               <div className="space-y-2">

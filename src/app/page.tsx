@@ -7,15 +7,10 @@ import {
   Type,
   Hash,
   Shapes,
-  Brain,
-  Puzzle,
-  Search,
   GraduationCap,
-  Calendar,
   Settings2,
   Download,
   Zap,
-  Star,
 } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -40,7 +35,7 @@ function HeroSection() {
           <div className="space-y-8 animate-fade-up">
             <Badge variant="outline" className="w-fit border-blue-200 bg-blue-50/50 text-blue-700">
               <Sparkles className="w-3 h-3 mr-1" />
-              New — AI Worksheet Generator
+              New — Romanian alphabet with Ă Â Î Ș Ț
             </Badge>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.08] tracking-tight text-slate-900">
@@ -52,7 +47,7 @@ function HeroSection() {
             </h1>
 
             <p className="text-lg md:text-xl leading-relaxed text-slate-600 max-w-xl">
-              AI-powered worksheets for letter tracing, numbers, shapes, math, and more. Fully customizable, instant downloads. Perfect for preschool, kindergarten, and homeschooling.
+              Tracing worksheets for letters, numbers, shapes and pre-writing, with numbered start dots and stroke arrows. Print-ready PDF in seconds. Made for preschool, kindergarten and home practice.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-2">
@@ -65,41 +60,17 @@ function HeroSection() {
                   Start Free — No Account Needed <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full sm:w-auto h-14 text-base rounded-2xl border-2 border-slate-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
-              >
-                See Examples
-              </Button>
+              <Link href="/book" className="flex-shrink-0">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto h-14 text-base rounded-2xl border-2 border-slate-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
+                >
+                  Make a Workbook
+                </Button>
+              </Link>
             </div>
 
-            <div className="flex items-center gap-4 pt-4">
-              <div className="flex -space-x-2">
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-9 h-9 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white"
-                    style={{
-                      background: [
-                        'linear-gradient(135deg, #2563EB, #1e40af)',
-                        'linear-gradient(135deg, #059669, #047857)',
-                        'linear-gradient(135deg, #EA580C, #d97706)',
-                        'linear-gradient(135deg, #7C3AED, #6d28d9)',
-                      ][i],
-                    }}
-                  >
-                    {String(i + 1).padStart(1, '0')}
-                  </div>
-                ))}
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-900">
-                  2,847+ parents trust <span className="gradient-text-blue">WorksheetWiz</span>
-                </p>
-                <p className="text-xs text-slate-500">Creating better learning experiences daily</p>
-              </div>
-            </div>
           </div>
 
           <div className="relative h-96 md:h-full flex items-center justify-center">
@@ -146,38 +117,12 @@ function HeroSection() {
   );
 }
 
-function StatsBar() {
-  const stats = [
-    { label: 'Worksheets Generated', value: '50,000+' },
-    { label: 'Letters + Diacritics', value: '26' },
-    { label: 'Worksheet Types', value: '8' },
-    { label: 'Star Rating', value: '4.9/5' },
-  ];
-
-  return (
-    <section className="py-20 md:py-28 bg-gradient-to-r from-slate-50 to-blue-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((stat, i) => (
-            <div key={i} className="text-center space-y-2">
-              <div className="text-4xl md:text-5xl font-bold text-slate-900">
-                {stat.value}
-              </div>
-              <p className="text-sm md:text-base text-slate-600 font-medium">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function HowItWorks() {
   const steps = [
     {
       num: '01',
       title: 'Pick Your Content',
-      desc: 'Choose from letters, numbers, shapes, math, games, and more. 8 worksheet types to explore.',
+      desc: 'Choose letters (Romanian or English), numbers, shapes or pre-writing patterns.',
       icon: Type,
       color: 'blue',
     },
@@ -191,7 +136,7 @@ function HowItWorks() {
     {
       num: '03',
       title: 'Download & Print',
-      desc: 'Get instant PDF downloads. No watermarks, no hidden paywalls. Print whenever you want.',
+      desc: 'Download a print-ready PDF. What you see in the preview is exactly what prints.',
       icon: Download,
       color: 'green',
     },
@@ -253,12 +198,9 @@ function FeaturesGrid() {
     { title: 'Letter Tracing', icon: Type, color: 'blue' },
     { title: 'Number Practice', icon: Hash, color: 'green' },
     { title: 'Shape Tracing', icon: Shapes, color: 'purple' },
-    { title: 'Math Worksheets', icon: Zap, color: 'orange' },
-    { title: 'Games & Activities', icon: Puzzle, color: 'red' },
-    { title: 'Word Search', icon: Search, color: 'teal' },
-    { title: 'AI Generator', icon: Brain, color: 'indigo' },
-    { title: 'Classroom Mode', icon: GraduationCap, color: 'emerald' },
-    { title: 'Curriculum Builder', icon: Calendar, color: 'cyan' },
+    { title: 'Pre-writing Patterns', icon: Zap, color: 'orange' },
+    { title: 'Left-handed Mode', icon: Settings2, color: 'teal' },
+    { title: 'KDP Workbook Maker', icon: GraduationCap, color: 'emerald' },
   ];
 
   const colorGradients: Record<string, string> = {
@@ -319,7 +261,7 @@ function PricingSection() {
       price: '$0',
       description: 'Perfect for trying it out',
       popular: false,
-      features: ['5 letters (A-E)', '5 numbers', '3 shapes', '2 downloads/day', 'Basic templates'],
+      features: ['Letters A–E (with Ă, Â)', 'Numbers 0–5', '3 shapes, 3 patterns', 'Workbook preview with watermark'],
       cta: 'Start Free',
     },
     {
@@ -328,12 +270,9 @@ function PricingSection() {
       description: 'Most popular choice',
       popular: true,
       features: [
-        'All letters & numbers',
-        'All shapes',
-        'Unlimited downloads',
-        'Cloud save (20 sheets)',
-        '10 custom templates',
-        'Priority support',
+        'All letters, Romanian and English',
+        'Numbers 0–20',
+        'All shapes and patterns',
       ],
       cta: 'Get Starter',
     },
@@ -344,13 +283,8 @@ function PricingSection() {
       popular: false,
       features: [
         'Everything in Starter',
-        'AI content generator',
-        'Math & pre-writing sheets',
-        'Word search builder',
-        'Game templates',
-        'Classroom mode',
-        'Curriculum builder',
-        'Commercial license',
+        'KDP workbook without watermark',
+        'Interior + cover PDFs',
       ],
       cta: 'Get Full Access',
     },
@@ -404,6 +338,7 @@ function PricingSection() {
                   ))}
                 </ul>
 
+                <Link href="/generator" className="block">
                 <Button
                   className={`w-full h-11 rounded-xl font-semibold transition-all ${
                     tier.popular
@@ -418,6 +353,7 @@ function PricingSection() {
                 >
                   {tier.cta}
                 </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}
@@ -427,61 +363,6 @@ function PricingSection() {
           <p className="text-slate-600">
             <button className="text-blue-600 font-semibold hover:underline">No credit card required.</button>
           </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Testimonials() {
-  const testimonials = [
-    {
-      quote: 'WorksheetWiz saved me countless hours of design work. My kids love the variety and I love how easy it is to create custom worksheets tailored to their needs.',
-      author: 'Elena M.',
-      role: 'Parent of 3',
-      rating: 5,
-    },
-    {
-      quote: 'As a teacher managing 30+ students, creating differentiated worksheets is now effortless. The quality is professional-grade and my students are more engaged than ever.',
-      author: 'David R.',
-      role: 'Elementary Teacher',
-      rating: 5,
-    },
-    {
-      quote: 'Homeschooling just got so much easier! The AI generator understands exactly what I need, and the customization options are incredible. Worth every penny.',
-      author: 'Ana P.',
-      role: 'Homeschool Mom',
-      rating: 5,
-    },
-  ];
-
-  return (
-    <section className="py-28 bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center space-y-4 mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900">Loved by educators & parents</h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">Join thousands of satisfied users creating better learning materials every day</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, i) => (
-            <Card key={i} className="border-slate-200 hover:shadow-lg transition-all duration-300 hover-lift">
-              <CardContent className="pt-8">
-                <div className="flex gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, j) => (
-                    <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-
-                <p className="text-slate-700 italic mb-6">{`"${testimonial.quote}"`}</p>
-
-                <div>
-                  <p className="font-semibold text-slate-900">{testimonial.author}</p>
-                  <p className="text-sm text-slate-600">{testimonial.role}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
         </div>
       </div>
     </section>
@@ -533,11 +414,9 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <Navbar />
       <HeroSection />
-      <StatsBar />
       <HowItWorks />
       <FeaturesGrid />
       <PricingSection />
-      <Testimonials />
       <FinalCTA />
       <Footer />
     </div>
