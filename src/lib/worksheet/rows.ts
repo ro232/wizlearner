@@ -1,4 +1,5 @@
 import type { DrawOp, Glyph } from '@/lib/glyphs/types';
+import { iconOps } from '@/lib/hints/icons';
 import { renderGlyph, glyphBounds, type TraceVariant, type GlyphStyle } from '@/lib/glyphs/render';
 import { mixColor } from '@/lib/glyphs/geometry';
 import { patternGlyph, patternPeriods, type PatternId } from '@/lib/glyphs/patterns';
@@ -152,7 +153,9 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
   const hint = st.hint ?? null;
   const hintW = hint ? Math.max(16, hint.word.length * 2.2 + 4) : 0;
   const modelW = st.showModel ? cellMm + hintW + 3 : 0;
-  let copies = Math.max(1, Math.floor((width - modelW) / cellMm));
+  // No room left after the model (a long hint word on a narrow page): draw no copies
+  // rather than one that runs past the margin.
+  let copies = Math.max(0, Math.floor((width - modelW) / cellMm));
   if (st.maxCopies > 0) copies = Math.min(copies, st.maxCopies);
   const top = baseline - 100 * s;
 
@@ -162,13 +165,13 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
     if (hint) {
       const hx = st.leftHanded ? modelX - 3 - hintW / 2 : modelX + cellMm + 3 + hintW / 2;
       const cy = baseline - 50 * s;
-      ops.push({ t: 'text', x: hx, y: cy - 1, text: hint.emoji, size: Math.min(8, 42 * s), fill: INK, align: 'center', baseline: 'middle', emoji: true });
+      ops.push(...iconOps(hint.emoji, hx, cy - 1, Math.min(9, 48 * s)));
       ops.push({ t: 'text', x: hx, y: Math.min(baseline, cy + 6), text: hint.word, size: 3.4, fill: MUTED, align: 'center', weight: 'bold' });
     }
   }
 
   const firstCopyX = st.leftHanded ? x : x + modelW;
-  const traced = Math.max(1, copies - (copies >= 4 ? st.blankCells : 0));
+  const traced = copies === 0 ? 0 : Math.max(1, copies - (copies >= 4 ? st.blankCells : 0));
   for (let k = 0; k < traced; k++) {
     const fade = traced > 1 ? 1 - (1 - st.fadeTo) * (k / (traced - 1)) : 1;
     ops.push({ t: 'group', tx: firstCopyX + k * cellMm + CELL_PAD * s, ty: top, scale: s, ops: itemOps(glyphs, copyStyle(st, fade)) });

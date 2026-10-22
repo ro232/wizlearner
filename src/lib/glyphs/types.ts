@@ -35,6 +35,8 @@ export interface Stroke {
    * `null` = no arrow; `undefined` = automatic placement.
    */
   arrowAt?: number | number[] | null;
+  /** A diacritic or comma mark (the breve of Ă, the comma of Ș …). */
+  mark?: boolean;
 }
 
 export interface GlyphDef {
@@ -44,6 +46,8 @@ export interface GlyphDef {
   width: number;
   /** Optional per-stroke arrow positions (fraction 0..1, or a list, or null for none). */
   arrows?: (number | number[] | null | undefined)[];
+  /** How many of the last strokes are diacritic marks (drawn so they stay legible when traced). */
+  marks?: number;
 }
 
 export interface Glyph {

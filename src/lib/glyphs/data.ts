@@ -44,11 +44,11 @@ const UPPER: Record<string, GlyphDef> = {
 };
 
 // Romanian letters: base letter strokes + diacritic as the last stroke.
-UPPER['Ă'] = { width: 80, strokes: [...UPPER.A.strokes, 'A 40 -30 16 10 200 -20'], arrows: [0.5, 0.5, 0.5, null] };
-UPPER['Â'] = { width: 80, strokes: [...UPPER.A.strokes, 'M 24 -20 L 40 -34 L 56 -20'], arrows: [0.5, 0.5, 0.5, null] };
-UPPER['Î'] = { width: 0, strokes: [...UPPER.I.strokes, 'M -16 -20 L 0 -34 L 16 -20'], arrows: [0.5, null] };
-UPPER['Ș'] = { width: 64, strokes: [...UPPER.S.strokes, 'M 35 106 C 36 114 33 121 27 126'], arrows: [[0.2, 0.75], null] };
-UPPER['Ț'] = { width: 70, strokes: [...UPPER.T.strokes, 'M 37 106 C 38 114 35 121 29 126'], arrows: [0.5, 0.5, null] };
+UPPER['Ă'] = { marks: 1, width: 80, strokes: [...UPPER.A.strokes, 'A 40 -30 16 10 200 -20'], arrows: [0.5, 0.5, 0.5, null] };
+UPPER['Â'] = { marks: 1, width: 80, strokes: [...UPPER.A.strokes, 'M 24 -20 L 40 -34 L 56 -20'], arrows: [0.5, 0.5, 0.5, null] };
+UPPER['Î'] = { marks: 1, width: 0, strokes: [...UPPER.I.strokes, 'M -16 -20 L 0 -34 L 16 -20'], arrows: [0.5, null] };
+UPPER['Ș'] = { marks: 1, width: 64, strokes: [...UPPER.S.strokes, 'M 35 106 C 36 114 33 121 27 126'], arrows: [[0.2, 0.75], null] };
+UPPER['Ț'] = { marks: 1, width: 70, strokes: [...UPPER.T.strokes, 'M 37 106 C 38 114 35 121 29 126'], arrows: [0.5, 0.5, null] };
 
 // ───────────────────────── lowercase ─────────────────────────
 
@@ -85,11 +85,11 @@ const LOWER: Record<string, GlyphDef> = {
   z: { width: 48, strokes: ['M 0 50 L 48 50 L 0 100 L 48 100'] },
 };
 
-LOWER['ă'] = { width: 52, strokes: [...LOWER.a.strokes, 'A 26 26 14 9 200 -20'], arrows: [0.25, 0.5, null] };
-LOWER['â'] = { width: 52, strokes: [...LOWER.a.strokes, 'M 12 34 L 26 20 L 40 34'], arrows: [0.25, 0.5, null] };
-LOWER['î'] = { width: 0, strokes: ['M 0 50 L 0 100', 'M -14 34 L 0 20 L 14 34'], arrows: [0.5, null] };
-LOWER['ș'] = { width: 44, strokes: [...LOWER.s.strokes, 'M 24 106 C 25 114 22 121 16 126'], arrows: [[0.2, 0.75], null] };
-LOWER['ț'] = { width: 30, strokes: [...LOWER.t.strokes, 'M 17 106 C 18 114 15 121 9 126'], arrows: [0.4, 0.5, null] };
+LOWER['ă'] = { marks: 1, width: 52, strokes: [...LOWER.a.strokes, 'A 26 26 14 9 200 -20'], arrows: [0.25, 0.5, null] };
+LOWER['â'] = { marks: 1, width: 52, strokes: [...LOWER.a.strokes, 'M 12 34 L 26 20 L 40 34'], arrows: [0.25, 0.5, null] };
+LOWER['î'] = { marks: 1, width: 0, strokes: ['M 0 50 L 0 100', 'M -14 34 L 0 20 L 14 34'], arrows: [0.5, null] };
+LOWER['ș'] = { marks: 1, width: 44, strokes: [...LOWER.s.strokes, 'M 24 106 C 25 114 22 121 16 126'], arrows: [[0.2, 0.75], null] };
+LOWER['ț'] = { marks: 1, width: 30, strokes: [...LOWER.t.strokes, 'M 17 106 C 18 114 15 121 9 126'], arrows: [0.4, 0.5, null] };
 
 // ───────────────────────── digits ─────────────────────────
 

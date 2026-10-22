@@ -168,7 +168,8 @@ export function strokeStart(stroke: Stroke): Pt {
 export function buildGlyph(key: string, def: GlyphDef): Glyph {
   const strokes: Stroke[] = def.strokes.map((dsl, i) => {
     const a = def.arrows?.[i];
-    return { subpaths: parseStroke(dsl), arrowAt: a === undefined ? undefined : a };
+    const mark = def.marks !== undefined && i >= def.strokes.length - def.marks;
+    return { subpaths: parseStroke(dsl), arrowAt: a === undefined ? undefined : a, ...(mark ? { mark: true } : {}) };
   });
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
   for (const st of strokes)
