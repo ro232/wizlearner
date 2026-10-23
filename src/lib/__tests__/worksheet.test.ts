@@ -15,6 +15,10 @@ const cases: [string, Partial<WorksheetConfig>][] = [
   ['patterns', { category: 'prewrite', selectedItems: [...PATTERN_IDS] }],
   ['left-handed dotted', { selectedItems: ['B', 'Ș'], leftHandedMode: true, fontStyle: 'dotted' }],
   ['long name', { selectedItems: ['A'], childName: 'Maria-Magdalena Ștefănescu-Popovici', schoolName: 'Grădinița nr. 123' }],
+  ['handwriting, small letters', { script: 'cursive', letterMode: 'lowercase', selectedItems: lowercaseLetters('ro') }],
+  ['handwriting, pairs, large', { script: 'cursive', letterMode: 'paired', selectedItems: pairedLetters('ro'), letterSize: 'large' }],
+  ['handwriting, words', { script: 'cursive', letterMode: 'paired', customWords: ['Maria-Magdalena Ștefănescu', 'frunză', 'țestoasă'], childName: 'Ana' }],
+  ['handwriting, left-handed', { script: 'cursive', selectedItems: ['Șș', 'Gg'], leftHandedMode: true, customWords: ['gâscă'] }],
 ];
 
 describe('worksheet pages', () => {

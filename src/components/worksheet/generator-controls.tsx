@@ -10,6 +10,7 @@ import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/g
 import { COUNT_RANGES, DOT_SHAPES, DOT_SHAPE_LABELS } from '@/lib/worksheet/activities';
 import { Button } from '@/components/ui/button';
 import { Lock, RotateCcw, Plus, X, ChevronDown, UserRound } from 'lucide-react';
+import { isCursive } from '@/lib/worksheet/layout';
 
 interface GeneratorControlsProps {
   onShowPaywall: () => void;
@@ -55,7 +56,7 @@ function Slider({ label, value, min, max, onChange, left, right }: { label: stri
 export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   const {
     config, tier, setCategory, setAlphabet, setLetterMode, toggleItem, addItems, removeAllItems,
-    addCustomWord, removeCustomWord, setDifficulty, setFontStyle, setLetterSize, setVisibility,
+    addCustomWord, removeCustomWord, setDifficulty, setFontStyle, setScript, setLetterSize, setVisibility,
     setBackgroundPattern, setGuideColor, setRowsPerPage, setRepetitionsPerItem, toggleGuideLines,
     toggleArrows, toggleStartDots, toggleEmoji, toggleReward, toggleFullPage, toggleLeftHanded,
     toggleFillPage, setChildName, resetConfig,
@@ -63,6 +64,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
 
   const [wordInput, setWordInput] = useState('');
   const alphabet = config.alphabet ?? 'ro';
+  const cursive = isCursive(config);
 
   const allItems: string[] = (() => {
     switch (config.category) {
@@ -135,6 +137,15 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
         </div>
       </div>
 
+      {config.category === 'letters' && (
+        <div>
+          <SectionLabel>Scris</SectionLabel>
+          <div className="grid grid-cols-2 gap-2">
+            <Choice active={!cursive} onClick={() => setScript('print')}><div className="text-sm font-bold">Ab · de tipar</div><div className="text-[11px] text-slate-500">grădiniță, pregătitoare</div></Choice>
+            <Choice active={cursive} onClick={() => setScript('cursive')}><div className="text-sm font-bold italic">Ab · de mână</div><div className="text-[11px] text-slate-500">clasa I, scris legat</div></Choice>
+          </div>
+        </div>
+      )}
       {config.category === 'letters' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>

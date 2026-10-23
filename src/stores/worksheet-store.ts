@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
-import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
+import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, Script, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
 import { ALPHABETS, normalizeKey } from '@/lib/glyphs/data';
 
 interface WorksheetState {
@@ -19,6 +19,7 @@ interface WorksheetState {
   removeCustomWord: (word: string) => void;
   setDifficulty: (difficulty: Difficulty) => void;
   setFontStyle: (style: FontStyle) => void;
+  setScript: (script: Script) => void;
   setLetterSize: (size: LetterSize) => void;
   setVisibility: (value: number) => void;
   setBackgroundPattern: (pattern: BackgroundPattern) => void;
@@ -123,6 +124,17 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
     return { config: { ...state.config, difficulty, ...presets[difficulty] } };
   }),
   setFontStyle: (fontStyle) => set((state) => ({ config: { ...state.config, fontStyle } })),
+  // The old "cursive" trace style meant handwriting too: going back to print resets it.
+  setScript: (script) =>
+    set((state) => {
+      const c = state.config;
+      // Handwriting is taught with small letters joined: all-capitals would come out as separate capitals.
+      if (script === 'cursive' && c.letterMode === 'uppercase') {
+        const selectedItems = c.category === 'letters' ? c.selectedItems.map((i) => (i.length === 1 ? `${i.toUpperCase()}${i.toLowerCase()}` : i)) : c.selectedItems;
+        return { config: { ...c, script, letterMode: 'paired', selectedItems } };
+      }
+      return { config: { ...c, script, ...(script === 'print' && c.fontStyle === 'cursive' ? { fontStyle: 'dashed' as const } : {}) } };
+    }),
   setLetterSize: (letterSize) => set((state) => ({ config: { ...state.config, letterSize } })),
   setVisibility: (tracingVisibility) => set((state) => ({ config: { ...state.config, tracingVisibility } })),
   setBackgroundPattern: (backgroundPattern) => set((state) => ({ config: { ...state.config, backgroundPattern } })),

@@ -9,6 +9,8 @@ export type GuideColor = 'gray' | 'green' | 'orange' | 'purple';
 export type BackgroundPattern = 'blank' | 'grid' | 'guides' | 'patratele' | 'dictando' | 'lines';
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 export type LetterMode = 'uppercase' | 'lowercase' | 'paired';
+/** Print letters ("de tipar") or joined handwriting ("de mână"). */
+export type Script = 'print' | 'cursive';
 export type ContentCategory = 'letters' | 'numbers' | 'shapes' | 'prewrite' | 'math' | 'games' | 'wordsearch' | 'templates';
 /** Which alphabet the letter grid offers: Romanian (with Ă Â Î Ș Ț) or English. */
 export type Alphabet = 'ro' | 'en';
@@ -18,6 +20,8 @@ export interface WorksheetConfig {
   category: ContentCategory;
   alphabet: Alphabet;
   letterMode: LetterMode;
+  /** Letters and words in print (default) or joined handwriting. */
+  script?: Script;
   selectedItems: string[];
   customWords: string[];
 

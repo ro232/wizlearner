@@ -11,7 +11,7 @@ import { PagesPreview } from '@/components/worksheet/pages-preview';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { buildNameBookPages } from '@/lib/worksheet/name-book';
-import { DEFAULT_CONFIG, type LetterMode, type WorksheetConfig } from '@/types';
+import { DEFAULT_CONFIG, type LetterMode, type Script, type WorksheetConfig } from '@/types';
 import { downloadPagesPdf, generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/generate-pdf';
 import { lettersOfWord } from '@/lib/glyphs/data';
 
@@ -23,6 +23,7 @@ import { lettersOfWord } from '@/lib/glyphs/data';
 export default function NameSheetPage() {
   const [name, setName] = useState('');
   const [mode, setMode] = useState<LetterMode>('paired');
+  const [script, setScript] = useState<Script>('print');
   const [withLetters, setWithLetters] = useState(true);
   const toast = useToast();
   const [busy, setBusy] = useState(false);
@@ -40,6 +41,7 @@ export default function NameSheetPage() {
       category: 'letters',
       alphabet: 'ro',
       letterMode: mode === 'lowercase' ? 'lowercase' : 'uppercase',
+      script,
       selectedItems: letters.slice(0, 4),
       customWords: clean ? [clean] : [],
       childName: clean,
@@ -48,7 +50,7 @@ export default function NameSheetPage() {
       showLetterIcons: false,
       fillPage: true,
     };
-  }, [name, mode, withLetters]);
+  }, [name, mode, withLetters, script]);
 
   // Paired mode writes the name with a capital first letter ("Ștefan").
   const sheet = useMemo<WorksheetConfig>(() => (mode === 'paired' ? { ...config, letterMode: 'paired', selectedItems: [] } : config), [config, mode]);
@@ -121,6 +123,20 @@ export default function NameSheetPage() {
                 ))}
               </div>
             </div>
+            {kind === 'sheet' && (
+              <div>
+                <span className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Litere</span>
+                <div className="grid grid-cols-2 gap-2">
+                  {([['print', 'de tipar', 'grădiniță, pregătitoare'], ['cursive', 'de mână', 'clasa I, scris legat']] as const).map(([v, label, sub]) => (
+                    <button key={v} type="button" onClick={() => setScript(v)} aria-pressed={script === v}
+                      className={`p-2 rounded-lg border-2 text-center ${script === v ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`}>
+                      <div className={`text-sm font-bold ${v === 'cursive' ? 'italic' : ''}`}>{label}</div>
+                      <div className="text-[11px] text-slate-500">{sub}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             {kind === 'sheet' && mode !== 'paired' && (
               <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" checked={withLetters} onChange={() => setWithLetters((v) => !v)} className="w-4 h-4" />

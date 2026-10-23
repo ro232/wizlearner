@@ -3,6 +3,7 @@ import { iconOps } from '@/lib/hints/icons';
 import { renderGlyph, glyphBounds, type TraceVariant, type GlyphStyle } from '@/lib/glyphs/render';
 import { mixColor } from '@/lib/glyphs/geometry';
 import { patternGlyph, patternPeriods, type PatternId } from '@/lib/glyphs/patterns';
+import { SLANT } from '@/lib/glyphs/cursive';
 
 /**
  * Row builders shared by the worksheet generator and the book composer.
@@ -20,7 +21,12 @@ export const CELL_PAD = 16; // glyph units, each side of a cell
 
 /** Words need more air between copies than single letters, or "BradBrad" reads as one word. */
 export function cellPad(glyphs: Glyph[]): number {
-  return glyphs.length > 2 ? CELL_PAD * 2.4 : CELL_PAD;
+  return isWordish(glyphs) ? CELL_PAD * 2.4 : CELL_PAD;
+}
+
+/** A word (several print letters, or one joined handwriting word), not a single letter or pair. */
+export function isWordish(glyphs: Glyph[]): boolean {
+  return glyphs.length > 2 || itemWidth(glyphs) > 150;
 }
 export const INNER_GAP = 18; // between the glyphs of a pair / two-digit number / word letters
 
@@ -53,6 +59,8 @@ export interface RowStyle {
   /** Draw the 3-line guides in this colour (null = none). */
   guideColor: string | null;
   hint?: { word: string; emoji: string } | null;
+  /** Handwriting row: four lines (ascender, x-height, baseline, descender) and slanted guides. */
+  cursive?: boolean;
   ink?: string;
   accent?: string;
   paper?: string;
@@ -79,8 +87,9 @@ export function itemWidth(glyphs: Glyph[]): number {
 }
 
 /** Vertical extent of a row in glyph units above the cap line and below the baseline. */
-export function rowExtents(glyphs: Glyph[], stroke: number): { ascent: number; descent: number } {
-  let minY = 0, maxY = 100;
+export function rowExtents(glyphs: Glyph[], stroke: number, cursive = false): { ascent: number; descent: number } {
+  // Handwriting rows always keep room for the descender line, so every row has the same ruling.
+  let minY = 0, maxY = cursive ? 150 : 100;
   for (const g of glyphs) {
     const b = glyphBounds(g, stroke);
     minY = Math.min(minY, b.minY);
@@ -90,8 +99,8 @@ export function rowExtents(glyphs: Glyph[], stroke: number): { ascent: number; d
 }
 
 /** Total row height in mm (ascent + cap height + descent). */
-export function rowHeightMm(glyphs: Glyph[], s: number, stroke = 10): number {
-  const e = rowExtents(glyphs, stroke);
+export function rowHeightMm(glyphs: Glyph[], s: number, stroke = 10, cursive = false): number {
+  const e = rowExtents(glyphs, stroke, cursive);
   return (e.ascent + 100 + e.descent) * s;
 }
 
@@ -108,8 +117,24 @@ export function itemOps(glyphs: Glyph[], style: GlyphStyle): DrawOp[] {
   return ops;
 }
 
-export function guideOps(geom: RowGeometry, s: number, color: string): DrawOp[] {
+export function guideOps(geom: RowGeometry, s: number, color: string, cursive = false): DrawOp[] {
   const { x, width, baseline } = geom;
+  if (cursive) {
+    // Like a "tip I" notebook: the body of the small letters between the two strong lines,
+    // a light line for the tall letters and one for the tails, and slanted lines for the slope.
+    const y0 = baseline - 100 * s, yx = baseline - 50 * s, y150 = baseline + 50 * s;
+    const ops: DrawOp[] = [
+      { t: 'line', x1: x, y1: y0, x2: x + width, y2: y0, stroke: color, strokeWidth: 0.2 },
+      { t: 'line', x1: x, y1: yx, x2: x + width, y2: yx, stroke: color, strokeWidth: 0.35 },
+      { t: 'line', x1: x, y1: baseline, x2: x + width, y2: baseline, stroke: color, strokeWidth: 0.4 },
+      { t: 'line', x1: x, y1: y150, x2: x + width, y2: y150, stroke: color, strokeWidth: 0.2 },
+    ];
+    const lean = 150 * SLANT * s; // horizontal run of a slanted line from the bottom line to the top one
+    for (let px = x; px + lean <= x + width + 0.01; px += 34 * s) {
+      ops.push({ t: 'line', x1: px, y1: y150, x2: px + lean, y2: y0, stroke: color, strokeWidth: 0.12 });
+    }
+    return ops;
+  }
   return [
     { t: 'line', x1: x, y1: baseline - 100 * s, x2: x + width, y2: baseline - 100 * s, stroke: color, strokeWidth: 0.3 },
     { t: 'line', x1: x, y1: baseline - 50 * s, x2: x + width, y2: baseline - 50 * s, stroke: color, strokeWidth: 0.25, dash: [1.5, 1.5] },
@@ -133,6 +158,8 @@ function modelStyle(st: RowStyle): GlyphStyle {
 
 function copyStyle(st: RowStyle, fade: number): GlyphStyle {
   return {
+    // Handwriting is all curves and thin loops: longer dashes keep the line readable.
+    ...(st.cursive ? { dash: [1.6, 1.4] as [number, number] } : {}),
     color: mixColor(st.ink ?? INK, st.paper ?? PAPER, 1 - st.vis * 0.85 * fade),
     strokeWidth: st.stroke,
     variant: st.variant,
@@ -151,7 +178,7 @@ function copyStyle(st: RowStyle, fade: number): GlyphStyle {
 export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry, st: RowStyle): number {
   const { s } = st;
   const { x, width, baseline } = geom;
-  if (st.guideColor) ops.push(...guideOps(geom, s, st.guideColor));
+  if (st.guideColor) ops.push(...guideOps(geom, s, st.guideColor, st.cursive));
   if (glyphs.length === 0) return 0;
 
   const pad = cellPad(glyphs);
@@ -164,7 +191,7 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
   let copies = Math.max(0, Math.floor((width - modelW) / cellMm));
   if (st.maxCopies > 0) copies = Math.min(copies, st.maxCopies);
   // A word with room for a single copy looks unfinished next to rows that have none: trace the model itself.
-  if (glyphs.length > 2 && copies < 2 && st.maxCopies === 0) copies = 0;
+  if (isWordish(glyphs) && copies < 2 && st.maxCopies === 0) copies = 0;
   const top = baseline - 100 * s;
 
   const modelX = st.leftHanded ? x + width - cellMm : x;
