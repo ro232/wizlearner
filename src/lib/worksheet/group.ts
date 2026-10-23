@@ -19,6 +19,8 @@ export interface GroupOptions {
   letters: string[];
   letterMode: LetterMode;
   difficulty: Difficulty;
+  /** A different level for some children (keyed by name as listed). */
+  levels?: Record<string, Difficulty>;
 }
 
 /** A pasted list (one per line, or separated by commas) → clean, unique names. */
@@ -77,7 +79,8 @@ export function buildGroupPages(opts: GroupOptions): { pages: PageOps[]; perChil
   const perChild: number[] = [];
   for (const name of opts.names) {
     // Built as "full": the group feature itself is what is paid for (checked by the page).
-    const sheet = buildWorksheetPages(childSheetConfig(name, opts), 'full');
+    const difficulty = opts.levels?.[name] ?? opts.difficulty;
+    const sheet = buildWorksheetPages(childSheetConfig(name, { ...opts, difficulty }), 'full');
     perChild.push(sheet.length);
     pages.push(...sheet);
   }

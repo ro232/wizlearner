@@ -163,6 +163,8 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
   // rather than one that runs past the margin.
   let copies = Math.max(0, Math.floor((width - modelW) / cellMm));
   if (st.maxCopies > 0) copies = Math.min(copies, st.maxCopies);
+  // A word with room for a single copy looks unfinished next to rows that have none: trace the model itself.
+  if (glyphs.length > 2 && copies < 2 && st.maxCopies === 0) copies = 0;
   const top = baseline - 100 * s;
 
   const modelX = st.leftHanded ? x + width - cellMm : x;
