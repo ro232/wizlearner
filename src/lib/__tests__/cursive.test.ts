@@ -62,4 +62,12 @@ describe('handwriting worksheets', () => {
     const [page] = buildWorksheetPages({ ...DEFAULT_CONFIG, script: 'cursive', selectedItems: [], customWords: ['mama'] }, 'full');
     expect(page.ops.length).toBeGreaterThan(5);
   });
+
+  it('trace copies of every handwriting pair (a pair is not a word)', () => {
+    for (const pair of ['Mm', 'Ww', 'Șș', 'Aa']) {
+      const [page] = buildWorksheetPages({ ...DEFAULT_CONFIG, script: 'cursive', letterMode: 'paired', selectedItems: [pair], customWords: [], fillPage: false }, 'full');
+      // model + copies: well over one group per row
+      expect(page.ops.filter((o) => o.t === 'group').length, pair).toBeGreaterThan(3);
+    }
+  });
 });
