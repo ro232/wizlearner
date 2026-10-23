@@ -1,5 +1,6 @@
 import type { DrawOp, PageOps } from '@/lib/glyphs/types';
-import { getGlyph } from '@/lib/glyphs/data';
+import { iconOps } from '@/lib/hints/icons';
+import { getGlyph, hintFor } from '@/lib/glyphs/data';
 import { renderGlyph } from '@/lib/glyphs/render';
 import { patternGlyph } from '@/lib/glyphs/patterns';
 import { INK, ACCENT, PAPER, MUTED, itemOps, itemWidth, starPoints } from '@/lib/worksheet/rows';
@@ -18,7 +19,8 @@ const SAFE = 0.25 * IN; // keep text this far inside the trim
 
 const COVER_TEXT = {
   ro: {
-    tagline: 'Alfabetul românesc complet · Ă Â Î Ș Ț · cifrele 0–10',
+    numbersBullet: (max: number) => `${max >= 10 ? 'Cifrele și numerele' : 'Cifrele'} de la 0 la ${max}, cu numărat și scris`,
+    tagline: (max: number) => `Alfabetul românesc complet · Ă Â Î Ș Ț · ${max >= 10 ? 'numerele' : 'cifrele'} 0–${max}`,
     ages: 'Pentru copii de 4–7 ani',
     backTitle: 'Învață să scrii, pas cu pas',
     blurb:
@@ -26,14 +28,15 @@ const COVER_TEXT = {
     bullets: [
       'Exerciții grafice de pregătire a mâinii: linii, valuri, bucle',
       'Toate cele 31 de litere ale alfabetului românesc, mari și mici',
-      'Cifrele de la 0 la 10, cu numărat și scris',
+      'NUMBERS',
       'Ordinea corectă a liniilor, arătată pe fiecare literă',
       'Diplomă la final, pentru micul învățăcel',
     ],
     spine: (title: string) => title,
   },
   en: {
-    tagline: 'The complete alphabet · numbers 0–10',
+    numbersBullet: (max: number) => `Numbers from 0 to ${max}, counting and writing`,
+    tagline: (max: number) => `The complete alphabet · numbers 0–${max}`,
     ages: 'For children aged 4–7',
     backTitle: 'Learn to write, step by step',
     blurb:
@@ -41,7 +44,7 @@ const COVER_TEXT = {
     bullets: [
       'Pre-writing exercises: lines, waves, loops',
       'All 26 letters, capital and small',
-      'Numbers from 0 to 10, counting and writing',
+      'NUMBERS',
       'The correct stroke order, shown on every letter',
       'A certificate at the end for the little learner',
     ],
@@ -74,17 +77,22 @@ export function buildCoverPage(config: BookConfig, pageCount: number): PageOps {
   // ── front cover ──
   const fx = g.frontX, fy = g.trimY, fw = g.trimW, fh = g.trimH;
   const fcx = fx + fw / 2;
+  // Title card and letter cards scale with the trim; on short trims (8.5 × 8.5 in) they shrink
+  // so the tagline and author still sit inside the safe zone.
+  const fixed = SAFE * 2 + 6 + 10 + 8 + 10 + 11 + 17 + 14; // gaps, wave strip, tagline, author
+  const k = Math.min(1, (fh - fixed) / (fh * 0.7));
+  const titleH = fh * 0.3 * k;
   // white card for the title block
-  ops.push({ t: 'rect', x: fx + SAFE + 4, y: fy + SAFE + 6, w: fw - SAFE * 2 - 8, h: fh * 0.3, rx: 6, fill: PAPER, stroke: ACCENT, strokeWidth: 0.9 });
-  let y = fy + SAFE + 6 + fh * 0.3 * 0.42;
+  ops.push({ t: 'rect', x: fx + SAFE + 4, y: fy + SAFE + 6, w: fw - SAFE * 2 - 8, h: titleH, rx: 6, fill: PAPER, stroke: ACCENT, strokeWidth: 0.9 });
+  let y = fy + SAFE + 6 + titleH * 0.42;
   y = paragraph(ops, config.title, { x: fx + SAFE + 10, y, width: fw - SAFE * 2 - 20, size: Math.min(17, 320 / Math.max(12, config.title.length)), fill: INK, weight: 'bold', align: 'center', lineHeight: 1.15 });
   paragraph(ops, config.subtitle, { x: fx + SAFE + 14, y: y + 3, width: fw - SAFE * 2 - 28, size: 5, fill: MUTED, align: 'center' });
 
-  // showcase letters with numbered dots and arrows
-  const show = config.alphabet === 'ro' ? ['A', 'ă', 'Ș', '3'] : ['A', 'b', 'C', '3'];
+  // showcase letters with numbered dots and arrows, each beside its picture
+  const show = config.alphabet === 'ro' ? ['A', 'B', 'Ș', 'Ț'] : ['A', 'B', 'C', 'D'];
   const cardW = (fw - SAFE * 2 - 8 - 10) / 2;
-  const cardH = fh * 0.2;
-  const topCards = fy + SAFE + 6 + fh * 0.3 + 10;
+  const cardH = fh * 0.2 * k;
+  const topCards = fy + SAFE + 6 + titleH + 10;
   show.forEach((ch, i) => {
     const col = i % 2, row = Math.floor(i / 2);
     const cx = fx + SAFE + 4 + col * (cardW + 10);
@@ -93,13 +101,17 @@ export function buildCoverPage(config: BookConfig, pageCount: number): PageOps {
     const gl = glyphs(ch);
     const s = (cardH * 0.62) / 100;
     const w = itemWidth(gl) * s;
+    const hint = hintFor(ch, config.alphabet);
+    const pic = Math.min(cardH * 0.62, cardW * 0.4);
+    const letterX = hint ? cx + cardW * 0.3 - w / 2 : cx + (cardW - w) / 2;
     ops.push({
       t: 'group',
-      tx: cx + (cardW - w) / 2,
+      tx: letterX,
       ty: cy + cardH * 0.18,
       scale: s,
       ops: itemOps(gl, { color: INK, strokeWidth: 10, variant: 'solid', startDots: true, arrows: true, accent: ACCENT, dotText: PAPER, paper: PAPER, minDotRadius: 1.8 / s }),
     });
+    if (hint) ops.push(...iconOps(hint.emoji, cx + cardW * 0.72, cy + cardH / 2, pic));
   });
 
   // wave strip + tagline
@@ -114,7 +126,7 @@ export function buildCoverPage(config: BookConfig, pageCount: number): PageOps {
     scale: ws,
     ops: renderGlyph(wave, { color: '#F59E0B', strokeWidth: 10, variant: 'dashed', startDots: false, arrows: false, accent: ACCENT, dotText: PAPER, paper: PAPER }),
   });
-  ops.push({ t: 'text', x: fcx, y: stripY + 100 * ws + 10, text: C.tagline, size: 4.4, fill: INK, weight: 'bold', align: 'center' });
+  ops.push({ t: 'text', x: fcx, y: stripY + 100 * ws + 10, text: C.tagline(config.numbersMax), size: 4.4, fill: INK, weight: 'bold', align: 'center' });
   ops.push({ t: 'text', x: fcx, y: stripY + 100 * ws + 17, text: C.ages, size: 3.8, fill: MUTED, align: 'center' });
   ops.push({ t: 'text', x: fcx, y: fy + fh - SAFE - 4, text: config.author, size: 5, fill: INK, weight: 'bold', align: 'center' });
 
@@ -131,7 +143,7 @@ export function buildCoverPage(config: BookConfig, pageCount: number): PageOps {
   let by = fy + SAFE + 28;
   by = paragraph(ops, C.backTitle, { x: inner.x, y: by, width: inner.w, size: 8, fill: INK, weight: 'bold', align: 'center' });
   by = paragraph(ops, C.blurb, { x: inner.x, y: by + 4, width: inner.w, size: 4.6, fill: '#334155', align: 'center' });
-  by = bulletList(ops, C.bullets, { x: inner.x + 4, y: by + 8, width: inner.w - 8, size: 4.2, fill: '#334155', gap: 2.5, bullet: '•' });
+  by = bulletList(ops, C.bullets.map((b) => (b === 'NUMBERS' ? C.numbersBullet(config.numbersMax) : b)), { x: inner.x + 4, y: by + 8, width: inner.w - 8, size: 4.2, fill: '#334155', gap: 2.5, bullet: '•' });
   for (let i = 0; i < 5; i++) {
     ops.push({ t: 'polygon', points: starPoints(bx + bw / 2 - 24 + i * 12, by + 10, 4), stroke: '#D97706', strokeWidth: 0.5, fill: '#FDE68A' });
   }

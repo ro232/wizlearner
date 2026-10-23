@@ -59,6 +59,13 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
       continue;
     }
     const subpaths = stroke.subpaths;
+    // A breve, circumflex or comma is too short to survive a dash pattern drawn at letter
+    // thickness: it breaks into one or two blobs and the letter stops being recognisable.
+    // Trace copies draw it as a slimmer continuous mark in the same faded colour.
+    if (stroke.mark && (style.variant === 'dashed' || style.variant === 'dotted')) {
+      ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w * 0.6, cap: 'round' });
+      continue;
+    }
     switch (style.variant) {
       case 'solid':
         ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w, cap: 'round' });

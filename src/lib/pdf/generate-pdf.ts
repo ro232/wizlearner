@@ -54,6 +54,8 @@ export function createWorksheetPdf(config: WorksheetConfig, tier: Tier, fonts: E
     unit: 'mm',
     format: [first.width, first.height],
     compress: true,
+    // Only list fonts that are drawn: KDP rejects PDFs that reference non-embedded fonts.
+    putOnlyUsedFonts: true,
   });
 
   let font: PdfFontSet = { family: 'helvetica', unicode: false };

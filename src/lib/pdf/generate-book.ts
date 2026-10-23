@@ -11,6 +11,8 @@ function newDoc(first: PageOps, fonts: EmbeddedFonts | null): { doc: jsPDF; font
     unit: 'mm',
     format: [first.width, first.height],
     compress: true,
+    // Only list fonts that are drawn: KDP rejects PDFs that reference non-embedded fonts.
+    putOnlyUsedFonts: true,
   });
   let font: PdfFontSet = { family: 'helvetica', unicode: false };
   if (fonts) {

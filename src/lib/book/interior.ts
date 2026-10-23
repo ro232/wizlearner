@@ -1,5 +1,6 @@
 import type { DrawOp, Glyph, PageOps } from '@/lib/glyphs/types';
-import { ALPHABETS, getGlyph, hintFor, type Alphabet } from '@/lib/glyphs/data';
+import { ALPHABETS, getGlyph, hintFor, normalizeKey, type Alphabet } from '@/lib/glyphs/data';
+import { iconOps, ICON_CREDIT, ICON_CREDIT_EN } from '@/lib/hints/icons';
 import { renderGlyph, type TraceVariant } from '@/lib/glyphs/render';
 import { PATTERN_IDS, PATTERN_LABELS, patternGlyph, type PatternId } from '@/lib/glyphs/patterns';
 import {
@@ -90,17 +91,18 @@ const T = {
     part2Title: 'Literele',
     part2Sub: 'Litere mari și litere mici, pas cu pas',
     part3: 'Partea 3',
-    part3Title: 'Cifrele',
-    part3Sub: 'De la 0 la 10, cu numărat și scris',
+    part3Title: (max: number) => (max >= 10 ? 'Cifrele și numerele' : 'Cifrele'),
+    part3Sub: (max: number) => `De la 0 la ${max}, cu numărat și scris`,
     traceHint: 'Trasează peste linii, de la punct, în direcția săgeții.',
     alone: 'Acum singur:',
     writeAlone: 'Scrie singur:',
     letterTitle: (u: string, l: string) => `Litera ${u} ${l}`,
+    inWord: (u: string) => `${u} se află în cuvânt`,
     reviewTitle: 'Tot alfabetul',
     reviewSub: 'Trasează fiecare pereche de litere.',
-    numberTitle: (n: number) => `Cifra ${n}`,
+    numberTitle: (n: number) => (n < 10 ? `Cifra ${n}` : `Numărul ${n}`),
     count: 'Numără și colorează:',
-    numbersReview: 'Toate cifrele',
+    numbersReview: (max: number) => (max >= 10 ? 'Toate cifrele și numerele' : 'Toate cifrele'),
     numbersReviewSub: 'Trasează cifrele, apoi scrie-le singur pe rândurile libere.',
     diploma: 'DIPLOMĂ',
     diplomaFor: 'Se acordă lui / ei',
@@ -134,17 +136,18 @@ const T = {
     part2Title: 'The letters',
     part2Sub: 'Capital and small letters, step by step',
     part3: 'Part 3',
-    part3Title: 'The numbers',
-    part3Sub: 'From 0 to 10, counting and writing',
+    part3Title: () => 'The numbers',
+    part3Sub: (max: number) => `From 0 to ${max}, counting and writing`,
     traceHint: 'Trace over the lines, from the dot, in the direction of the arrow.',
     alone: 'Now on your own:',
     writeAlone: 'Write it yourself:',
     letterTitle: (u: string, l: string) => `Letter ${u} ${l}`,
+    inWord: (u: string) => `${u} is inside the word`,
     reviewTitle: 'The whole alphabet',
     reviewSub: 'Trace every pair of letters.',
     numberTitle: (n: number) => `Number ${n}`,
     count: 'Count and colour:',
-    numbersReview: 'All the numbers',
+    numbersReview: () => 'All the numbers',
     numbersReviewSub: 'Trace the numbers, then write them yourself on the empty rows.',
     diploma: 'CERTIFICATE',
     diplomaFor: 'Awarded to',
@@ -218,7 +221,7 @@ export function buildBookPages(config: BookConfig): PageOps[] {
 
   // ── part 3: numbers ──
   if (config.includeNumbers) {
-    add((f, ops) => dividerPage(f, ops, config, L.part3, L.part3Title, L.part3Sub, 'numbers'));
+    add((f, ops) => dividerPage(f, ops, config, L.part3, L.part3Title(config.numbersMax), L.part3Sub(config.numbersMax), 'numbers'));
     for (let n = 0; n <= config.numbersMax; n++) add((f, ops) => numberPage(f, ops, config, n));
     if (config.includeReview) add((f, ops) => numbersReviewPage(f, ops, config));
   }
@@ -355,17 +358,27 @@ function baseStyle(config: BookConfig, s: number): RowStyle {
  * evenly between the rows (capped) so pages are not top-heavy.
  */
 function stackRows(ops: DrawOp[], f: Frame, top: number, rows: RowSpec[], gap: number, bottom?: number): number {
-  const heights = rows.map((r) => {
+  const rawHeights = rows.map((r) => {
     const e = rowExtents(r.glyphs, 10);
     return (e.ascent + 100 + e.descent) * r.style.s;
   });
+  // Short trims (8.5 × 8.5 in) cannot hold every row at full size: shrink the rows to fit
+  // rather than letting them run off the page.
+  let k = 1;
+  if (bottom !== undefined) {
+    const room = bottom - top - gap * Math.max(0, rows.length - 1);
+    const need = rawHeights.reduce((a, b) => a + b, 0);
+    if (need > room && need > 0) k = Math.max(0.5, room / need);
+  }
+  const fitted = rows.map((r) => (k === 1 ? r : { ...r, style: { ...r.style, s: r.style.s * k } }));
+  const heights = rawHeights.map((h) => h * k);
   let extra = 0;
-  if (bottom !== undefined && rows.length > 1) {
-    const used = heights.reduce((a, b) => a + b, 0) + gap * (rows.length - 1);
-    extra = Math.min(Math.max(0, (bottom - top - used) / (rows.length - 1)), 9);
+  if (bottom !== undefined && fitted.length > 1) {
+    const used = heights.reduce((a, b) => a + b, 0) + gap * (fitted.length - 1);
+    extra = Math.min(Math.max(0, (bottom - top - used) / (fitted.length - 1)), 9);
   }
   let y = top;
-  rows.forEach((r, i) => {
+  fitted.forEach((r, i) => {
     const e = rowExtents(r.glyphs, 10);
     const s = r.style.s;
     if (r.label) {
@@ -404,13 +417,14 @@ function titlePage(f: Frame, ops: DrawOp[], config: BookConfig): void {
 
 function colophonPage(f: Frame, ops: DrawOp[], config: BookConfig): void {
   const L = T[config.alphabet];
-  let y = f.y + f.h - 40;
+  let y = f.y + f.h - 48;
   ops.push({ t: 'text', x: f.x, y, text: `${config.title}`, size: 4, fill: INK, weight: 'bold' });
   y += 7;
   ops.push({ t: 'text', x: f.x, y, text: `© ${config.year} ${config.author}`, size: 3.4, fill: '#334155' });
   y += 6;
   y = paragraph(ops, L.rights, { x: f.x, y, width: f.w, size: 3.1, fill: MUTED });
   y = paragraph(ops, L.fonts, { x: f.x, y: y + 1, width: f.w, size: 3.1, fill: MUTED });
+  y = paragraph(ops, config.alphabet === 'ro' ? ICON_CREDIT : ICON_CREDIT_EN, { x: f.x, y: y + 1, width: f.w, size: 3.1, fill: MUTED });
   paragraph(ops, L.made, { x: f.x, y: y + 1, width: f.w, size: 3.1, fill: MUTED });
 }
 
@@ -503,11 +517,15 @@ function letterPage(f: Frame, ops: DrawOp[], config: BookConfig, upper: string):
   if (hint) {
     const cardX = Math.max(x, f.x + f.w * 0.5);
     const cardW = f.x + f.w - cardX;
-    const hx = cardX + cardW / 2;
     const cy = capY + 100 * bigS * 0.5;
     ops.push({ t: 'rect', x: cardX, y: capY - 4, w: cardW, h: 100 * bigS + 8, rx: 4, fill: '#F8FAFC', stroke: '#e2e8f0', strokeWidth: 0.4 });
-    ops.push({ t: 'text', x: cardX + 16, y: cy, text: hint.emoji, size: 13, fill: INK, align: 'center', baseline: 'middle', emoji: true });
-    ops.push({ t: 'text', x: hx + 6, y: cy, text: hint.word, size: 7.5, fill: INK, weight: 'bold', align: 'center', baseline: 'middle' });
+    const pic = Math.min(26, 100 * bigS);
+    ops.push(...iconOps(hint.emoji, cardX + 6 + pic / 2, cy, pic));
+    const wordX = cardX + 6 + pic + (cardW - 6 - pic) / 2;
+    const startsWith = normalizeKey(hint.word)[0]?.toUpperCase() === upper;
+    ops.push({ t: 'text', x: wordX, y: startsWith ? cy : cy - 2.5, text: hint.word, size: 7.5, fill: INK, weight: 'bold', align: 'center', baseline: 'middle' });
+    // Ă and Â never start a word: say where the letter is instead of implying it is the first sound.
+    if (!startsWith) ops.push({ t: 'text', x: wordX, y: cy + 5.5, text: L.inWord(upper), size: 3.4, fill: MUTED, align: 'center', baseline: 'middle' });
   }
 
   // rows
@@ -531,15 +549,21 @@ function alphabetReviewPage(f: Frame, ops: DrawOp[], config: BookConfig): void {
   const top = pageTitle(ops, f, L.reviewTitle, L.reviewSub);
   rewardStars(ops, f, L.starsHint);
   const letters = ALPHABETS[config.alphabet];
-  const s = 0.16;
-  const cols = 6;
   const pairs = letters.map((u) => glyphsOf(`${u}${u.toLowerCase()}`));
-  const cellW = (Math.max(...pairs.map(itemWidth)) + CELL_PAD * 2) * s;
+  const avail = f.y + f.h - 4 - (top + 6);
+  // Largest letter size (≤ 0.16) at which every pair fits on the page, up to 6 per line.
+  let s = 0.16;
+  let cellW = 0, cols = 1, nRows = 1, rowH = 0;
+  for (; s > 0.08; s -= 0.005) {
+    cellW = (Math.max(...pairs.map(itemWidth)) + CELL_PAD * 2) * s;
+    cols = Math.max(1, Math.min(6, Math.floor(f.w / cellW)));
+    nRows = Math.ceil(pairs.length / cols);
+    rowH = (48 + 100 + 48) * s;
+    if (nRows * rowH + (nRows - 1) * 3 <= avail) break;
+  }
   const gridW = cols * cellW;
   const x0 = f.x + (f.w - gridW) / 2;
-  const rowH = (48 + 100 + 48) * s;
-  const nRows = Math.ceil(pairs.length / cols);
-  const rowGap = Math.min(14, Math.max(3, (f.y + f.h - 4 - (top + 6) - nRows * rowH) / Math.max(1, nRows - 1)));
+  const rowGap = Math.min(14, Math.max(3, (avail - nRows * rowH) / Math.max(1, nRows - 1)));
   let y = top + 6;
   for (let r = 0; r < nRows; r++) {
     const baseline = y + 148 * s;
@@ -601,35 +625,49 @@ function numberPage(f: Frame, ops: DrawOp[], config: BookConfig, n: number): voi
 
 function numbersReviewPage(f: Frame, ops: DrawOp[], config: BookConfig): void {
   const L = T[config.alphabet];
-  const top = pageTitle(ops, f, L.numbersReview, L.numbersReviewSub);
+  const top = pageTitle(ops, f, L.numbersReview(config.numbersMax), L.numbersReviewSub);
   rewardStars(ops, f, L.starsHint);
-  const s = 0.15;
   const digits = Array.from({ length: config.numbersMax + 1 }, (_, i) => glyphsOf(String(i)));
-  const cellW = (Math.max(...digits.map(itemWidth)) + CELL_PAD * 2) * s;
-  const gridW = digits.length * cellW;
-  const x0 = f.x + Math.max(0, (f.w - gridW) / 2);
-  const rowH = (8 + 100 + 8) * s;
-  let y = top + 6;
   const variants: TraceVariant[] = [config.variant, 'dotted', 'outline'];
-  for (let r = 0; r < 3; r++) {
-    const baseline = y + 108 * s;
-    ops.push(...guideOps({ x: f.x, width: f.w, baseline }, s, '#cbd5e1'));
-    digits.forEach((d, i) => {
-      ops.push({
-        t: 'group',
-        tx: x0 + i * cellW + CELL_PAD * s,
-        ty: baseline - 100 * s,
-        scale: s,
-        ops: itemOps(d, { color: '#64748b', strokeWidth: 10, variant: variants[r], startDots: false, arrows: false, accent: ACCENT, dotText: PAPER, paper: PAPER }),
-      });
-    });
-    y += rowH + 6;
+  const avail = f.y + f.h - 4 - (top + 6) - 30; // keep room for at least two "write alone" lines
+  // Largest size (≤ 0.15) at which the three passes over 0…N fit, balanced over as few lines as possible.
+  let s = 0.15;
+  let cellW = 0, lines: Glyph[][][] = [], rowH = 0;
+  for (; s > 0.07; s -= 0.005) {
+    cellW = (Math.max(...digits.map(itemWidth)) + CELL_PAD * 2) * s;
+    const maxPerLine = Math.max(1, Math.floor(f.w / cellW));
+    const perLine = Math.ceil(digits.length / Math.ceil(digits.length / maxPerLine));
+    lines = [];
+    for (let i = 0; i < digits.length; i += perLine) lines.push(digits.slice(i, i + perLine));
+    rowH = (8 + 100 + 8) * s;
+    if (variants.length * (lines.length * (rowH + 4) + 2) <= avail) break;
   }
+  let y = top + 6;
+  for (let r = 0; r < variants.length; r++) {
+    for (const line of lines) {
+      const baseline = y + 108 * s;
+      const x0 = f.x + Math.max(0, (f.w - line.length * cellW) / 2);
+      ops.push(...guideOps({ x: f.x, width: f.w, baseline }, s, '#cbd5e1'));
+      line.forEach((d, i) => {
+        ops.push({
+          t: 'group',
+          tx: x0 + i * cellW + CELL_PAD * s,
+          ty: baseline - 100 * s,
+          scale: s,
+          ops: itemOps(d, { color: '#64748b', strokeWidth: 10, variant: variants[r], startDots: false, arrows: false, accent: ACCENT, dotText: PAPER, paper: PAPER }),
+        });
+      });
+      y += rowH + 4;
+    }
+    y += 2;
+  }
+  const writeS = 0.15;
+  const writeH = (8 + 100 + 8) * writeS;
   ops.push({ t: 'text', x: f.x, y: y + 4, text: L.writeAlone, size: 3, fill: MUTED, weight: 'bold' });
   y += 8;
-  while (y + rowH < f.y + f.h - 4) {
-    ops.push(...guideOps({ x: f.x, width: f.w, baseline: y + 108 * s }, s, '#cbd5e1'));
-    y += rowH + 6;
+  while (y + writeH < f.y + f.h - 4) {
+    ops.push(...guideOps({ x: f.x, width: f.w, baseline: y + 108 * writeS }, writeS, '#cbd5e1'));
+    y += writeH + 6;
   }
 }
 
