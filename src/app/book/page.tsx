@@ -59,7 +59,7 @@ export default function BookPage() {
   const inch = (v: number) => `${(v / 25.4).toFixed(2)} in`;
 
   return (
-    <div className="min-h-screen noise-bg" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen bg-paper">
       <Navbar />
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-5">
         <div className="flex flex-col lg:flex-row gap-6">
@@ -177,7 +177,7 @@ export default function BookPage() {
 
           {/* RIGHT: stats + preview + downloads */}
           <div className="lg:w-[58%] lg:sticky lg:top-20 lg:self-start space-y-4 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-            <Card className="border-0 shadow-md bg-gradient-to-r from-blue-50 to-indigo-50">
+            <Card className="shadow-md bg-white">
               <div className="p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                 <div>
                   <div className="text-xs text-slate-500">Pagini</div>
@@ -206,7 +206,7 @@ export default function BookPage() {
             </Card>
 
             <Card className="border-0 shadow-xl overflow-hidden rounded-2xl">
-              <CardHeader className="py-3.5 px-5 border-b glass" style={{ background: 'rgba(248,250,252,0.8)' }}>
+              <CardHeader className="py-3.5 px-5 border-b" style={{ background: 'rgba(248,250,252,0.8)' }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#EFF6FF', color: '#2E5C8A' }}>
@@ -227,7 +227,7 @@ export default function BookPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="p-6 flex justify-center" style={{ background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)' }}>
+              <CardContent className="p-6 flex justify-center desk">
                 {view === 'interior' ? (
                   <PagesPreview pages={pages} width={420} pageLabel="Pagina" />
                 ) : (
@@ -240,8 +240,8 @@ export default function BookPage() {
               <Button
                 onClick={() => run('interior')}
                 disabled={busy !== null}
-                className="h-14 rounded-2xl text-white shadow-xl btn-premium font-bold text-base disabled:opacity-50"
-                style={{ background: 'linear-gradient(135deg, #E8913A, #d97706)' }}
+                className="h-14 rounded-2xl text-white shadow-xl font-bold text-base disabled:opacity-50"
+                data-btn="primary"
               >
                 <FileText className="w-5 h-5 mr-2" />
                 {busy === 'interior' ? 'Se pregătește…' : `PDF interior (${pages.length} pagini)`}
@@ -249,8 +249,8 @@ export default function BookPage() {
               <Button
                 onClick={() => run('cover')}
                 disabled={busy !== null}
-                className="h-14 rounded-2xl text-white shadow-xl btn-premium font-bold text-base disabled:opacity-50"
-                style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e3a5f)' }}
+                className="h-14 rounded-2xl text-white shadow-xl font-bold text-base disabled:opacity-50"
+                data-btn="ink"
               >
                 <ImageIcon className="w-5 h-5 mr-2" />
                 {busy === 'cover' ? 'Se pregătește…' : 'PDF copertă (față, cotor, spate)'}

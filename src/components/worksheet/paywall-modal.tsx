@@ -41,8 +41,8 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
       <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-7 animate-scale-in">
         <button onClick={onClose} aria-label="Închide" className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors text-lg">×</button>
 
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style={{ background: 'linear-gradient(135deg, #FFF7ED, #FEF3C7)' }}>
-          <Crown className="w-7 h-7 text-orange-500" />
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style={{ background: '#FDF3D7' }}>
+          <Crown className="w-7 h-7 text-pen" aria-hidden />
         </div>
 
         <h2 id="paywall-title" className="text-xl font-extrabold text-center text-slate-900 mb-2">Acest conținut este în versiunea completă</h2>
@@ -66,7 +66,7 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
                 autoComplete="off"
                 className="flex-1 h-11 px-3 rounded-xl border border-slate-300 font-mono uppercase tracking-wider text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
-              <Button type="submit" disabled={busy || !code.trim()} className="h-11 rounded-xl text-white" style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e40af)' }}>
+              <Button type="submit" disabled={busy || !code.trim()} className="h-11 rounded-xl text-white" data-btn="ink">
                 <KeyRound className="w-4 h-4 mr-1.5" /> {busy ? 'Verific…' : 'Activează'}
               </Button>
             </div>
@@ -74,7 +74,7 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
           </form>
         ) : (
           <Link href="/auth/login" className="block">
-            <Button className="w-full h-12 rounded-xl text-white font-semibold" style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e40af)' }}>
+            <Button className="w-full h-12 rounded-xl text-white font-semibold" data-btn="ink">
               <KeyRound className="w-4 h-4 mr-2" /> Intră în cont ca să folosești un cod
             </Button>
           </Link>

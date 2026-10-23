@@ -33,8 +33,7 @@ export function SubscribeButton({ plan, label, highlight }: { plan: string; labe
 
   return (
     <div>
-      <Button onClick={go} disabled={busy} className={`w-full h-12 rounded-xl font-semibold ${highlight ? 'text-white' : ''}`} variant={highlight ? 'default' : 'outline'}
-        style={highlight ? { background: 'linear-gradient(135deg, #E8913A, #d97706)' } : undefined}>
+      <Button onClick={go} disabled={busy} className="w-full h-12 rounded-xl" data-btn={highlight ? 'primary' : 'ink'}>
         {busy ? 'Se deschide plata…' : label}
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
