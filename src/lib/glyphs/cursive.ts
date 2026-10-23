@@ -29,6 +29,8 @@ interface CursiveDef {
   extra?: string[];
   /** How many of the last extra strokes are diacritic marks. */
   marks?: number;
+  /** Starts at the top with a small arch (m, n, v, w, x, y, z): no lead-in from the baseline at the start of a word. */
+  startTop?: boolean;
 }
 
 // lead-in and joins (upright coordinates)
@@ -58,27 +60,30 @@ const LOWER: Record<string, CursiveDef> = {
   k: { w: 42, body: `${LOOP_UP} L 4 100 L 4 82 C 10 64 26 54 30 62 C 33 70 22 76 12 76 C 20 78 26 86 30 94`, exit: 'low' },
   l: { w: 18, body: `${LOOP_UP} L 4 92`, exit: 'low' },
   m: {
-    w: 66,
-    body: 'M 4 56 C 6 52 10 52 10 58 L 10 100 L 10 78 C 12 60 18 54 24 54 C 30 54 32 62 32 72 L 32 100 L 32 78 C 34 60 40 54 46 54 C 52 54 54 62 54 72 L 54 92',
+    w: 94,
+    body: 'M 0 64 C 2 52 14 48 16 58 L 14 100 L 15 82 C 19 60 29 52 37 52 C 47 52 50 62 49 74 L 48 100 L 49 82 C 53 60 63 52 71 52 C 81 52 84 62 83 74 L 81 92',
     exit: 'low',
+    startTop: true,
   },
-  n: { w: 44, body: 'M 4 56 C 6 52 10 52 10 58 L 10 100 L 10 78 C 12 60 18 54 24 54 C 30 54 32 62 32 72 L 32 92', exit: 'low' },
+  n: { w: 60, body: 'M 0 64 C 2 52 14 48 16 58 L 14 100 L 15 82 C 19 60 30 52 40 52 C 50 52 52 62 50 74 L 48 92', exit: 'low', startTop: true },
   o: { w: 38, body: 'A 20 75 15 23 -80 -440 C 24 50 30 50 36 52', exit: 'high' },
   p: { w: 46, body: 'M 8 52 L 6 146 L 7 80 C 10 60 18 54 26 54 C 34 54 36 62 36 72 L 36 92', exit: 'low' },
   q: { w: 50, body: `${OVAL} L 37 52 L 37 136 C 37 144 32 146 30 142 C 28 138 36 136 46 138`, exit: 'none' },
-  r: { w: 46, body: 'M 10 54 C 12 40 28 42 18 58 C 13 64 12 80 11 100 L 11 82 C 14 62 20 56 26 56 C 32 56 34 64 34 74 L 34 92', exit: 'low' },
+  // r (school model): up to a small loop at the top, then one shoulder down to the right — not a stem and an arch like n.
+  r: { w: 50, body: 'M 12 56 C 7 42 27 33 29 44 C 31 55 11 58 14 49 C 18 43 34 46 37 56 L 35 92', exit: 'low' },
   s: { w: 38, body: 'M 12 50 C 20 62 30 76 26 90 C 23 99 10 101 6 94 C 12 98 26 98 34 88', exit: 'low' },
   t: { w: 26, body: 'M 14 20 L 12 92', exit: 'low', extra: ['M 2 50 L 26 50'] },
   u: { w: 44, body: 'M 8 52 L 6 82 C 6 96 12 100 18 100 C 28 100 32 88 32 74 L 32 52 L 32 92', exit: 'low' },
-  v: { w: 44, body: 'M 4 56 C 6 51 12 51 12 58 C 12 76 16 98 24 98 C 32 98 34 80 34 56 C 34 50 30 50 30 54 C 30 58 36 54 42 52', exit: 'high' },
+  v: { w: 44, body: 'M 5 53 C 9 51 12 55 12 62 C 12 78 16 98 24 98 C 32 98 34 80 34 56 C 34 50 30 50 30 54 C 30 58 36 54 42 52', exit: 'high', startTop: true },
   w: {
     w: 58,
-    body: 'M 4 56 C 6 51 12 51 12 58 C 12 76 14 98 21 98 C 28 98 30 86 30 72 C 30 86 32 98 39 98 C 46 98 48 80 48 56 C 48 50 44 50 44 54 C 44 58 50 54 56 52',
+    body: 'M 5 53 C 9 51 12 55 12 62 C 12 78 14 98 21 98 C 28 98 30 86 30 72 C 30 86 32 98 39 98 C 46 98 48 80 48 56 C 48 50 44 50 44 54 C 44 58 50 54 56 52',
     exit: 'high',
+    startTop: true,
   },
-  x: { w: 50, body: 'M 6 56 C 12 50 24 52 23 66 C 22 82 14 96 4 96 l 42 58 C 38 50 28 52 24 64 C 21 78 26 98 36 98 C 40 98 44 94 46 90', exit: 'low' },
-  y: { w: 50, body: 'M 8 52 L 6 82 C 6 96 12 100 18 100 C 28 100 32 88 32 74 L 32 52 L 32 138 C 32 151 22 151 22 140 C 22 128 36 110 46 98', exit: 'low' },
-  z: { w: 48, body: 'M 6 58 C 12 50 22 56 32 52 L 8 98 C 16 94 26 102 36 98 C 40 96 42 94 44 90', exit: 'low', extra: ['M 12 76 L 30 76'] },
+  x: { w: 50, body: 'M 6 56 C 12 50 24 52 23 66 C 22 82 14 96 4 96 l 42 58 C 38 50 28 52 24 64 C 21 78 26 98 36 98 C 40 98 44 94 46 90', exit: 'low', startTop: true },
+  y: { w: 50, body: 'M 5 53 C 9 51 12 55 12 62 L 10 82 C 10 96 14 100 19 100 C 28 100 32 88 32 74 L 32 52 L 32 138 C 32 151 22 151 22 140 C 22 128 36 110 46 98', exit: 'low', startTop: true },
+  z: { w: 48, body: 'M 6 58 C 12 50 22 56 32 52 L 8 98 C 16 94 26 102 36 98 C 40 96 42 94 44 90', exit: 'low', startTop: true, extra: ['M 12 76 L 30 76'] },
 };
 
 LOWER['ă'] = { ...LOWER.a, extra: [BREVE], marks: 1 };
@@ -167,12 +172,15 @@ function bridge(a: Pt, da: Pt, b: Pt, db: Pt, reach = 0.4, min = 6): Seg {
   return { kind: 'C', c1: { x: a.x + da.x * k, y: a.y + da.y * k }, c2: { x: b.x - db.x * k, y: b.y - db.y * k }, p: b };
 }
 
-const slantPt = (p: Pt, dx: number): Pt => ({ x: p.x + (100 - p.y) * SLANT + dx, y: p.y });
+// The school model writes wide, round letters: the drawings are stretched sideways before slanting.
+const WIDE_LOWER = 1.25;
+const WIDE_UPPER = 1.12;
+const slantPt = (p: Pt, dx: number, kx = 1): Pt => ({ x: p.x * kx + (100 - p.y) * SLANT + dx, y: p.y });
 
-function slantSubpath(sp: Subpath, dx: number): Subpath {
+function slantSubpath(sp: Subpath, dx: number, kx = 1): Subpath {
   return {
-    start: slantPt(sp.start, dx),
-    segs: sp.segs.map((s) => (s.kind === 'L' ? { kind: 'L', p: slantPt(s.p, dx) } : { kind: 'C', c1: slantPt(s.c1, dx), c2: slantPt(s.c2, dx), p: slantPt(s.p, dx) })),
+    start: slantPt(sp.start, dx, kx),
+    segs: sp.segs.map((s) => (s.kind === 'L' ? { kind: 'L', p: slantPt(s.p, dx, kx) } : { kind: 'C', c1: slantPt(s.c1, dx, kx), c2: slantPt(s.c2, dx, kx), p: slantPt(s.p, dx, kx) })),
   };
 }
 
@@ -194,7 +202,14 @@ function letterStrokes(def: CursiveDef, entry: Entry, withExit: boolean): Stroke
     first.start = from.p;
   }
   if (withExit && def.exit !== 'none') {
-    const end = lastPointDir(last);
+    let end = lastPointDir(last);
+    // A down stroke ends in a round bowl on the baseline before rising to the next letter (the "u" tail
+    // of a, i, m, n, u … in the school model), not in a sharp V.
+    if (def.exit === 'low' && end.d.y > 0.7 && end.p.y > 80) {
+      const turnTo = { x: end.p.x + 9, y: 100 };
+      last.segs.push({ kind: 'C', c1: { x: end.p.x + end.d.x * 6, y: end.p.y + end.d.y * 6 }, c2: { x: end.p.x + 2, y: 100 }, p: turnTo });
+      end = { p: turnTo, d: { x: 1, y: 0 } };
+    }
     const x = advance(def);
     const to = def.exit === 'high' ? { p: { x, y: HIGH_JOIN.p.y }, d: HIGH_JOIN.d } : { p: { x, y: LOW_JOIN.p.y }, d: LOW_JOIN.d };
     last.segs.push(bridge(end.p, end.d, to.p, to.d, 0.45, 8));
@@ -231,8 +246,9 @@ export function cursiveGlyph(ch: string): Glyph | undefined {
   const def = DEFS[k];
   if (!def) return undefined;
   const isUpper = k in UPPER;
-  const strokes = letterStrokes(def, isUpper ? 'none' : 'start', true).map((st) => ({ ...st, subpaths: st.subpaths.map((sp) => slantSubpath(sp, 0)) }));
-  const g = toGlyph(`cur:${k}`, strokes, advance(def));
+  const kx = isUpper ? WIDE_UPPER : WIDE_LOWER;
+  const strokes = letterStrokes(def, isUpper || def.startTop ? 'none' : 'start', true).map((st) => ({ ...st, subpaths: st.subpaths.map((sp) => slantSubpath(sp, 0, kx)) }));
+  const g = toGlyph(`cur:${k}`, strokes, advance(def) * kx);
   cache.set(k, g);
   return g;
 }
@@ -259,10 +275,11 @@ export function cursiveWord(text: string): Glyph | undefined {
     if (!def) continue;
     const isUpper = k in UPPER;
     if (isUpper && any) x += UPPER_GAP;
-    const entry: Entry = isUpper ? 'none' : next;
-    for (const st of letterStrokes(def, entry, true)) strokes.push({ ...st, subpaths: st.subpaths.map((sp) => slantSubpath(sp, x)) });
+    const entry: Entry = isUpper || (next === 'start' && def.startTop) ? 'none' : next;
+    const kx = isUpper ? WIDE_UPPER : WIDE_LOWER;
+    for (const st of letterStrokes(def, entry, true)) strokes.push({ ...st, subpaths: st.subpaths.map((sp) => slantSubpath(sp, x, kx)) });
     any = true;
-    x += advance(def) + (isUpper ? UPPER_GAP : 0);
+    x += advance(def) * kx + (isUpper ? UPPER_GAP : 0);
     next = isUpper ? 'start' : def.exit === 'high' ? 'high' : def.exit === 'low' ? 'low' : 'start';
   }
   if (!any) return undefined;
