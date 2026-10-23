@@ -43,6 +43,8 @@ export interface WorksheetConfig {
   showRewardSection: boolean;
   fullPageMode: boolean;
   leftHandedMode: boolean;
+  /** Repeat the chosen rows until the page is full (a single page with few items looks unfinished). */
+  fillPage?: boolean;
 
   // Header
   childName: string;
@@ -107,6 +109,7 @@ export const DEFAULT_CONFIG: WorksheetConfig = {
   showRewardSection: true,
   fullPageMode: false,
   leftHandedMode: false,
+  fillPage: true,
   childName: '',
   dateField: true,
   customTitle: '',

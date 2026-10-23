@@ -1,116 +1,56 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  ArrowRight,
-  Sparkles,
-  Type,
-  Hash,
-  Shapes,
-  GraduationCap,
-  Settings2,
-  Download,
-  Zap,
-} from 'lucide-react';
+import { ArrowRight, Check, Download, MousePointerClick, Printer, UserRound, BookOpen, PenLine } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { WorksheetPreview } from '@/components/worksheet/worksheet-preview';
+import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
 
-function HeroSection() {
+// A real sheet, drawn by the same engine as the downloads: what you see is what you get.
+const SAMPLE: WorksheetConfig = {
+  ...DEFAULT_CONFIG,
+  selectedItems: ['A', 'Ă', 'Ș'],
+  customWords: ['Ana'],
+  letterMode: 'uppercase',
+  childName: 'Ana',
+  rowsPerPage: 5,
+};
+
+const ORANGE = 'linear-gradient(135deg, #E8913A, #d97706)';
+
+function Hero() {
   return (
-    <section className="relative overflow-hidden pt-32 pb-20 md:pb-28">
-      <div className="absolute inset-0 -z-10">
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            background: 'radial-gradient(circle at 20% 50%, rgba(46, 92, 138, 0.1) 0%, transparent 50%)',
-          }}
-        />
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8 animate-fade-up">
-            <Badge variant="outline" className="w-fit border-blue-200 bg-blue-50/50 text-blue-700">
-              <Sparkles className="w-3 h-3 mr-1" />
-              New — Romanian alphabet with Ă Â Î Ș Ț
-            </Badge>
-
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.08] tracking-tight text-slate-900">
-              Create perfect
-              <br />
-              practice sheets
-              <br />
-              <span className="gradient-text-blue">in seconds</span>
-            </h1>
-
-            <p className="text-lg md:text-xl leading-relaxed text-slate-600 max-w-xl">
-              Tracing worksheets for letters, numbers, shapes and pre-writing, with numbered start dots and stroke arrows. Print-ready PDF in seconds. Made for preschool, kindergarten and home practice.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <Link href="/generator" className="flex-shrink-0">
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto text-white px-8 h-14 text-base rounded-2xl shadow-lg btn-premium hover:shadow-xl transition-shadow"
-                  style={{ background: 'linear-gradient(135deg, #E8913A, #d97706)' }}
-                >
-                  Start Free — No Account Needed <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-              <Link href="/book" className="flex-shrink-0">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full sm:w-auto h-14 text-base rounded-2xl border-2 border-slate-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
-                >
-                  Make a Workbook
-                </Button>
-              </Link>
-            </div>
-
+    <section className="relative overflow-hidden pt-12 sm:pt-20 pb-16 md:pb-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+        <div className="space-y-7 animate-fade-up">
+          <p className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/60 px-3 py-1 text-xs font-semibold text-blue-700">
+            Alfabetul românesc complet · Ă Â Î Ș Ț
+          </p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.08] tracking-tight text-slate-900">
+            Fișe de scris pentru cei mici, <span className="gradient-text-blue">gata într-un minut</span>
+          </h1>
+          <p className="text-lg leading-relaxed text-slate-600 max-w-xl">
+            Litere, cifre, forme și exerciții grafice, cu ordinea liniilor ca la școală: puncte de start numerotate și săgeți.
+            Adaugi numele copilului, descarci PDF-ul și printezi.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link href="/generator">
+              <Button size="lg" className="w-full sm:w-auto text-white px-7 h-14 text-base rounded-2xl shadow-lg" style={{ background: ORANGE }}>
+                Fă o fișă gratuit <ArrowRight className="w-4 h-4 ml-2" aria-hidden />
+              </Button>
+            </Link>
+            <Link href="/nume">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 text-base rounded-2xl border-2 border-slate-300">
+                <UserRound className="w-4 h-4 mr-2" aria-hidden /> Fișa cu numele copilului
+              </Button>
+            </Link>
           </div>
-
-          <div className="relative h-96 md:h-full flex items-center justify-center">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-400/20 to-purple-400/20 blur-3xl" />
-            <div
-              className="relative w-full max-w-sm rounded-3xl p-8 shadow-2xl"
-              style={{
-                background: 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.5)',
-              }}
-            >
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 text-blue-600" />
-                  </div>
-                  <span className="text-sm font-semibold text-slate-900">Letter Tracing - A</span>
-                </div>
-
-                <div className="space-y-3 bg-slate-50 rounded-2xl p-6">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="flex-1 h-8 rounded-lg bg-slate-200/60" />
-                      <div className="w-3 h-3 rounded-full bg-green-400" />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex gap-2 pt-2">
-                  <div className="flex-1 h-10 rounded-lg bg-slate-100/60" />
-                  <div className="flex-1 h-10 rounded-lg bg-orange-100/60" />
-                </div>
-              </div>
-
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl shadow-lg flex items-center justify-center">
-                <Download className="w-8 h-8 text-white" />
-              </div>
-            </div>
-          </div>
+          <p className="text-sm text-slate-500">Fără cont, fără card. Pentru grădiniță, clasa pregătitoare și acasă.</p>
+        </div>
+        <div className="flex justify-center">
+          <WorksheetPreview config={SAMPLE} tier="full" width={400} />
         </div>
       </div>
     </section>
@@ -119,250 +59,77 @@ function HeroSection() {
 
 function HowItWorks() {
   const steps = [
-    {
-      num: '01',
-      title: 'Pick Your Content',
-      desc: 'Choose letters (Romanian or English), numbers, shapes or pre-writing patterns.',
-      icon: Type,
-      color: 'blue',
-    },
-    {
-      num: '02',
-      title: 'Customize Everything',
-      desc: 'Adjust fonts, difficulty, colors, sizes, and layout in seconds. Fully personalized worksheets.',
-      icon: Settings2,
-      color: 'orange',
-    },
-    {
-      num: '03',
-      title: 'Download & Print',
-      desc: 'Download a print-ready PDF. What you see in the preview is exactly what prints.',
-      icon: Download,
-      color: 'green',
-    },
+    { icon: MousePointerClick, title: 'Alegi ce exersați', text: 'Literele mari sau mici, cifrele, formele ori exercițiile grafice. Sau scrii un nume ori un cuvânt.' },
+    { icon: PenLine, title: 'Potrivești nivelul', text: 'De la „cu mult ajutor” la „mai mult singur”. Ultimele căsuțe din rând rămân libere pentru scris fără model.' },
+    { icon: Printer, title: 'Descarci și printezi', text: 'Primești un PDF A4 identic cu ce vezi pe ecran, cu diacriticele corecte.' },
   ];
-
   return (
-    <section className="py-28 bg-white">
+    <section className="py-20 bg-slate-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center space-y-4 mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900">How it works</h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Three simple steps to create perfect worksheets for your classroom or home
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {steps.map((step, i) => {
-            const Icon = step.icon;
-            const colorClasses: Record<string, string> = {
-              blue: 'bg-blue-50 text-blue-600 border-blue-200',
-              orange: 'bg-orange-50 text-orange-600 border-orange-200',
-              green: 'bg-green-50 text-green-600 border-green-200',
-            };
-
-            return (
-              <div
-                key={i}
-                className="group relative rounded-2xl border-2 border-slate-200 p-8 hover:border-slate-300 transition-all duration-300 hover-lift"
-              >
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white to-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                <div className="relative space-y-4">
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center border-2 ${colorClasses[step.color]}`}>
-                    <Icon className="w-6 h-6" />
-                  </div>
-
-                  <div>
-                    <div className="text-4xl font-bold text-slate-200 mb-1">{step.num}</div>
-                    <h3 className="text-2xl font-bold text-slate-900">{step.title}</h3>
-                  </div>
-
-                  <p className="text-slate-600 leading-relaxed">{step.desc}</p>
-                </div>
-
-                {i < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-1 bg-gradient-to-r from-slate-300 to-transparent" />
-                )}
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-12">Cum funcționează</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {steps.map((s, i) => (
+            <div key={s.title} className="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center"><s.icon className="w-5 h-5" aria-hidden /></span>
+                <span className="text-sm font-bold text-slate-400">Pasul {i + 1}</span>
               </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FeaturesGrid() {
-  const features = [
-    { title: 'Letter Tracing', icon: Type, color: 'blue' },
-    { title: 'Number Practice', icon: Hash, color: 'green' },
-    { title: 'Shape Tracing', icon: Shapes, color: 'purple' },
-    { title: 'Pre-writing Patterns', icon: Zap, color: 'orange' },
-    { title: 'Left-handed Mode', icon: Settings2, color: 'teal' },
-    { title: 'KDP Workbook Maker', icon: GraduationCap, color: 'emerald' },
-  ];
-
-  const colorGradients: Record<string, string> = {
-    blue: 'from-blue-400 to-blue-600',
-    green: 'from-green-400 to-green-600',
-    purple: 'from-purple-400 to-purple-600',
-    orange: 'from-orange-400 to-orange-600',
-    red: 'from-red-400 to-red-600',
-    teal: 'from-teal-400 to-teal-600',
-    indigo: 'from-indigo-400 to-indigo-600',
-    emerald: 'from-emerald-400 to-emerald-600',
-    cyan: 'from-cyan-400 to-cyan-600',
-  };
-
-  return (
-    <section className="py-28 bg-gradient-to-b from-white to-slate-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center space-y-4 mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900">Powerful features for every need</h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Everything you need to create engaging educational worksheets for all skill levels
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {features.map((feature, i) => {
-            const Icon = feature.icon;
-            return (
-              <Card
-                key={i}
-                className="border-slate-200 hover:shadow-lg transition-all duration-300 hover-lift cursor-pointer group"
-              >
-                <CardContent className="pt-8">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${colorGradients[feature.color]} mb-4`}>
-                    <Icon className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 group-hover:text-slate-900 transition-colors">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-slate-500 mt-2">
-                    Professional-grade tools for educators and parents
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Pricing section
-function PricingSection() {
-  const tiers = [
-    {
-      name: 'Free',
-      price: '$0',
-      description: 'Perfect for trying it out',
-      popular: false,
-      features: ['Letters A–E (with Ă, Â)', 'Numbers 0–5', '3 shapes, 3 patterns', 'Workbook preview with watermark'],
-      cta: 'Start Free',
-    },
-    {
-      name: 'Starter',
-      price: '$4.99',
-      description: 'Most popular choice',
-      popular: true,
-      features: [
-        'All letters, Romanian and English',
-        'Numbers 0–20',
-        'All shapes and patterns',
-      ],
-      cta: 'Get Starter',
-    },
-    {
-      name: 'Full Access',
-      price: '$9.99',
-      description: 'Complete power user',
-      popular: false,
-      features: [
-        'Everything in Starter',
-        'KDP workbook without watermark',
-        'Interior + cover PDFs',
-      ],
-      cta: 'Get Full Access',
-    },
-  ];
-
-  return (
-    <section id="pricing" className="py-28 bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center space-y-4 mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900">Simple, transparent pricing</h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">Choose the plan that fits your needs</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-6">
-          {tiers.map((tier, i) => (
-            <Card
-              key={i}
-              className={`border-slate-200 flex flex-col transition-all duration-300 hover-lift ${
-                tier.popular
-                  ? 'md:scale-105 md:shadow-2xl border-blue-300 bg-gradient-to-br from-blue-50 to-white ring-2 ring-blue-200'
-                  : 'hover:shadow-lg'
-              }`}
-            >
-              {tier.popular && (
-                <div className="px-6 pt-6">
-                  <Badge className="bg-blue-600 text-white">Most Popular</Badge>
-                </div>
-              )}
-
-              <CardHeader>
-                <CardTitle className="text-2xl">{tier.name}</CardTitle>
-                <CardDescription className="text-base text-slate-600">{tier.description}</CardDescription>
-              </CardHeader>
-
-              <CardContent className="flex-1 space-y-6">
-                <div>
-                  <span className="text-5xl font-bold text-slate-900">{tier.price}</span>
-                  {tier.price !== '$0' && <span className="text-slate-600 ml-2">one-time</span>}
-                </div>
-
-                <ul className="space-y-3">
-                  {tier.features.map((feature, j) => (
-                    <li key={j} className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <span className="text-slate-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link href="/generator" className="block">
-                <Button
-                  className={`w-full h-11 rounded-xl font-semibold transition-all ${
-                    tier.popular
-                      ? 'text-white btn-premium'
-                      : 'border-2 border-slate-300 hover:border-blue-500 hover:bg-blue-50'
-                  }`}
-                  style={
-                    tier.popular
-                      ? { background: 'linear-gradient(135deg, #E8913A, #d97706)' }
-                      : undefined
-                  }
-                >
-                  {tier.cta}
-                </Button>
-                </Link>
-              </CardContent>
-            </Card>
+              <h3 className="text-lg font-bold text-slate-900">{s.title}</h3>
+              <p className="mt-2 text-slate-600">{s.text}</p>
+            </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
 
-        <div className="text-center mt-12">
-          <p className="text-slate-600">
-            <button className="text-blue-600 font-semibold hover:underline">No credit card required.</button>
-          </p>
+function ForWhom() {
+  const groups = [
+    { icon: UserRound, title: 'Părinți', text: 'O fișă cu numele copilului sau literele pe care le învață acum, în două minute, înainte de școală.', href: '/nume', cta: 'Fișa cu numele' },
+    { icon: PenLine, title: 'Educatoare și învățătoare', text: 'Fișe pentru literele săptămânii, la nivelul grupei, cu liniatură, dictando sau pătrățele.', href: '/generator', cta: 'Deschide generatorul' },
+    { icon: BookOpen, title: 'Autori pe Amazon KDP', text: 'Un caiet complet de 60 de pagini, cu interior și copertă la dimensiunile cerute de KDP.', href: '/book', cta: 'Fă un caiet' },
+  ];
+  return (
+    <section className="py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-12">Pentru cine e</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {groups.map((g) => (
+            <div key={g.title} className="rounded-2xl border border-slate-200 p-6 flex flex-col">
+              <g.icon className="w-6 h-6 text-orange-500" aria-hidden />
+              <h3 className="mt-3 text-lg font-bold text-slate-900">{g.title}</h3>
+              <p className="mt-2 text-slate-600 flex-1">{g.text}</p>
+              <Link href={g.href} className="mt-4 inline-flex items-center text-sm font-semibold text-blue-700 hover:underline">
+                {g.cta} <ArrowRight className="w-4 h-4 ml-1" aria-hidden />
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Pricing() {
+  const free = ['Literele A–E (și Ă, Â)', 'Cifrele 0–5', 'Trei forme și trei exerciții grafice', 'Fișa cu numele copilului', 'Caietul KDP, cu filigran'];
+  const full = ['Tot alfabetul românesc și englez, mari și mici', 'Cifre și numere 0–20, toate formele și exercițiile', 'Orice cuvânt de trasat', 'Caietul KDP fără filigran'];
+  return (
+    <section id="preturi" className="py-20 bg-slate-50">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-12">Ce e gratuit și ce e în varianta completă</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          {[{ name: 'Gratuit', items: free, note: 'Pentru totdeauna, fără cont.' }, { name: 'Complet', items: full, note: 'Plata online vine în curând. Dacă ai un cod de acces, îl activezi din cont.' }].map((p, i) => (
+            <div key={p.name} className={`rounded-2xl bg-white p-6 border-2 ${i ? 'border-orange-300' : 'border-slate-200'}`}>
+              <h3 className="text-xl font-bold text-slate-900">{p.name}</h3>
+              <ul className="mt-4 space-y-2">
+                {p.items.map((it) => (
+                  <li key={it} className="flex items-start gap-2 text-slate-700"><Check className="w-4 h-4 mt-1 text-green-600 shrink-0" aria-hidden />{it}</li>
+                ))}
+              </ul>
+              <p className="mt-5 text-sm text-slate-500">{p.note}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -371,53 +138,31 @@ function PricingSection() {
 
 function FinalCTA() {
   return (
-    <section className="py-24 md:py-32 overflow-hidden">
-      <div
-        className="max-w-4xl mx-auto px-4 sm:px-6 rounded-3xl p-12 md:p-16 text-center space-y-8 relative"
-        style={{
-          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 58, 138, 0.98) 100%)',
-        }}
-      >
-        <div className="absolute inset-0 rounded-3xl opacity-10 noise-bg" />
-
-        <div className="relative space-y-6">
-          <h2 className="text-4xl md:text-5xl font-bold text-white">
-            Ready to make<br />learning fun?
-          </h2>
-
-          <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-            Create beautiful, effective worksheets in minutes. No design skills. No complicated setup. Just instant, perfect worksheets.
-          </p>
-
-          <div className="pt-4">
-            <Link href="/generator">
-              <Button
-                size="lg"
-                className="text-white px-10 h-14 text-lg rounded-2xl shadow-lg btn-premium hover:shadow-xl transition-shadow"
-                style={{ background: 'linear-gradient(135deg, #E8913A, #d97706)' }}
-              >
-                Start Creating Free <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-          </div>
-
-          <p className="text-sm text-blue-200">No credit card required • Start free today</p>
-        </div>
+    <section className="py-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 rounded-3xl p-10 md:p-14 text-center" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)' }}>
+        <h2 className="text-3xl md:text-4xl font-bold text-white">Prima fișă e la un click distanță</h2>
+        <p className="mt-4 text-lg text-blue-100">Alege câteva litere și vezi rezultatul pe loc.</p>
+        <Link href="/generator" className="inline-block mt-8">
+          <Button size="lg" className="text-white px-8 h-14 text-lg rounded-2xl shadow-lg" style={{ background: ORANGE }}>
+            <Download className="w-5 h-5 mr-2" aria-hidden /> Fă o fișă gratuit
+          </Button>
+        </Link>
       </div>
     </section>
   );
 }
 
-// Main page component
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <HeroSection />
-      <HowItWorks />
-      <FeaturesGrid />
-      <PricingSection />
-      <FinalCTA />
+      <main>
+        <Hero />
+        <HowItWorks />
+        <ForWhom />
+        <Pricing />
+        <FinalCTA />
+      </main>
       <Footer />
     </div>
   );

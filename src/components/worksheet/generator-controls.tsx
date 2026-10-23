@@ -4,618 +4,339 @@ import React, { useState } from 'react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { CATEGORY_TABS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
 import { isItemAllowed } from '@/lib/access';
+import { isWordAllowed } from '@/lib/worksheet/layout';
 import { uppercaseLetters, lowercaseLetters, pairedLetters, hintFor } from '@/lib/glyphs/data';
 import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Lock, RotateCcw, Printer, Download, Plus, X } from 'lucide-react';
+import { Lock, RotateCcw, Plus, X, ChevronDown, UserRound } from 'lucide-react';
 
 interface GeneratorControlsProps {
   onShowPaywall: () => void;
-  onDownload?: () => void;
-  onPrint?: () => void;
 }
 
-export function GeneratorControls({ onShowPaywall, onDownload, onPrint }: GeneratorControlsProps) {
+const SHAPE_LABELS: Record<string, string> = {
+  circle: 'cerc', square: 'pătrat', triangle: 'triunghi', rectangle: 'dreptunghi', oval: 'oval',
+  diamond: 'romb', star: 'stea', heart: 'inimă', hexagon: 'hexagon', pentagon: 'pentagon',
+};
+
+function SectionLabel({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between mb-2">
+      <span className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">{children}</span>
+      {right}
+    </div>
+  );
+}
+
+function Choice({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`p-2 rounded-lg border-2 transition-all text-center ${active ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Slider({ label, value, min, max, onChange, left, right }: { label: string; value: number; min: number; max: number; onChange: (v: number) => void; left: string; right: string }) {
+  return (
+    <div>
+      <SectionLabel right={<span className="text-xs font-semibold text-slate-600 bg-slate-100 rounded px-2 py-0.5">{value}</span>}>{label}</SectionLabel>
+      <input type="range" min={min} max={max} value={value} onChange={(e) => onChange(Number(e.target.value))} aria-label={label} className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" />
+      <div className="flex justify-between text-xs text-slate-500"><span>{left}</span><span>{right}</span></div>
+    </div>
+  );
+}
+
+export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   const {
-    config,
-    tier,
-    setCategory,
-    setAlphabet,
-    setLetterMode,
-    toggleItem,
-    addItems,
-    removeAllItems,
-    addCustomWord,
-    removeCustomWord,
-    setDifficulty,
-    setFontStyle,
-    setLetterSize,
-    setVisibility,
-    setBackgroundPattern,
-    setGuideColor,
-    setRowsPerPage,
-    setRepetitionsPerItem,
-    toggleGuideLines,
-    toggleArrows,
-    toggleStartDots,
-    toggleEmoji,
-    toggleReward,
-    toggleFullPage,
-    toggleLeftHanded,
-    setChildName,
-    resetConfig,
+    config, tier, setCategory, setAlphabet, setLetterMode, toggleItem, addItems, removeAllItems,
+    addCustomWord, removeCustomWord, setDifficulty, setFontStyle, setLetterSize, setVisibility,
+    setBackgroundPattern, setGuideColor, setRowsPerPage, setRepetitionsPerItem, toggleGuideLines,
+    toggleArrows, toggleStartDots, toggleEmoji, toggleReward, toggleFullPage, toggleLeftHanded,
+    toggleFillPage, setChildName, resetConfig,
   } = useWorksheetStore();
 
-  const [customWordInput, setCustomWordInput] = useState('');
-  const [childNameInput, setChildNameInput] = useState(config.childName);
+  const [wordInput, setWordInput] = useState('');
+  const alphabet = config.alphabet ?? 'ro';
 
-  const alphabet = config.alphabet ?? 'en';
-
-  // Get all items for the current category
-  const getAllItems = (): string[] => {
-    if (config.category === 'letters') {
-      if (config.letterMode === 'uppercase') return uppercaseLetters(alphabet);
-      if (config.letterMode === 'lowercase') return lowercaseLetters(alphabet);
-      if (config.letterMode === 'paired') return pairedLetters(alphabet);
+  const allItems: string[] = (() => {
+    switch (config.category) {
+      case 'letters':
+        return config.letterMode === 'lowercase' ? lowercaseLetters(alphabet) : config.letterMode === 'paired' ? pairedLetters(alphabet) : uppercaseLetters(alphabet);
+      case 'numbers':
+        return [...NUMBERS];
+      case 'shapes':
+        return [...SHAPES];
+      case 'prewrite':
+        return [...PATTERN_IDS];
+      default:
+        return [];
     }
-    if (config.category === 'numbers') return [...NUMBERS];
-    if (config.category === 'shapes') return [...SHAPES];
-    if (config.category === 'prewrite') return [...PATTERN_IDS];
-    return [];
-  };
+  })();
 
-  const allItems = getAllItems();
-  const isItemFree = (item: string) => isItemAllowed(item, config.category, tier);
-  const freeCount = allItems.filter(isItemFree).length;
+  const isFree = (item: string) => isItemAllowed(item, config.category, tier);
+  const usable = allItems.filter(isFree);
 
-  // Handle adding all free items
-  const handleAddAllFree = () => {
-    const freeFiltered = allItems.filter((item) => isItemFree(item));
-    addItems(freeFiltered);
-  };
-
-  // Handle adding custom word
-  const handleAddCustomWord = () => {
-    if (customWordInput.trim()) {
-      addCustomWord(customWordInput.trim());
-      setCustomWordInput('');
-    }
-  };
-
-  // Handle item click with paywall check for locked items
   const handleItemClick = (item: string) => {
-    if (!isItemFree(item) && tier === 'free') {
-      onShowPaywall();
-    } else {
-      toggleItem(item);
-    }
+    if (!isFree(item)) onShowPaywall();
+    else toggleItem(item);
   };
 
-  // Get emoji for letter
-  const getEmoji = (item: string) => {
-    if (config.category === 'letters') return hintFor(item, alphabet)?.emoji || '✨';
-    return null;
+  const addWord = (word: string, isName = false) => {
+    const w = word.trim();
+    if (!w) return;
+    if (!isName && !isWordAllowed(w, tier)) {
+      onShowPaywall();
+      return;
+    }
+    addCustomWord(w);
   };
+
+  const nameAdded = !!config.childName.trim() && config.customWords.includes(config.childName.trim());
+  const pickTitle = { letters: 'Alege literele', numbers: 'Alege cifrele', shapes: 'Alege formele', prewrite: 'Alege exercițiile' }[config.category as 'letters'] ?? 'Alege';
 
   return (
-    <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg p-6 space-y-6 overflow-y-auto max-h-screen">
-      {/* Header with Controls */}
+    <div className="w-full bg-white rounded-2xl shadow-lg p-5 sm:p-6 space-y-6">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-xl font-bold text-slate-900">Settings</h2>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={resetConfig}
-            className="h-9 w-9 p-0"
-            title="Reset all settings"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onPrint}
-            className="h-9 w-9 p-0"
-            title="Print worksheet"
-          >
-            <Printer className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onDownload}
-            className="h-9 w-9 p-0"
-            title="Download PDF"
-          >
-            <Download className="w-4 h-4" />
-          </Button>
-        </div>
+        <h2 className="text-xl font-bold text-slate-900">Fișa ta</h2>
+        <Button variant="outline" size="sm" onClick={resetConfig} className="h-9 gap-1.5 text-xs" title="Pornește de la zero">
+          <RotateCcw className="w-3.5 h-3.5" /> De la zero
+        </Button>
       </div>
 
-      {/* Child's Name Input */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-slate-700">Child&apos;s Name</label>
-        <input
-          type="text"
-          value={childNameInput}
-          onChange={(e) => {
-            setChildNameInput(e.target.value);
-            setChildName(e.target.value);
-          }}
-          placeholder="Enter child's name"
-          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      {/* Category Tabs */}
-      <div className="space-y-2">
-        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-          Content Type
-        </label>
-        <div className="grid grid-cols-4 gap-2">
+      {/* 1. What we practise */}
+      <div>
+        <SectionLabel>Ce exersăm</SectionLabel>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {CATEGORY_TABS.map((tab) => {
-            const isLocked = tab.locked && tier === 'free';
-            const isActive = config.category === tab.id;
-
+            const active = config.category === tab.id;
+            const color = THEME.categories[tab.id];
             return (
               <button
                 key={tab.id}
-                onClick={() => {
-                  if (isLocked) {
-                    onShowPaywall();
-                  } else {
-                    setCategory(tab.id);
-                  }
-                }}
-                className={`relative p-2 rounded-lg border-2 transition-all flex flex-col items-center gap-1 ${
-                  isActive
-                    ? `border-current bg-opacity-10`
-                    : 'border-slate-200 hover:border-slate-300'
-                }`}
-                style={
-                  isActive
-                    ? {
-                        borderColor: THEME.categories[tab.id as keyof typeof THEME.categories],
-                        backgroundColor:
-                          THEME.categories[tab.id as keyof typeof THEME.categories] + '15',
-                      }
-                    : {}
-                }
+                type="button"
+                onClick={() => setCategory(tab.id)}
+                aria-pressed={active}
+                className={`p-2 rounded-lg border-2 transition-all flex flex-col items-center gap-1 ${active ? '' : 'border-slate-200 hover:border-slate-300'}`}
+                style={active ? { borderColor: color, backgroundColor: `${color}15` } : {}}
               >
-                <span className="text-xl">{tab.icon}</span>
-                <span className="text-xs font-medium text-center leading-tight text-slate-700">
-                  {tab.label}
-                </span>
-                {isLocked && (
-                  <div className="absolute top-1 right-1">
-                    <Lock className="w-3 h-3 text-red-500" />
-                  </div>
-                )}
+                <span className="text-xl" aria-hidden>{tab.icon}</span>
+                <span className="text-xs font-medium text-center leading-tight text-slate-700">{tab.label}</span>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Alphabet (for letters category) */}
       {config.category === 'letters' && (
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-            Alphabet
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { value: 'ro' as const, label: 'Română', display: 'A Ă Â Î Ș Ț · 31 litere' },
-              { value: 'en' as const, label: 'English', display: 'A–Z · 26 letters' },
-            ].map(({ value, label, display }) => (
-              <button
-                key={value}
-                onClick={() => setAlphabet(value)}
-                className={`p-2 rounded-lg border-2 transition-all text-center ${
-                  alphabet === value
-                    ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold'
-                    : 'border-slate-200 text-slate-700 hover:border-slate-300'
-                }`}
-              >
-                <div className="text-sm font-bold">{label}</div>
-                <div className="text-xs text-slate-600">{display}</div>
-              </button>
-            ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <SectionLabel>Alfabet</SectionLabel>
+            <div className="grid grid-cols-2 gap-2">
+              <Choice active={alphabet === 'ro'} onClick={() => setAlphabet('ro')}><div className="text-sm font-bold">Română</div><div className="text-[11px] text-slate-500">cu Ă Â Î Ș Ț</div></Choice>
+              <Choice active={alphabet === 'en'} onClick={() => setAlphabet('en')}><div className="text-sm font-bold">Engleză</div><div className="text-[11px] text-slate-500">A–Z</div></Choice>
+            </div>
+          </div>
+          <div>
+            <SectionLabel>Litere</SectionLabel>
+            <div className="grid grid-cols-3 gap-2">
+              <Choice active={config.letterMode === 'uppercase'} onClick={() => setLetterMode('uppercase')}><div className="text-sm font-bold">A B</div><div className="text-[11px] text-slate-500">mari</div></Choice>
+              <Choice active={config.letterMode === 'lowercase'} onClick={() => setLetterMode('lowercase')}><div className="text-sm font-bold">a b</div><div className="text-[11px] text-slate-500">mici</div></Choice>
+              <Choice active={config.letterMode === 'paired'} onClick={() => setLetterMode('paired')}><div className="text-sm font-bold">Aa</div><div className="text-[11px] text-slate-500">perechi</div></Choice>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Letter Mode Toggle (for letters category) */}
-      {config.category === 'letters' && (
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-            Letter Mode
-          </label>
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { mode: 'uppercase' as const, label: 'A B C', display: 'Uppercase' },
-              { mode: 'lowercase' as const, label: 'a b c', display: 'Lowercase' },
-              { mode: 'paired' as const, label: 'Aa Bb', display: 'Paired' },
-            ].map(({ mode, label, display }) => (
-              <button
-                key={mode}
-                onClick={() => setLetterMode(mode)}
-                className={`p-2 rounded-lg border-2 transition-all text-center ${
-                  config.letterMode === mode
-                    ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold'
-                    : 'border-slate-200 text-slate-700 hover:border-slate-300'
-                }`}
-              >
-                <div className="text-sm font-bold">{label}</div>
-                <div className="text-xs text-slate-600">{display}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Item Grid */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-            Items ({config.selectedItems.length})
-          </label>
-        </div>
-        <div className="grid grid-cols-5 gap-1.5 max-h-48 overflow-y-auto p-2 bg-slate-50 rounded-lg border border-slate-200">
+      {/* 2. Which items */}
+      <div>
+        <SectionLabel right={<span className="text-xs text-slate-500">{config.selectedItems.length} alese</span>}>{pickTitle}</SectionLabel>
+        <div className={`grid gap-1.5 p-2 bg-slate-50 rounded-lg border border-slate-200 ${config.category === 'prewrite' || config.category === 'shapes' ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-6 sm:grid-cols-7 lg:grid-cols-8'}`}>
           {allItems.map((item) => {
-            const isFree = isItemFree(item);
-            const isSelected = config.selectedItems.includes(item);
-            const emoji = getEmoji(item);
-
+            const free = isFree(item);
+            const selected = config.selectedItems.includes(item);
+            const hint = config.category === 'letters' && config.showLetterIcons ? hintFor(item, alphabet) : undefined;
+            const label = isPatternId(item) ? PATTERN_LABELS[alphabet][item] : config.category === 'shapes' ? SHAPE_LABELS[item] ?? item : item;
             return (
               <button
                 key={item}
+                type="button"
                 onClick={() => handleItemClick(item)}
-                disabled={!isFree && tier === 'free'}
-                className={`relative p-2 rounded-lg border-2 transition-all aspect-square flex items-center justify-center text-sm font-bold ${
-                  isSelected
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : isFree
-                      ? 'border-slate-300 bg-white text-slate-700 hover:border-blue-300'
-                      : 'border-slate-200 bg-slate-100 text-slate-500 opacity-50 cursor-not-allowed'
+                aria-pressed={selected}
+                aria-label={free ? label : `${label} (versiunea completă)`}
+                className={`relative min-h-[3rem] p-1 rounded-lg border-2 transition-all flex flex-col items-center justify-center text-sm font-bold ${
+                  selected ? 'border-blue-500 bg-blue-50 text-blue-700' : free ? 'border-slate-300 bg-white text-slate-700 hover:border-blue-300' : 'border-slate-200 bg-slate-100 text-slate-400'
                 }`}
               >
-                <div className="flex flex-col items-center">
-                  {emoji && config.showLetterIcons && (
-                    <span className="text-xs mb-0.5">{emoji}</span>
-                  )}
-                  {isPatternId(item) ? (
-                    <>
-                      <span className="text-base leading-none">{PATTERN_ICONS[item]}</span>
-                      <span className="text-[9px] font-medium leading-tight text-center mt-1">{PATTERN_LABELS[alphabet][item]}</span>
-                    </>
-                  ) : (
-                    <span>{item}</span>
-                  )}
-                </div>
-                {!isFree && tier === 'free' && (
-                  <div className="absolute top-0.5 right-0.5">
-                    <Lock className="w-3 h-3 text-amber-600" />
-                  </div>
+                {hint && <span className="text-[11px] leading-none mb-0.5" aria-hidden>{hint.emoji}</span>}
+                {isPatternId(item) ? (
+                  <>
+                    <span className="text-base leading-none" aria-hidden>{PATTERN_ICONS[item]}</span>
+                    <span className="text-[10px] font-medium leading-tight text-center mt-1">{label}</span>
+                  </>
+                ) : config.category === 'shapes' ? (
+                  <span className="text-[11px] font-medium">{label}</span>
+                ) : (
+                  <span>{item}</span>
                 )}
+                {!free && <Lock className="absolute top-0.5 right-0.5 w-3 h-3 text-amber-600" aria-hidden />}
               </button>
             );
           })}
         </div>
-
-        {/* Add All Free / Remove All Buttons */}
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleAddAllFree}
-            className="flex-1 text-xs"
-          >
-            {tier === 'free' ? 'Add All Free' : 'Add All'}
-            {freeCount > 0 && (
-              <Badge variant="secondary" className="ml-2 text-xs">
-                {freeCount}
-              </Badge>
-            )}
+        <div className="flex gap-2 mt-2">
+          <Button size="sm" variant="outline" onClick={() => addItems(usable)} className="flex-1 text-xs">
+            {tier === 'free' ? `Adaugă toate gratuite (${usable.length})` : `Adaugă toate (${usable.length})`}
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={removeAllItems}
-            className="flex-1 text-xs"
-          >
-            Remove All
+          <Button size="sm" variant="outline" onClick={removeAllItems} className="flex-1 text-xs" disabled={config.selectedItems.length === 0}>
+            Golește
           </Button>
         </div>
       </div>
 
-      {/* Custom Word/Name Input */}
-      <div className="space-y-2">
-        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-          Custom Word
-        </label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={customWordInput}
-            onChange={(e) => setCustomWordInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleAddCustomWord();
-              }
-            }}
-            placeholder={alphabet === 'ro' ? 'ex. MAMA, ȘTEFAN' : 'e.g., CAT, DOG'}
-            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <Button
-            size="sm"
-            onClick={handleAddCustomWord}
-            className="h-10 w-10 p-0"
-          >
-            <Plus className="w-4 h-4" />
-          </Button>
+      {/* 3. Child's name and words */}
+      <div className="rounded-xl border border-orange-200 bg-orange-50/40 p-4 space-y-3">
+        <div>
+          <label htmlFor="child-name" className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+            <UserRound className="w-3.5 h-3.5" aria-hidden /> Numele copilului
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="child-name"
+              type="text"
+              value={config.childName}
+              onChange={(e) => setChildName(e.target.value)}
+              placeholder="ex. Ștefan"
+              autoComplete="off"
+              className="flex-1 min-w-0 px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <Button size="sm" variant="outline" className="h-10 text-xs whitespace-nowrap" disabled={!config.childName.trim() || nameAdded} onClick={() => addWord(config.childName, true)}>
+              {nameAdded ? 'Adăugat' : 'Trasează-l'}
+            </Button>
+          </div>
+          <p className="text-[11px] text-slate-500 mt-1">Apare în antetul fișei. Cu „Trasează-l” devine și rând de scris.</p>
         </div>
-        {config.customWords.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {config.customWords.map((word) => (
-              <Badge
-                key={word}
-                variant="secondary"
-                className="flex items-center gap-1 cursor-pointer hover:bg-slate-300"
-                onClick={() => removeCustomWord(word)}
-              >
-                {word}
-                <X className="w-3 h-3" />
-              </Badge>
+        <div>
+          <label htmlFor="custom-word" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Cuvinte de trasat</label>
+          <div className="flex gap-2">
+            <input
+              id="custom-word"
+              type="text"
+              value={wordInput}
+              onChange={(e) => setWordInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  addWord(wordInput);
+                  setWordInput('');
+                }
+              }}
+              placeholder={alphabet === 'ro' ? 'ex. MAMA, toamna' : 'e.g. CAT'}
+              autoComplete="off"
+              className="flex-1 min-w-0 px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <Button size="sm" onClick={() => { addWord(wordInput); setWordInput(''); }} className="h-10 w-10 p-0" aria-label="Adaugă cuvântul">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+          {config.customWords.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {config.customWords.map((word) => (
+                <button key={word} type="button" onClick={() => removeCustomWord(word)} className="inline-flex items-center gap-1 rounded-full bg-white border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-red-400 hover:bg-red-50" aria-label={`Scoate ${word}`}>
+                  {word} <X className="w-3 h-3" aria-hidden />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 4. Level */}
+      <div>
+        <SectionLabel>Nivel</SectionLabel>
+        <div className="grid grid-cols-3 gap-2">
+          {([
+            ['beginner', '🌱', 'Început', 'cu mult ajutor'],
+            ['intermediate', '🌿', 'Mijlociu', 'ajutor parțial'],
+            ['advanced', '🌳', 'Avansat', 'mai mult singur'],
+          ] as const).map(([d, icon, label, sub]) => (
+            <Choice key={d} active={config.difficulty === d} onClick={() => setDifficulty(d)}>
+              <div className="text-lg" aria-hidden>{icon}</div>
+              <div className="text-xs font-semibold">{label}</div>
+              <div className="text-[10px] text-slate-500">{sub}</div>
+            </Choice>
+          ))}
+        </div>
+      </div>
+
+      {/* 5. Everything else */}
+      <details className="group rounded-xl border border-slate-200">
+        <summary className="flex items-center justify-between cursor-pointer select-none px-4 py-3 text-sm font-semibold text-slate-700">
+          Mai multe opțiuni
+          <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" aria-hidden />
+        </summary>
+        <div className="px-4 pb-4 space-y-5">
+          <div>
+            <SectionLabel>Stil de trasare</SectionLabel>
+            <div className="grid grid-cols-3 gap-2">
+              {([['dashed', 'Liniuțe'], ['dotted', 'Puncte'], ['outline', 'Contur']] as const).map(([v, l]) => (
+                <Choice key={v} active={config.fontStyle === v} onClick={() => setFontStyle(v)}><span className="text-sm">{l}</span></Choice>
+              ))}
+            </div>
+          </div>
+          <div>
+            <SectionLabel>Mărimea literelor</SectionLabel>
+            <div className="grid grid-cols-3 gap-2">
+              {([['small', 'Mici', 14], ['medium', 'Medii', 18], ['large', 'Mari', 22]] as const).map(([v, l, px]) => (
+                <Choice key={v} active={config.letterSize === v} onClick={() => setLetterSize(v)}>
+                  <div className="font-bold" style={{ fontSize: px }}>A</div>
+                  <div className="text-[11px]">{l}</div>
+                </Choice>
+              ))}
+            </div>
+          </div>
+          <Slider label="Rânduri pe pagină" value={config.rowsPerPage} min={3} max={8} onChange={setRowsPerPage} left="3" right="8" />
+          <Slider label="Rânduri pentru fiecare" value={config.repetitionsPerItem} min={1} max={5} onChange={setRepetitionsPerItem} left="1" right="5" />
+          <Slider label="Cât de vizibil e modelul" value={config.tracingVisibility} min={1} max={10} onChange={setVisibility} left="abia se vede" right="foarte clar" />
+          <div>
+            <SectionLabel>Fundal</SectionLabel>
+            <div className="grid grid-cols-3 gap-2">
+              {([['guides', 'Liniatură'], ['dictando', 'Dictando'], ['patratele', 'Pătrățele'], ['lines', 'Linii'], ['grid', 'Grilă'], ['blank', 'Alb']] as const).map(([v, l]) => (
+                <Choice key={v} active={config.backgroundPattern === v} onClick={() => setBackgroundPattern(v)}><span className="text-xs">{l}</span></Choice>
+              ))}
+            </div>
+          </div>
+          <div>
+            <SectionLabel>Culoarea liniilor</SectionLabel>
+            <div className="flex gap-3">
+              {([['gray', '#9CA3AF', 'gri'], ['green', '#10B981', 'verde'], ['orange', '#F97316', 'portocaliu'], ['purple', '#A855F7', 'mov']] as const).map(([c, hex, name]) => (
+                <button key={c} type="button" onClick={() => setGuideColor(c)} aria-label={`Linii ${name}`} aria-pressed={config.guideColor === c}
+                  className={`w-8 h-8 rounded-full border-2 transition-all ${config.guideColor === c ? 'border-slate-900 scale-110' : 'border-slate-300'}`} style={{ backgroundColor: hex }} />
+              ))}
+            </div>
+          </div>
+          <div className="space-y-1 pt-3 border-t border-slate-200">
+            {([
+              ['Imagini lângă litere', config.showLetterIcons, toggleEmoji],
+              ['Săgeți de direcție', config.showDirectionalArrows, toggleArrows],
+              ['Puncte de start numerotate', config.showStartDots !== false, toggleStartDots],
+              ['Liniatură', config.showGuideLines, toggleGuideLines],
+              ['Umple pagina cu repetiții', config.fillPage !== false, toggleFillPage],
+              ['Stelele de recompensă', config.showRewardSection, toggleReward],
+              ['Fără antet (doar rânduri)', config.fullPageMode, toggleFullPage],
+              ['Pentru stângaci', config.leftHandedMode, toggleLeftHanded],
+            ] as [string, boolean, () => void][]).map(([label, checked, onChange]) => (
+              <label key={label} className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition-colors">
+                <input type="checkbox" checked={checked} onChange={onChange} className="w-4 h-4 rounded border-slate-300 cursor-pointer" />
+                <span className="text-sm text-slate-700">{label}</span>
+              </label>
             ))}
           </div>
-        )}
-      </div>
-
-      {/* Difficulty Selector */}
-      <div className="space-y-2">
-        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-          Quick Difficulty
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { difficulty: 'beginner' as const, icon: '🌱', label: 'Beginner' },
-            { difficulty: 'intermediate' as const, icon: '🌿', label: 'Intermediate' },
-            { difficulty: 'advanced' as const, icon: '🌳', label: 'Advanced' },
-          ].map(({ difficulty, icon, label }) => (
-            <button
-              key={difficulty}
-              onClick={() => setDifficulty(difficulty)}
-              className={`p-2 rounded-lg border-2 transition-all text-center ${
-                config.difficulty === difficulty
-                  ? 'border-green-500 bg-green-50 text-green-700 font-semibold'
-                  : 'border-slate-200 text-slate-700 hover:border-slate-300'
-              }`}
-            >
-              <div className="text-lg">{icon}</div>
-              <div className="text-xs mt-1 font-medium">{label}</div>
-            </button>
-          ))}
         </div>
-      </div>
-
-      {/* Font Style */}
-      <div className="space-y-2">
-        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-          Font Style
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {(['dashed', 'dotted', 'outline'] as const).map((style) => (
-            <button
-              key={style}
-              onClick={() => setFontStyle(style)}
-              className={`p-2 rounded-lg border-2 transition-all text-center capitalize ${
-                config.fontStyle === style
-                  ? 'border-purple-500 bg-purple-50 text-purple-700 font-semibold'
-                  : 'border-slate-200 text-slate-700 hover:border-slate-300'
-              }`}
-            >
-              <div className="text-sm font-bold">{style}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Letter Size */}
-      <div className="space-y-2">
-        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-          Letter Size
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {(['small', 'medium', 'large'] as const).map((size) => (
-            <button
-              key={size}
-              onClick={() => setLetterSize(size)}
-              className={`p-2 rounded-lg border-2 transition-all text-center capitalize ${
-                config.letterSize === size
-                  ? 'border-orange-500 bg-orange-50 text-orange-700 font-semibold'
-                  : 'border-slate-200 text-slate-700 hover:border-slate-300'
-              }`}
-            >
-              <div
-                className="font-bold"
-                style={{
-                  fontSize: size === 'small' ? '14px' : size === 'medium' ? '18px' : '22px',
-                }}
-              >
-                A
-              </div>
-              <div className="text-xs mt-1">{size}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Rows Per Page */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-            Rows per Page
-          </label>
-          <Badge variant="secondary">{config.rowsPerPage}</Badge>
-        </div>
-        <input
-          type="range"
-          min="3"
-          max="8"
-          value={config.rowsPerPage}
-          onChange={(e) => setRowsPerPage(Number(e.target.value))}
-          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-        />
-        <div className="flex justify-between text-xs text-slate-600">
-          <span>3</span>
-          <span>8</span>
-        </div>
-      </div>
-
-      {/* Repetitions per Item */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-            Rows per Letter
-          </label>
-          <Badge variant="secondary">{config.repetitionsPerItem}</Badge>
-        </div>
-        <input
-          type="range"
-          min="1"
-          max="5"
-          value={config.repetitionsPerItem}
-          onChange={(e) => setRepetitionsPerItem(Number(e.target.value))}
-          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-        />
-        <div className="flex justify-between text-xs text-slate-600">
-          <span>1 row</span>
-          <span>5 rows</span>
-        </div>
-      </div>
-
-      {/* Tracing Visibility */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-            Tracing Visibility
-          </label>
-          <Badge variant="secondary">{config.tracingVisibility}</Badge>
-        </div>
-        <input
-          type="range"
-          min="1"
-          max="10"
-          value={config.tracingVisibility}
-          onChange={(e) => setVisibility(Number(e.target.value))}
-          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-        />
-        <div className="flex justify-between text-xs text-slate-600">
-          <span>Hard</span>
-          <span>Easy</span>
-        </div>
-      </div>
-
-      {/* Background Pattern */}
-      <div className="space-y-2">
-        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-          Background Pattern
-        </label>
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            { pattern: 'blank' as const, label: 'Blank' },
-            { pattern: 'grid' as const, label: 'Grid' },
-            { pattern: 'guides' as const, label: 'Writing Guides' },
-            { pattern: 'patratele' as const, label: 'Pătrățele' },
-            { pattern: 'dictando' as const, label: 'Dictando' },
-            { pattern: 'lines' as const, label: 'Lines' },
-          ].map(({ pattern, label }) => (
-            <button
-              key={pattern}
-              onClick={() => setBackgroundPattern(pattern)}
-              className={`p-2 rounded-lg border-2 transition-all text-center text-xs capitalize ${
-                config.backgroundPattern === pattern
-                  ? 'border-teal-500 bg-teal-50 text-teal-700 font-semibold'
-                  : 'border-slate-200 text-slate-700 hover:border-slate-300'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Guide Line Color */}
-      <div className="space-y-2">
-        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-          Guide Line Color
-        </label>
-        <div className="flex gap-3">
-          {[
-            { color: 'gray' as const, hex: '#9CA3AF' },
-            { color: 'green' as const, hex: '#10B981' },
-            { color: 'orange' as const, hex: '#F97316' },
-            { color: 'purple' as const, hex: '#A855F7' },
-          ].map(({ color, hex }) => (
-            <button
-              key={color}
-              onClick={() => setGuideColor(color)}
-              className={`w-8 h-8 rounded-full border-3 transition-all ${
-                config.guideColor === color
-                  ? 'border-slate-900 scale-110'
-                  : 'border-slate-300'
-              }`}
-              style={{ backgroundColor: hex }}
-              title={color}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Toggle Switches */}
-      <div className="space-y-3 pt-4 border-t border-slate-200">
-        {[
-          { label: 'Letter Icons (Emoji)', checked: config.showLetterIcons, onChange: toggleEmoji },
-          {
-            label: 'Directional Arrows',
-            checked: config.showDirectionalArrows,
-            onChange: toggleArrows,
-          },
-          {
-            label: 'Numbered Start Dots',
-            checked: config.showStartDots !== false,
-            onChange: toggleStartDots,
-          },
-          { label: 'Guide Lines', checked: config.showGuideLines, onChange: toggleGuideLines },
-          {
-            label: 'Reward Section',
-            checked: config.showRewardSection,
-            onChange: toggleReward,
-          },
-          { label: 'Full Page Mode', checked: config.fullPageMode, onChange: toggleFullPage },
-          {
-            label: 'Left-handed Mode',
-            checked: config.leftHandedMode,
-            onChange: toggleLeftHanded,
-          },
-        ].map(({ label, checked, onChange }) => (
-          <label
-            key={label}
-            className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition-colors"
-          >
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={onChange}
-              className="w-4 h-4 rounded border-slate-300 cursor-pointer"
-            />
-            <span className="text-sm font-medium text-slate-700">{label}</span>
-          </label>
-        ))}
-      </div>
+      </details>
     </div>
   );
 }

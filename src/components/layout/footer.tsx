@@ -18,14 +18,13 @@ export function Footer() {
           </span>
         </Link>
         <p className="text-xs text-slate-500">
-          Made with <Heart className="w-3 h-3 inline text-red-400 fill-red-400 mx-0.5" /> for little learners  •  © 2026 WorksheetWiz
+          Făcut cu <Heart className="w-3 h-3 inline text-red-400 fill-red-400 mx-0.5" aria-hidden /> pentru cei mici  •  © 2026 WorksheetWiz
           <br />
-          Pictures: <a href="https://github.com/jdecked/twemoji" className="underline hover:text-blue-600" target="_blank" rel="noopener noreferrer">Twemoji</a>, CC-BY 4.0
+          Imagini: <a href="https://github.com/jdecked/twemoji" className="underline hover:text-blue-600" target="_blank" rel="noopener noreferrer">Twemoji</a>, CC-BY 4.0
         </p>
         <div className="flex gap-5 text-xs font-medium text-slate-500">
-          <button className="hover:text-blue-600 transition-colors">Privacy</button>
-          <button className="hover:text-blue-600 transition-colors">Terms</button>
-          <button className="hover:text-blue-600 transition-colors">Contact</button>
+          <Link href="/confidentialitate" className="hover:text-blue-600 transition-colors">Confidențialitate</Link>
+          <Link href="/termeni" className="hover:text-blue-600 transition-colors">Termeni</Link>
         </div>
       </div>
     </footer>

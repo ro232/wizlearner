@@ -71,6 +71,39 @@ export interface RowItem {
   item: string;
   glyphs: Glyph[];
   pattern?: PatternId;
+  /** A whole word or name traced as one row (no hint picture). */
+  word?: boolean;
+}
+
+/** A word-space: no strokes, just room between the words of a name ("Ana Maria"). */
+const SPACE_GLYPH: Glyph = { key: ' ', strokes: [], width: 34, bbox: { minX: 0, minY: 50, maxX: 34, maxY: 100 } };
+
+/** How a typed word is written for the chosen letter mode: MAMA, mama, or Mama. */
+export function wordInCase(word: string, mode: WorksheetConfig['letterMode']): string {
+  const w = normalizeKey(word);
+  if (mode === 'uppercase') return w.toUpperCase();
+  if (mode === 'lowercase') return w.toLowerCase();
+  return w.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, sep: string, ch: string) => sep + ch.toUpperCase());
+}
+
+/** Glyphs for a word; characters we cannot draw are skipped, spaces keep their room. */
+export function glyphsForWord(text: string): Glyph[] {
+  const out: Glyph[] = [];
+  for (const ch of text) {
+    if (ch === ' ') {
+      if (out.length && out[out.length - 1] !== SPACE_GLYPH) out.push(SPACE_GLYPH);
+      continue;
+    }
+    const g = getGlyph(ch);
+    if (g) out.push(g);
+  }
+  while (out[out.length - 1] === SPACE_GLYPH) out.pop();
+  return out;
+}
+
+/** A word is usable on a tier when every letter in it is. */
+export function isWordAllowed(word: string, tier: Tier): boolean {
+  return [...normalizeKey(word)].every((ch) => !/\p{L}/u.test(ch) || isItemAllowed(ch, 'letters', tier));
 }
 
 /** Older saved worksheets have no `alphabet`; they were made with English letters. */
@@ -106,6 +139,18 @@ export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[
     const glyphs = glyphsForItem(item, config.category);
     if (glyphs.length === 0) continue;
     for (let r = 0; r < reps; r++) rows.push({ item, glyphs });
+  }
+  if (config.category === 'letters') {
+    // The child's own name is free on every tier (it is what parents look for first);
+    // other words follow the letter limits of the tier.
+    const name = normalizeKey(config.childName ?? '').trim();
+    for (const raw of config.customWords ?? []) {
+      if (!isWordAllowed(raw, tier) && normalizeKey(raw).trim() !== name) continue;
+      const text = wordInCase(raw, config.letterMode);
+      const glyphs = glyphsForWord(text);
+      if (glyphs.length === 0) continue;
+      for (let r = 0; r < reps; r++) rows.push({ item: text, glyphs, word: true });
+    }
   }
   return rows;
 }
@@ -146,7 +191,8 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     showModel: true,
     modelDots: config.showStartDots !== false,
     modelArrows: config.showDirectionalArrows,
-    blankCells: config.difficulty === 'beginner' ? 0 : 1,
+    // Empty cells at the end of each row for writing without help.
+    blankCells: config.difficulty === 'advanced' ? 4 : config.difficulty === 'intermediate' ? 3 : 2,
     maxCopies: 0,
     leftHanded: config.leftHandedMode,
     guideColor: config.showGuideLines ? guide : null,
@@ -169,6 +215,20 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     y += h + rowGap;
   }
   if (current.length > 0 || pages.length === 0) pages.push(current);
+
+  // One short page: repeat the chosen rows (in order) until the page is full.
+  if (config.fillPage !== false && pages.length === 1 && rows.length > 0) {
+    const page = pages[0];
+    let i = 0;
+    while (page.length < maxRows) {
+      const row = rows[i % rows.length];
+      const h = heightOf(row);
+      if (y + h > contentBottom) break;
+      page.push(row);
+      y += h + rowGap;
+      i++;
+    }
+  }
 
   // ── render pages ──
   return pages.map((pageRows, pageIndex) => {
@@ -203,7 +263,12 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
       if (row.pattern) {
         buildPatternRow(ops, row.pattern, geom, rowStyle);
       } else {
-        buildTraceRow(ops, row.glyphs, geom, { ...rowStyle, hint: showHint ? hintFor(row.item, alphabet) : null });
+        buildTraceRow(ops, row.glyphs, geom, {
+          ...rowStyle,
+          hint: showHint && !row.word ? hintFor(row.item, alphabet) : null,
+          // A whole word with a numbered dot on every letter is too busy to read; letters rows teach the order.
+          ...(row.word ? { modelDots: false, modelArrows: false } : {}),
+        });
       }
       ry += heightOf(row) + rowGap + extraGap;
     }

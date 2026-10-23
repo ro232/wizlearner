@@ -1,32 +1,37 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Pencil, LogIn, LogOut, User, BookOpen } from 'lucide-react';
+import { Pencil, LogIn, LogOut, User, BookOpen, Menu, X, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { useAuth } from '@/hooks/use-auth';
 
-const navLinks = [
-  { href: '/generator', label: 'Generator', icon: Pencil },
-  { href: '/book', label: 'Book', icon: BookOpen },
+export const NAV_LINKS = [
+  { href: '/generator', label: 'Fișe', icon: Pencil },
+  { href: '/nume', label: 'Fișa cu numele', icon: UserRound },
+  { href: '/book', label: 'Caiet KDP', icon: BookOpen },
 ];
+
+const TIER_LABEL = { free: 'Gratuit', starter: 'Starter', full: 'Complet' } as const;
 
 export function Navbar() {
   const pathname = usePathname();
   const tier = useWorksheetStore((s) => s.tier);
   const { user, profile, loading, signOut } = useAuth();
-  const isLanding = pathname === '/';
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => setOpen(false), [pathname]);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/20 glass" style={{ background: 'rgba(255,255,255,0.75)' }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
+    <nav className="sticky top-0 z-50 border-b border-white/20 glass" style={{ background: 'rgba(255,255,255,0.85)' }} aria-label="Navigare principală">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-md transition-transform group-hover:scale-105" style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e40af)' }}>
-            <Pencil className="w-4 h-4 text-white" />
+            <Pencil className="w-4 h-4 text-white" aria-hidden />
           </div>
           <span className="text-xl font-bold tracking-tight">
             <span className="text-slate-900">Worksheet</span>
@@ -34,76 +39,81 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        {isLanding ? (
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
-            <Link href="/generator" className="hover:text-blue-600 transition-colors">Features</Link>
-            <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
-          </div>
-        ) : (
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <Link key={link.href} href={link.href}>
-                <Button variant="ghost" size="sm" className={cn('text-xs gap-1.5', pathname === link.href && 'bg-blue-50 text-blue-700')}>
-                  <link.icon className="w-3.5 h-3.5" />{link.label}
-                </Button>
-              </Link>
-            ))}
-          </div>
-        )}
+        <div className="hidden md:flex items-center gap-1">
+          {NAV_LINKS.map((link) => (
+            <Link key={link.href} href={link.href}>
+              <Button variant="ghost" size="sm" className={cn('text-xs gap-1.5', pathname === link.href && 'bg-blue-50 text-blue-700')}>
+                <link.icon className="w-3.5 h-3.5" aria-hidden />
+                {link.label}
+              </Button>
+            </Link>
+          ))}
+        </div>
 
-        {/* Right side */}
-        <div className="flex items-center gap-3">
-          {!isLanding && user && (
-            <div className="flex items-center gap-1">
-              <Badge variant="outline" className={cn('text-xs font-medium', tier === 'free' && 'border-blue-200 text-blue-700 bg-blue-50/50', tier === 'starter' && 'border-green-200 text-green-700 bg-green-50/50', tier === 'full' && 'border-orange-200 text-orange-700 bg-orange-50/50')}>
-                {tier === 'free' ? 'Free Tier' : tier === 'starter' ? 'Starter' : 'Full Access'}
-              </Badge>
-            </div>
+        <div className="flex items-center gap-2">
+          {user && (
+            <Badge variant="outline" className={cn('hidden sm:inline-flex text-xs font-medium', tier === 'free' && 'border-blue-200 text-blue-700 bg-blue-50/50', tier === 'starter' && 'border-green-200 text-green-700 bg-green-50/50', tier === 'full' && 'border-orange-200 text-orange-700 bg-orange-50/50')}>
+              {TIER_LABEL[tier]}
+            </Badge>
           )}
           {/* Local development only: cycle the tier to test locked content. Never shipped to visitors. */}
-          {process.env.NODE_ENV === 'development' && !isLanding && (
+          {process.env.NODE_ENV === 'development' && (
             <button
               onClick={() => {
                 const tiers: Array<'free' | 'starter' | 'full'> = ['free', 'starter', 'full'];
-                const nextTier = tiers[(tiers.indexOf(tier) + 1) % tiers.length];
-                useWorksheetStore.getState().setTier(nextTier);
+                useWorksheetStore.getState().setTier(tiers[(tiers.indexOf(tier) + 1) % tiers.length]);
               }}
-              className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors"
+              className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-500"
               title="Dev only: cycle tier"
             >
               🔓 {tier}
             </button>
           )}
 
-          {/* Auth buttons */}
           {loading ? (
             <div className="w-8 h-8 rounded-full bg-slate-100 animate-pulse" />
           ) : user ? (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e40af)' }}>
-                {profile?.display_name?.[0]?.toUpperCase() || <User className="w-4 h-4" />}
+            <div className="flex items-center gap-1">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e40af)' }} title={profile?.display_name ?? undefined}>
+                {profile?.display_name?.[0]?.toUpperCase() || <User className="w-4 h-4" aria-hidden />}
               </div>
-              <Button variant="ghost" size="sm" className="text-xs gap-1 text-slate-500" onClick={signOut}>
-                <LogOut className="w-3 h-3" />
+              <Button variant="ghost" size="sm" className="text-xs gap-1 text-slate-500" onClick={signOut} aria-label="Ieși din cont">
+                <LogOut className="w-3.5 h-3.5" aria-hidden />
               </Button>
             </div>
           ) : (
-            <>
-              {isLanding ? (
-                <>
-                  <Link href="/auth/login"><Button variant="ghost" className="text-sm hidden sm:inline-flex gap-1.5"><LogIn className="w-3.5 h-3.5" /> Log in</Button></Link>
-                  <Link href="/generator">
-                    <Button className="text-sm text-white px-5 rounded-xl btn-premium shadow-md" style={{ background: 'linear-gradient(135deg, #E8913A, #d97706)' }}>Start Free</Button>
-                  </Link>
-                </>
-              ) : (
-                <Link href="/auth/login"><Button variant="ghost" size="sm" className="text-xs gap-1.5"><LogIn className="w-3.5 h-3.5" /> Log in</Button></Link>
-              )}
-            </>
+            <Link href="/auth/login" className="hidden sm:block">
+              <Button variant="ghost" size="sm" className="text-xs gap-1.5"><LogIn className="w-3.5 h-3.5" aria-hidden /> Intră în cont</Button>
+            </Link>
           )}
+
+          <button
+            type="button"
+            className="md:hidden w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? 'Închide meniul' : 'Deschide meniul'}
+          >
+            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+
+      {open && (
+        <div id="mobile-menu" className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-1">
+          {NAV_LINKS.map((link) => (
+            <Link key={link.href} href={link.href} className={cn('flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50', pathname === link.href && 'bg-blue-50 text-blue-700')}>
+              <link.icon className="w-4 h-4" aria-hidden /> {link.label}
+            </Link>
+          ))}
+          {!user && (
+            <Link href="/auth/login" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+              <LogIn className="w-4 h-4" aria-hidden /> Intră în cont
+            </Link>
+          )}
+        </div>
+      )}
     </nav>
   );
 }

@@ -128,7 +128,12 @@ const SHAPES: Record<string, GlyphDef> = {
   'shape:pentagon': { width: 100, strokes: ['M 50 2 L 97.6 36.5 L 79.4 92.5 L 20.6 92.5 L 2.4 36.5 L 50 2'] },
 };
 
-export const GLYPH_DEFS: Record<string, GlyphDef> = { ...UPPER, ...LOWER, ...DIGITS, ...SHAPES };
+// Punctuation that appears in names ("Maria-Magdalena").
+const PUNCT: Record<string, GlyphDef> = {
+  '-': { width: 28, strokes: ['M 0 66 L 28 66'], arrows: [null] },
+};
+
+export const GLYPH_DEFS: Record<string, GlyphDef> = { ...UPPER, ...LOWER, ...DIGITS, ...SHAPES, ...PUNCT };
 
 const cache = new Map<string, Glyph>();
 
@@ -188,7 +193,7 @@ export function baseLetter(letter: string): string {
 export function lettersOfWord(word: string, mode: 'uppercase' | 'lowercase' | 'paired'): string[] {
   const out: string[] = [];
   for (const ch of normalizeKey(word).toUpperCase()) {
-    if (!hasGlyph(ch) || /[0-9]/.test(ch)) continue;
+    if (!hasGlyph(ch) || !/\p{L}/u.test(ch)) continue;
     const item = mode === 'uppercase' ? ch : mode === 'lowercase' ? ch.toLowerCase() : `${ch}${ch.toLowerCase()}`;
     if (!out.includes(item)) out.push(item);
   }

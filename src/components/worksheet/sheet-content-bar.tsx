@@ -2,84 +2,60 @@
 
 import React, { useMemo } from 'react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
-import { Card } from '@/components/ui/card';
 import { hintFor } from '@/lib/glyphs/data';
-import { PATTERN_ICONS, isPatternId } from '@/lib/glyphs/patterns';
-import { countWorksheetPages } from '@/lib/worksheet/layout';
+import { PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
+import { countWorksheetPages, rowItems } from '@/lib/worksheet/layout';
 
+/** What is on the sheet right now, with one-click removal. */
 export const SheetContentBar = () => {
   const config = useWorksheetStore((state) => state.config);
   const tier = useWorksheetStore((state) => state.tier);
   const toggleItem = useWorksheetStore((state) => state.toggleItem);
+  const removeCustomWord = useWorksheetStore((state) => state.removeCustomWord);
 
-  const { totalRows, estimatedPages } = useMemo(() => {
-    const reps = config.repetitionsPerItem || 1;
-    const totalRows = config.selectedItems.length * reps;
-    const estimatedPages = countWorksheetPages(config, tier);
-    return { totalRows, estimatedPages };
-  }, [config, tier]);
+  const { rows, pages } = useMemo(() => ({ rows: rowItems(config, tier).length, pages: countWorksheetPages(config, tier) }), [config, tier]);
+  const words = config.category === 'letters' ? config.customWords : [];
+  const isEmpty = config.selectedItems.length === 0 && words.length === 0;
+  const alphabet = config.alphabet ?? 'ro';
 
-  const isEmpty = config.selectedItems.length === 0;
-
-  const sizeName = {
-    small: 'Small',
-    medium: 'Medium',
-    large: 'Large',
-  }[config.letterSize] || 'Medium';
+  if (isEmpty) {
+    return (
+      <div className="rounded-2xl bg-blue-50/70 border border-blue-100 px-5 py-4 text-sm text-slate-600">
+        Fișa e goală. Alege litere, cifre sau forme, ori scrie numele copilului.
+      </div>
+    );
+  }
 
   return (
-    <Card className="border-0 shadow-md bg-gradient-to-r from-blue-50 to-indigo-50">
-      <div className="p-6">
-        {/* Header with icon and title */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="text-2xl">📄</div>
-          <h3 className="text-lg font-semibold text-gray-800">Sheet Content</h3>
-        </div>
-
-        {/* Content summary or empty state */}
-        <div className="flex items-start justify-between gap-6">
-          <div className="flex-1">
-            {isEmpty ? (
-              <p className="text-gray-500 italic text-sm">Your sheet is empty. Pick items above!</p>
-            ) : (
-              <div>
-                <p className="text-gray-700 font-medium text-sm">
-                  {config.selectedItems.length} item{config.selectedItems.length !== 1 ? 's' : ''} ~ {estimatedPages} page{estimatedPages !== 1 ? 's' : ''} ({sizeName}, {totalRows} row{totalRows !== 1 ? 's' : ''}/page){config.repetitionsPerItem > 1 ? `, ${config.repetitionsPerItem} rows each` : ''}
-                </p>
-
-                {/* Item tags/pills */}
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {config.selectedItems.map((item) => {
-                    const emoji = isPatternId(item) ? PATTERN_ICONS[item] : hintFor(item, config.alphabet ?? 'en')?.emoji || '✨';
-                    return (
-                      <button
-                        key={item}
-                        onClick={() => toggleItem(item)}
-                        className="group inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:border-red-400 hover:bg-red-50 transition-all duration-200"
-                        title={`Remove ${item}`}
-                      >
-                        <span className="text-base">{emoji}</span>
-                        <span>{item}</span>
-                        <span className="text-gray-400 group-hover:text-red-500 transition-colors">×</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Page count on the right */}
-          {!isEmpty && (
-            <div className="flex flex-col items-center justify-center min-w-24">
-              <div className="text-5xl font-bold bg-gradient-to-br from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                {estimatedPages}
-              </div>
-              <p className="text-xs font-medium text-gray-600 mt-1">pages</p>
-            </div>
-          )}
-        </div>
+    <div className="rounded-2xl bg-blue-50/70 border border-blue-100 px-5 py-4">
+      <div className="flex items-center justify-between gap-4 mb-3">
+        <p className="text-sm font-semibold text-slate-800">Pe fișă</p>
+        <p className="text-xs text-slate-600">
+          {rows} {rows === 1 ? 'rând' : 'rânduri'} · {pages} {pages === 1 ? 'pagină' : 'pagini'}
+        </p>
       </div>
-    </Card>
+      <div className="flex flex-wrap gap-2">
+        {config.selectedItems.map((item) => {
+          const icon = isPatternId(item) ? PATTERN_ICONS[item] : hintFor(item, alphabet)?.emoji;
+          const label = isPatternId(item) ? PATTERN_LABELS[alphabet][item] : item;
+          return (
+            <button key={item} type="button" onClick={() => toggleItem(item)} aria-label={`Scoate ${label}`}
+              className="group inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-700 hover:border-red-400 hover:bg-red-50 transition-colors">
+              {icon && <span aria-hidden>{icon}</span>}
+              <span>{label}</span>
+              <span className="text-slate-400 group-hover:text-red-500" aria-hidden>×</span>
+            </button>
+          );
+        })}
+        {words.map((word) => (
+          <button key={`w-${word}`} type="button" onClick={() => removeCustomWord(word)} aria-label={`Scoate ${word}`}
+            className="group inline-flex items-center gap-1.5 px-3 py-1 bg-orange-50 border border-orange-200 rounded-full text-sm font-semibold text-slate-700 hover:border-red-400 hover:bg-red-50 transition-colors">
+            <span aria-hidden>✍️</span>
+            <span>{word}</span>
+            <span className="text-slate-400 group-hover:text-red-500" aria-hidden>×</span>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 };

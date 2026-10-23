@@ -86,3 +86,33 @@ export async function generateWorksheetPDF(config: WorksheetConfig, tier: Tier):
   const doc = createWorksheetPdf(config, tier, fonts);
   doc.save(worksheetFilename(config));
 }
+
+/**
+ * Print exactly the PDF (not the web page around the preview): load it in a hidden
+ * frame and open the browser's print dialog on it. Falls back to opening the PDF in a
+ * new tab where frames cannot print PDFs (some mobile browsers).
+ */
+export async function printWorksheetPDF(config: WorksheetConfig, tier: Tier): Promise<void> {
+  const fonts = await loadEmbeddedFonts();
+  const doc = createWorksheetPdf(config, tier, fonts);
+  const url = URL.createObjectURL(doc.output('blob'));
+  const frame = document.createElement('iframe');
+  frame.style.position = 'fixed';
+  frame.style.width = '0';
+  frame.style.height = '0';
+  frame.style.border = '0';
+  frame.src = url;
+  frame.onload = () => {
+    try {
+      frame.contentWindow?.focus();
+      frame.contentWindow?.print();
+    } catch {
+      window.open(url, '_blank');
+    }
+    setTimeout(() => {
+      frame.remove();
+      URL.revokeObjectURL(url);
+    }, 60_000);
+  };
+  document.body.appendChild(frame);
+}

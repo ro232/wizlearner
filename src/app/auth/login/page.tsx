@@ -33,7 +33,7 @@ export default function LoginPage() {
     try {
       await signInWithGoogle();
     } catch {
-      setError('Failed to sign in with Google. Please try again.');
+      setError('Nu am putut intra cu Google. Încearcă din nou.');
       setIsLoading(false);
     }
   };
@@ -44,7 +44,7 @@ export default function LoginPage() {
     setError('');
 
     if (!email || !password) {
-      setError('Please fill in all fields');
+      setError('Completează emailul și parola.');
       setIsLoading(false);
       return;
     }
@@ -55,17 +55,17 @@ export default function LoginPage() {
         : await signInWithEmail(email, password);
 
       if (result?.error) {
-        setError(result.error.message || 'Authentication failed');
+        setError('Emailul sau parola nu sunt corecte.');
       } else {
         if (isSignUp) {
           setError('');
-          alert('Check your email for a confirmation link!');
+          alert('Ți-am trimis un email de confirmare. Deschide linkul din el.');
         } else {
           router.push('/generator');
         }
       }
     } catch {
-      setError('An unexpected error occurred');
+      setError('A apărut o eroare. Încearcă din nou.');
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +77,7 @@ export default function LoginPage() {
     setError('');
 
     if (!email) {
-      setError('Please enter your email');
+      setError('Scrie adresa de email.');
       setIsLoading(false);
       return;
     }
@@ -85,12 +85,12 @@ export default function LoginPage() {
     try {
       const result = await signInWithMagicLink(email);
       if (result?.error) {
-        setError(result.error.message || 'Failed to send magic link');
+        setError('Nu am putut trimite linkul. Încearcă din nou.');
       } else {
         setMagicLinkSent(true);
       }
     } catch {
-      setError('An unexpected error occurred');
+      setError('A apărut o eroare. Încearcă din nou.');
     } finally {
       setIsLoading(false);
     }
@@ -101,15 +101,15 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
         <Card className="w-full max-w-md border-blue-200 shadow-xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-blue-600">Check Your Email</CardTitle>
+            <CardTitle className="text-2xl text-blue-600">Verifică emailul</CardTitle>
             <CardDescription className="mt-2">
-              We sent a magic link to{' '}
+              Ți-am trimis un link de autentificare la{' '}
               <span className="font-semibold text-slate-900">{email}</span>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-slate-600">
-              Click the link in the email to sign in. If you don&apos;t see it, check your spam folder.
+              Apasă pe linkul din email ca să intri în cont. Dacă nu-l găsești, uită-te și în Spam.
             </p>
             <Button
               onClick={() => {
@@ -119,7 +119,7 @@ export default function LoginPage() {
               variant="outline"
               className="w-full"
             >
-              Try Another Email
+              Folosește alt email
             </Button>
           </CardContent>
         </Card>
@@ -138,7 +138,7 @@ export default function LoginPage() {
               WorksheetWiz
             </h1>
           </div>
-          <p className="text-slate-600">Sign in to your account</p>
+          <p className="text-slate-600">Intră în contul tău</p>
         </div>
 
         {/* Main Card */}
@@ -146,11 +146,11 @@ export default function LoginPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 pointer-events-none" />
           <div className="relative">
             <CardHeader className="pb-3">
-              <CardTitle className="text-xl">Get Started</CardTitle>
+              <CardTitle className="text-xl">Autentificare</CardTitle>
               <CardDescription>
                 {useMagicLink
-                  ? 'Enter your email to receive a magic link'
-                  : 'Choose your preferred sign in method'}
+                  ? 'Primești pe email un link cu care intri direct.'
+                  : 'Alege cum vrei să intri.'}
               </CardDescription>
             </CardHeader>
 
@@ -175,7 +175,7 @@ export default function LoginPage() {
                   ) : (
                     <Chrome className="w-5 h-5" />
                   )}
-                  {isLoading ? 'Signing in...' : 'Continue with Google'}
+                  {isLoading ? 'Se încarcă…' : 'Continuă cu Google'}
                 </Button>
               )}
 
@@ -183,7 +183,7 @@ export default function LoginPage() {
               {!useMagicLink && (
                 <div className="flex items-center gap-3">
                   <div className="flex-1 h-px bg-slate-200" />
-                  <span className="text-xs text-slate-500 font-medium">OR</span>
+                  <span className="text-xs text-slate-500 font-medium">SAU</span>
                   <div className="flex-1 h-px bg-slate-200" />
                 </div>
               )}
@@ -197,7 +197,7 @@ export default function LoginPage() {
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder="nume@exemplu.ro"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
@@ -207,7 +207,7 @@ export default function LoginPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">Password</label>
+                    <label className="block text-sm font-medium text-slate-700">Parolă</label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
@@ -232,12 +232,12 @@ export default function LoginPage() {
                     ) : (
                       <ArrowRight className="w-4 h-4" />
                     )}
-                    {isSignUp ? 'Create Account' : 'Sign In'}
+                    {isSignUp ? 'Creează cont' : 'Intră în cont'}
                   </Button>
 
                   <div className="text-center text-sm">
                     <span className="text-slate-600">
-                      {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+                      {isSignUp ? 'Ai deja cont? ' : 'Nu ai cont? '}
                     </span>
                     <button
                       type="button"
@@ -247,7 +247,7 @@ export default function LoginPage() {
                       }}
                       className="text-blue-600 hover:text-blue-700 font-semibold transition"
                     >
-                      {isSignUp ? 'Sign In' : 'Sign Up'}
+                      {isSignUp ? 'Intră în cont' : 'Creează unul'}
                     </button>
                   </div>
                 </form>
@@ -262,7 +262,7 @@ export default function LoginPage() {
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder="nume@exemplu.ro"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
@@ -282,7 +282,7 @@ export default function LoginPage() {
                     ) : (
                       <Mail className="w-4 h-4" />
                     )}
-                    Send Magic Link
+                    Trimite linkul
                   </Button>
                 </form>
               )}
@@ -296,7 +296,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-center text-sm text-slate-600 hover:text-slate-900 transition font-medium py-2"
               >
-                {useMagicLink ? 'Use email & password instead' : 'Use magic link instead'}
+                {useMagicLink ? 'Folosește email și parolă' : 'Primește un link pe email'}
               </button>
             </CardContent>
 
@@ -308,7 +308,7 @@ export default function LoginPage() {
                 className="w-full text-slate-700 hover:text-slate-900 hover:bg-slate-100"
               >
                 <ArrowRight className="w-4 h-4 mr-2" />
-                Continue without account
+                Continuă fără cont
               </Button>
             </div>
           </div>

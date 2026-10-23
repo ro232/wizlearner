@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
-import { ALPHABETS, lettersOfWord, normalizeKey } from '@/lib/glyphs/data';
-import { isItemAllowed } from '@/lib/access';
+import { ALPHABETS, normalizeKey } from '@/lib/glyphs/data';
 
 interface WorksheetState {
   config: WorksheetConfig;
@@ -32,6 +31,7 @@ interface WorksheetState {
   toggleReward: () => void;
   toggleFullPage: () => void;
   toggleLeftHanded: () => void;
+  toggleFillPage: () => void;
   setChildName: (name: string) => void;
   setCustomTitle: (title: string) => void;
   setSchoolName: (name: string) => void;
@@ -76,16 +76,12 @@ export const useWorksheetStore = create<WorksheetState>((set) => ({
   removeAllItems: () => set((state) => ({
     config: { ...state.config, selectedItems: [] }
   })),
-  addCustomWord: (word) => set((state) => ({
-    config: {
-      ...state.config,
-      customWords: state.config.customWords.includes(word) ? state.config.customWords : [...state.config.customWords, word],
-      selectedItems: Array.from(new Set([
-        ...state.config.selectedItems,
-        ...lettersOfWord(word, state.config.letterMode).filter((l) => isItemAllowed(l, 'letters', state.tier)),
-      ])),
-    }
-  })),
+  // A word or name becomes its own tracing row (the whole word), not a list of letters.
+  addCustomWord: (word) => set((state) => {
+    const clean = normalizeKey(word).trim().replace(/\s+/g, ' ');
+    if (!clean || state.config.customWords.includes(clean)) return state;
+    return { config: { ...state.config, category: 'letters', customWords: [...state.config.customWords, clean] } };
+  }),
   removeCustomWord: (word) => set((state) => ({
     config: { ...state.config, customWords: state.config.customWords.filter((w) => w !== word) }
   })),
@@ -111,6 +107,7 @@ export const useWorksheetStore = create<WorksheetState>((set) => ({
   toggleReward: () => set((state) => ({ config: { ...state.config, showRewardSection: !state.config.showRewardSection } })),
   toggleFullPage: () => set((state) => ({ config: { ...state.config, fullPageMode: !state.config.fullPageMode } })),
   toggleLeftHanded: () => set((state) => ({ config: { ...state.config, leftHandedMode: !state.config.leftHandedMode } })),
+  toggleFillPage: () => set((state) => ({ config: { ...state.config, fillPage: state.config.fillPage === false } })),
   setChildName: (childName) => set((state) => ({ config: { ...state.config, childName } })),
   setCustomTitle: (customTitle) => set((state) => ({ config: { ...state.config, customTitle } })),
   setSchoolName: (schoolName) => set((state) => ({ config: { ...state.config, schoolName } })),
