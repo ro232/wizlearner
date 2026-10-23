@@ -1,4 +1,6 @@
 import type { DrawOp, Glyph, PageOps } from '@/lib/glyphs/types';
+import type { Script } from '@/types';
+import { cursiveGlyph, cursiveWord } from '@/lib/glyphs/cursive';
 import { ALPHABETS, getGlyph, hintFor, normalizeKey, type Alphabet } from '@/lib/glyphs/data';
 import { iconOps, ICON_CREDIT, ICON_CREDIT_EN } from '@/lib/hints/icons';
 import { renderGlyph, type TraceVariant } from '@/lib/glyphs/render';
@@ -47,6 +49,8 @@ export interface BookConfig {
   numbersMax: number;
   /** Free tier gets a diagonal preview watermark. */
   watermark: boolean;
+  /** Letters in print (default) or joined handwriting ("de mână", first grade). Numbers stay in print. */
+  script?: Script;
 }
 
 export const DEFAULT_BOOK_CONFIG: BookConfig = {
@@ -274,7 +278,7 @@ export function countBookPages(config: BookConfig): number {
 
 // ───────────────────────── shared pieces ─────────────────────────
 
-function bigModel(ops: DrawOp[], glyphs: Glyph[], x: number, capLineY: number, s: number, dots = true, arrows = true): number {
+function bigModel(ops: DrawOp[], glyphs: Glyph[], x: number, capLineY: number, s: number, dots = true, arrows = true, strokeWidth = 10): number {
   ops.push({
     t: 'group',
     tx: x,
@@ -282,7 +286,7 @@ function bigModel(ops: DrawOp[], glyphs: Glyph[], x: number, capLineY: number, s
     scale: s,
     ops: itemOps(glyphs, {
       color: INK,
-      strokeWidth: 10,
+      strokeWidth,
       variant: 'solid',
       startDots: dots,
       arrows,
@@ -326,19 +330,23 @@ function rewardStars(ops: DrawOp[], f: Frame, hint: string): void {
   ops.push({ t: 'text', x: f.x + f.w, y: y + 9.5, text: hint, size: 2.6, fill: '#B45309', align: 'right' });
 }
 
-function glyphsOf(text: string): Glyph[] {
+function glyphsOf(text: string, cursive = false): Glyph[] {
   const out: Glyph[] = [];
   for (const ch of text) {
-    const g = getGlyph(ch);
+    const g = cursive ? cursiveGlyph(ch) : getGlyph(ch);
     if (g) out.push(g);
   }
   return out;
 }
 
-function baseStyle(config: BookConfig, s: number): RowStyle {
+const isCursive = (config: BookConfig) => config.script === 'cursive';
+
+function baseStyle(config: BookConfig, s: number, letters = false): RowStyle {
+  const cursive = letters && isCursive(config);
   return {
     s,
-    stroke: 10,
+    stroke: cursive ? 6 : 10,
+    cursive,
     variant: config.variant,
     vis: 0.85,
     fadeTo: 0.55,
@@ -359,7 +367,7 @@ function baseStyle(config: BookConfig, s: number): RowStyle {
  */
 function stackRows(ops: DrawOp[], f: Frame, top: number, rows: RowSpec[], gap: number, bottom?: number): number {
   const rawHeights = rows.map((r) => {
-    const e = rowExtents(r.glyphs, 10);
+    const e = rowExtents(r.glyphs, 10, r.style.cursive);
     return (e.ascent + 100 + e.descent) * r.style.s;
   });
   // Short trims (8.5 × 8.5 in) cannot hold every row at full size: shrink the rows to fit
@@ -379,7 +387,7 @@ function stackRows(ops: DrawOp[], f: Frame, top: number, rows: RowSpec[], gap: n
   }
   let y = top;
   fitted.forEach((r, i) => {
-    const e = rowExtents(r.glyphs, 10);
+    const e = rowExtents(r.glyphs, 10, r.style.cursive);
     const s = r.style.s;
     if (r.label) {
       ops.push({ t: 'text', x: f.x, y: y + e.ascent * s - 1.5, text: r.label, size: 3, fill: MUTED, weight: 'bold' });
@@ -402,12 +410,20 @@ function titlePage(f: Frame, ops: DrawOp[], config: BookConfig): void {
   y = paragraph(ops, config.title, { x: f.x, y, width: f.w, size: 15, fill: INK, weight: 'bold', align: 'center', lineHeight: 1.2 });
   y = paragraph(ops, config.subtitle, { x: f.x + 10, y: y + 4, width: f.w - 20, size: 5, fill: MUTED, align: 'center' });
   // decorative letters
-  const show = config.alphabet === 'ro' ? 'AăȘ3' : 'AbC3';
-  const s = 0.42;
   const capY = y + 18;
-  const glyphs = glyphsOf(show);
-  const w = itemWidth(glyphs) * s;
-  bigModel(ops, glyphs, cx - w / 2, capY, s);
+  if (isCursive(config)) {
+    // A handwriting book opens with a joined word in the school script.
+    const word = cursiveWord(config.alphabet === 'ro' ? 'Abc' : 'Abc')!;
+    const s = 0.5;
+    const w = (word.bbox.maxX - word.bbox.minX) * s;
+    bigModel(ops, [word], cx - w / 2 - word.bbox.minX * s, capY, s, false, false, 6);
+  } else {
+    const show = config.alphabet === 'ro' ? 'AăȘ3' : 'AbC3';
+    const s = 0.42;
+    const glyphs = glyphsOf(show);
+    const w = itemWidth(glyphs) * s;
+    bigModel(ops, glyphs, cx - w / 2, capY, s);
+  }
   // ownership line
   const oy = f.y + f.h * 0.78;
   ops.push({ t: 'text', x: cx, y: oy, text: L.belongsTo, size: 4.2, fill: INK, weight: 'bold', align: 'center' });
@@ -504,14 +520,16 @@ function letterPage(f: Frame, ops: DrawOp[], config: BookConfig, upper: string):
   rewardStars(ops, f, L.starsHint);
 
   // header: big models + hint word
+  const cursive = isCursive(config);
   const bigS = 0.34;
-  const gU = glyphsOf(upper);
-  const gL = glyphsOf(lower);
+  const gU = glyphsOf(upper, cursive);
+  const gL = glyphsOf(lower, cursive);
   const capY = top + 12;
   let x = f.x + 2;
-  const wU = bigModel(ops, gU, x, capY, bigS);
+  const pen = cursive ? 6 : 10;
+  const wU = bigModel(ops, gU, x + (cursive ? 5 - gU[0].bbox.minX * bigS : 0), capY, bigS, true, true, pen);
   x += Math.max(wU, 12) + 12;
-  const wL = bigModel(ops, gL, x, capY, bigS);
+  const wL = bigModel(ops, gL, x + (cursive ? 5 - gL[0].bbox.minX * bigS : 0), capY, bigS, true, true, pen);
   x += Math.max(wL, 12) + 14;
   const hint = hintFor(upper, config.alphabet);
   if (hint) {
@@ -529,19 +547,22 @@ function letterPage(f: Frame, ops: DrawOp[], config: BookConfig, upper: string):
   }
 
   // rows
-  const s = 0.16;
-  const st = baseStyle(config, s);
+  const s = cursive ? 0.19 : 0.16;
+  const st = baseStyle(config, s, true);
   const rowsTop = capY + 100 * bigS + 16;
-  const word = hint ? glyphsOf(hint.word) : [];
+  const joined = hint && cursive ? cursiveWord(hint.word) : undefined;
+  const word = hint ? (joined ? [joined] : glyphsOf(hint.word)) : [];
+  // Handwriting: one row of the capital, two of the small letter (it is the one joined in words).
   const rows: RowSpec[] = [
     { glyphs: gU, style: { ...st, vis: 0.85, fadeTo: 0.6 } },
-    { glyphs: gU, style: { ...st, vis: 0.6, fadeTo: 0.45, blankCells: 2 } },
+    ...(cursive ? [] : [{ glyphs: gU, style: { ...st, vis: 0.6, fadeTo: 0.45, blankCells: 2 } }]),
     { glyphs: gL, style: { ...st, vis: 0.85, fadeTo: 0.6 } },
     { glyphs: gL, style: { ...st, vis: 0.6, fadeTo: 0.45, blankCells: 2 } },
   ];
   if (word.length) rows.push({ glyphs: word, style: { ...st, vis: 0.75, fadeTo: 0.6, modelDots: false, modelArrows: false, maxCopies: 3 } });
   rows.push({ glyphs: [], style: { ...st, showModel: false }, label: L.writeAlone });
-  stackRows(ops, f, rowsTop, rows, 4.5, f.y + f.h - 4);
+  // Handwriting rows draw a line for the tails at the very bottom of the row: keep it off the trim edge.
+  stackRows(ops, f, rowsTop, rows, 4.5, f.y + f.h - (cursive ? 10 : 4));
 }
 
 function alphabetReviewPage(f: Frame, ops: DrawOp[], config: BookConfig): void {
@@ -549,7 +570,8 @@ function alphabetReviewPage(f: Frame, ops: DrawOp[], config: BookConfig): void {
   const top = pageTitle(ops, f, L.reviewTitle, L.reviewSub);
   rewardStars(ops, f, L.starsHint);
   const letters = ALPHABETS[config.alphabet];
-  const pairs = letters.map((u) => glyphsOf(`${u}${u.toLowerCase()}`));
+  const cursive = isCursive(config);
+  const pairs = letters.map((u) => glyphsOf(`${u}${u.toLowerCase()}`, cursive));
   const avail = f.y + f.h - 4 - (top + 6);
   // Largest letter size (≤ 0.16) at which every pair fits on the page, up to 6 per line.
   let s = 0.16;
@@ -558,7 +580,7 @@ function alphabetReviewPage(f: Frame, ops: DrawOp[], config: BookConfig): void {
     cellW = (Math.max(...pairs.map(itemWidth)) + CELL_PAD * 2) * s;
     cols = Math.max(1, Math.min(6, Math.floor(f.w / cellW)));
     nRows = Math.ceil(pairs.length / cols);
-    rowH = (48 + 100 + 48) * s;
+    rowH = (48 + 100 + (cursive ? 62 : 48)) * s;
     if (nRows * rowH + (nRows - 1) * 3 <= avail) break;
   }
   const gridW = cols * cellW;
@@ -567,7 +589,7 @@ function alphabetReviewPage(f: Frame, ops: DrawOp[], config: BookConfig): void {
   let y = top + 6;
   for (let r = 0; r < nRows; r++) {
     const baseline = y + 148 * s;
-    ops.push(...guideOps({ x: f.x, width: f.w, baseline }, s, '#cbd5e1'));
+    ops.push(...guideOps({ x: f.x, width: f.w, baseline }, s, '#cbd5e1', cursive));
     for (let c = 0; c < cols; c++) {
       const pair = pairs[r * cols + c];
       if (!pair) break;
@@ -576,7 +598,7 @@ function alphabetReviewPage(f: Frame, ops: DrawOp[], config: BookConfig): void {
         tx: x0 + c * cellW + CELL_PAD * s,
         ty: baseline - 100 * s,
         scale: s,
-        ops: itemOps(pair, { color: '#64748b', strokeWidth: 10, variant: config.variant, startDots: false, arrows: false, accent: ACCENT, dotText: PAPER, paper: PAPER }),
+        ops: itemOps(pair, { color: '#64748b', strokeWidth: cursive ? 6 : 10, variant: config.variant, startDots: false, arrows: false, accent: ACCENT, dotText: PAPER, paper: PAPER, ...(cursive ? { dash: [1.6, 1.4] as [number, number] } : {}) }),
       });
     }
     y += rowH + rowGap;

@@ -1,5 +1,5 @@
 import type { PageOps } from '@/lib/glyphs/types';
-import { DEFAULT_CONFIG, type Difficulty, type LetterMode, type WorksheetConfig } from '@/types';
+import { DEFAULT_CONFIG, type Difficulty, type LetterMode, type Script, type WorksheetConfig } from '@/types';
 import { normalizeKey } from '@/lib/glyphs/data';
 import { themeById } from '@/lib/themes';
 import { buildWorksheetPages } from './layout';
@@ -23,6 +23,8 @@ export interface GroupOptions {
   levels?: Record<string, Difficulty>;
   /** Weekly pack: after each child's sheet, a "find the letter" page per letter of the week. */
   withFindPages?: boolean;
+  /** Print letters (default) or joined handwriting, for the first grade. */
+  script?: Script;
 }
 
 /** A pasted list (one per line, or separated by commas) → clean, unique names. */
@@ -51,7 +53,9 @@ const LEVEL: Record<Difficulty, Partial<WorksheetConfig>> = {
 export function childSheetConfig(name: string, opts: Omit<GroupOptions, 'names'>): WorksheetConfig {
   const theme = themeById(opts.themeId);
   // One page per child: the name, up to two letters of the week, then as many theme words as fit.
-  const letters = opts.letters.slice(0, MAX_LETTERS);
+  const cursive = opts.script === 'cursive';
+  // Handwriting is practised as capital + small letter (Aa), the small one joined in words.
+  const letters = opts.letters.slice(0, MAX_LETTERS).map((l) => (cursive && l.length === 1 ? `${l.toUpperCase()}${l.toLowerCase()}` : l));
   const room = ROWS_PER_SHEET - 1 - letters.length;
   const words = theme ? theme.words.slice(0, room).map((w) => w.word) : [];
   const wordPictures = theme ? Object.fromEntries(theme.words.map((w) => [w.word, w.emoji])) : {};
@@ -60,9 +64,11 @@ export function childSheetConfig(name: string, opts: Omit<GroupOptions, 'names'>
     ...LEVEL[opts.difficulty],
     category: 'letters',
     alphabet: 'ro',
-    letterMode: opts.letterMode,
+    letterMode: cursive ? 'paired' : opts.letterMode,
+    script: opts.script ?? 'print',
     difficulty: opts.difficulty,
-    letterSize: 'medium',
+    // Handwriting rows are taller (tails under the line): one size down keeps a child on one page.
+    letterSize: cursive ? 'small' : 'medium',
     selectedItems: letters,
     customWords: [name, ...words],
     wordPictures,

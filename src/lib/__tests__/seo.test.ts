@@ -36,5 +36,14 @@ describe('SEO sheet catalog', () => {
     expect(rel.map((r) => r.slug)).toContain('litera-b');
     expect(rel.map((r) => r.slug)).not.toContain('litera-c');
     expect(rel.some((r) => r.kind === 'cifre')).toBe(true);
+    expect(rel[0].slug).toBe('litera-c-de-mana'); // the same letter, handwritten
+    expect(relatedSheets('litera-s-virgula-de-mana')[0].slug).toBe('litera-s-virgula');
+  });
+
+  it('has a handwriting page for every letter', () => {
+    for (const l of ALPHABETS.ro) {
+      const sheet = seoSheetBySlug(`${letterSlug(l)}-de-mana`);
+      expect(sheet?.config.script, l).toBe('cursive');
+    }
   });
 });

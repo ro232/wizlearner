@@ -14,7 +14,7 @@ import { buildGroupPages, parseNames, MAX_CHILDREN, MAX_LETTERS } from '@/lib/wo
 import { SCHOOL_YEAR, WEEKS_IN_YEAR, weekLabel, weekOfSchoolYear } from '@/lib/calendar';
 import { loadGroups, storeGroups, type SavedGroup } from '@/lib/saved-groups';
 import { downloadPagesPdf } from '@/lib/pdf/generate-pdf';
-import type { Difficulty, LetterMode } from '@/types';
+import type { Difficulty, LetterMode, Script } from '@/types';
 
 /** On the free plan the group sheets can be tried with a few children. */
 const FREE_GROUP_LIMIT = 3;
@@ -40,6 +40,7 @@ export default function GroupPage() {
   const [themeId, setThemeId] = useState<string | undefined>(THEMES[0].id);
   const [letters, setLetters] = useState<string[]>([]);
   const [letterMode, setLetterMode] = useState<LetterMode>('uppercase');
+  const [script, setScript] = useState<Script>('print');
   const [difficulty, setDifficulty] = useState<Difficulty>('beginner');
   const [withFind, setWithFind] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -63,9 +64,9 @@ export default function GroupPage() {
   const limit = tier === 'free' ? FREE_GROUP_LIMIT : MAX_CHILDREN;
   const previewNames = names.length ? names.slice(0, limit) : ['Ana'];
   const { pages } = useMemo(
-    () => buildGroupPages({ names: previewNames, themeId, letters, letterMode, difficulty, levels, withFindPages: withFind }),
+    () => buildGroupPages({ names: previewNames, themeId, letters, letterMode, script, difficulty, levels, withFindPages: withFind }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [previewNames.join('\n'), themeId, letters, letterMode, difficulty, levels, withFind],
+    [previewNames.join('\n'), themeId, letters, letterMode, script, difficulty, levels, withFind],
   );
 
   function applyWeek(w: number) {
@@ -290,10 +291,11 @@ export default function GroupPage() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <span className={`${label} mb-2`}>Scriem</span>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {([['uppercase', 'MARI'], ['paired', 'Prima mare']] as const).map(([m, l]) => (
-                    <button key={m} type="button" onClick={() => setLetterMode(m)} aria-pressed={letterMode === m} className={`h-10 text-sm ${pill(letterMode === m)}`}>{l}</button>
+                    <button key={m} type="button" onClick={() => { setLetterMode(m); setScript('print'); }} aria-pressed={script === 'print' && letterMode === m} className={`h-10 text-sm ${pill(script === 'print' && letterMode === m)}`}>{l}</button>
                   ))}
+                  <button type="button" onClick={() => setScript('cursive')} aria-pressed={script === 'cursive'} className={`h-10 text-sm italic ${pill(script === 'cursive')}`} title="Scris de mână, legat (clasa I)">De mână</button>
                 </div>
               </div>
               <div>

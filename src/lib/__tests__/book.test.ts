@@ -11,6 +11,8 @@ const variants: Partial<BookConfig>[] = [
   { numbersMax: 20 },
   { variant: 'dotted', includePrewriting: false },
   { variant: 'outline', watermark: true },
+  { script: 'cursive' },
+  { script: 'cursive', variant: 'dotted', includeNumbers: false },
 ];
 
 describe('KDP interior', () => {

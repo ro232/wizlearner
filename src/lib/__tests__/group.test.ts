@@ -15,13 +15,14 @@ describe('group sheets', () => {
   });
 
   for (const theme of THEMES) {
-    for (const letterMode of ['uppercase', 'paired'] as const) {
-      it(`fits one child on one A4 page: ${theme.id}, ${letterMode}`, () => {
+    for (const [letterMode, script] of [['uppercase', 'print'], ['paired', 'print'], ['paired', 'cursive']] as const) {
+      it(`fits one child on one A4 page: ${theme.id}, ${letterMode}, ${script}`, () => {
         const { pages, perChild } = buildGroupPages({
           names: ['Ana', 'Maria-Magdalena Ionescu'],
           themeId: theme.id,
           letters: ['A', 'M'],
           letterMode,
+          script,
           difficulty: 'beginner',
         });
         expect(perChild).toEqual([1, 1]);
