@@ -24,7 +24,7 @@ Fără chei Supabase/Stripe, generatorul, fișa cu numele, fișele pentru grupă
 
 ## Configurare
 
-1. **Supabase:** rulează `src/lib/supabase/schema.sql` (doar pe o bază nouă), apoi toate fișierele din `supabase/migrations/` în ordinea numelui. Ele închid accesul din browser la coduri, nivelul contului și starea abonamentului. Adaugă `https://SITE/auth/callback` (cu parametri) la URL-urile de redirect din Authentication.
+1. **Supabase:** rulează `src/lib/supabase/schema.sql` (doar pe o bază nouă), apoi toate fișierele din `supabase/migrations/` în ordinea numelui (acum trei). Ele închid accesul din browser la coduri, nivelul contului și starea abonamentului. Adaugă `https://SITE/auth/callback` (cu parametri) la URL-urile de redirect din Authentication.
 2. **Coduri de acces** (de exemplu pentru Etsy), din SQL Editor: `SELECT * FROM generate_access_codes('starter', 10);`
 3. **Stripe:** două prețuri recurente (lunar și pe an școlar) puse în `STRIPE_PRICE_MONTHLY` și `STRIPE_PRICE_YEARLY`; un webhook spre `/api/stripe/webhook` cu evenimentele `checkout.session.completed` și `customer.subscription.*`; Customer Portal activat. Planul plătit se acordă **doar** din webhook.
 4. **Datele firmei** pentru Confidențialitate și Termeni: variabilele `NEXT_PUBLIC_OPERATOR_*`.

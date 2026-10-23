@@ -119,15 +119,11 @@ export function useAuth() {
 
     // Checked and applied on the server (supabase/migrations: redeem_access_code),
     // so the browser can never read the code list or set its own tier.
-    const { error } = await supabase.rpc('redeem_access_code', { p_code: code.trim() });
-    if (error) {
-      return {
-        success: false,
-        error: error.message.includes('invalid_code')
-          ? 'Codul nu este valid sau a fost deja folosit.'
-          : 'Nu am putut verifica codul. Încearcă din nou.',
-      };
-    }
+    const { data, error } = await supabase.rpc('redeem_access_code', { p_code: code.trim() });
+    if (error) return { success: false, error: 'Nu am putut verifica codul. Încearcă din nou.' };
+    if (data === 'invalid_code') return { success: false, error: 'Codul nu este valid sau a fost deja folosit.' };
+    if (data === 'too_many_attempts') return { success: false, error: 'Prea multe coduri greșite. Încearcă din nou peste o oră.' };
+    if (data !== 'starter' && data !== 'full') return { success: false, error: 'Nu am putut activa codul.' };
 
     await fetchProfile(user.id);
     return { success: true };

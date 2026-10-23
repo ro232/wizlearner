@@ -62,7 +62,7 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
                 id="access-code"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                placeholder="WIZ-XXXX-XXXX"
+                placeholder="WIZ-XXXX-XXXX-XXXX"
                 autoComplete="off"
                 className="flex-1 h-11 px-3 rounded-xl border border-slate-300 font-mono uppercase tracking-wider text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />

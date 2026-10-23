@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 // ── in-memory stand-ins for Supabase (service role) and the Stripe API ──
 type Row = Record<string, unknown>;
 const db: Record<string, Row[]> = {};
+let failWrites = false;
 function table(name: string) {
   db[name] ??= [];
   const rows = db[name];
@@ -17,6 +18,7 @@ function table(name: string) {
     insert: async (row: Row) => { rows.push(row); return { error: null }; },
     update: (patch: Row) => ({
       eq: async (col: string, val: unknown) => {
+        if (failWrites) return { error: new Error('database unavailable') };
         rows.filter((r) => r[col] === val).forEach((r) => Object.assign(r, patch));
         return { error: null };
       },
@@ -30,7 +32,10 @@ const real = new Stripe('sk_test_dummy');
 vi.mock('@/lib/stripe', () => ({
   stripe: () => ({
     webhooks: real.webhooks,
-    subscriptions: { retrieve: async (id: string) => subscriptions[id] },
+    subscriptions: {
+      retrieve: async (id: string) => subscriptions[id],
+      list: async ({ customer }: { customer: string }) => ({ data: Object.values(subscriptions).filter((s) => s.customer === customer) }),
+    },
   }),
 }));
 
@@ -48,6 +53,7 @@ const USER = 'u-1';
 const profile = () => db.users_profile.find((r) => r.id === USER)!;
 
 beforeEach(() => {
+  failWrites = false;
   for (const k of Object.keys(db)) delete db[k];
   db.users_profile = [{ id: USER, tier: 'free', access_code: 'WIZ-AAAA-BBBB', stripe_customer_id: 'cus_1' }];
   db.access_codes = [{ code: 'WIZ-AAAA-BBBB', tier: 'starter' }];
@@ -84,9 +90,23 @@ describe('Stripe webhook', () => {
     expect(profile().tier).toBe('full');
   });
 
-  it('answers 500 (so Stripe retries) and does not mark the event done when the account is unknown', async () => {
-    subscriptions.sub_1 = { ...subscriptions.sub_1, customer: 'cus_unknown', metadata: {} };
+  it('ignores subscriptions of customers that are not WorksheetWiz accounts (no endless retries)', async () => {
+    subscriptions.sub_1 = { ...subscriptions.sub_1, customer: 'cus_other_product', metadata: {} };
     const res = await post({ id: 'evt_4', type: 'customer.subscription.updated', data: { object: { id: 'sub_1' } } });
+    expect(res.status).toBe(200);
+    expect(profile().tier).toBe('free');
+  });
+
+  it('keeps access when one of two subscriptions is cancelled', async () => {
+    subscriptions.sub_2 = { id: 'sub_2', customer: 'cus_1', status: 'active', created: 2, metadata: { user_id: USER }, items: { data: [{ current_period_end: 1767225600 }] } };
+    subscriptions.sub_1 = { ...subscriptions.sub_1, status: 'canceled', created: 1 };
+    await post({ id: 'evt_6', type: 'customer.subscription.deleted', data: { object: { id: 'sub_1' } } });
+    expect(profile()).toMatchObject({ tier: 'full', subscription_id: 'sub_2', subscription_status: 'active' });
+  });
+
+  it('answers 500 (so Stripe retries) and does not mark the event done when saving fails', async () => {
+    failWrites = true;
+    const res = await post({ id: 'evt_7', type: 'customer.subscription.updated', data: { object: { id: 'sub_1' } } });
     expect(res.status).toBe(500);
     expect(db.stripe_events).toHaveLength(0);
   });

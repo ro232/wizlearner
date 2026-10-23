@@ -26,6 +26,13 @@ export async function POST(request: Request) {
   }
 
   let customer = profile?.stripe_customer_id as string | null | undefined;
+  if (customer) {
+    // The webhook may not have arrived yet: ask Stripe directly before taking a second payment.
+    const existing = await stripe().subscriptions.list({ customer, status: 'all', limit: 20 });
+    if (existing.data.some((s) => subscriptionGivesAccess(s.status))) {
+      return NextResponse.json({ error: 'Ai deja un abonament activ. Îl poți schimba din cont.' }, { status: 409 });
+    }
+  }
   if (!customer) {
     const created = await stripe().customers.create({ email: user.email ?? undefined, metadata: { user_id: user.id } });
     customer = created.id;

@@ -48,6 +48,6 @@ describe('sign-in redirect', () => {
   it('only allows paths on this site', () => {
     expect(safeNextPath('/book')).toBe('/book');
     expect(safeNextPath(null)).toBe('/generator');
-    for (const bad of ['//evil.com', '/\\evil.com', '@evil.com', 'https://evil.com', '/@evil.com']) expect(safeNextPath(bad), bad).toBe('/generator');
+    for (const bad of ['//evil.com', '/\\evil.com', '@evil.com', 'https://evil.com', '/@evil.com', '/\t/evil.com', '/\n/evil.com', '/\r/evil.com', '/ /evil.com', '/%09/evil.com'.replace('%09', '\t')]) expect(safeNextPath(bad), bad).toBe('/generator');
   });
 });

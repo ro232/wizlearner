@@ -114,7 +114,7 @@ export default function AccountPage() {
           <form onSubmit={redeem} className="pt-4 border-t border-slate-100">
             <label htmlFor="code" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Cod de acces</label>
             <div className="flex gap-2">
-              <input id="code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="WIZ-XXXX-XXXX" autoComplete="off"
+              <input id="code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="WIZ-XXXX-XXXX-XXXX" autoComplete="off"
                 className="flex-1 min-w-0 h-11 px-3 rounded-xl border border-slate-300 font-mono uppercase text-sm" />
               <Button type="submit" disabled={!code.trim()} className="h-11 gap-1.5"><KeyRound className="w-4 h-4" aria-hidden /> Activează</Button>
             </div>
