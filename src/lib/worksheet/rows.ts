@@ -17,6 +17,11 @@ export const MUTED = '#64748B';
 
 export const MIN_GLYPH_WIDTH = 30; // I, l, i, 1 … still get a sensible cell
 export const CELL_PAD = 16; // glyph units, each side of a cell
+
+/** Words need more air between copies than single letters, or "BradBrad" reads as one word. */
+export function cellPad(glyphs: Glyph[]): number {
+  return glyphs.length > 2 ? CELL_PAD * 2.4 : CELL_PAD;
+}
 export const INNER_GAP = 18; // between the glyphs of a pair / two-digit number / word letters
 
 export interface RowGeometry {
@@ -149,7 +154,8 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
   if (st.guideColor) ops.push(...guideOps(geom, s, st.guideColor));
   if (glyphs.length === 0) return 0;
 
-  const cellMm = (itemWidth(glyphs) + CELL_PAD * 2) * s;
+  const pad = cellPad(glyphs);
+  const cellMm = (itemWidth(glyphs) + pad * 2) * s;
   const hint = st.hint ?? null;
   const hintW = hint ? Math.max(16, hint.word.length * 2.2 + 4) : 0;
   const modelW = st.showModel ? cellMm + hintW + 3 : 0;
@@ -161,12 +167,20 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
 
   const modelX = st.leftHanded ? x + width - cellMm : x;
   if (st.showModel) {
-    ops.push({ t: 'group', tx: modelX + CELL_PAD * s, ty: top, scale: s, ops: itemOps(glyphs, modelStyle(st)) });
+    // When nothing else fits on the row (a long name), the model itself is drawn to be traced:
+    // a solid model with no copy next to it would leave the child nothing to write over.
+    const style = copies === 0 ? { ...copyStyle(st, 1), startDots: false, arrows: false } : modelStyle(st);
+    ops.push({ t: 'group', tx: modelX + pad * s, ty: top, scale: s, ops: itemOps(glyphs, style) });
     if (hint) {
       const hx = st.leftHanded ? modelX - 3 - hintW / 2 : modelX + cellMm + 3 + hintW / 2;
       const cy = baseline - 50 * s;
-      ops.push(...iconOps(hint.emoji, hx, cy - 1, Math.min(9, 48 * s)));
-      ops.push({ t: 'text', x: hx, y: Math.min(baseline, cy + 6), text: hint.word, size: 3.4, fill: MUTED, align: 'center', weight: 'bold' });
+      if (hint.word) {
+        ops.push(...iconOps(hint.emoji, hx, cy - 1, Math.min(9, 48 * s)));
+        ops.push({ t: 'text', x: hx, y: Math.min(baseline, cy + 6), text: hint.word, size: 3.4, fill: MUTED, align: 'center', weight: 'bold' });
+      } else {
+        // Picture only (a themed word is its own label).
+        ops.push(...iconOps(hint.emoji, hx, baseline - 55 * s, Math.min(12, 75 * s)));
+      }
     }
   }
 
@@ -174,7 +188,7 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
   const traced = copies === 0 ? 0 : Math.max(1, copies - (copies >= 4 ? st.blankCells : 0));
   for (let k = 0; k < traced; k++) {
     const fade = traced > 1 ? 1 - (1 - st.fadeTo) * (k / (traced - 1)) : 1;
-    ops.push({ t: 'group', tx: firstCopyX + k * cellMm + CELL_PAD * s, ty: top, scale: s, ops: itemOps(glyphs, copyStyle(st, fade)) });
+    ops.push({ t: 'group', tx: firstCopyX + k * cellMm + pad * s, ty: top, scale: s, ops: itemOps(glyphs, copyStyle(st, fade)) });
   }
   return traced;
 }

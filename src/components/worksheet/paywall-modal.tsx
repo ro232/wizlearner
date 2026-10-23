@@ -49,7 +49,7 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
         <p className="text-sm text-center text-slate-500 mb-5">Versiunea gratuită include literele A–E, cifrele 0–5, trei forme și trei exerciții grafice.</p>
 
         <ul className="space-y-1.5 mb-6 text-sm text-slate-700">
-          {['Tot alfabetul românesc și englez, mari și mici', 'Cifrele și numerele 0–20', 'Toate formele și exercițiile grafice', 'Caietul KDP fără filigran'].map((f) => (
+          {['Fișe pentru toată grupa, până la 40 de copii', 'Tot alfabetul românesc și englez, mari și mici', 'Cifrele și numerele 0–20', 'Toate formele și exercițiile grafice', 'Caietul KDP fără filigran'].map((f) => (
             <li key={f} className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600 flex-shrink-0" />{f}</li>
           ))}
         </ul>

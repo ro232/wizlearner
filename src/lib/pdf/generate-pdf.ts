@@ -2,6 +2,7 @@ import { jsPDF } from 'jspdf';
 import type { WorksheetConfig, Tier } from '@/types';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
 import { drawPageToPdf, type PdfFontSet } from '@/lib/glyphs/backends/pdf';
+import type { PageOps } from '@/lib/glyphs/types';
 
 /**
  * PDF export. Pages come from the shared layout (same as the live preview), so
@@ -47,7 +48,11 @@ export function loadEmbeddedFonts(): Promise<EmbeddedFonts | null> {
 
 /** Build the document in memory (used by the download button and by tests). */
 export function createWorksheetPdf(config: WorksheetConfig, tier: Tier, fonts: EmbeddedFonts | null): jsPDF {
-  const pages = buildWorksheetPages(config, tier);
+  return createPagesPdf(buildWorksheetPages(config, tier), fonts);
+}
+
+/** Any list of pages (e.g. the sheets of a whole group) as one PDF. */
+export function createPagesPdf(pages: PageOps[], fonts: EmbeddedFonts | null): jsPDF {
   const first = pages[0];
   const doc = new jsPDF({
     orientation: first.width > first.height ? 'landscape' : 'portrait',
@@ -115,4 +120,10 @@ export async function printWorksheetPDF(config: WorksheetConfig, tier: Tier): Pr
     }, 60_000);
   };
   document.body.appendChild(frame);
+}
+
+/** Download a list of pages as one PDF. */
+export async function downloadPagesPdf(pages: PageOps[], filename: string): Promise<void> {
+  const fonts = await loadEmbeddedFonts();
+  createPagesPdf(pages, fonts).save(filename);
 }

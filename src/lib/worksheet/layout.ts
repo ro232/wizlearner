@@ -13,6 +13,8 @@ import {
   buildPatternRow,
   rowHeightMm,
   rowExtents,
+  itemWidth,
+  cellPad,
   starPoints,
   backgroundOps,
   type RowStyle,
@@ -71,18 +73,24 @@ export interface RowItem {
   item: string;
   glyphs: Glyph[];
   pattern?: PatternId;
-  /** A whole word or name traced as one row (no hint picture). */
+  /** A whole word or name traced as one row. */
   word?: boolean;
+  /** Picture drawn next to a word row (theme words). */
+  picture?: string;
 }
 
 /** A word-space: no strokes, just room between the words of a name ("Ana Maria"). */
 const SPACE_GLYPH: Glyph = { key: ' ', strokes: [], width: 34, bbox: { minX: 0, minY: 50, maxX: 34, maxY: 100 } };
 
 /** How a typed word is written for the chosen letter mode: MAMA, mama, or Mama. */
-export function wordInCase(word: string, mode: WorksheetConfig['letterMode']): string {
+export function wordInCase(word: string, mode: WorksheetConfig['letterMode'], kind: 'name' | 'theme' | 'typed' = 'name'): string {
   const w = normalizeKey(word);
   if (mode === 'uppercase') return w.toUpperCase();
   if (mode === 'lowercase') return w.toLowerCase();
+  // Theme words: only the first letter ("Om de zăpadă"). Typed words: first letter, the rest as typed.
+  if (kind === 'theme') return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+  if (kind === 'typed') return w.charAt(0).toUpperCase() + w.slice(1);
+  // Names: every part capitalised ("Ana-Maria Popescu").
   return w.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, sep: string, ch: string) => sep + ch.toUpperCase());
 }
 
@@ -146,10 +154,12 @@ export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[
     const name = normalizeKey(config.childName ?? '').trim();
     for (const raw of config.customWords ?? []) {
       if (!isWordAllowed(raw, tier) && normalizeKey(raw).trim() !== name) continue;
-      const text = wordInCase(raw, config.letterMode);
+      const kind = normalizeKey(raw).trim() === name ? 'name' : config.wordPictures?.[raw] ? 'theme' : 'typed';
+      const text = wordInCase(raw, config.letterMode, kind);
       const glyphs = glyphsForWord(text);
       if (glyphs.length === 0) continue;
-      for (let r = 0; r < reps; r++) rows.push({ item: text, glyphs, word: true });
+      const picture = config.wordPictures?.[raw];
+      for (let r = 0; r < reps; r++) rows.push({ item: text, glyphs, word: true, ...(picture ? { picture } : {}) });
     }
   }
   return rows;
@@ -202,7 +212,14 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
   const pages: RowItem[][] = [];
   let current: RowItem[] = [];
   let y = contentTop;
-  const heightOf = (row: RowItem) => rowHeightMm(row.glyphs, s, stroke);
+  // A long word or full name must fit across the page as one model: shrink that row only.
+  const scaleOf = (row: RowItem) => {
+    if (!row.word) return s;
+    const pictureW = row.picture ? 19 : 0;
+    const modelW = (itemWidth(row.glyphs) + cellPad(row.glyphs) * 2) * s;
+    return Math.min(s, s * ((contentW - pictureW) / modelW));
+  };
+  const heightOf = (row: RowItem) => rowHeightMm(row.glyphs, scaleOf(row), stroke);
   for (const row of rows) {
     const h = heightOf(row);
     const fits = y + h <= contentBottom && current.length < maxRows;
@@ -258,14 +275,16 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     let ry = contentTop;
     for (const row of pageRows) {
       const e = rowExtents(row.glyphs, stroke);
-      const baseline = ry + (e.ascent + 100) * s;
+      const rs = scaleOf(row);
+      const baseline = ry + (e.ascent + 100) * rs;
       const geom = { x: contentX, width: contentW, baseline };
       if (row.pattern) {
         buildPatternRow(ops, row.pattern, geom, rowStyle);
       } else {
         buildTraceRow(ops, row.glyphs, geom, {
           ...rowStyle,
-          hint: showHint && !row.word ? hintFor(row.item, alphabet) : null,
+          s: rs,
+          hint: row.word ? (row.picture ? { word: '', emoji: row.picture } : null) : showHint ? hintFor(row.item, alphabet) : null,
           // A whole word with a numbered dot on every letter is too busy to read; letters rows teach the order.
           ...(row.word ? { modelDots: false, modelArrows: false } : {}),
         });

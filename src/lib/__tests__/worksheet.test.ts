@@ -40,10 +40,12 @@ describe('words and names', () => {
     expect(wordInCase('ştefan', 'uppercase')).toBe('ȘTEFAN');
     expect(wordInCase('ANA-MARIA popescu', 'paired')).toBe('Ana-Maria Popescu');
     expect(wordInCase('Țara', 'lowercase')).toBe('țara');
+    expect(wordInCase('OM DE ZĂPADĂ', 'paired', 'theme')).toBe('Om de zăpadă');
+    expect(wordInCase('toamna', 'paired', 'typed')).toBe('Toamna');
   });
 
   it('traces a whole name as one row, keeping spaces and hyphens', () => {
-    const config = { ...DEFAULT_CONFIG, customWords: ['Ana-Maria Ionescu'], letterMode: 'paired' as const, fillPage: false };
+    const config = { ...DEFAULT_CONFIG, childName: 'ana-maria ionescu', customWords: ['ana-maria ionescu'], letterMode: 'paired' as const, fillPage: false };
     const rows = rowItems(config, 'full');
     expect(rows).toHaveLength(1);
     expect(rows[0].word).toBe(true);

@@ -45,6 +45,8 @@ export interface WorksheetConfig {
   leftHandedMode: boolean;
   /** Repeat the chosen rows until the page is full (a single page with few items looks unfinished). */
   fillPage?: boolean;
+  /** Pictures next to traced words (theme words): word as typed → emoji. */
+  wordPictures?: Record<string, string>;
 
   // Header
   childName: string;

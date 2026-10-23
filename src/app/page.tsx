@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, Check, Download, MousePointerClick, Printer, UserRound, BookOpen, PenLine } from 'lucide-react';
+import { ArrowRight, Check, Download, MousePointerClick, Printer, UserRound, BookOpen, PenLine, Users } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
@@ -87,7 +87,7 @@ function HowItWorks() {
 function ForWhom() {
   const groups = [
     { icon: UserRound, title: 'Părinți', text: 'O fișă cu numele copilului sau literele pe care le învață acum, în două minute, înainte de școală.', href: '/nume', cta: 'Fișa cu numele' },
-    { icon: PenLine, title: 'Educatoare și învățătoare', text: 'Fișe pentru literele săptămânii, la nivelul grupei, cu liniatură, dictando sau pătrățele.', href: '/generator', cta: 'Deschide generatorul' },
+    { icon: Users, title: 'Educatoare și învățătoare', text: 'Lipești lista copiilor și primești câte o fișă pentru fiecare: numele lui, literele săptămânii și cuvintele temei, cu imagini.', href: '/grupa', cta: 'Fișe pentru grupă' },
     { icon: BookOpen, title: 'Autori pe Amazon KDP', text: 'Un caiet complet de 60 de pagini, cu interior și copertă la dimensiunile cerute de KDP.', href: '/book', cta: 'Fă un caiet' },
   ];
   return (
@@ -112,8 +112,8 @@ function ForWhom() {
 }
 
 function Pricing() {
-  const free = ['Literele A–E (și Ă, Â)', 'Cifrele 0–5', 'Trei forme și trei exerciții grafice', 'Fișa cu numele copilului', 'Caietul KDP, cu filigran'];
-  const full = ['Tot alfabetul românesc și englez, mari și mici', 'Cifre și numere 0–20, toate formele și exercițiile', 'Orice cuvânt de trasat', 'Caietul KDP fără filigran'];
+  const free = ['Literele A–E (și Ă, Â)', 'Cifrele 0–5', 'Trei forme și trei exerciții grafice', 'Fișa cu numele copilului', 'Fișe pentru grupă: încearcă cu 3 copii', 'Caietul KDP, cu filigran'];
+  const full = ['Fișe pentru toată grupa, până la 40 de copii, pe teme', 'Tot alfabetul românesc și englez, mari și mici', 'Cifre și numere 0–20, toate formele și exercițiile', 'Orice cuvânt de trasat', 'Caietul KDP fără filigran'];
   return (
     <section id="preturi" className="py-20 bg-slate-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
