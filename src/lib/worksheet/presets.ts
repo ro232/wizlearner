@@ -39,15 +39,15 @@ export const PRESETS: Preset[] = [
     config: { ...base, category: 'prewrite', selectedItems: ['vertical', 'horizontal', 'zigzag'] },
   },
   {
-    id: 'forme',
-    title: 'Forme',
-    text: 'Cerc, pătrat, triunghi.',
-    config: { ...base, category: 'shapes', selectedItems: ['circle', 'square', 'triangle'] },
+    id: 'gaseste-litera',
+    title: 'Găsește litera',
+    text: 'Colorează toate literele A dintr-o grilă.',
+    config: { ...base, category: 'games', selectedItems: ['find:A'] },
   },
   {
-    id: 'vocale',
-    title: 'Primele litere',
-    text: 'A, B, C, D, E, cu imagini.',
-    config: { ...base, letterMode: 'uppercase', selectedItems: ['A', 'B', 'C', 'D', 'E'], fillPage: false },
+    id: 'puncte',
+    title: 'Unește punctele',
+    text: 'De la 1 la 10 și iese o stea.',
+    config: { ...base, category: 'games', selectedItems: ['dots:star'] },
   },
 ];

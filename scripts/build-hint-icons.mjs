@@ -22,6 +22,9 @@ const twemojiDir = join(root, 'node_modules/@twemoji/svg');
 // Every emoji used as a letter hint or as a picture in a theme.
 const sources = ['src/lib/glyphs/data.ts', 'src/lib/themes.ts'].map((f) => readFileSync(join(root, f), 'utf8'));
 const emojis = new Set(sources.flatMap((src) => [...src.matchAll(/emoji: '([^']+)'/g)].map((m) => m[1])));
+// Pictures used by the activities (counting sheets): every quoted emoji in that file.
+const activities = readFileSync(join(root, 'src/lib/worksheet/activities.ts'), 'utf8');
+for (const m of activities.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)'/gu)) emojis.add(m[1]);
 
 function fileFor(emoji) {
   const cps = [...emoji].map((c) => c.codePointAt(0).toString(16));

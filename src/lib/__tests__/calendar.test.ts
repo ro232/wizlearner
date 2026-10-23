@@ -38,3 +38,12 @@ describe('levels per child', () => {
     expect(JSON.stringify(mixed[1])).not.toBe(JSON.stringify(same[1]));
   });
 });
+
+describe('weekly pack', () => {
+  it('adds a find-the-letter page per letter of the week after each child sheet', () => {
+    const base = { names: ['Ana', 'Luca'], themeId: 'toamna', letters: ['A', 'M'], letterMode: 'uppercase' as const, difficulty: 'beginner' as const };
+    expect(buildGroupPages(base).perChild).toEqual([1, 1]);
+    expect(buildGroupPages({ ...base, withFindPages: true }).perChild).toEqual([3, 3]);
+    expect(buildGroupPages({ ...base, letters: [], withFindPages: true }).perChild).toEqual([1, 1]);
+  });
+});

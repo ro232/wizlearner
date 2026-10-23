@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import type { WorksheetConfig, Tier } from '@/types';
-import { buildWorksheetPages, rowItems } from '@/lib/worksheet/layout';
+import { buildWorksheetPages, hasContent } from '@/lib/worksheet/layout';
 import { PagesPreview } from './pages-preview';
 
 interface WorksheetPreviewProps {
@@ -19,7 +19,7 @@ interface WorksheetPreviewProps {
  */
 export function WorksheetPreview({ config, tier = 'free', className, width = 420 }: WorksheetPreviewProps) {
   const pages = useMemo(() => buildWorksheetPages(config, tier), [config, tier]);
-  const isEmpty = useMemo(() => rowItems(config, tier).length === 0, [config, tier]);
+  const isEmpty = useMemo(() => !hasContent(config, tier), [config, tier]);
   return (
     <PagesPreview
       pages={pages}

@@ -41,6 +41,7 @@ export default function GroupPage() {
   const [letters, setLetters] = useState<string[]>([]);
   const [letterMode, setLetterMode] = useState<LetterMode>('uppercase');
   const [difficulty, setDifficulty] = useState<Difficulty>('beginner');
+  const [withFind, setWithFind] = useState(true);
   const [busy, setBusy] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -62,9 +63,9 @@ export default function GroupPage() {
   const limit = tier === 'free' ? FREE_GROUP_LIMIT : MAX_CHILDREN;
   const previewNames = names.length ? names.slice(0, limit) : ['Ana'];
   const { pages } = useMemo(
-    () => buildGroupPages({ names: previewNames, themeId, letters, letterMode, difficulty, levels }),
+    () => buildGroupPages({ names: previewNames, themeId, letters, letterMode, difficulty, levels, withFindPages: withFind }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [previewNames.join('\n'), themeId, letters, letterMode, difficulty, levels],
+    [previewNames.join('\n'), themeId, letters, letterMode, difficulty, levels, withFind],
   );
 
   function applyWeek(w: number) {
@@ -304,6 +305,16 @@ export default function GroupPage() {
                 </div>
               </div>
             </div>
+
+            <label className="flex items-start gap-3 cursor-pointer rounded-xl border-2 border-slate-300 bg-paper p-3">
+              <input type="checkbox" checked={withFind} onChange={() => setWithFind((v) => !v)} disabled={!letters.length} className="mt-1 w-4 h-4" />
+              <span>
+                <span className="block font-extrabold text-ink">Pachetul săptămânii</span>
+                <span className="block text-sm text-slate-600">
+                  {letters.length ? `După fișa de scris, fiecare copil primește și jocul „Găsește litera” pentru ${letters.join(' și ')}.` : 'Alege literele săptămânii ca să adaugi jocul „Găsește litera”.'}
+                </span>
+              </span>
+            </label>
 
             <button type="button" onClick={download} disabled={busy || names.length === 0} data-btn="primary"
               className="w-full h-14 rounded-xl text-base inline-flex items-center justify-center gap-2 disabled:opacity-50">

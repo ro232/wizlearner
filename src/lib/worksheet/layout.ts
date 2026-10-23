@@ -4,6 +4,7 @@ import { getGlyph, hintFor, normalizeKey, type Alphabet } from '@/lib/glyphs/dat
 import type { TraceVariant } from '@/lib/glyphs/render';
 import { isPatternId, type PatternId } from '@/lib/glyphs/patterns';
 import { isItemAllowed } from '@/lib/access';
+import { buildActivityPages } from './activities';
 import {
   INK,
   ACCENT,
@@ -135,6 +136,7 @@ export function glyphsForItem(item: string, category: WorksheetConfig['category'
 }
 
 export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[] {
+  if (config.category === 'games') return [];
   const reps = Math.max(1, config.repetitionsPerItem || 1);
   const rows: RowItem[] = [];
   for (const item of config.selectedItems) {
@@ -166,6 +168,10 @@ export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[
 }
 
 export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOps[] {
+  if (config.category === 'games') {
+    const pages = buildActivityPages(config, tier, (item) => isItemAllowed(item, 'games', tier));
+    if (pages.length) return pages;
+  }
   const size = PAGE_SIZES_MM[config.pageSize] ?? PAGE_SIZES_MM.a4;
   const landscape = config.orientation === 'landscape';
   const W = landscape ? size.height : size.width;
@@ -318,4 +324,10 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
 
 export function countWorksheetPages(config: WorksheetConfig, tier: Tier): number {
   return buildWorksheetPages(config, tier).length;
+}
+
+/** True when the sheet has something to print (rows, words or activity pages). */
+export function hasContent(config: WorksheetConfig, tier: Tier): boolean {
+  if (config.category === 'games') return buildActivityPages(config, tier, (item) => isItemAllowed(item, 'games', tier)).length > 0;
+  return rowItems(config, tier).length > 0;
 }

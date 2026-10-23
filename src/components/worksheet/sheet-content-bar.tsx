@@ -5,6 +5,7 @@ import { useWorksheetStore } from '@/stores/worksheet-store';
 import { hintFor } from '@/lib/glyphs/data';
 import { PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
 import { countWorksheetPages, rowItems } from '@/lib/worksheet/layout';
+import { activityLabel, isActivityItem } from '@/lib/worksheet/activities';
 
 /** What is on the sheet right now, with one-click removal. */
 export const SheetContentBar = () => {
@@ -31,13 +32,13 @@ export const SheetContentBar = () => {
       <div className="flex items-center justify-between gap-4 mb-3">
         <p className="text-sm font-semibold text-slate-800">Pe fișă</p>
         <p className="text-xs text-slate-600">
-          {rows} {rows === 1 ? 'rând' : 'rânduri'} · {pages} {pages === 1 ? 'pagină' : 'pagini'}
+          {config.category === 'games' ? '' : `${rows} ${rows === 1 ? 'rând' : 'rânduri'} · `}{pages} {pages === 1 ? 'pagină' : 'pagini'}
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
         {config.selectedItems.map((item) => {
-          const icon = isPatternId(item) ? PATTERN_ICONS[item] : hintFor(item, alphabet)?.emoji;
-          const label = isPatternId(item) ? PATTERN_LABELS[alphabet][item] : item;
+          const icon = isPatternId(item) ? PATTERN_ICONS[item] : isActivityItem(item) ? '🧩' : hintFor(item, alphabet)?.emoji;
+          const label = isPatternId(item) ? PATTERN_LABELS[alphabet][item] : isActivityItem(item) ? activityLabel(item) : item;
           return (
             <button key={item} type="button" onClick={() => toggleItem(item)} aria-label={`Scoate ${label}`}
               className="group inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-700 hover:border-red-400 hover:bg-red-50 transition-colors">

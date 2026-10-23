@@ -26,6 +26,12 @@ export function isItemAllowed(item: string, category: ContentCategory, tier: Tie
       return (FREE_LIMITS.shapes as readonly string[]).includes(item);
     case 'prewrite':
       return (FREE_LIMITS.prewrite as readonly string[]).includes(item);
+    case 'games': {
+      // Free: find a free letter, count to 5, connect the dots of the star.
+      const [kind, arg = ''] = item.split(':');
+      if (kind === 'find') return isItemAllowed(arg, 'letters', tier);
+      return item === 'count:5' || item === 'dots:star';
+    }
     default:
       return false;
   }
