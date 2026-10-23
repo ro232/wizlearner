@@ -12,6 +12,7 @@ export function Footer() {
           Imagini: <a href="https://github.com/jdecked/twemoji" className="underline hover:text-pen" target="_blank" rel="noopener noreferrer">Twemoji</a>, CC-BY 4.0
         </p>
         <nav aria-label="Pagini legale" className="flex gap-5 text-xs font-bold text-slate-600">
+          <Link href="/fise" className="hover:text-pen">Fișe gratuite</Link>
           <Link href="/preturi" className="hover:text-pen">Prețuri</Link>
           <Link href="/confidentialitate" className="hover:text-pen">Confidențialitate</Link>
           <Link href="/termeni" className="hover:text-pen">Termeni</Link>

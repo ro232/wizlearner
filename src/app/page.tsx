@@ -82,6 +82,9 @@ function Gallery() {
         <div className="mt-10">
           <SheetGallery />
         </div>
+        <Link href="/fise" className="mt-10 inline-flex items-center font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">
+          Toate fișele gratuite: fiecare literă, cifră și temă <ArrowRight className="w-4 h-4 ml-1" aria-hidden />
+        </Link>
       </div>
     </section>
   );
