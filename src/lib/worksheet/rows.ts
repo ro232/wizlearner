@@ -26,7 +26,8 @@ export function cellPad(glyphs: Glyph[]): number {
 
 /** A word (several print letters, or one joined handwriting word), not a single letter or pair. */
 export function isWordish(glyphs: Glyph[]): boolean {
-  return glyphs.length > 2 || itemWidth(glyphs) > 150;
+  // A pair (Mm) stays a letter item even when the handwriting is wide; a joined word is one long glyph.
+  return glyphs.length > 2 || (glyphs.length === 1 && itemWidth(glyphs) > 150);
 }
 export const INNER_GAP = 18; // between the glyphs of a pair / two-digit number / word letters
 
