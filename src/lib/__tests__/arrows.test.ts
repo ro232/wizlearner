@@ -14,7 +14,7 @@ function segDist(p: Pt, a: Pt, b: Pt): number {
   return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy);
 }
 
-describe('direction arrows', () => {
+describe('direction arrows and start numbers', () => {
   const keys = [...ALPHABETS.ro, ...ALPHABETS.ro.map((l) => l.toLowerCase()), ...'0123456789'.split('')];
 
   it('sit beside the strokes, never on them', () => {
@@ -30,6 +30,21 @@ describe('direction arrows', () => {
           // half the pen width plus a hair: the arrow may touch the ink edge, not cover it
           expect(m, `${key}: arrow on a stroke`).toBeGreaterThan(W * 0.5);
         }
+      }
+    }
+  });
+
+  it('start numbers sit beside the ink, not on it', () => {
+    for (const key of keys) {
+      const g = getGlyph(key)!;
+      const lines = g.strokes.flatMap((s) => s.subpaths.map((sp) => flattenSubpath(sp)));
+      const dots = renderGlyph(g, DEFAULT_GLYPH_STYLE).filter((op) => op.t === 'circle' && op.fill === DEFAULT_GLYPH_STYLE.accent);
+      expect(dots.length, key).toBe(g.strokes.length);
+      for (const d of dots) {
+        if (d.t !== 'circle') continue;
+        let m = Infinity;
+        for (const pts of lines) for (let i = 1; i < pts.length; i++) m = Math.min(m, segDist({ x: d.cx, y: d.cy }, pts[i - 1], pts[i]));
+        expect(m, `${key}: number on a stroke`).toBeGreaterThanOrEqual(d.r + W * 0.5 - 0.01);
       }
     }
   });
