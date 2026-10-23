@@ -10,10 +10,13 @@ export type BackgroundPattern = 'blank' | 'grid' | 'guides' | 'patratele' | 'dic
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 export type LetterMode = 'uppercase' | 'lowercase' | 'paired';
 export type ContentCategory = 'letters' | 'numbers' | 'shapes' | 'prewrite' | 'math' | 'games' | 'wordsearch' | 'templates';
+/** Which alphabet the letter grid offers: Romanian (with Ă Â Î Ș Ț) or English. */
+export type Alphabet = 'ro' | 'en';
 
 export interface WorksheetConfig {
   // Content
   category: ContentCategory;
+  alphabet: Alphabet;
   letterMode: LetterMode;
   selectedItems: string[];
   customWords: string[];
@@ -34,6 +37,8 @@ export interface WorksheetConfig {
   // Features
   showGuideLines: boolean;
   showDirectionalArrows: boolean;
+  /** Numbered circles marking where each stroke starts. */
+  showStartDots: boolean;
   showLetterIcons: boolean;
   showRewardSection: boolean;
   fullPageMode: boolean;
@@ -80,6 +85,7 @@ export interface SavedWorksheet {
 
 export const DEFAULT_CONFIG: WorksheetConfig = {
   category: 'letters',
+  alphabet: 'ro',
   letterMode: 'uppercase',
   selectedItems: [],
   customWords: [],
@@ -96,6 +102,7 @@ export const DEFAULT_CONFIG: WorksheetConfig = {
   repetitionsPerItem: 1,
   showGuideLines: true,
   showDirectionalArrows: true,
+  showStartDots: true,
   showLetterIcons: true,
   showRewardSection: true,
   fullPageMode: false,

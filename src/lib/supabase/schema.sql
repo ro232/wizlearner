@@ -1,4 +1,5 @@
 -- WorksheetWiz Database Schema for Supabase
+-- Instalare nouă: rulează acest fișier, apoi fișierele din supabase/migrations, în ordine.
 
 -- Users profile (extends auth.users)
 CREATE TABLE users_profile (
@@ -85,7 +86,6 @@ ALTER TABLE template_ratings ENABLE ROW LEVEL SECURITY;
 -- Users can read/update their own profile
 CREATE POLICY "Users can view own profile" ON users_profile FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON users_profile FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY "Users can insert own profile" ON users_profile FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- Users can manage their own worksheets
 CREATE POLICY "Users can view own worksheets" ON saved_worksheets FOR SELECT USING (auth.uid() = user_id);
@@ -94,8 +94,7 @@ CREATE POLICY "Users can update own worksheets" ON saved_worksheets FOR UPDATE U
 CREATE POLICY "Users can delete own worksheets" ON saved_worksheets FOR DELETE USING (auth.uid() = user_id);
 CREATE POLICY "Public worksheets are viewable" ON saved_worksheets FOR SELECT USING (is_public = true);
 
--- Access codes: anyone can check, only server can modify
-CREATE POLICY "Anyone can view available codes" ON access_codes FOR SELECT USING (true);
+-- Access codes: no client access at all; redemption goes through redeem_access_code() (see supabase/migrations)
 
 -- Progress: users manage their own
 CREATE POLICY "Users can manage own progress" ON children_progress FOR ALL USING (auth.uid() = user_id);

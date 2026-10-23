@@ -25,16 +25,18 @@ export const EMOJI_MAP: Record<string, string> = {
   Y: '🧶', Z: '⚡',
 };
 
+// Letter lists per alphabet live in @/lib/glyphs/data (ALPHABETS); these are the English defaults.
 export const UPPERCASE_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 export const LOWERCASE_LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split('');
 export const PAIRED_LETTERS = UPPERCASE_LETTERS.map((l, i) => `${l}${LOWERCASE_LETTERS[i]}`);
-export const NUMBERS = Array.from({ length: 20 }, (_, i) => String(i + 1));
+export const NUMBERS = Array.from({ length: 21 }, (_, i) => String(i));
 export const SHAPES = ['circle', 'square', 'triangle', 'rectangle', 'oval', 'diamond', 'star', 'heart', 'hexagon', 'pentagon'];
 
 export const FREE_LIMITS = {
-  letters: ['A', 'B', 'C', 'D', 'E'],
-  numbers: ['1', '2', '3', '4', '5'],
+  letters: ['A', 'B', 'C', 'D', 'E'], // diacritic forms of a free letter (Ă, Â) are free too
+  numbers: ['0', '1', '2', '3', '4', '5'],
   shapes: ['circle', 'square', 'triangle'],
+  prewrite: ['vertical', 'horizontal', 'zigzag'],
   maxDownloadsPerDay: 2,
   maxCloudSave: 0,
   templates: 2,
@@ -49,13 +51,11 @@ export const STARTER_LIMITS = {
   templates: 10,
 } as const;
 
-export const CATEGORY_TABS = [
-  { id: 'letters' as const, label: 'Aa Letters', icon: '✏️' },
-  { id: 'numbers' as const, label: '123', icon: '🔢' },
-  { id: 'shapes' as const, label: 'Shapes', icon: '◆' },
-  { id: 'prewrite' as const, label: 'Pre-Write', icon: '〰', locked: true, minTier: 'full' as const },
-  { id: 'math' as const, label: 'Math', icon: '🧮', locked: true, minTier: 'full' as const },
-  { id: 'games' as const, label: 'Games', icon: '🎮', locked: true, minTier: 'full' as const },
-  { id: 'wordsearch' as const, label: 'Word Search', icon: '🔍', locked: true, minTier: 'full' as const },
-  { id: 'templates' as const, label: 'Templates', icon: '✨' },
+// Only content types that actually produce a worksheet today. Math, games, word search and
+// templates exist as type names for later, but are not shown until they are built.
+export const CATEGORY_TABS: { id: 'letters' | 'numbers' | 'shapes' | 'prewrite'; label: string; icon: string; locked?: boolean }[] = [
+  { id: 'letters', label: 'Aa Letters', icon: '✏️' },
+  { id: 'numbers', label: '123', icon: '🔢' },
+  { id: 'shapes', label: 'Shapes', icon: '◆' },
+  { id: 'prewrite', label: 'Pre-Write', icon: '〰' },
 ];

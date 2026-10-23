@@ -105,37 +105,20 @@ export function useAuth() {
   const redeemAccessCode = async (
     code: string
   ): Promise<{ success: boolean; error?: string }> => {
-    if (!user) return { success: false, error: 'Not logged in' };
+    if (!user) return { success: false, error: 'Intră în cont ca să folosești codul.' };
 
-    // Check if code exists and is unused
-    const { data: codeData } = await supabase
-      .from('access_codes')
-      .select('*')
-      .eq('code', code.toUpperCase())
-      .eq('is_used', false)
-      .single();
-
-    if (!codeData) {
-      return { success: false, error: 'Invalid or already used code' };
+    // Checked and applied on the server (supabase/migrations: redeem_access_code),
+    // so the browser can never read the code list or set its own tier.
+    const { error } = await supabase.rpc('redeem_access_code', { p_code: code.trim() });
+    if (error) {
+      return {
+        success: false,
+        error: error.message.includes('invalid_code')
+          ? 'Codul nu este valid sau a fost deja folosit.'
+          : 'Nu am putut verifica codul. Încearcă din nou.',
+      };
     }
 
-    // Mark code as used
-    await supabase
-      .from('access_codes')
-      .update({
-        is_used: true,
-        used_by: user.id,
-        used_at: new Date().toISOString(),
-      })
-      .eq('code', code.toUpperCase());
-
-    // Update user tier
-    await supabase
-      .from('users_profile')
-      .update({ tier: codeData.tier, access_code: code.toUpperCase() })
-      .eq('id', user.id);
-
-    // Refresh profile
     await fetchProfile(user.id);
     return { success: true };
   };

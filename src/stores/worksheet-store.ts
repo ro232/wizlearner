@@ -1,5 +1,7 @@
 import { create } from 'zustand';
-import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, LetterSize, Difficulty, GuideColor, BackgroundPattern } from '@/types';
+import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
+import { ALPHABETS, lettersOfWord, normalizeKey } from '@/lib/glyphs/data';
+import { isItemAllowed } from '@/lib/access';
 
 interface WorksheetState {
   config: WorksheetConfig;
@@ -8,11 +10,13 @@ interface WorksheetState {
 
   // Actions
   setCategory: (category: ContentCategory) => void;
+  setAlphabet: (alphabet: Alphabet) => void;
   setLetterMode: (mode: LetterMode) => void;
   toggleItem: (item: string) => void;
   addItems: (items: string[]) => void;
   removeAllItems: () => void;
   addCustomWord: (word: string) => void;
+  removeCustomWord: (word: string) => void;
   setDifficulty: (difficulty: Difficulty) => void;
   setFontStyle: (style: FontStyle) => void;
   setLetterSize: (size: LetterSize) => void;
@@ -23,6 +27,7 @@ interface WorksheetState {
   setRepetitionsPerItem: (reps: number) => void;
   toggleGuideLines: () => void;
   toggleArrows: () => void;
+  toggleStartDots: () => void;
   toggleEmoji: () => void;
   toggleReward: () => void;
   toggleFullPage: () => void;
@@ -43,6 +48,14 @@ export const useWorksheetStore = create<WorksheetState>((set) => ({
   setCategory: (category) => set((state) => ({
     config: { ...state.config, category, selectedItems: [] }
   })),
+  setAlphabet: (alphabet) => set((state) => {
+    // Keep only the letters that exist in the newly chosen alphabet.
+    const allowed = new Set(ALPHABETS[alphabet]);
+    const selectedItems = state.config.category === 'letters'
+      ? state.config.selectedItems.filter((item) => allowed.has(normalizeKey(item)[0].toUpperCase()))
+      : state.config.selectedItems;
+    return { config: { ...state.config, alphabet, selectedItems } };
+  }),
   setLetterMode: (mode) => set((state) => ({
     config: { ...state.config, letterMode: mode, selectedItems: [] }
   })),
@@ -66,12 +79,15 @@ export const useWorksheetStore = create<WorksheetState>((set) => ({
   addCustomWord: (word) => set((state) => ({
     config: {
       ...state.config,
-      customWords: [...state.config.customWords, word],
+      customWords: state.config.customWords.includes(word) ? state.config.customWords : [...state.config.customWords, word],
       selectedItems: Array.from(new Set([
         ...state.config.selectedItems,
-        ...word.toUpperCase().split('').filter((c) => /[A-Z]/.test(c)),
+        ...lettersOfWord(word, state.config.letterMode).filter((l) => isItemAllowed(l, 'letters', state.tier)),
       ])),
     }
+  })),
+  removeCustomWord: (word) => set((state) => ({
+    config: { ...state.config, customWords: state.config.customWords.filter((w) => w !== word) }
   })),
   setDifficulty: (difficulty) => set((state) => {
     const presets: Record<string, Partial<WorksheetConfig>> = {
@@ -90,6 +106,7 @@ export const useWorksheetStore = create<WorksheetState>((set) => ({
   setRepetitionsPerItem: (repetitionsPerItem) => set((state) => ({ config: { ...state.config, repetitionsPerItem } })),
   toggleGuideLines: () => set((state) => ({ config: { ...state.config, showGuideLines: !state.config.showGuideLines } })),
   toggleArrows: () => set((state) => ({ config: { ...state.config, showDirectionalArrows: !state.config.showDirectionalArrows } })),
+  toggleStartDots: () => set((state) => ({ config: { ...state.config, showStartDots: !state.config.showStartDots } })),
   toggleEmoji: () => set((state) => ({ config: { ...state.config, showLetterIcons: !state.config.showLetterIcons } })),
   toggleReward: () => set((state) => ({ config: { ...state.config, showRewardSection: !state.config.showRewardSection } })),
   toggleFullPage: () => set((state) => ({ config: { ...state.config, fullPageMode: !state.config.fullPageMode } })),

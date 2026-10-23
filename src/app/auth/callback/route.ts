@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/generator';
+  // Only same-site paths: "/x" is fine, "//evil.com" or "@evil.com" would leave the site.
+  const requested = searchParams.get('next') ?? '/generator';
+  const next = /^\/(?!\/)[^\\@]*$/.test(requested) ? requested : '/generator';
 
   if (code) {
     const supabase = createServerSupabase();
