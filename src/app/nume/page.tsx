@@ -1,14 +1,18 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Download, Printer, UserRound } from 'lucide-react';
+import { BookOpen, Download, FileText, Printer, UserRound } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/toast';
 import { WorksheetPreview } from '@/components/worksheet/worksheet-preview';
+import { PagesPreview } from '@/components/worksheet/pages-preview';
+import { PaywallModal } from '@/components/worksheet/paywall-modal';
+import { useWorksheetStore } from '@/stores/worksheet-store';
+import { buildNameBookPages } from '@/lib/worksheet/name-book';
 import { DEFAULT_CONFIG, type LetterMode, type WorksheetConfig } from '@/types';
-import { generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/generate-pdf';
+import { downloadPagesPdf, generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/generate-pdf';
 import { lettersOfWord } from '@/lib/glyphs/data';
 
 /**
@@ -22,6 +26,10 @@ export default function NameSheetPage() {
   const [withLetters, setWithLetters] = useState(true);
   const toast = useToast();
   const [busy, setBusy] = useState(false);
+  const [kind, setKind] = useState<'sheet' | 'book'>('sheet');
+  const [showPaywall, setShowPaywall] = useState(false);
+  const tier = useWorksheetStore((s) => s.tier);
+  const bookPages = useMemo(() => (kind === 'book' ? buildNameBookPages(name || 'Ana') : []), [kind, name]);
 
   const config: WorksheetConfig = useMemo(() => {
     const clean = name.trim();
@@ -47,6 +55,18 @@ export default function NameSheetPage() {
   const empty = !name.trim();
 
   const run = async (what: 'download' | 'print') => {
+    if (kind === 'book') {
+      // The whole workbook is part of the full plan; the single sheet stays free.
+      if (tier === 'free') return setShowPaywall(true);
+      setBusy(true);
+      try {
+        await downloadPagesPdf(bookPages, `caietul-lui-${name.trim().toLowerCase().replace(/\s+/g, '-')}.pdf`);
+        toast(`Caietul lui ${name.trim()} e gata: ${bookPages.length} pagini.`);
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
     setBusy(true);
     try {
       if (what === 'download') await generateWorksheetPDF(sheet, 'full');
@@ -59,15 +79,29 @@ export default function NameSheetPage() {
 
   return (
     <div className="min-h-screen bg-paper">
+      <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-2 gap-8">
         <section className="space-y-6">
           <div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Fișa cu numele copilului</h1>
-            <p className="mt-2 text-slate-600">Scrie numele, alege cum vrei literele și descarcă o pagină întreagă de exersat. Gratuit.</p>
+            <p className="mt-2 text-slate-600">Scrie numele și descarcă o pagină de exersat, gratuit, sau un caiet întreg cu numele lui: copertă, câte o pagină pentru fiecare literă, numele în trei feluri, un joc și diplomă.</p>
           </div>
 
           <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6 space-y-5">
+            <div className="grid grid-cols-2 gap-2" role="group" aria-label="Ce descarci">
+              {([
+                ['sheet', FileText, 'O fișă', 'gratuit'],
+                ['book', BookOpen, 'Caietul cu numele', 'copertă, fiecare literă, diplomă'],
+              ] as const).map(([k, Icon, title, sub]) => (
+                <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k}
+                  className={`p-3 rounded-xl border-2 text-left ${kind === k ? 'border-ink bg-white shadow-md' : 'border-slate-300 bg-white hover:border-ink'}`}>
+                  <Icon className="w-5 h-5 text-pen" aria-hidden />
+                  <div className="mt-1 font-extrabold text-ink">{title}</div>
+                  <div className="text-xs text-slate-600">{sub}</div>
+                </button>
+              ))}
+            </div>
             <div>
               <label htmlFor="name" className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                 <UserRound className="w-3.5 h-3.5" aria-hidden /> Numele
@@ -87,7 +121,7 @@ export default function NameSheetPage() {
                 ))}
               </div>
             </div>
-            {mode !== 'paired' && (
+            {kind === 'sheet' && mode !== 'paired' && (
               <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" checked={withLetters} onChange={() => setWithLetters((v) => !v)} className="w-4 h-4" />
                 <span className="text-sm text-slate-700">Întâi literele din nume, câte una pe rând</span>
@@ -95,9 +129,9 @@ export default function NameSheetPage() {
             )}
             <div className="flex gap-2">
               <Button onClick={() => run('download')} disabled={empty || busy} className="flex-1 h-12 rounded-2xl text-white font-bold disabled:opacity-50" data-btn="primary">
-                <Download className="w-5 h-5 mr-2" aria-hidden /> Descarcă PDF
+                <Download className="w-5 h-5 mr-2" aria-hidden /> {kind === 'book' ? `Descarcă caietul (${bookPages.length} pagini)` : 'Descarcă PDF'}
               </Button>
-              <Button variant="outline" onClick={() => run('print')} disabled={empty || busy} className="h-12 px-4 rounded-2xl border-2" aria-label="Printează">
+              <Button variant="outline" onClick={() => run('print')} disabled={empty || busy || kind === 'book'} className="h-12 px-4 rounded-2xl border-2" aria-label="Printează">
                 <Printer className="w-5 h-5" aria-hidden />
               </Button>
             </div>
@@ -105,8 +139,13 @@ export default function NameSheetPage() {
           <p className="text-sm text-slate-500">Ai o grupă întreagă? Pe pagina „Pentru grupă” faci câte o fișă pentru fiecare copil, dintr-o listă de nume.</p>
         </section>
 
-        <section aria-label="Previzualizare" className="flex justify-center lg:sticky lg:top-24 lg:self-start">
-          <WorksheetPreview config={sheet} tier="full" />
+        <section aria-label="Previzualizare" className="lg:sticky lg:top-24 lg:self-start">
+          <div className="desk rounded-2xl border-2 border-ink p-4 sm:p-8 flex justify-center">
+            {kind === 'book' ? <PagesPreview pages={bookPages} width={420} /> : <WorksheetPreview config={sheet} tier="full" />}
+          </div>
+          {kind === 'book' && tier === 'free' && (
+            <p className="mt-3 text-sm text-slate-600 text-center">Răsfoiește caietul gratuit. Descărcarea lui face parte din varianta completă.</p>
+          )}
         </section>
       </main>
       <Footer />

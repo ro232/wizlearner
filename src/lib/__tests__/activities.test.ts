@@ -39,3 +39,15 @@ describe('activities', () => {
     for (const d of DOT_SHAPES) expect(dotPoints(d).length, d).toBeGreaterThanOrEqual(9);
   });
 });
+
+describe('name workbook', () => {
+  it('has a cover, a page per letter, the name three ways, a game and a diploma, all on the paper', async () => {
+    const { buildNameBookPages } = await import('@/lib/worksheet/name-book');
+    const pages = buildNameBookPages('Ştefan');
+    // Ș T E F A N = 6 letters → 1 + 6 + 3 + 1 + 1
+    expect(pages).toHaveLength(12);
+    pages.forEach((p, i) => expect(opsOutside(p, { minX: 5, minY: 5, maxX: p.width - 5, maxY: p.height - 5 }), `page ${i + 1}`).toEqual([]));
+    expect(buildNameBookPages('Ana-Maria Magdalena').length).toBeLessThanOrEqual(1 + 8 + 3 + 1 + 1);
+    expect(buildNameBookPages('  ')).toEqual([]);
+  });
+});
