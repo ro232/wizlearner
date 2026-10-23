@@ -83,14 +83,17 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
     }
   }
 
-  // 2. arrows
+  // 2. arrows, drawn beside the stroke (not on it) so they stay readable on the model
   if (style.arrows) {
     let count = 0;
     const limit = style.maxArrows ?? Infinity;
+    const outline = glyph.strokes.flatMap((st) => st.subpaths.flatMap((sp) => densify(flattenSubpath(sp), w * 0.4)));
+    const centre = { x: (glyph.bbox.minX + glyph.bbox.maxX) / 2, y: (glyph.bbox.minY + glyph.bbox.maxY) / 2 };
+    const taken: Pt[] = [];
     for (const stroke of glyph.strokes) {
-      for (const { p, dir } of arrowPositions(stroke)) {
+      for (const pos of arrowPositions(stroke)) {
         if (count++ >= limit) break;
-        ops.push(arrowHead(p, dir, w, style.accent));
+        ops.push(...sideArrow(pos, outline, centre, w, style.accent, taken));
       }
     }
   }
@@ -203,17 +206,82 @@ function pointAlongStroke(runs: Pt[][], lengths: number[], fraction: number): Ar
   return pointAlong(runs[0], 0.5);
 }
 
-function arrowHead(p: Pt, dir: Pt, w: number, fill: string): DrawOp {
-  const len = w * 1.5;
-  const half = w * 0.8;
-  const nx = -dir.y, ny = dir.x;
-  const tip = { x: p.x + dir.x * len * 0.55, y: p.y + dir.y * len * 0.55 };
-  const back = { x: p.x - dir.x * len * 0.45, y: p.y - dir.y * len * 0.45 };
-  return {
-    t: 'polygon',
-    points: [tip, { x: back.x + nx * half, y: back.y + ny * half }, { x: back.x - nx * half, y: back.y - ny * half }],
-    fill,
+export const ARROW_OFFSET = 1.9; // arrow centre from the stroke centreline, in stroke widths
+const ARROW_LEN = 2.3; // arrow length, in stroke widths
+
+/** The polyline with extra points so no two neighbours are farther apart than `step`. */
+function densify(pts: Pt[], step: number): Pt[] {
+  const out: Pt[] = pts.slice(0, 1);
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    const n = Math.max(1, Math.ceil(dist(a, b) / step));
+    for (let k = 1; k <= n; k++) out.push({ x: a.x + ((b.x - a.x) * k) / n, y: a.y + ((b.y - a.y) * k) / n });
+  }
+  return out;
+}
+
+/** Points along an arrow centred at c, for clearance checks. */
+function arrowSamples(c: Pt, dir: Pt, w: number): Pt[] {
+  const h = (w * ARROW_LEN) / 2;
+  return [-1, -0.5, 0, 0.5, 1].map((k) => ({ x: c.x + dir.x * h * k, y: c.y + dir.y * h * k }));
+}
+
+/**
+ * Where a stroke's arrow goes: beside the stroke, never on it. Candidates are tried in order
+ * of preference (close to the stroke, at its middle, on the outer side of the letter); the first
+ * one that keeps clear of every stroke and of the arrows already placed wins.
+ */
+export function arrowPlacement(pos: ArrowPos, outline: Pt[], centre: Pt, w: number, taken: Pt[] = []): Pt {
+  const n = { x: -pos.dir.y, y: pos.dir.x };
+  const need = w * 1.15; // half a stroke + half an arrow head + a small gap
+  const clearance = (c: Pt) => {
+    let m = Infinity;
+    for (const q of arrowSamples(c, pos.dir, w)) {
+      for (const o of outline) m = Math.min(m, dist(q, o));
+      for (const t of taken) m = Math.min(m, dist(q, t) + w * 0.3);
+    }
+    return m;
   };
+  // outer side first: the one facing away from the middle of the letter
+  const sides = [1, -1].sort((k1, k2) => {
+    const c1 = { x: pos.p.x + n.x * k1, y: pos.p.y + n.y * k1 };
+    const c2 = { x: pos.p.x + n.x * k2, y: pos.p.y + n.y * k2 };
+    return dist(c2, centre) - dist(c1, centre);
+  });
+  const len = w * ARROW_LEN;
+  let best: { c: Pt; room: number } | null = null;
+  for (const off of [ARROW_OFFSET, 2.5]) {
+    for (const slide of [0, -0.8, 0.8]) {
+      for (const k of sides) {
+        const c = {
+          x: pos.p.x + n.x * w * off * k + pos.dir.x * len * slide,
+          y: pos.p.y + n.y * w * off * k + pos.dir.y * len * slide,
+        };
+        const room = clearance(c);
+        if (room >= need) return c;
+        if (!best || room > best.room) best = { c, room };
+      }
+    }
+  }
+  return best!.c;
+}
+
+/** A small arrow (shaft and head) parallel to the stroke, beside it. */
+function sideArrow(pos: ArrowPos, outline: Pt[], centre: Pt, w: number, fill: string, taken: Pt[]): DrawOp[] {
+  const c = arrowPlacement(pos, outline, centre, w, taken);
+  taken.push(...arrowSamples(c, pos.dir, w));
+  const { dir } = pos;
+  const len = w * ARROW_LEN;
+  const tail = { x: c.x - dir.x * len * 0.5, y: c.y - dir.y * len * 0.5 };
+  const tip = { x: c.x + dir.x * len * 0.5, y: c.y + dir.y * len * 0.5 };
+  const head = w * 0.95;
+  const half = w * 0.55;
+  const nx = -dir.y, ny = dir.x;
+  const back = { x: tip.x - dir.x * head, y: tip.y - dir.y * head };
+  return [
+    { t: 'path', subpaths: [{ start: tail, segs: [{ kind: 'L', p: back }] }], stroke: fill, strokeWidth: w * 0.34, cap: 'round' },
+    { t: 'polygon', points: [tip, { x: back.x + nx * half, y: back.y + ny * half }, { x: back.x - nx * half, y: back.y - ny * half }], fill },
+  ];
 }
 
 /** Visual bounding box including stroke width, diacritics and dots. */
