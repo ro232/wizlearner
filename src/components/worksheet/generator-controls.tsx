@@ -252,7 +252,8 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
           </div>
           <p className="text-[11px] text-slate-500 mt-1">Apare în antetul fișei. Cu „Trasează-l” devine și rând de scris.</p>
         </div>
-        <div>
+        {/* Games draw their own page: no extra words to trace there. */}
+        <div className={config.category === 'games' ? 'hidden' : undefined}>
           <label htmlFor="custom-word" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Cuvinte de trasat</label>
           <div className="flex gap-2">
             <input
@@ -286,8 +287,8 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
         </div>
       </div>
 
-      {/* 4. Level */}
-      <div>
+      {/* 4. Level (not used by the games) */}
+      <div className={config.category === 'games' ? 'hidden' : undefined}>
         <SectionLabel>Nivel</SectionLabel>
         <div className="grid grid-cols-3 gap-2">
           {([
