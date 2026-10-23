@@ -17,12 +17,14 @@ export default function PrivacyPage() {
         <li><strong>Fără cont:</strong> fișele se generează direct în browserul tău. Numele copilului și cuvintele pe care le scrii nu ne sunt trimise și nu sunt salvate de noi.</li>
         <li><strong>Cu cont:</strong> adresa de email, numele afișat și, dacă intri cu Google, numele din contul Google. Le folosim ca să te autentificăm și să știm ce variantă ai (gratuită sau completă).</li>
         <li><strong>Coduri de acces:</strong> când activezi un cod, păstrăm codul și data activării, legate de contul tău.</li>
+        <li><strong>Abonament:</strong> plata se face prin Stripe. Datele cardului ajung doar la Stripe, nu la noi. Noi păstrăm identificatorul de client Stripe, starea abonamentului și data reînnoirii.</li>
+        <li><strong>Fișe salvate:</strong> dacă salvezi o fișă în cont, păstrăm setările ei (literele, cuvintele, nivelul), fără numele copilului.</li>
       </ul>
 
       <h2>Datele copiilor</h2>
       <p>
-        Nu cerem și nu păstrăm date despre copii. Numele scris pe o fișă rămâne în browserul tău. Dacă în viitor vei putea salva
-        fișe în cont, te vom anunța aici înainte, iar salvarea va fi opțională.
+        Nu cerem și nu păstrăm date despre copii. Numele scris pe o fișă, inclusiv listele de nume de pe pagina „Pentru grupă”,
+        rămân în browserul tău. Când salvezi o fișă în cont, numele copilului este scos înainte de salvare.
       </p>
 
       <h2>Temeiul și cât timp</h2>
@@ -34,6 +36,7 @@ export default function PrivacyPage() {
       <h2>Cu cine lucrăm</h2>
       <ul>
         <li>Supabase, pentru autentificare și baza de date.</li>
+        <li>Stripe, pentru plăți și facturi.</li>
         <li>Furnizorul de găzduire al site-ului.</li>
         <li>Google, doar dacă alegi să intri cu contul Google.</li>
       </ul>

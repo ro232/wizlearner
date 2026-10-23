@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { safeNextPath } from '@/lib/safe-redirect';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -61,7 +62,7 @@ export default function LoginPage() {
           setError('');
           alert('Ți-am trimis un email de confirmare. Deschide linkul din el.');
         } else {
-          router.push('/generator');
+          router.push(safeNextPath(new URLSearchParams(window.location.search).get('next')));
         }
       }
     } catch {

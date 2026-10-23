@@ -62,7 +62,7 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
                 id="access-code"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                placeholder="WIZ-XXXX-XXXX"
+                placeholder="WIZ-XXXX-XXXX-XXXX"
                 autoComplete="off"
                 className="flex-1 h-11 px-3 rounded-xl border border-slate-300 font-mono uppercase tracking-wider text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
@@ -80,7 +80,7 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
           </Link>
         )}
 
-        <p className="text-xs text-center text-slate-400 mt-4">Plata online va fi disponibilă în curând.</p>
+        <Link href="/preturi" className="block mt-4 text-center text-sm font-semibold text-orange-600 hover:underline">Vezi prețurile și abonează-te</Link>
       </div>
     </div>
   );

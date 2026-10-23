@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Download, Printer } from 'lucide-react';
+import { Download, Printer, Save } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Button } from '@/components/ui/button';
 import { GeneratorControls } from '@/components/worksheet/generator-controls';
@@ -11,12 +11,31 @@ import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/generate-pdf';
 import { countWorksheetPages, rowItems } from '@/lib/worksheet/layout';
+import { configForSaving, defaultSheetName } from '@/lib/worksheet/saved';
+import { useAuth } from '@/hooks/use-auth';
+import { useWorksheets } from '@/hooks/use-worksheets';
+import { useRouter } from 'next/navigation';
 
 export default function GeneratorPage() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [busy, setBusy] = useState<'download' | 'print' | null>(null);
   const config = useWorksheetStore((s) => s.config);
   const tier = useWorksheetStore((s) => s.tier);
+  const { user } = useAuth();
+  const { saveWorksheet } = useWorksheets(user?.id);
+  const router = useRouter();
+  const [saved, setSaved] = useState<string | null>(null);
+
+  // Saving needs an account and a paid plan; the child's name is never stored.
+  const save = async () => {
+    if (!user) return router.push('/auth/login?next=/generator');
+    if (tier === 'free') return setShowPaywall(true);
+    const name = window.prompt('Numele fișei', defaultSheetName(config));
+    if (!name) return;
+    const res = await saveWorksheet(name.trim().slice(0, 80), configForSaving(config));
+    setSaved(res?.error ? 'Nu am putut salva fișa.' : 'Salvată în cont.');
+    setTimeout(() => setSaved(null), 3000);
+  };
 
   const { empty, pages } = useMemo(
     () => ({ empty: rowItems(config, tier).length === 0, pages: countWorksheetPages(config, tier) }),
@@ -56,6 +75,17 @@ export default function GeneratorPage() {
       >
         <Printer className="w-5 h-5" aria-hidden />
         <span className="hidden sm:inline ml-2">{busy === 'print' ? 'Se pregătește…' : 'Printează'}</span>
+      </Button>
+      <Button
+        variant="outline"
+        onClick={save}
+        disabled={empty}
+        className="h-12 sm:h-14 px-4 rounded-2xl border-2 font-semibold"
+        aria-label="Salvează în cont"
+        title={saved ?? 'Salvează fișa în cont'}
+      >
+        <Save className="w-5 h-5" aria-hidden />
+        <span className="hidden xl:inline ml-2">{saved ?? 'Salvează'}</span>
       </Button>
     </div>
   );

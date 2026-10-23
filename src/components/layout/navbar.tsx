@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Pencil, LogIn, LogOut, User, BookOpen, Menu, X, UserRound, Users } from 'lucide-react';
+import { Pencil, LogIn, LogOut, User, BookOpen, Menu, X, UserRound, Users, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -49,6 +49,11 @@ export function Navbar() {
               </Button>
             </Link>
           ))}
+          <Link href="/preturi">
+            <Button variant="ghost" size="sm" className={cn('text-xs gap-1.5', pathname === '/preturi' && 'bg-blue-50 text-blue-700')}>
+              <Crown className="w-3.5 h-3.5" aria-hidden /> Prețuri
+            </Button>
+          </Link>
         </div>
 
         <div className="flex items-center gap-2">
@@ -75,9 +80,9 @@ export function Navbar() {
             <div className="w-8 h-8 rounded-full bg-slate-100 animate-pulse" />
           ) : user ? (
             <div className="flex items-center gap-1">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e40af)' }} title={profile?.display_name ?? undefined}>
+              <Link href="/cont" aria-label="Contul tău" className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e40af)' }} title={profile?.display_name ?? 'Contul tău'}>
                 {profile?.display_name?.[0]?.toUpperCase() || <User className="w-4 h-4" aria-hidden />}
-              </div>
+              </Link>
               <Button variant="ghost" size="sm" className="text-xs gap-1 text-slate-500" onClick={signOut} aria-label="Ieși din cont">
                 <LogOut className="w-3.5 h-3.5" aria-hidden />
               </Button>
@@ -108,11 +113,12 @@ export function Navbar() {
               <link.icon className="w-4 h-4" aria-hidden /> {link.label}
             </Link>
           ))}
-          {!user && (
-            <Link href="/auth/login" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-              <LogIn className="w-4 h-4" aria-hidden /> Intră în cont
-            </Link>
-          )}
+          <Link href="/preturi" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            <Crown className="w-4 h-4" aria-hidden /> Prețuri
+          </Link>
+          <Link href={user ? '/cont' : '/auth/login'} className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            <LogIn className="w-4 h-4" aria-hidden /> {user ? 'Contul tău' : 'Intră în cont'}
+          </Link>
         </div>
       )}
     </nav>
