@@ -69,38 +69,38 @@ export default function BookPage() {
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-blue-600" /> KDP Book
+                    <BookOpen className="w-5 h-5 text-blue-600" aria-hidden /> Caiet pentru Amazon KDP
                   </h2>
-                  <p className="text-xs text-slate-500 mt-1">A complete tracing workbook, ready to upload to Amazon KDP.</p>
+                  <p className="text-xs text-slate-500 mt-1">Un caiet de scris complet, gata de încărcat pe Amazon KDP.</p>
                 </div>
-                {tier !== 'full' && <Badge variant="secondary">Preview watermark</Badge>}
+                {tier !== 'full' && <Badge variant="secondary">Cu filigran (planul Complet îl scoate)</Badge>}
               </div>
 
               <div className="space-y-2">
-                <label className={labelClass}>Title</label>
+                <label className={labelClass}>Titlu</label>
                 <input className={inputClass} value={config.title} onChange={(e) => set('title', e.target.value)} />
               </div>
               <div className="space-y-2">
-                <label className={labelClass}>Subtitle</label>
+                <label className={labelClass}>Subtitlu</label>
                 <input className={inputClass} value={config.subtitle} onChange={(e) => set('subtitle', e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <label className={labelClass}>Author / brand</label>
+                  <label className={labelClass}>Autor / brand</label>
                   <input className={inputClass} value={config.author} onChange={(e) => set('author', e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <label className={labelClass}>Year</label>
+                  <label className={labelClass}>An</label>
                   <input className={inputClass} type="number" value={config.year} onChange={(e) => set('year', Number(e.target.value) || new Date().getFullYear())} />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className={labelClass}>Alphabet</label>
+                <label className={labelClass}>Alfabet</label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { value: 'ro' as const, label: 'Română', display: 'A Ă Â Î Ș Ț · 31 litere' },
-                    { value: 'en' as const, label: 'English', display: 'A–Z · 26 letters' },
+                    { value: 'en' as const, label: 'Engleză', display: 'A–Z · 26 litere' },
                   ].map(({ value, label, display }) => (
                     <button
                       key={value}
@@ -118,7 +118,7 @@ export default function BookPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <label className={labelClass}>Trim size</label>
+                  <label className={labelClass}>Format</label>
                   <select className={inputClass} value={config.trim} onChange={(e) => set('trim', e.target.value as TrimKey)}>
                     {(Object.keys(TRIM_SIZES) as TrimKey[]).map((k) => (
                       <option key={k} value={k}>
@@ -128,7 +128,7 @@ export default function BookPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className={labelClass}>Paper</label>
+                  <label className={labelClass}>Hârtie</label>
                   <select className={inputClass} value={config.paper} onChange={(e) => set('paper', e.target.value as PaperKey)}>
                     {(Object.keys(PAPER_LABELS) as PaperKey[]).map((k) => (
                       <option key={k} value={k}>
@@ -140,7 +140,7 @@ export default function BookPage() {
               </div>
 
               <div className="space-y-2">
-                <label className={labelClass}>Tracing style</label>
+                <label className={labelClass}>Stil de trasare</label>
                 <div className="grid grid-cols-3 gap-2">
                   {(['dashed', 'dotted', 'outline'] as const).map((v) => (
                     <button
@@ -150,7 +150,7 @@ export default function BookPage() {
                         config.variant === v ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'
                       }`}
                     >
-                      {v}
+                      {{ dashed: 'Liniuțe', dotted: 'Puncte', outline: 'Contur' }[v]}
                     </button>
                   ))}
                 </div>
@@ -158,19 +158,19 @@ export default function BookPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className={labelClass}>Numbers up to</label>
+                  <label className={labelClass}>Numere până la</label>
                   <Badge variant="secondary">{config.numbersMax}</Badge>
                 </div>
                 <input type="range" min="5" max="20" value={config.numbersMax} onChange={(e) => set('numbersMax', Number(e.target.value))} className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" />
               </div>
 
               <div className="space-y-1 pt-3 border-t border-slate-200">
-                <Toggle label={`Pre-writing exercises (${PATTERN_IDS.length} pages)`} checked={config.includePrewriting} onChange={() => flip('includePrewriting')} />
-                <Toggle label={`Letters, one page each (${letterCount} pages)`} checked={config.includeLetters} onChange={() => flip('includeLetters')} />
-                <Toggle label={`Numbers 0–${config.numbersMax} (${config.numbersMax + 1} pages)`} checked={config.includeNumbers} onChange={() => flip('includeNumbers')} />
-                <Toggle label="Review pages (alphabet, numbers)" checked={config.includeReview} onChange={() => flip('includeReview')} />
-                <Toggle label="Certificate page" checked={config.includeCertificate} onChange={() => flip('includeCertificate')} />
-                <Toggle label="Bleed (only if art reaches the page edge)" checked={config.bleed} onChange={() => flip('bleed')} />
+                <Toggle label={`Exerciții grafice (${PATTERN_IDS.length} pagini)`} checked={config.includePrewriting} onChange={() => flip('includePrewriting')} />
+                <Toggle label={`Literele, câte o pagină (${letterCount} pagini)`} checked={config.includeLetters} onChange={() => flip('includeLetters')} />
+                <Toggle label={`Cifre și numere 0–${config.numbersMax} (${config.numbersMax + 1} pagini)`} checked={config.includeNumbers} onChange={() => flip('includeNumbers')} />
+                <Toggle label="Pagini de recapitulare" checked={config.includeReview} onChange={() => flip('includeReview')} />
+                <Toggle label="Diplomă la final" checked={config.includeCertificate} onChange={() => flip('includeCertificate')} />
+                <Toggle label="Bleed (doar dacă desenele ajung la marginea foii)" checked={config.bleed} onChange={() => flip('bleed')} />
               </div>
             </div>
           </div>
@@ -180,27 +180,27 @@ export default function BookPage() {
             <Card className="border-0 shadow-md bg-gradient-to-r from-blue-50 to-indigo-50">
               <div className="p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                 <div>
-                  <div className="text-xs text-slate-500">Pages</div>
+                  <div className="text-xs text-slate-500">Pagini</div>
                   <div className="text-2xl font-bold text-blue-700">{pages.length}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500">Spine</div>
+                  <div className="text-xs text-slate-500">Cotor</div>
                   <div className="font-semibold text-slate-800">{mm(geometry.spine)}</div>
                   <div className="text-xs text-slate-500">{inch(geometry.spine)}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500">Cover file</div>
+                  <div className="text-xs text-slate-500">Fișier copertă</div>
                   <div className="font-semibold text-slate-800">
                     {inch(geometry.width)} × {inch(geometry.height)}
                   </div>
-                  <div className="text-xs text-slate-500">incl. 0.125 in bleed</div>
+                  <div className="text-xs text-slate-500">cu bleed 0.125 in</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500">Gutter / outside</div>
+                  <div className="text-xs text-slate-500">Margine cotor / exterior</div>
                   <div className="font-semibold text-slate-800">
                     {mm(margins.inside)} / {mm(margins.outside)}
                   </div>
-                  <div className="text-xs text-slate-500">KDP minimum met</div>
+                  <div className="text-xs text-slate-500">peste minimul KDP</div>
                 </div>
               </div>
             </Card>
@@ -212,7 +212,7 @@ export default function BookPage() {
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#EFF6FF', color: '#2E5C8A' }}>
                       <Eye className="w-4 h-4" />
                     </div>
-                    <span className="text-sm font-bold text-slate-900">Preview</span>
+                    <span className="text-sm font-bold text-slate-900">Previzualizare</span>
                   </div>
                   <div className="flex gap-1">
                     {(['interior', 'cover'] as const).map((v) => (
@@ -221,7 +221,7 @@ export default function BookPage() {
                         onClick={() => setView(v)}
                         className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${view === v ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                       >
-                        {v === 'interior' ? 'Interior' : 'Cover'}
+                        {v === 'interior' ? 'Interior' : 'Copertă'}
                       </button>
                     ))}
                   </div>
@@ -229,7 +229,7 @@ export default function BookPage() {
               </CardHeader>
               <CardContent className="p-6 flex justify-center" style={{ background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)' }}>
                 {view === 'interior' ? (
-                  <PagesPreview pages={pages} width={420} pageLabel={config.alphabet === 'ro' ? 'Pagina' : 'Page'} />
+                  <PagesPreview pages={pages} width={420} pageLabel="Pagina" />
                 ) : (
                   <PagesPreview pages={[cover]} width={640} />
                 )}
@@ -244,7 +244,7 @@ export default function BookPage() {
                 style={{ background: 'linear-gradient(135deg, #E8913A, #d97706)' }}
               >
                 <FileText className="w-5 h-5 mr-2" />
-                {busy === 'interior' ? 'Generating…' : `Interior PDF (${pages.length} pages)`}
+                {busy === 'interior' ? 'Se pregătește…' : `PDF interior (${pages.length} pagini)`}
               </Button>
               <Button
                 onClick={() => run('cover')}
@@ -253,13 +253,14 @@ export default function BookPage() {
                 style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e3a5f)' }}
               >
                 <ImageIcon className="w-5 h-5 mr-2" />
-                {busy === 'cover' ? 'Generating…' : 'Cover PDF (full wrap)'}
+                {busy === 'cover' ? 'Se pregătește…' : 'PDF copertă (față, cotor, spate)'}
               </Button>
             </div>
             <p className="text-xs text-slate-500 flex items-start gap-2">
               <Download className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-              Upload the interior and the cover as two separate PDFs in KDP. The spine width is computed from the page count and paper
-              type; the lower-right corner of the back cover is left clear for the barcode.
+              În KDP încarci interiorul și coperta ca două PDF-uri separate. Grosimea cotorului e calculată din numărul de pagini și
+              tipul hârtiei; colțul din dreapta-jos al spatelui rămâne liber pentru codul de bare. Verifică-le în KDP Print Previewer
+              înainte de publicare.
             </p>
           </div>
         </div>

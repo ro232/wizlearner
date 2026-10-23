@@ -23,7 +23,7 @@ interface PagesPreviewProps {
  * Draws page descriptions (the same ones the PDF uses) on a canvas, with
  * previous/next navigation. Used by the worksheet generator and the book composer.
  */
-export function PagesPreview({ pages, width = 420, className, pageLabel = 'Page', emptyMessage = null, pageIndex, onPageChange }: PagesPreviewProps) {
+export function PagesPreview({ pages, width = 420, className, pageLabel = 'Pagina', emptyMessage = null, pageIndex, onPageChange }: PagesPreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [internalIndex, setInternalIndex] = useState(0);
   const index = pageIndex ?? internalIndex;
@@ -61,7 +61,7 @@ export function PagesPreview({ pages, width = 420, className, pageLabel = 'Page'
   }, [page, width]);
 
   return (
-    <div className={`relative group ${className || ''}`}>
+    <div className={`relative group w-full ${className || ''}`} style={{ maxWidth: width }}>
       <div
         className="absolute -inset-2 rounded-2xl opacity-40 group-hover:opacity-70 transition-all duration-700"
         style={{ background: 'linear-gradient(135deg, #dbeafe 0%, #fed7aa 50%, #ddd6fe 100%)', filter: 'blur(8px)' }}
@@ -81,7 +81,7 @@ export function PagesPreview({ pages, width = 420, className, pageLabel = 'Page'
             onClick={() => setIndex(Math.max(0, safeIndex - 1))}
             disabled={safeIndex === 0}
             className="w-7 h-7 rounded-full bg-white shadow flex items-center justify-center disabled:opacity-40"
-            aria-label="Previous page"
+            aria-label="Pagina anterioară"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -93,7 +93,7 @@ export function PagesPreview({ pages, width = 420, className, pageLabel = 'Page'
             onClick={() => setIndex(Math.min(pages.length - 1, safeIndex + 1))}
             disabled={safeIndex >= pages.length - 1}
             className="w-7 h-7 rounded-full bg-white shadow flex items-center justify-center disabled:opacity-40"
-            aria-label="Next page"
+            aria-label="Pagina următoare"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

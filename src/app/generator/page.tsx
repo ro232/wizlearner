@@ -1,97 +1,90 @@
 'use client';
 
-import { useState } from 'react';
-import { Eye, Download } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Download, Printer } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GeneratorControls } from '@/components/worksheet/generator-controls';
 import { WorksheetPreview } from '@/components/worksheet/worksheet-preview';
 import { SheetContentBar } from '@/components/worksheet/sheet-content-bar';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
-import { generateWorksheetPDF } from '@/lib/pdf/generate-pdf';
-import { countWorksheetPages } from '@/lib/worksheet/layout';
+import { generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/generate-pdf';
+import { countWorksheetPages, rowItems } from '@/lib/worksheet/layout';
 
 export default function GeneratorPage() {
   const [showPaywall, setShowPaywall] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [busy, setBusy] = useState<'download' | 'print' | null>(null);
   const config = useWorksheetStore((s) => s.config);
   const tier = useWorksheetStore((s) => s.tier);
 
-  // Exact page count from the shared layout (same as preview and PDF)
-  const estimatedPages = countWorksheetPages(config, tier);
+  const { empty, pages } = useMemo(
+    () => ({ empty: rowItems(config, tier).length === 0, pages: countWorksheetPages(config, tier) }),
+    [config, tier],
+  );
 
-  const handleDownloadPDF = async () => {
-    setIsGenerating(true);
+  const run = async (what: 'download' | 'print') => {
+    setBusy(what);
     try {
-      await generateWorksheetPDF(config, tier);
+      if (what === 'download') await generateWorksheetPDF(config, tier);
+      else await printWorksheetPDF(config, tier);
     } catch (err) {
-      console.error('PDF generation failed', err);
+      console.error('PDF failed', err);
     } finally {
-      setIsGenerating(false);
+      setBusy(null);
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const actions = (
+    <div className="flex gap-2">
+      <Button
+        onClick={() => run('download')}
+        disabled={empty || busy !== null}
+        className="flex-1 h-12 sm:h-14 rounded-2xl text-white shadow-lg font-bold text-base disabled:opacity-50"
+        style={{ background: 'linear-gradient(135deg, #E8913A, #d97706)' }}
+      >
+        <Download className="w-5 h-5 mr-2" aria-hidden />
+        {busy === 'download' ? 'Se pregătește…' : `Descarcă PDF${!empty && pages > 1 ? ` (${pages} pagini)` : ''}`}
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => run('print')}
+        disabled={empty || busy !== null}
+        className="h-12 sm:h-14 px-4 rounded-2xl border-2 font-semibold"
+        aria-label="Printează"
+        title="Printează fișa"
+      >
+        <Printer className="w-5 h-5" aria-hidden />
+        <span className="hidden sm:inline ml-2">{busy === 'print' ? 'Se pregătește…' : 'Printează'}</span>
+      </Button>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen noise-bg" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen pb-24 lg:pb-0" style={{ background: '#F8FAFC' }}>
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
       <Navbar />
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-5">
+      <main className="max-w-[1440px] mx-auto px-3 sm:px-6 py-5">
+        <h1 className="sr-only">Generator de fișe de lucru</h1>
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* LEFT: Controls */}
-          <div className="lg:w-[46%] space-y-4 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-            <GeneratorControls
-              onShowPaywall={() => setShowPaywall(true)}
-              onDownload={handleDownloadPDF}
-              onPrint={handlePrint}
-            />
-          </div>
-
-          {/* RIGHT: Preview */}
-          <div className="lg:w-[54%] lg:sticky lg:top-20 lg:self-start space-y-4 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-            {/* Sheet content bar */}
+          {/* Preview first on phones, on the right on large screens */}
+          <section aria-label="Previzualizare" className="order-1 lg:order-2 lg:w-[54%] lg:sticky lg:top-20 lg:self-start space-y-4">
             <SheetContentBar />
+            <div className="rounded-2xl shadow-xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 p-3 sm:p-6 flex justify-center">
+              <WorksheetPreview config={config} tier={tier} />
+            </div>
+            <div className="hidden lg:block">{actions}</div>
+          </section>
 
-            {/* Live preview */}
-            <Card className="border-0 shadow-xl overflow-hidden rounded-2xl">
-              <CardHeader className="py-3.5 px-5 border-b glass" style={{ background: 'rgba(248,250,252,0.8)' }}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#EFF6FF', color: '#2E5C8A' }}>
-                      <Eye className="w-4 h-4" />
-                    </div>
-                    <span className="text-sm font-bold text-slate-900">Live Preview</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                    <span className="text-[10px] font-medium text-slate-500">Real-time</span>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6 flex justify-center" style={{ background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)' }}>
-                <WorksheetPreview config={config} tier={tier} />
-              </CardContent>
-            </Card>
-
-            {/* Download button */}
-            <Button
-              onClick={handleDownloadPDF}
-              disabled={isGenerating}
-              className="w-full h-14 rounded-2xl text-white shadow-xl btn-premium font-bold text-base disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg, #E8913A, #d97706)' }}
-            >
-              <Download className="w-5 h-5 mr-2" />
-              {isGenerating ? 'Generating...' : `Download PDF ${config.selectedItems.length > 0 && estimatedPages > 1 ? `(${estimatedPages} pages)` : ''}`}
-            </Button>
-          </div>
+          <section aria-label="Setări" className="order-2 lg:order-1 lg:w-[46%]">
+            <GeneratorControls onShowPaywall={() => setShowPaywall(true)} />
+          </section>
         </div>
-      </div>
+      </main>
+
+      {/* Phones: actions always within reach */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 p-3">{actions}</div>
     </div>
   );
 }
