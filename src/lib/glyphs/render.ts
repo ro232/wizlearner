@@ -25,6 +25,8 @@ export interface GlyphStyle {
   maxDots?: number;
   /** Draw at most N arrows in total. */
   maxArrows?: number;
+  /** Dash pattern for the `dashed` variant, in stroke widths (default 1 on, 2 off). */
+  dash?: [number, number];
 }
 
 export const DEFAULT_GLYPH_STYLE: GlyphStyle = {
@@ -71,7 +73,7 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
         ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w, cap: 'round' });
         break;
       case 'dashed':
-        ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w, cap: 'round', dash: [w * 1.0, w * 2.0] });
+        ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w, cap: 'round', dash: [w * (style.dash?.[0] ?? 1), w * (style.dash?.[1] ?? 2)] });
         break;
       case 'dotted':
         ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w, cap: 'round', dash: [0.01, w * 1.5] });

@@ -1,6 +1,7 @@
 import type { WorksheetConfig, Tier } from '@/types';
 import type { DrawOp, Glyph, PageOps } from '@/lib/glyphs/types';
 import { getGlyph, hintFor, normalizeKey, type Alphabet } from '@/lib/glyphs/data';
+import { cursiveGlyph, cursiveWord } from '@/lib/glyphs/cursive';
 import type { TraceVariant } from '@/lib/glyphs/render';
 import { isPatternId, type PatternId } from '@/lib/glyphs/patterns';
 import { isItemAllowed } from '@/lib/access';
@@ -120,8 +121,13 @@ export function alphabetOf(config: WorksheetConfig): Alphabet {
   return config.alphabet === 'ro' ? 'ro' : 'en';
 }
 
+/** Letters and words in joined handwriting ("de mână"); digits and shapes stay in print. */
+export function isCursive(config: Pick<WorksheetConfig, 'script' | 'fontStyle' | 'category'>): boolean {
+  return config.category === 'letters' && (config.script === 'cursive' || config.fontStyle === 'cursive');
+}
+
 /** Glyphs that make up one selected item. */
-export function glyphsForItem(item: string, category: WorksheetConfig['category']): Glyph[] {
+export function glyphsForItem(item: string, category: WorksheetConfig['category'], cursive = false): Glyph[] {
   if (category === 'shapes') {
     const g = getGlyph(`shape:${item}`);
     return g ? [g] : [];
@@ -129,7 +135,7 @@ export function glyphsForItem(item: string, category: WorksheetConfig['category'
   if (category === 'prewrite') return [];
   const out: Glyph[] = [];
   for (const ch of normalizeKey(item)) {
-    const g = getGlyph(ch);
+    const g = cursive && category === 'letters' ? cursiveGlyph(ch) : getGlyph(ch);
     if (g) out.push(g);
   }
   return out;
@@ -138,6 +144,7 @@ export function glyphsForItem(item: string, category: WorksheetConfig['category'
 export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[] {
   if (config.category === 'games') return [];
   const reps = Math.max(1, config.repetitionsPerItem || 1);
+  const cursive = isCursive(config);
   const rows: RowItem[] = [];
   for (const item of config.selectedItems) {
     if (!isItemAllowed(item, config.category, tier)) continue;
@@ -146,7 +153,7 @@ export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[
       for (let r = 0; r < reps; r++) rows.push({ item, glyphs: [], pattern: item });
       continue;
     }
-    const glyphs = glyphsForItem(item, config.category);
+    const glyphs = glyphsForItem(item, config.category, cursive);
     if (glyphs.length === 0) continue;
     for (let r = 0; r < reps; r++) rows.push({ item, glyphs });
   }
@@ -158,7 +165,8 @@ export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[
       if (!isWordAllowed(raw, tier) && normalizeKey(raw).trim() !== name) continue;
       const kind = normalizeKey(raw).trim() === name ? 'name' : config.wordPictures?.[raw] ? 'theme' : 'typed';
       const text = wordInCase(raw, config.letterMode, kind);
-      const glyphs = glyphsForWord(text);
+      const joined = cursive ? cursiveWord(text) : undefined;
+      const glyphs = cursive ? (joined ? [joined] : []) : glyphsForWord(text);
       if (glyphs.length === 0) continue;
       const picture = config.wordPictures?.[raw];
       for (let r = 0; r < reps; r++) rows.push({ item: text, glyphs, word: true, ...(picture ? { picture } : {}) });
@@ -178,8 +186,10 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
   const H = landscape ? size.width : size.height;
   const alphabet = alphabetOf(config);
   const L = LABELS[alphabet];
-  const s = (CAP_HEIGHT_MM[config.letterSize] ?? 14) / 100;
-  const stroke = 10;
+  const cursive = isCursive(config);
+  // Handwriting: the small letters are half as tall as the capitals, so the whole size goes up a step.
+  const s = ((CAP_HEIGHT_MM[config.letterSize] ?? 14) / 100) * (cursive ? 1.3 : 1);
+  const stroke = cursive ? 7 : 10; // handwriting has thin loops: a lighter pen keeps them open
   const rowGap = ROW_GAP_MM[config.rowSpacing] ?? 7;
   const guide = GUIDE_COLORS[config.guideColor] ?? GUIDE_COLORS.gray;
 
@@ -212,6 +222,7 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     maxCopies: 0,
     leftHanded: config.leftHandedMode,
     guideColor: config.showGuideLines ? guide : null,
+    cursive,
   };
 
   // ── split rows into pages ──
@@ -223,9 +234,11 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     if (!row.word) return s;
     const pictureW = row.picture ? 19 : 0;
     const modelW = (itemWidth(row.glyphs) + cellPad(row.glyphs) * 2) * s;
-    return Math.min(s, s * ((contentW - pictureW) / modelW));
+    // Handwriting words: small enough for the model and two copies to trace on the same line.
+    const cells = cursive ? 3 : 1;
+    return Math.min(s, s * ((contentW - pictureW - 3) / (modelW * cells)));
   };
-  const heightOf = (row: RowItem) => rowHeightMm(row.glyphs, scaleOf(row), stroke);
+  const heightOf = (row: RowItem) => rowHeightMm(row.glyphs, scaleOf(row), stroke, cursive && !row.pattern);
   for (const row of rows) {
     const h = heightOf(row);
     const fits = y + h <= contentBottom && current.length < maxRows;
@@ -280,7 +293,7 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     const extraGap = pageRows.length > 1 ? Math.min(leftover / (pageRows.length - 1), avgRowH * 0.8) : 0;
     let ry = contentTop;
     for (const row of pageRows) {
-      const e = rowExtents(row.glyphs, stroke);
+      const e = rowExtents(row.glyphs, stroke, cursive && !row.pattern);
       const rs = scaleOf(row);
       const baseline = ry + (e.ascent + 100) * rs;
       const geom = { x: contentX, width: contentW, baseline };
