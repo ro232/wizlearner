@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 
 const KIND_TEXT: Record<SeoKind, string> = {
   litere: 'Fiecare literă, mare și mică, cu un cuvânt și o imagine.',
+  mana: 'Scrisul de mână de la școală, pe liniatură tip I, cu cuvinte legate.',
   cifre: 'Cifrele de la 0 la 9 și numărul 10.',
   teme: 'Cuvintele temei săptămânii, cu imagini.',
   jocuri: 'Găsește litera și unește punctele.',
@@ -37,15 +38,15 @@ export default function SheetsIndexPage() {
             <div className="max-w-6xl mx-auto px-4 sm:px-6">
               <h2 className="text-3xl font-extrabold text-ink">{KIND_TITLES[k]}</h2>
               <p className="mt-1 text-slate-700">{KIND_TEXT[k]}</p>
-              <ul className={`mt-6 grid gap-3 ${k === 'litere' || k === 'cifre' ? 'grid-cols-4 sm:grid-cols-6 lg:grid-cols-11' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}>
+              <ul className={`mt-6 grid gap-3 ${['litere', 'mana', 'cifre'].includes(k) ? 'grid-cols-4 sm:grid-cols-6 lg:grid-cols-11' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}>
                 {SEO_SHEETS.filter((s) => s.kind === k).map((s) => (
                   <li key={s.slug}>
                     <Link
                       href={`/fise/${s.slug}`}
                       aria-label={s.label}
-                      className={`flex items-center justify-center h-full rounded-xl bg-white border-2 border-ink font-extrabold text-ink hover:bg-pencil hover:-translate-y-0.5 transition-transform ${k === 'litere' || k === 'cifre' ? 'aspect-square text-2xl font-display' : 'px-4 py-3 justify-start'}`}
+                      className={`flex items-center justify-center h-full rounded-xl bg-white border-2 border-ink font-extrabold text-ink hover:bg-pencil hover:-translate-y-0.5 transition-transform ${['litere', 'mana', 'cifre'].includes(k) ? `aspect-square text-2xl font-display ${k === 'mana' ? 'italic' : ''}` : 'px-4 py-3 justify-start'}`}
                     >
-                      {k === 'litere' ? s.label.replace('Litera ', '') : k === 'cifre' ? s.label.replace(/^(Cifra|Numărul) /, '') : s.label}
+                      {k === 'litere' ? s.label.replace('Litera ', '') : k === 'mana' ? s.label.replace(/^Litera (.+) de mână$/, '$1') : k === 'cifre' ? s.label.replace(/^(Cifra|Numărul) /, '') : s.label}
                     </Link>
                   </li>
                 ))}

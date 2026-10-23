@@ -114,7 +114,7 @@ const UPPER: Record<string, CursiveDef> = {
   P: { w: 62, body: FOOT(26), exit: 'none', extra: [BOWL_P] },
   Q: { w: 62, body: OVAL_O, exit: 'none', extra: ['M 18 88 C 26 100 40 104 56 98'] },
   R: { w: 66, body: FOOT(26), exit: 'none', extra: [`${BOWL_P} C 38 54 44 76 50 90 C 52 98 60 100 66 94`] },
-  S: { w: 60, body: 'M 0 90 C 2 100 14 100 20 90 C 28 74 34 40 40 20 C 44 6 56 0 62 6 C 68 14 58 24 46 22 C 36 20 30 14 26 8', exit: 'none' },
+  S: { w: 64, body: 'M 2 90 C 4 100 14 100 20 90 C 28 74 32 40 38 18 C 42 4 58 -2 66 6 C 74 16 60 30 44 26 C 34 22 28 14 28 8', exit: 'none' },
   T: { w: 64, body: WAVE, exit: 'none', extra: [FOOT(34)] },
   U: { w: 68, body: 'M 4 18 C 8 6 20 4 22 14 L 18 72 C 16 92 26 100 36 100 C 48 100 54 86 54 64 L 56 6 L 54 90 C 54 98 60 100 66 94', exit: 'none' },
   V: { w: 72, body: 'M 4 18 C 8 6 20 4 22 14 C 22 50 20 80 26 94 C 30 100 38 100 44 90 C 52 74 56 30 60 10 C 62 0 74 0 74 10 C 74 20 62 20 58 12', exit: 'none' },

@@ -30,7 +30,7 @@ export default function NameSheetPage() {
   const [kind, setKind] = useState<'sheet' | 'book'>('sheet');
   const [showPaywall, setShowPaywall] = useState(false);
   const tier = useWorksheetStore((s) => s.tier);
-  const bookPages = useMemo(() => (kind === 'book' ? buildNameBookPages(name || 'Ana') : []), [kind, name]);
+  const bookPages = useMemo(() => (kind === 'book' ? buildNameBookPages(name || 'Ana', script) : []), [kind, name, script]);
 
   const config: WorksheetConfig = useMemo(() => {
     const clean = name.trim();
@@ -123,7 +123,7 @@ export default function NameSheetPage() {
                 ))}
               </div>
             </div>
-            {kind === 'sheet' && (
+            {(
               <div>
                 <span className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Litere</span>
                 <div className="grid grid-cols-2 gap-2">

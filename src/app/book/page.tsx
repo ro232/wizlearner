@@ -15,6 +15,8 @@ import { downloadBookInterior, downloadBookCover } from '@/lib/pdf/generate-book
 import { PATTERN_IDS } from '@/lib/glyphs/patterns';
 import { ALPHABETS } from '@/lib/glyphs/data';
 
+const CURSIVE_TITLE = 'Literele de mână';
+
 const inputClass = 'w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white';
 const labelClass = 'block text-xs font-semibold text-slate-700 uppercase tracking-wider';
 
@@ -136,6 +138,33 @@ export default function BookPage() {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className={labelClass}>Literele</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {([['print', 'De tipar', 'grădiniță, pregătitoare'], ['cursive', 'De mână', 'clasa I, scris legat']] as const).map(([v, l, sub]) => {
+                    const active = (config.script ?? 'print') === v;
+                    return (
+                      <button
+                        key={v}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() =>
+                          setConfig((c) => {
+                            // Switch the default title with the script, but never overwrite one the author typed.
+                            const isDefault = c.title === DEFAULT_BOOK_CONFIG.title || c.title === CURSIVE_TITLE;
+                            return { ...c, script: v, ...(isDefault ? { title: v === 'cursive' ? CURSIVE_TITLE : DEFAULT_BOOK_CONFIG.title } : {}) };
+                          })
+                        }
+                        className={`p-2 rounded-lg border-2 transition-all text-center ${active ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`}
+                      >
+                        <div className={`text-sm font-bold ${v === 'cursive' ? 'italic' : ''}`}>{l}</div>
+                        <div className="text-[11px] text-slate-500">{sub}</div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

@@ -12,7 +12,7 @@ import { DOT_SHAPES } from '@/lib/worksheet/activities';
  * Everything here is static data, so the pages are built ahead of time.
  */
 
-export type SeoKind = 'litere' | 'cifre' | 'teme' | 'jocuri';
+export type SeoKind = 'litere' | 'mana' | 'cifre' | 'teme' | 'jocuri';
 
 export interface SeoSheet {
   slug: string;
@@ -30,7 +30,8 @@ export interface SeoSheet {
 }
 
 export const KIND_TITLES: Record<SeoKind, string> = {
-  litere: 'Litere de trasat',
+  litere: 'Litere de tipar',
+  mana: 'Litere de mână (clasa I)',
   cifre: 'Cifre de trasat',
   teme: 'Fișe pe teme',
   jocuri: 'Jocuri pe hârtie',
@@ -83,6 +84,37 @@ function letterSheet(upper: string): SeoSheet {
       customWords: word ? [word] : [],
       wordPictures: word && hint ? { [word]: hint.emoji } : undefined,
       customTitle: `Litera ${upper}${lower}`,
+      showLetterIcons: true,
+      repetitionsPerItem: 2,
+    },
+  };
+}
+
+function handwritingSheet(upper: string): SeoSheet {
+  const lower = upper.toLowerCase();
+  const hint = LETTER_HINTS.ro[upper];
+  const word = hint?.word ?? '';
+  return {
+    slug: `${letterSlug(upper)}-de-mana`,
+    kind: 'mana',
+    label: `Litera ${upper} de mână`,
+    h1: `Fișă de scris de mână: litera ${upper}${lower}`,
+    title: `Litera ${upper} de mână (${upper} mare și ${lower} mic) – fișă clasa I, PDF gratuit`,
+    description: `Fișă gratuită de scris de mână pentru litera ${upper}${lower}, pe liniatură tip I, cu ordinea liniilor${word ? ` și cuvântul „${word}” scris legat` : ''}. Pentru clasa I și pregătitoare.`,
+    intro: [
+      `Litera ${upper} mare și ${lower} mic, de mână, pe liniatura caietului tip I, cu liniile oblice care arată înclinarea.`,
+      ...(DIACRITIC_NOTE[upper] ? [DIACRITIC_NOTE[upper]] : []),
+      word ? `La final copilul scrie cuvântul „${word}” legat, dintr-o singură linie, cum se învață la școală.` : 'Pe ultimele rânduri modelul se estompează, ca cel mic să scrie singur.',
+    ],
+    config: {
+      ...base,
+      category: 'letters',
+      script: 'cursive',
+      letterMode: 'paired',
+      selectedItems: [`${upper}${lower}`],
+      customWords: word ? [word] : [],
+      wordPictures: word && hint ? { [word]: hint.emoji } : undefined,
+      customTitle: `Litera ${upper}${lower} de mână`,
       showLetterIcons: true,
       repetitionsPerItem: 2,
     },
@@ -180,6 +212,7 @@ function gameSheets(): SeoSheet[] {
 
 export const SEO_SHEETS: SeoSheet[] = [
   ...ALPHABETS.ro.map(letterSheet),
+  ...ALPHABETS.ro.map(handwritingSheet),
   ...Array.from({ length: 11 }, (_, n) => numberSheet(n)),
   ...THEMES.map((t) => themeSheet(t.id)),
   ...gameSheets(),
@@ -195,7 +228,9 @@ export function relatedSheets(slug: string, count = 6): SeoSheet[] {
   if (!me) return [];
   const same = SEO_SHEETS.filter((s) => s.kind === me.kind);
   const i = same.findIndex((s) => s.slug === slug);
-  const near = [same[i - 1], same[i + 1], same[i + 2], same[i - 2]].filter((s): s is SeoSheet => !!s);
-  const others = (Object.keys(KIND_TITLES) as SeoKind[]).filter((k) => k !== me.kind).map((k) => SEO_SHEETS.find((s) => s.kind === k)!);
+  // The same letter in the other script (print ↔ handwriting) is the most useful link.
+  const twin = seoSheetBySlug(slug.endsWith('-de-mana') ? slug.slice(0, -'-de-mana'.length) : `${slug}-de-mana`);
+  const near = [twin, same[i - 1], same[i + 1], same[i + 2], same[i - 2]].filter((s): s is SeoSheet => !!s);
+  const others = (Object.keys(KIND_TITLES) as SeoKind[]).filter((k) => k !== me.kind && k !== twin?.kind).map((k) => SEO_SHEETS.find((s) => s.kind === k)!);
   return [...near, ...others].slice(0, count);
 }
