@@ -80,7 +80,7 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
           </Link>
         )}
 
-        <p className="text-xs text-center text-slate-400 mt-4">Plata online va fi disponibilă în curând.</p>
+        <Link href="/preturi" className="block mt-4 text-center text-sm font-semibold text-orange-600 hover:underline">Vezi prețurile și abonează-te</Link>
       </div>
     </div>
   );

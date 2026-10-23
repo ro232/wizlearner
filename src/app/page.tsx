@@ -119,7 +119,7 @@ function Pricing() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-12">Ce e gratuit și ce e în varianta completă</h2>
         <div className="grid md:grid-cols-2 gap-6">
-          {[{ name: 'Gratuit', items: free, note: 'Pentru totdeauna, fără cont.' }, { name: 'Complet', items: full, note: 'Plata online vine în curând. Dacă ai un cod de acces, îl activezi din cont.' }].map((p, i) => (
+          {[{ name: 'Gratuit', items: free, note: 'Pentru totdeauna, fără cont.' }, { name: 'Complet', items: full, note: 'Abonament lunar sau pe an școlar. Vezi prețurile.' }].map((p, i) => (
             <div key={p.name} className={`rounded-2xl bg-white p-6 border-2 ${i ? 'border-orange-300' : 'border-slate-200'}`}>
               <h3 className="text-xl font-bold text-slate-900">{p.name}</h3>
               <ul className="mt-4 space-y-2">
@@ -128,6 +128,7 @@ function Pricing() {
                 ))}
               </ul>
               <p className="mt-5 text-sm text-slate-500">{p.note}</p>
+              {i === 1 && <Link href="/preturi" className="mt-3 inline-flex items-center text-sm font-semibold text-blue-700 hover:underline">Vezi prețurile <ArrowRight className="w-4 h-4 ml-1" aria-hidden /></Link>}
             </div>
           ))}
         </div>

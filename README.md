@@ -1,74 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WorksheetWiz
 
-## Getting Started
+Fișe de scris pentru grădiniță și clasa pregătitoare, cu alfabetul românesc complet (Ă Â Î Ș Ț): litere, cifre, forme, exerciții grafice, numele copilului, fișe pentru toată grupa pe teme și caiete gata de publicat pe Amazon KDP.
 
-First, run the development server:
+## Pornire
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # completează cheile (vezi mai jos)
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Fără chei Supabase/Stripe, generatorul, fișa cu numele, fișele pentru grupă și caietul KDP merg în continuare (totul se desenează în browser); doar contul și plata sunt oprite.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Comenzi
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Comandă | Ce face |
+| --- | --- |
+| `npm run dev` | server de dezvoltare (aici apare și butonul 🔓 care schimbă planul, pentru teste) |
+| `npm test` | testele automate (Vitest) |
+| `npm run lint` | verificarea codului |
+| `npm run build` | build de producție |
+| `npm run build:icons` | regenerează imaginile pentru cuvinte după ce schimbi `LETTER_HINTS` sau `THEMES` |
 
-## Tracing glyph engine (`src/lib/glyphs`)
+## Configurare
 
-Letters, digits and shapes are **vector strokes**, not fonts. Each glyph in
-`data.ts` lists its strokes in the order a child is taught to write them
-(cap height = 100 units, x-height = 50, baseline = 100, descender = 135):
+1. **Supabase:** rulează `src/lib/supabase/schema.sql` (doar pe o bază nouă), apoi toate fișierele din `supabase/migrations/` în ordinea numelui. Ele închid accesul din browser la coduri, nivelul contului și starea abonamentului. Adaugă `https://SITE/auth/callback` (cu parametri) la URL-urile de redirect din Authentication.
+2. **Coduri de acces** (de exemplu pentru Etsy), din SQL Editor: `SELECT * FROM generate_access_codes('starter', 10);`
+3. **Stripe:** două prețuri recurente (lunar și pe an școlar) puse în `STRIPE_PRICE_MONTHLY` și `STRIPE_PRICE_YEARLY`; un webhook spre `/api/stripe/webhook` cu evenimentele `checkout.session.completed` și `customer.subscription.*`; Customer Portal activat. Planul plătit se acordă **doar** din webhook.
+4. **Datele firmei** pentru Confidențialitate și Termeni: variabilele `NEXT_PUBLIC_OPERATOR_*`.
+
+## Cum e construit
 
 ```
-A: ['M 40 0 L 0 100', 'M 40 0 L 80 100', 'M 14 65 L 66 65']
-Ă: A + 'A 40 -30 16 10 200 -20'   // breve drawn last
+src/lib/glyphs      motorul de litere: linii vectoriale în ordinea de scriere, puncte numerotate, săgeți
+                    → desenate identic pe ecran (canvas), în PDF (jsPDF) și în SVG
+src/lib/worksheet   paginile fișelor (layout.ts), rândurile (rows.ts), fișele pentru grupă (group.ts)
+src/lib/book        caietul KDP: interior cu margini oglindite, copertă cu cotor, dimensiuni KDP
+src/lib/hints       imaginile pentru cuvinte (Twemoji, CC-BY 4.0), convertite în desene vectoriale
+src/lib/themes.ts   temele săptămânii
+src/lib/access.ts   ce e gratuit și ce nu (o singură regulă, folosită peste tot)
+src/lib/billing     planuri și reguli abonament → nivel
+src/app/api/stripe  checkout, portal, webhook
 ```
 
-- `geometry.ts` – stroke DSL (`M L C A l`), arcs → cubic béziers, lengths, bounding boxes
-- `render.ts` – one glyph → draw-ops: solid / dashed / dotted / outline strokes,
-  **numbered start dots** and **direction arrows**
-- `backends/` – the same draw-ops rendered to **canvas** (live preview), **jsPDF**
-  (download) and **SVG**
-- `src/lib/worksheet/layout.ts` – rows (model letter + fading copies), guides,
-  header, reward box → identical pages for preview and PDF
+Ce vezi în previzualizare e exact ce se tipărește: aceeași descriere de pagină alimentează ecranul și PDF-ul. PDF-urile includ doar fontul Nunito (înglobat), cum cere KDP.
 
-The Romanian alphabet (`ALPHABETS.ro`) includes Ă Â Î Ș Ț in upper and lower
-case; `ş`/`ţ` (cedilla) input is normalised to the comma-below letters.
-Header text is set in Nunito (`public/fonts`, SIL OFL), embedded in the PDF so
-diacritics print correctly.
+## Teste
 
-## KDP book mode (`src/lib/book`, page `/book`)
-
-Composes a complete print-ready workbook for Amazon KDP from the same glyph
-engine: title page, colophon, parent instructions, pre-writing section (9
-patterns from `src/lib/glyphs/patterns.ts`), one page per letter, alphabet
-review, one page per number (with counting stars), numbers review, certificate.
-
-- `spec.ts` – KDP geometry: trim sizes, bleed (0.125 in), gutter by page count,
-  spine width per paper type, full-wrap cover size
-- `interior.ts` – page builders with mirrored margins (gutter on the inside),
-  even page count, optional preview watermark
-- `cover.ts` – back cover + spine + front cover in one page, barcode corner left clear
-- `src/lib/pdf/generate-book.ts` – interior and cover PDFs (Nunito embedded)
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`npm test` verifică, printre altele: că nicio pagină a caietului nu iese din zona sigură KDP pe niciun format, că fiecare copil încape pe o pagină la fișele pentru grupă, că literele blocate nu ajung în fișele gratuite, că webhook-ul Stripe acordă și retrage planul corect (cu semnături reale) și că numele copilului nu se salvează niciodată în cont.

@@ -4,13 +4,23 @@ import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { useWorksheetStore } from '@/stores/worksheet-store';
+import { safeNextPath } from '@/lib/safe-redirect';
 import type { Tier } from '@/types';
 
-interface UserProfile {
+/** Where to land after an email or Google sign-in: the page in ?next=, if it is on this site. */
+function callbackUrl(): string {
+  const next = safeNextPath(new URLSearchParams(window.location.search).get('next'));
+  return `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
+}
+
+export interface UserProfile {
   id: string;
   display_name: string | null;
   tier: Tier;
   access_code: string | null;
+  subscription_status?: string | null;
+  subscription_period_end?: string | null;
+  stripe_customer_id?: string | null;
   children: Array<{ name: string; age: number; avatar_url?: string }>;
   preferences: Record<string, unknown>;
 }
@@ -70,7 +80,7 @@ export function useAuth() {
   const signInWithGoogle = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: callbackUrl() },
     });
   };
 
@@ -83,7 +93,7 @@ export function useAuth() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: callbackUrl(),
       },
     });
   };
@@ -91,7 +101,7 @@ export function useAuth() {
   const signInWithMagicLink = async (email: string) => {
     return await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: callbackUrl() },
     });
   };
 
