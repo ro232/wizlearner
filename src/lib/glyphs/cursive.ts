@@ -14,7 +14,7 @@ import { normalizeKey as normalizeKeyCursive } from './data';
  * So "mama" is written as one line, the way it is taught at school.
  */
 
-export const SLANT = 0.3; // horizontal shift per unit of height (about 17°, like the oblique lines of a "tip I" notebook)
+export const SLANT = 0.36; // horizontal shift per unit of height (about 20°, the oblique lines of a "tip I" notebook)
 
 type Exit = 'low' | 'high' | 'none';
 export type Entry = 'start' | 'low' | 'high' | 'none';
@@ -45,11 +45,11 @@ const HAT = 'M 13 44 L 22 35 L 31 44';
 
 const LOWER: Record<string, CursiveDef> = {
   a: { w: 48, body: `${OVAL} L 37 52 L 37 92`, exit: 'low' },
-  b: { w: 40, body: `${LOOP_UP} L 4 92 C 5 100 12 101 20 98 C 30 94 34 74 32 62 C 31 54 24 50 22 56 C 21 61 30 58 38 52`, exit: 'high' },
+  b: { w: 40, body: `${LOOP_UP} L 4 92 C 5 100 12 101 20 98 C 30 94 34 74 32 62 C 31 52 20 48 18 56 C 17 64 30 60 40 52`, exit: 'high' },
   c: { w: 40, body: 'M 31 55 C 28 49 20 50 15 54 C 6 60 4 80 8 92 C 12 101 24 101 32 92', exit: 'low' },
   d: { w: 48, body: `${OVAL} L 38 2 L 37 92`, exit: 'low' },
   e: { w: 40, body: 'M 4 82 C 18 78 30 70 30 60 C 30 52 22 49 15 53 C 6 59 4 78 8 90 C 12 100 24 101 32 93', exit: 'low' },
-  f: { w: 36, body: 'M 4 74 C 16 46 22 8 14 4 C 6 0 6 30 6 60 L 6 138 C 6 150 18 150 18 138 C 18 124 10 108 7 99 C 14 100 22 98 28 95', exit: 'low' },
+  f: { w: 32, body: 'M 4 74 C 16 46 22 8 14 4 C 6 0 6 30 6 60 L 6 146 L 6 96 C 8 90 16 90 16 96 C 16 102 6 102 8 96 C 14 94 22 94 28 92', exit: 'low' },
   g: { w: 46, body: `${OVAL} L 37 52 L 37 136 C 37 151 22 153 20 143 C 18 132 30 112 42 98`, exit: 'low' },
   h: { w: 44, body: `${LOOP_UP} L 4 100 L 4 80 C 6 62 14 54 22 56 C 30 58 32 66 32 76 L 32 92`, exit: 'low' },
   i: { w: 22, body: 'M 10 52 L 9 92', exit: 'low', extra: ['M 11 34 L 11 34.01'] },
@@ -63,9 +63,9 @@ const LOWER: Record<string, CursiveDef> = {
   },
   n: { w: 44, body: 'M 4 56 C 6 52 10 52 10 58 L 10 100 L 10 78 C 12 60 18 54 24 54 C 30 54 32 62 32 72 L 32 92', exit: 'low' },
   o: { w: 38, body: 'A 20 75 15 23 -80 -440 C 24 50 30 50 36 52', exit: 'high' },
-  p: { w: 44, body: 'M 8 52 L 6 146 L 7 98 C 8 72 16 54 27 54 C 36 54 39 66 37 78 C 35 92 24 101 14 98 C 24 102 34 98 40 90', exit: 'low' },
-  q: { w: 52, body: `${OVAL} L 37 52 L 37 136 C 37 150 48 150 48 138 C 48 124 40 110 38 100 C 42 98 46 97 50 95`, exit: 'low' },
-  r: { w: 34, body: 'M 8 50 C 12 58 20 58 28 48 C 27 62 25 80 24 92', exit: 'low' },
+  p: { w: 46, body: 'M 8 52 L 6 146 L 7 80 C 10 60 18 54 26 54 C 34 54 36 62 36 72 L 36 92', exit: 'low' },
+  q: { w: 50, body: `${OVAL} L 37 52 L 37 136 C 37 144 32 146 30 142 C 28 138 36 136 46 138`, exit: 'none' },
+  r: { w: 46, body: 'M 10 54 C 12 40 28 42 18 58 C 13 64 12 80 11 100 L 11 82 C 14 62 20 56 26 56 C 32 56 34 64 34 74 L 34 92', exit: 'low' },
   s: { w: 38, body: 'M 12 50 C 20 62 30 76 26 90 C 23 99 10 101 6 94 C 12 98 26 98 34 88', exit: 'low' },
   t: { w: 26, body: 'M 14 20 L 12 92', exit: 'low', extra: ['M 2 50 L 26 50'] },
   u: { w: 44, body: 'M 8 52 L 6 82 C 6 96 12 100 18 100 C 28 100 32 88 32 74 L 32 52 L 32 92', exit: 'low' },
@@ -75,9 +75,9 @@ const LOWER: Record<string, CursiveDef> = {
     body: 'M 4 56 C 6 51 12 51 12 58 C 12 76 14 98 21 98 C 28 98 30 86 30 72 C 30 86 32 98 39 98 C 46 98 48 80 48 56 C 48 50 44 50 44 54 C 44 58 50 54 56 52',
     exit: 'high',
   },
-  x: { w: 40, body: 'M 4 56 C 8 51 16 51 20 58 L 30 94', exit: 'low', extra: ['M 34 56 L 14 96'] },
+  x: { w: 50, body: 'M 6 56 C 12 50 24 52 23 66 C 22 82 14 96 4 96 l 42 58 C 38 50 28 52 24 64 C 21 78 26 98 36 98 C 40 98 44 94 46 90', exit: 'low' },
   y: { w: 50, body: 'M 8 52 L 6 82 C 6 96 12 100 18 100 C 28 100 32 88 32 74 L 32 52 L 32 138 C 32 151 22 151 22 140 C 22 128 36 110 46 98', exit: 'low' },
-  z: { w: 44, body: 'M 4 56 C 10 50 26 50 30 56 C 30 64 20 74 14 76 C 26 76 34 88 32 104 C 30 130 18 152 11 142 C 5 132 24 112 40 98', exit: 'low' },
+  z: { w: 48, body: 'M 6 58 C 12 50 22 56 32 52 L 8 98 C 16 94 26 102 36 98 C 40 96 42 94 44 90', exit: 'low', extra: ['M 12 76 L 30 76'] },
 };
 
 LOWER['ă'] = { ...LOWER.a, extra: [BREVE], marks: 1 };
@@ -86,42 +86,49 @@ LOWER['î'] = { ...LOWER.i, extra: ['M 1 44 L 10 35 L 19 44'], marks: 1 };
 LOWER['ș'] = { ...LOWER.s, extra: ['M 18 106 C 19 114 16 121 10 126'], marks: 1 };
 LOWER['ț'] = { ...LOWER.t, extra: [...LOWER.t.extra!, 'M 13 106 C 14 114 11 121 5 126'], marks: 1 };
 
-const STEM = (x: number) => `M ${x + 4} 6 C ${x + 4} 40 ${x + 2} 70 ${x - 2} 98`;
+/** A capital's stem from the top line down, ending in the little curl to the left of the school model. */
+const FOOT = (x: number, top = 8) => `M ${x} ${top} L ${x - 2} 86 C ${x - 2} 98 ${x - 12} 102 ${x - 18} 96 C ${x - 21} 92 ${x - 18} 86 ${x - 14} 88`;
+/** Hook at the top left of I, J, H, K, U, V, W, Y. */
+const CAP_HOOK = 'M 4 18 C 8 6 24 2 36 6';
+/** Wavy bar at the top of F and T. */
+const WAVE = 'M 8 16 C 12 6 22 6 32 8 C 44 10 52 6 62 2';
+const BOWL_P = 'M 14 26 C 4 18 14 2 32 4 C 50 4 60 12 58 26 C 56 42 40 50 24 50';
+const OVAL_O = 'A 32 52 24 46 -80 -440 C 38 -2 50 0 50 10 C 50 18 40 16 36 10';
 
 const UPPER: Record<string, CursiveDef> = {
-  A: { w: 76, body: 'A 34 56 24 44 -30 -390 L 62 8 L 62 92 C 62 100 68 101 74 96', exit: 'none' },
-  B: { w: 60, body: STEM(10), exit: 'none', extra: ['M 6 14 C 20 0 50 0 50 24 C 50 40 34 48 22 48 C 44 48 58 58 56 76 C 54 96 30 102 10 96'] },
-  C: { w: 64, body: 'M 56 18 C 54 6 44 2 34 4 C 14 8 4 36 6 62 C 8 88 24 100 40 98 C 50 97 58 90 62 82', exit: 'none' },
-  D: { w: 66, body: 'M 18 8 C 16 40 14 70 10 96 C 6 102 0 98 4 94 C 20 100 50 100 60 70 C 70 36 50 4 26 4 C 14 4 6 12 8 20', exit: 'none' },
-  E: { w: 60, body: 'M 50 14 C 46 2 22 2 18 18 C 15 32 26 44 36 46 C 16 46 6 60 8 76 C 10 96 40 104 56 86', exit: 'none' },
-  F: { w: 60, body: 'M 6 10 C 20 2 40 12 58 4', exit: 'none', extra: ['M 30 8 C 30 40 28 70 22 92 C 18 102 8 100 4 92', 'M 16 52 L 42 52'] },
-  G: { w: 64, body: 'M 56 18 C 54 6 44 2 34 4 C 14 8 4 36 6 62 C 8 88 24 100 40 98 C 52 96 58 84 58 66 L 58 54 L 40 54', exit: 'none' },
-  H: { w: 60, body: STEM(10), exit: 'none', extra: [STEM(50), 'M 12 52 L 52 50'] },
-  I: { w: 42, body: 'M 12 14 C 22 2 40 4 38 16 C 36 40 30 70 26 94 C 22 104 8 100 6 90', exit: 'none' },
-  J: { w: 46, body: 'M 12 14 C 22 2 44 4 42 16 L 38 120 C 36 146 14 146 14 130 C 14 116 32 104 46 98', exit: 'none' },
-  K: { w: 56, body: STEM(8), exit: 'none', extra: ['M 52 8 C 40 26 26 44 14 54 C 28 56 38 80 50 98'] },
-  L: { w: 58, body: 'M 40 16 C 40 4 26 2 24 16 C 22 40 22 70 14 90 C 8 100 2 96 8 92 C 20 88 40 100 56 96', exit: 'none' },
-  M: { w: 60, body: 'M 4 98 C 8 70 12 30 16 6 C 22 40 28 70 32 90 C 36 70 42 40 50 6 C 52 40 54 70 56 98', exit: 'none' },
-  N: { w: 56, body: 'M 4 98 C 8 70 12 30 16 6 C 24 40 34 70 44 96 C 46 70 48 40 52 4', exit: 'none' },
-  O: { w: 60, body: 'A 32 52 26 46 -80 -440 C 40 2 48 4 52 10', exit: 'none' },
-  P: { w: 58, body: STEM(10), exit: 'none', extra: ['M 8 14 C 20 2 54 0 54 26 C 54 48 30 54 14 50'] },
-  Q: { w: 62, body: 'A 32 52 26 46 -80 -440 C 40 2 48 4 52 10', exit: 'none', extra: ['M 28 84 C 38 100 50 106 62 102'] },
-  R: { w: 60, body: STEM(10), exit: 'none', extra: ['M 8 14 C 20 2 54 0 54 26 C 54 48 30 54 14 50 C 30 56 40 84 58 98'] },
-  S: { w: 58, body: 'M 50 14 C 46 2 26 2 22 16 C 18 32 48 46 50 66 C 52 88 32 100 18 96 C 8 92 6 84 10 78', exit: 'none' },
-  T: { w: 62, body: 'M 4 12 C 16 4 40 12 60 4', exit: 'none', extra: ['M 32 8 C 32 40 30 70 24 92 C 20 102 8 100 6 90'] },
-  U: { w: 58, body: 'M 6 10 C 10 4 14 6 14 14 L 12 70 C 12 92 20 100 30 100 C 44 100 50 86 50 64 L 50 6 L 50 92 C 50 100 56 101 58 96', exit: 'none' },
-  V: { w: 64, body: 'M 6 10 C 10 4 14 6 14 14 C 18 50 22 80 30 98 C 40 70 48 30 56 6 C 58 2 62 4 64 8', exit: 'none' },
-  W: { w: 70, body: 'M 4 8 C 8 40 12 80 18 98 C 24 70 28 40 34 30 C 38 50 42 80 46 98 C 52 70 60 30 68 6', exit: 'none' },
-  X: { w: 62, body: 'M 6 10 C 20 4 30 30 34 50 C 38 70 46 96 60 92', exit: 'none', extra: ['M 58 8 C 40 30 26 70 8 96'] },
-  Y: { w: 62, body: 'M 6 10 C 10 4 14 6 14 14 L 12 60 C 12 76 20 82 28 82 C 40 82 48 70 48 52 L 48 6 L 48 120 C 48 146 26 148 26 134 C 26 120 44 106 60 98', exit: 'none' },
-  Z: { w: 60, body: 'M 8 12 C 20 2 46 6 54 6 C 40 30 24 60 8 94 C 24 100 40 92 58 96', exit: 'none' },
+  A: { w: 72, body: 'M 0 90 C 2 100 12 100 18 90 C 28 70 36 30 42 4 C 46 34 50 70 54 90 C 56 98 62 100 68 94', exit: 'none', extra: ['M 12 58 C 24 50 36 64 56 54'] },
+  B: { w: 62, body: FOOT(20, 6), exit: 'none', extra: ['M 6 18 C 14 2 50 -2 54 18 C 56 34 40 46 26 48 C 36 46 52 52 54 70 C 56 92 36 102 22 98'] },
+  C: { w: 60, body: 'M 44 26 C 34 26 34 10 46 6 C 56 4 60 10 56 16 C 54 4 40 0 30 6 C 14 16 8 60 14 82 C 20 102 42 100 52 86', exit: 'none' },
+  D: { w: 70, body: 'M 28 6 L 24 86 C 22 98 12 100 6 96 C 0 92 4 86 12 88 C 24 92 34 100 46 96 C 62 90 68 64 66 40 C 64 14 48 2 32 4 C 18 6 14 20 26 22', exit: 'none' },
+  E: { w: 58, body: 'M 52 14 C 50 2 30 0 24 12 C 20 22 26 40 38 46 C 22 46 10 58 12 76 C 14 96 40 104 54 88', exit: 'none' },
+  F: { w: 64, body: WAVE, exit: 'none', extra: [FOOT(34), 'M 20 52 L 44 52'] },
+  G: { w: 66, body: 'M 44 26 C 34 26 34 10 46 6 C 56 4 60 10 56 16 C 54 4 40 0 30 6 C 14 16 8 60 14 82 C 20 102 42 100 50 86 C 54 76 56 62 56 50 L 56 92 C 56 100 62 100 66 96', exit: 'none' },
+  H: { w: 76, body: `${CAP_HOOK} L 34 86 C 34 98 24 102 18 96 C 15 92 18 86 22 88`, exit: 'none', extra: ['M 10 66 C 34 58 54 30 60 10 C 62 2 70 2 70 10 L 64 88 C 64 98 72 100 78 94'] },
+  I: { w: 46, body: `${CAP_HOOK} L 34 86 C 34 98 26 102 20 96 C 17 92 20 86 24 88`, exit: 'none' },
+  J: { w: 52, body: `${CAP_HOOK} L 34 86 C 34 100 22 102 18 96 C 14 88 28 74 50 66`, exit: 'none' },
+  K: { w: 68, body: `${CAP_HOOK} L 34 86 C 34 98 24 102 18 96 C 15 92 18 86 22 88`, exit: 'none', extra: ['M 70 10 C 64 2 54 6 46 18 C 40 28 34 44 30 54 C 44 50 48 70 52 90 C 54 98 62 100 68 94'] },
+  L: { w: 60, body: 'M 40 20 C 50 14 52 2 44 2 C 34 2 30 30 28 56 C 26 80 22 94 12 96 C 2 98 2 88 10 88 C 22 88 32 98 44 98 C 52 98 56 94 58 90', exit: 'none' },
+  M: { w: 84, body: 'M 0 90 C 2 100 12 100 18 90 C 26 70 32 30 38 4 C 40 40 42 70 44 96 C 52 70 62 30 72 4 L 68 88 C 68 98 76 100 82 94', exit: 'none' },
+  N: { w: 78, body: 'M 0 90 C 2 100 12 100 18 90 C 26 70 32 30 38 4 C 40 40 42 70 44 96 C 52 70 60 30 66 8 C 68 2 74 2 76 8', exit: 'none' },
+  O: { w: 60, body: OVAL_O, exit: 'none' },
+  P: { w: 62, body: FOOT(26), exit: 'none', extra: [BOWL_P] },
+  Q: { w: 62, body: OVAL_O, exit: 'none', extra: ['M 18 88 C 26 100 40 104 56 98'] },
+  R: { w: 66, body: FOOT(26), exit: 'none', extra: [`${BOWL_P} C 38 54 44 76 50 90 C 52 98 60 100 66 94`] },
+  S: { w: 60, body: 'M 0 90 C 2 100 14 100 20 90 C 28 74 34 40 40 20 C 44 6 56 0 62 6 C 68 14 58 24 46 22 C 36 20 30 14 26 8', exit: 'none' },
+  T: { w: 64, body: WAVE, exit: 'none', extra: [FOOT(34)] },
+  U: { w: 68, body: 'M 4 18 C 8 6 20 4 22 14 L 18 72 C 16 92 26 100 36 100 C 48 100 54 86 54 64 L 56 6 L 54 90 C 54 98 60 100 66 94', exit: 'none' },
+  V: { w: 72, body: 'M 4 18 C 8 6 20 4 22 14 C 22 50 20 80 26 94 C 30 100 38 100 44 90 C 52 74 56 30 60 10 C 62 0 74 0 74 10 C 74 20 62 20 58 12', exit: 'none' },
+  W: { w: 90, body: 'M 4 18 C 8 6 20 4 22 14 C 22 50 18 80 22 94 C 26 100 34 100 38 90 C 42 76 42 50 42 36 C 42 60 44 86 50 96 C 56 102 64 98 68 86 C 74 66 76 30 78 10 C 80 0 92 0 92 10 C 92 20 80 20 76 12', exit: 'none' },
+  X: { w: 70, body: 'M 6 12 C 16 2 32 10 32 40 C 32 70 22 92 10 96 C 4 98 0 94 2 90', exit: 'none', extra: ['M 66 12 C 58 2 40 10 38 40 C 36 70 44 92 56 96 C 62 98 68 94 68 90', 'M 22 52 L 48 52'] },
+  Y: { w: 66, body: 'M 4 18 C 8 6 20 4 22 14 L 18 60 C 16 76 24 84 34 84 C 46 84 52 70 52 52 L 56 6 L 52 120 C 50 146 30 148 30 134 C 30 120 46 106 62 98', exit: 'none' },
+  Z: { w: 64, body: 'M 6 16 C 12 4 30 10 42 6 C 48 4 54 2 58 4 C 42 30 22 70 6 96 C 20 92 34 102 52 96 C 56 94 60 92 62 90', exit: 'none', extra: ['M 18 52 L 46 52'] },
 };
 
-UPPER['Ă'] = { ...UPPER.A, extra: ['A 36 -12 10 7 160 20'], marks: 1 };
-UPPER['Â'] = { ...UPPER.A, extra: ['M 26 -6 L 36 -16 L 46 -6'], marks: 1 };
+UPPER['Ă'] = { ...UPPER.A, extra: [...UPPER.A.extra!, 'A 44 -12 10 7 160 20'], marks: 1 };
+UPPER['Â'] = { ...UPPER.A, extra: [...UPPER.A.extra!, 'M 34 -6 L 44 -16 L 54 -6'], marks: 1 };
 UPPER['Î'] = { ...UPPER.I, extra: ['M 24 -6 L 34 -16 L 44 -6'], marks: 1 };
-UPPER['Ș'] = { ...UPPER.S, extra: ['M 30 106 C 31 114 28 121 22 126'], marks: 1 };
-UPPER['Ț'] = { ...UPPER.T, extra: [...UPPER.T.extra!, 'M 26 106 C 27 114 24 121 18 126'], marks: 1 };
+UPPER['Ș'] = { ...UPPER.S, extra: ['M 12 108 C 13 116 10 123 4 128'], marks: 1 };
+UPPER['Ț'] = { ...UPPER.T, extra: [...UPPER.T.extra!, 'M 22 108 C 23 116 20 123 14 128'], marks: 1 };
 
 const DEFS: Record<string, CursiveDef> = { ...LOWER, ...UPPER };
 

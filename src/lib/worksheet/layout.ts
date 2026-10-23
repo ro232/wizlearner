@@ -189,7 +189,7 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
   const cursive = isCursive(config);
   // Handwriting: the small letters are half as tall as the capitals, so the whole size goes up a step.
   const s = ((CAP_HEIGHT_MM[config.letterSize] ?? 14) / 100) * (cursive ? 1.3 : 1);
-  const stroke = cursive ? 7 : 10; // handwriting has thin loops: a lighter pen keeps them open
+  const stroke = cursive ? 6 : 10; // handwriting has thin loops: a lighter pen keeps them open
   const rowGap = ROW_GAP_MM[config.rowSpacing] ?? 7;
   const guide = GUIDE_COLORS[config.guideColor] ?? GUIDE_COLORS.gray;
 
