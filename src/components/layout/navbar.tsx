@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Pencil, LogIn, LogOut, User, BookOpen, Menu, X, UserRound, Users, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Logo } from './logo';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useWorksheetStore } from '@/stores/worksheet-store';
@@ -28,29 +29,21 @@ export function Navbar() {
   useEffect(() => setOpen(false), [pathname]);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/20 glass" style={{ background: 'rgba(255,255,255,0.85)' }} aria-label="Navigare principală">
+    <nav className="sticky top-0 z-50 border-b-2 border-ink bg-paper/95 backdrop-blur" aria-label="Navigare principală">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-md transition-transform group-hover:scale-105" style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e40af)' }}>
-            <Pencil className="w-4 h-4 text-white" aria-hidden />
-          </div>
-          <span className="text-xl font-bold tracking-tight">
-            <span className="text-slate-900">Worksheet</span>
-            <span className="gradient-text">Wiz</span>
-          </span>
-        </Link>
+        <Logo />
 
         <div className="hidden md:flex items-center gap-1">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href}>
-              <Button variant="ghost" size="sm" className={cn('text-xs gap-1.5', pathname === link.href && 'bg-blue-50 text-blue-700')}>
+              <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 text-ink hover:bg-white', pathname === link.href && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
                 <link.icon className="w-3.5 h-3.5" aria-hidden />
                 {link.label}
               </Button>
             </Link>
           ))}
           <Link href="/preturi">
-            <Button variant="ghost" size="sm" className={cn('text-xs gap-1.5', pathname === '/preturi' && 'bg-blue-50 text-blue-700')}>
+            <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 text-ink hover:bg-white', pathname === '/preturi' && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
               <Crown className="w-3.5 h-3.5" aria-hidden /> Prețuri
             </Button>
           </Link>
@@ -80,7 +73,7 @@ export function Navbar() {
             <div className="w-8 h-8 rounded-full bg-slate-100 animate-pulse" />
           ) : user ? (
             <div className="flex items-center gap-1">
-              <Link href="/cont" aria-label="Contul tău" className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: 'linear-gradient(135deg, #2E5C8A, #1e40af)' }} title={profile?.display_name ?? 'Contul tău'}>
+              <Link href="/cont" aria-label="Contul tău" className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" data-btn="ink" title={profile?.display_name ?? 'Contul tău'}>
                 {profile?.display_name?.[0]?.toUpperCase() || <User className="w-4 h-4" aria-hidden />}
               </Link>
               <Button variant="ghost" size="sm" className="text-xs gap-1 text-slate-500" onClick={signOut} aria-label="Ieși din cont">
@@ -89,7 +82,7 @@ export function Navbar() {
             </div>
           ) : (
             <Link href="/auth/login" className="hidden sm:block">
-              <Button variant="ghost" size="sm" className="text-xs gap-1.5"><LogIn className="w-3.5 h-3.5" aria-hidden /> Intră în cont</Button>
+              <Button size="sm" className="text-[13px] gap-1.5 rounded-lg bg-white text-ink border-2 border-ink font-extrabold hover:bg-paper"><LogIn className="w-3.5 h-3.5" aria-hidden /> Intră în cont</Button>
             </Link>
           )}
 
@@ -107,7 +100,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div id="mobile-menu" className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-1">
+        <div id="mobile-menu" className="md:hidden border-t-2 border-ink bg-paper px-4 py-3 space-y-1">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href} className={cn('flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50', pathname === link.href && 'bg-blue-50 text-blue-700')}>
               <link.icon className="w-4 h-4" aria-hidden /> {link.label}

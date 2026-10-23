@@ -5,6 +5,7 @@ import { Download, Users, Check } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/toast';
 import { PagesPreview } from '@/components/worksheet/pages-preview';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
@@ -26,6 +27,7 @@ export default function GroupPage() {
   const [letters, setLetters] = useState<string[]>([]);
   const [letterMode, setLetterMode] = useState<LetterMode>('uppercase');
   const [difficulty, setDifficulty] = useState<Difficulty>('beginner');
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -49,13 +51,14 @@ export default function GroupPage() {
     setBusy(true);
     try {
       await downloadPagesPdf(pages, `fise-grupa-${themeId ?? 'litere'}.pdf`);
+      toast(`Gata: ${names.length} fișe, câte una pentru fiecare copil.`);
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-paper">
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-2 gap-8">
@@ -141,7 +144,7 @@ export default function GroupPage() {
               </div>
             </div>
 
-            <Button onClick={download} disabled={busy || names.length === 0} className="w-full h-14 rounded-2xl text-white font-bold text-base disabled:opacity-50" style={{ background: 'linear-gradient(135deg, #E8913A, #d97706)' }}>
+            <Button onClick={download} disabled={busy || names.length === 0} className="w-full h-14 rounded-2xl text-white font-bold text-base disabled:opacity-50" data-btn="primary">
               <Download className="w-5 h-5 mr-2" aria-hidden />
               {busy ? 'Se pregătește…' : names.length === 0 ? 'Adaugă numele copiilor' : `Descarcă fișele (${names.length} ${names.length === 1 ? 'copil' : 'copii'}, ${pages.length} pagini)`}
             </Button>

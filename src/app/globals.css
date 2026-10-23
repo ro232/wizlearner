@@ -4,23 +4,24 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    /* Caiet de școală: paper, navy ink, red pen */
+    --background: 43 64% 96%;
+    --foreground: 222 37% 19%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --primary: 213 50% 36%;
+    --card-foreground: 222 37% 19%;
+    --primary: 222 37% 19%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 30 80% 57%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    --secondary: 41 45% 92%;
+    --secondary-foreground: 222 37% 19%;
+    --muted: 41 45% 92%;
+    --muted-foreground: 40 11% 38%;
+    --accent: 41 45% 92%;
+    --accent-foreground: 222 37% 19%;
+    --destructive: 351 85% 42%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 213 50% 36%;
+    --border: 39 31% 85%;
+    --input: 222 20% 70%;
+    --ring: 40 88% 57%;
     --radius: 0.75rem;
   }
 }
@@ -28,6 +29,57 @@
 @layer base {
   * { @apply border-border; }
   body { @apply bg-background text-foreground; }
+  h1, h2, h3 { font-family: var(--font-fraunces), Georgia, serif; letter-spacing: -0.02em; }
+  :focus-visible { outline: 3px solid #F2B632; outline-offset: 2px; }
+  input[type='checkbox'], input[type='range'] { accent-color: #1F2A44; }
+  ::selection { background: #F2B632; color: #1F2A44; }
+}
+
+/* ── Caiet de școală ───────────────────────────────────────── */
+
+/* Notebook ruling, for hero areas. */
+.ruled {
+  background-color: #FBF7EE;
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 39px, #DCE6F2 39px, #DCE6F2 40px);
+}
+
+/* Buttons: data-btn="primary" (navy, red offset) and data-btn="ink" (navy, navy offset). */
+[data-btn] {
+  background: #1F2A44 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #1F2A44;
+  font-weight: 800;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+[data-btn='primary'] { box-shadow: 4px 4px 0 #C8102E !important; }
+[data-btn='ink'] { box-shadow: 4px 4px 0 #F2B632 !important; }
+[data-btn]:hover:not(:disabled) { transform: translate(-1px, -1px); }
+[data-btn='primary']:hover:not(:disabled) { box-shadow: 6px 6px 0 #C8102E !important; }
+[data-btn='ink']:hover:not(:disabled) { box-shadow: 6px 6px 0 #F2B632 !important; }
+[data-btn]:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #1F2A44 !important; }
+
+/* A sheet of paper on the desk, used around previews. */
+.desk {
+  background-color: #EFE7D6;
+  background-image: radial-gradient(#E3D8C2 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+/* Small entrance for the preview when the sheet changes. */
+@keyframes sheet-in {
+  from { opacity: 0.4; transform: translateY(4px) rotate(-0.3deg); }
+  to { opacity: 1; transform: none; }
+}
+.sheet-in { animation: sheet-in 260ms ease-out; }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.toast-in { animation: toast-in 200ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-in, .toast-in, .animate-fade-up, [data-btn] { animation: none !important; transition: none !important; }
 }
 
 /* Premium effects */
@@ -42,19 +94,8 @@
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, #2E5C8A 0%, #E8913A 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.gradient-text-blue {
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #2E5C8A 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+.gradient-text { color: #C8102E; }
+.gradient-text-blue { color: #C8102E; }
 
 .hover-lift {
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
@@ -78,15 +119,7 @@
   position: relative;
   overflow: hidden;
 }
-.btn-premium::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
-  background-size: 200% 100%;
-  animation: shimmer 3s infinite;
-  pointer-events: none;
-}
+
 
 .noise-bg {
   position: relative;

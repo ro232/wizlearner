@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
 import { ALPHABETS, normalizeKey } from '@/lib/glyphs/data';
 
@@ -40,7 +41,35 @@ interface WorksheetState {
   setLanguage: (lang: 'en' | 'ro') => void;
 }
 
-export const useWorksheetStore = create<WorksheetState>((set) => ({
+/**
+ * localStorage that never throws (private windows, blocked site data, server rendering):
+ * remembering the last sheet is a convenience, never a requirement.
+ */
+const safeStorage: StateStorage = {
+  getItem: (k) => {
+    try {
+      return typeof window === 'undefined' ? null : window.localStorage.getItem(k);
+    } catch {
+      return null;
+    }
+  },
+  setItem: (k, v) => {
+    try {
+      window.localStorage.setItem(k, v);
+    } catch {
+      /* ignore */
+    }
+  },
+  removeItem: (k) => {
+    try {
+      window.localStorage.removeItem(k);
+    } catch {
+      /* ignore */
+    }
+  },
+};
+
+export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   config: { ...DEFAULT_CONFIG },
   tier: 'free',
   language: 'en',
@@ -114,4 +143,13 @@ export const useWorksheetStore = create<WorksheetState>((set) => ({
   resetConfig: () => set({ config: { ...DEFAULT_CONFIG } }),
   setTier: (tier) => set({ tier }),
   setLanguage: (language) => set({ language }),
+}), {
+  name: 'wizlearner-last-sheet',
+  version: 1,
+  storage: createJSONStorage(() => safeStorage),
+  // Only the sheet is remembered, in this browser. The plan comes from the account, never from storage.
+  partialize: (state) => ({ config: state.config }),
+  merge: (persisted, current) => ({ ...current, config: { ...DEFAULT_CONFIG, ...((persisted as { config?: Partial<WorksheetConfig> })?.config ?? {}) } }),
+  // Rehydrated once after the first render (see StoreHydration), so server and client HTML match.
+  skipHydration: true,
 }));

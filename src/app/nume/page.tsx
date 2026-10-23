@@ -5,6 +5,7 @@ import { Download, Printer, UserRound } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/toast';
 import { WorksheetPreview } from '@/components/worksheet/worksheet-preview';
 import { DEFAULT_CONFIG, type LetterMode, type WorksheetConfig } from '@/types';
 import { generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/generate-pdf';
@@ -19,6 +20,7 @@ export default function NameSheetPage() {
   const [name, setName] = useState('');
   const [mode, setMode] = useState<LetterMode>('paired');
   const [withLetters, setWithLetters] = useState(true);
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
 
   const config: WorksheetConfig = useMemo(() => {
@@ -48,6 +50,7 @@ export default function NameSheetPage() {
     setBusy(true);
     try {
       if (what === 'download') await generateWorksheetPDF(sheet, 'full');
+      if (what === 'download') toast(`Fișa cu numele ${name.trim()} e descărcată.`);
       else await printWorksheetPDF(sheet, 'full');
     } finally {
       setBusy(false);
@@ -55,7 +58,7 @@ export default function NameSheetPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-paper">
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-2 gap-8">
         <section className="space-y-6">
@@ -91,7 +94,7 @@ export default function NameSheetPage() {
               </label>
             )}
             <div className="flex gap-2">
-              <Button onClick={() => run('download')} disabled={empty || busy} className="flex-1 h-12 rounded-2xl text-white font-bold disabled:opacity-50" style={{ background: 'linear-gradient(135deg, #E8913A, #d97706)' }}>
+              <Button onClick={() => run('download')} disabled={empty || busy} className="flex-1 h-12 rounded-2xl text-white font-bold disabled:opacity-50" data-btn="primary">
                 <Download className="w-5 h-5 mr-2" aria-hidden /> Descarcă PDF
               </Button>
               <Button variant="outline" onClick={() => run('print')} disabled={empty || busy} className="h-12 px-4 rounded-2xl border-2" aria-label="Printează">

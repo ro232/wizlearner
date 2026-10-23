@@ -99,7 +99,7 @@ export default function LoginPage() {
 
   if (magicLinkSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
+      <div className="min-h-screen flex items-center justify-center ruled p-4">
         <Card className="w-full max-w-md border-blue-200 shadow-xl">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-blue-600">Verifică emailul</CardTitle>
@@ -129,13 +129,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
+    <div className="min-h-screen flex items-center justify-center ruled p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2">
             <Sparkles className="w-8 h-8 text-blue-600" />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-extrabold text-ink">
               WorksheetWiz
             </h1>
           </div>
@@ -144,7 +144,7 @@ export default function LoginPage() {
 
         {/* Main Card */}
         <Card className="border-blue-200 shadow-xl overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 pointer-events-none" />
+          
           <div className="relative">
             <CardHeader className="pb-3">
               <CardTitle className="text-xl">Autentificare</CardTitle>
@@ -169,7 +169,7 @@ export default function LoginPage() {
                   onClick={handleGoogleSignIn}
                   disabled={isLoading}
                   size="lg"
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold h-12 gap-2"
+                  className="w-full h-12 gap-2 rounded-xl" data-btn="ink"
                 >
                   {isLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -226,7 +226,7 @@ export default function LoginPage() {
                     type="submit"
                     disabled={isLoading}
                     size="lg"
-                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold h-10 gap-2"
+                    className="w-full h-10 gap-2 rounded-xl" data-btn="ink"
                   >
                     {isLoading ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -276,7 +276,7 @@ export default function LoginPage() {
                     type="submit"
                     disabled={isLoading}
                     size="lg"
-                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold h-10 gap-2"
+                    className="w-full h-10 gap-2 rounded-xl" data-btn="ink"
                   >
                     {isLoading ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

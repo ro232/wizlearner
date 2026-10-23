@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Nunito } from "next/font/google";
 import "./globals.css";
+import { ToastProvider } from "@/components/ui/toast";
+import { StoreHydration } from "@/components/store-hydration";
 
-// latin-ext carries Ă Â Î Ș Ț.
-const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-inter" });
+// latin-ext carries Ă Â Î Ș Ț. Nunito is also the worksheet font, so screen and paper match.
+const nunito = Nunito({ subsets: ["latin", "latin-ext"], variable: "--font-nunito", display: "swap" });
+const fraunces = Fraunces({ subsets: ["latin", "latin-ext"], variable: "--font-fraunces", weight: ["600", "800"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "WorksheetWiz — fișe de scris pentru grădiniță și clasa pregătitoare",
@@ -18,6 +21,8 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport = { themeColor: "#1F2A44" };
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,8 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ro">
-      <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
+      <body className={`${nunito.variable} ${fraunces.variable} font-sans antialiased`}>
+        <StoreHydration />
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

@@ -62,15 +62,12 @@ export function PagesPreview({ pages, width = 420, className, pageLabel = 'Pagin
 
   return (
     <div className={`relative group w-full ${className || ''}`} style={{ maxWidth: width }}>
-      <div
-        className="absolute -inset-2 rounded-2xl opacity-40 group-hover:opacity-70 transition-all duration-700"
-        style={{ background: 'linear-gradient(135deg, #dbeafe 0%, #fed7aa 50%, #ddd6fe 100%)', filter: 'blur(8px)' }}
-      />
-      <div className="relative rounded-xl overflow-hidden shadow-xl ring-1 ring-black/5 bg-white w-full" style={{ maxWidth: width }}>
+
+      <div key={`${safeIndex}-${pages.length}`} className="sheet-in relative rounded-[3px] overflow-hidden bg-white w-full shadow-xl" style={{ maxWidth: width }}>
         <canvas ref={canvasRef} className="block w-full h-auto" style={{ background: '#fff' }} />
         {emptyMessage && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span className="px-4 py-2 rounded-full bg-white/90 text-sm font-medium text-slate-500 shadow">{emptyMessage}</span>
+            <span className="px-4 py-2 rounded-full bg-paper text-sm font-bold text-ink shadow-md">{emptyMessage}</span>
           </div>
         )}
       </div>
@@ -80,7 +77,7 @@ export function PagesPreview({ pages, width = 420, className, pageLabel = 'Pagin
             type="button"
             onClick={() => setIndex(Math.max(0, safeIndex - 1))}
             disabled={safeIndex === 0}
-            className="w-7 h-7 rounded-full bg-white shadow flex items-center justify-center disabled:opacity-40"
+            className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center disabled:opacity-40"
             aria-label="Pagina anterioară"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -92,7 +89,7 @@ export function PagesPreview({ pages, width = 420, className, pageLabel = 'Pagin
             type="button"
             onClick={() => setIndex(Math.min(pages.length - 1, safeIndex + 1))}
             disabled={safeIndex >= pages.length - 1}
-            className="w-7 h-7 rounded-full bg-white shadow flex items-center justify-center disabled:opacity-40"
+            className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center disabled:opacity-40"
             aria-label="Pagina următoare"
           >
             <ChevronRight className="w-4 h-4" />
