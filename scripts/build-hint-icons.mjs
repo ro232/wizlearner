@@ -6,7 +6,7 @@
  * Source: Twemoji (https://github.com/jdecked/twemoji), graphics licensed CC-BY 4.0.
  * Attribution is printed on the book colophon and in the site footer.
  *
- * Run after changing LETTER_HINTS in src/lib/glyphs/data.ts:
+ * Run after changing LETTER_HINTS in src/lib/glyphs/data.ts or THEMES in src/lib/themes.ts:
  *   node scripts/build-hint-icons.mjs
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
@@ -19,10 +19,9 @@ const svgpath = require('svgpath');
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const twemojiDir = join(root, 'node_modules/@twemoji/svg');
-const dataTs = readFileSync(join(root, 'src/lib/glyphs/data.ts'), 'utf8');
-
-// Every emoji used as a hint, plus the few extra pictures the UI uses.
-const emojis = new Set([...dataTs.matchAll(/emoji: '([^']+)'/g)].map((m) => m[1]));
+// Every emoji used as a letter hint or as a picture in a theme.
+const sources = ['src/lib/glyphs/data.ts', 'src/lib/themes.ts'].map((f) => readFileSync(join(root, f), 'utf8'));
+const emojis = new Set(sources.flatMap((src) => [...src.matchAll(/emoji: '([^']+)'/g)].map((m) => m[1])));
 
 function fileFor(emoji) {
   const cps = [...emoji].map((c) => c.codePointAt(0).toString(16));
