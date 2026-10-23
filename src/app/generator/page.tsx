@@ -10,7 +10,7 @@ import { SheetContentBar } from '@/components/worksheet/sheet-content-bar';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/generate-pdf';
-import { countWorksheetPages, rowItems } from '@/lib/worksheet/layout';
+import { countWorksheetPages, hasContent } from '@/lib/worksheet/layout';
 import { configForSaving, defaultSheetName } from '@/lib/worksheet/saved';
 import { useAuth } from '@/hooks/use-auth';
 import { useWorksheets } from '@/hooks/use-worksheets';
@@ -39,7 +39,7 @@ export default function GeneratorPage() {
   };
 
   const { empty, pages } = useMemo(
-    () => ({ empty: rowItems(config, tier).length === 0, pages: countWorksheetPages(config, tier) }),
+    () => ({ empty: !hasContent(config, tier), pages: countWorksheetPages(config, tier) }),
     [config, tier],
   );
 

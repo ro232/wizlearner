@@ -10,8 +10,8 @@ import { stripe } from '@/lib/stripe';
 export const metadata: Metadata = { title: 'Prețuri · WorksheetWiz' };
 export const revalidate = 3600; // prices come from Stripe; refresh hourly
 
-const FREE = ['Literele A–E (și Ă, Â), cifrele 0–5', 'Trei forme și trei exerciții grafice', 'Fișa cu numele copilului', 'Fișe pentru grupă: încearcă cu 3 copii', 'Caietul KDP, cu filigran'];
-const FULL = ['Fișe pentru toată grupa, până la 40 de copii, pe teme', 'Tot alfabetul românesc și englez, mari și mici', 'Cifre și numere 0–20, toate formele și exercițiile', 'Orice cuvânt de trasat', 'Fișele salvate în cont', 'Caietul KDP fără filigran, pe care îl poți vinde'];
+const FREE = ['Literele A–E (și Ă, Â), cifrele 0–5', 'Trei forme și trei exerciții grafice', 'Jocuri: găsește litera A–E, numără până la 5, steaua cu puncte', 'Fișa cu numele copilului', 'Fișe pentru grupă: încearcă cu 3 copii', 'Caietul KDP, cu filigran'];
+const FULL = ['Fișe pentru toată grupa, până la 40 de copii, pe teme', 'Tot alfabetul românesc și englez, mari și mici', 'Cifre și numere 0–20, toate formele și exercițiile', 'Toate jocurile și pachetul săptămânii pentru grupă', 'Orice cuvânt de trasat', 'Fișele salvate în cont', 'Caietul KDP fără filigran, pe care îl poți vinde'];
 
 function formatPrice(amount: number | null, currency: string): string {
   if (amount === null) return '';

@@ -7,6 +7,7 @@ import { isItemAllowed } from '@/lib/access';
 import { isWordAllowed } from '@/lib/worksheet/layout';
 import { uppercaseLetters, lowercaseLetters, pairedLetters, hintFor } from '@/lib/glyphs/data';
 import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
+import { COUNT_RANGES, DOT_SHAPES, DOT_SHAPE_LABELS } from '@/lib/worksheet/activities';
 import { Button } from '@/components/ui/button';
 import { Lock, RotateCcw, Plus, X, ChevronDown, UserRound } from 'lucide-react';
 
@@ -73,6 +74,8 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
         return [...SHAPES];
       case 'prewrite':
         return [...PATTERN_IDS];
+      case 'games':
+        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`)];
       default:
         return [];
     }
@@ -97,7 +100,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   };
 
   const nameAdded = !!config.childName.trim() && config.customWords.includes(config.childName.trim());
-  const pickTitle = { letters: 'Alege literele', numbers: 'Alege cifrele', shapes: 'Alege formele', prewrite: 'Alege exercițiile' }[config.category as 'letters'] ?? 'Alege';
+  const pickTitle = { letters: 'Alege literele', numbers: 'Alege cifrele', shapes: 'Alege formele', prewrite: 'Alege exercițiile', games: 'Alege jocurile' }[config.category as 'letters'] ?? 'Alege';
 
   return (
     <div className="w-full bg-white rounded-2xl shadow-lg p-5 sm:p-6 space-y-6">
@@ -111,7 +114,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       {/* 1. What we practise */}
       <div>
         <SectionLabel>Ce exersăm</SectionLabel>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
           {CATEGORY_TABS.map((tab) => {
             const active = config.category === tab.id;
             const color = THEME.categories[tab.id];
@@ -155,6 +158,34 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       {/* 2. Which items */}
       <div>
         <SectionLabel right={<span className="text-xs text-slate-500">{config.selectedItems.length} alese</span>}>{pickTitle}</SectionLabel>
+        {config.category === 'games' ? (
+          <div className="space-y-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+            {[
+              { title: 'Găsește litera', text: 'O grilă de litere: copilul o colorează pe cea cerută.', items: allItems.filter((i) => i.startsWith('find:')), cols: 'grid-cols-8 sm:grid-cols-11', show: (i: string) => i.slice(5) },
+              { title: 'Numără și scrie', text: 'Imagini de numărat și căsuța pentru număr.', items: [...COUNT_RANGES] as string[], cols: 'grid-cols-2', show: (i: string) => `1–${i.slice(6)}` },
+              { title: 'Unește punctele', text: 'Puncte numerotate care se transformă într-un desen.', items: DOT_SHAPES.map((d) => `dots:${d}`), cols: 'grid-cols-3 sm:grid-cols-6', show: (i: string) => DOT_SHAPE_LABELS[i.slice(5) as keyof typeof DOT_SHAPE_LABELS] },
+            ].map((group) => (
+              <div key={group.title}>
+                <div className="font-extrabold text-ink">{group.title}</div>
+                <div className="text-xs text-slate-600 mb-2">{group.text} O pagină pentru fiecare.</div>
+                <div className={`grid gap-1.5 ${group.cols}`}>
+                  {group.items.map((item) => {
+                    const free = isFree(item);
+                    const selected = config.selectedItems.includes(item);
+                    return (
+                      <button key={item} type="button" onClick={() => handleItemClick(item)} aria-pressed={selected}
+                        aria-label={`${group.title}: ${group.show(item)}${free ? '' : ' (versiunea completă)'}`}
+                        className={`relative min-h-[2.5rem] px-1 rounded-lg border-2 text-sm font-bold ${selected ? 'border-blue-500 bg-blue-50 text-blue-700' : free ? 'border-slate-300 bg-white text-slate-700 hover:border-blue-300' : 'border-slate-200 bg-slate-100 text-slate-400'}`}>
+                        {group.show(item)}
+                        {!free && <Lock className="absolute top-0.5 right-0.5 w-3 h-3 text-amber-600" aria-hidden />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className={`grid gap-1.5 p-2 bg-slate-50 rounded-lg border border-slate-200 ${config.category === 'prewrite' || config.category === 'shapes' ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-6 sm:grid-cols-7 lg:grid-cols-8'}`}>
           {allItems.map((item) => {
             const free = isFree(item);
@@ -188,6 +219,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
             );
           })}
         </div>
+        )}
         <div className="flex gap-2 mt-2">
           <Button size="sm" variant="outline" onClick={() => addItems(usable)} className="flex-1 text-xs">
             {tier === 'free' ? `Adaugă toate gratuite (${usable.length})` : `Adaugă toate (${usable.length})`}
