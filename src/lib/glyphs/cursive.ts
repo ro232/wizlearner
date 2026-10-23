@@ -46,7 +46,8 @@ const HAT = 'M 13 44 L 22 35 L 31 44';
 const LOWER: Record<string, CursiveDef> = {
   a: { w: 48, body: `${OVAL} L 37 52 L 37 92`, exit: 'low' },
   b: { w: 40, body: `${LOOP_UP} L 4 92 C 5 100 12 101 20 98 C 30 94 34 74 32 62 C 31 52 20 48 18 56 C 17 64 30 60 40 52`, exit: 'high' },
-  c: { w: 40, body: 'M 31 55 C 28 49 20 50 15 54 C 6 60 4 80 8 92 C 12 101 24 101 32 92', exit: 'low' },
+  // c: the pen comes up the left side, makes the little curl at the top right, then the round back.
+  c: { w: 40, body: 'M 13 57 C 17 50 27 48 30 53 C 32 58 26 61 24 56 C 21 50 11 52 8 62 C 5 74 7 92 15 98 C 23 102 30 97 32 92', exit: 'low' },
   d: { w: 48, body: `${OVAL} L 38 2 L 37 92`, exit: 'low' },
   e: { w: 40, body: 'M 4 82 C 18 78 30 70 30 60 C 30 52 22 49 15 53 C 6 59 4 78 8 90 C 12 100 24 101 32 93', exit: 'low' },
   f: { w: 32, body: 'M 4 74 C 16 46 22 8 14 4 C 6 0 6 30 6 60 L 6 146 L 6 96 C 8 90 16 90 16 96 C 16 102 6 102 8 96 C 14 94 22 94 28 92', exit: 'low' },
