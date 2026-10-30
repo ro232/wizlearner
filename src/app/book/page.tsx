@@ -11,7 +11,7 @@ import { useWorksheetStore } from '@/stores/worksheet-store';
 import { buildBookPages, DEFAULT_BOOK_CONFIG, type BookConfig } from '@/lib/book/interior';
 import { buildCoverPage } from '@/lib/book/cover';
 import { coverGeometry, interiorMargins, TRIM_SIZES, PAPER_LABELS, type TrimKey, type PaperKey } from '@/lib/book/spec';
-import { downloadBookInterior, downloadBookCover } from '@/lib/pdf/generate-book';
+import { downloadBookInterior, downloadBookCover } from '@/lib/pdf/actions';
 import { PATTERN_IDS } from '@/lib/glyphs/patterns';
 import { ALPHABETS } from '@/lib/glyphs/data';
 

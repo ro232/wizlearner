@@ -7,7 +7,7 @@ import { useWorksheetStore } from '@/stores/worksheet-store';
 import { useToast } from '@/components/ui/toast';
 import { seoSheetBySlug } from '@/lib/seo/catalog';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
-import { downloadPagesPdf } from '@/lib/pdf/generate-pdf';
+import { downloadPagesPdf } from '@/lib/pdf/actions';
 
 /**
  * The page's own sheet is given away as it is (one page). Changing it — the child's name,

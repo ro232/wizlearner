@@ -12,7 +12,7 @@ import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { buildNameBookPages } from '@/lib/worksheet/name-book';
 import { DEFAULT_CONFIG, type LetterMode, type Script, type WorksheetConfig } from '@/types';
-import { downloadPagesPdf, generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/generate-pdf';
+import { downloadPagesPdf, generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/actions';
 import { lettersOfWord } from '@/lib/glyphs/data';
 
 /**
@@ -157,7 +157,7 @@ export default function NameSheetPage() {
 
         <section aria-label="Previzualizare" className="lg:sticky lg:top-24 lg:self-start">
           <div className="desk rounded-2xl border-2 border-ink p-4 sm:p-8 flex justify-center">
-            {kind === 'book' ? <PagesPreview pages={bookPages} width={420} /> : <WorksheetPreview config={sheet} tier="full" />}
+            {kind === 'book' ? <PagesPreview pages={bookPages} width={420} /> : <WorksheetPreview config={sheet} tier="full" emptyMessage="Scrie numele ca să vezi fișa" />}
           </div>
           {kind === 'book' && tier === 'free' && (
             <p className="mt-3 text-sm text-slate-600 text-center">Răsfoiește caietul gratuit. Descărcarea lui face parte din varianta completă.</p>

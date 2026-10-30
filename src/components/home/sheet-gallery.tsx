@@ -6,7 +6,7 @@ import { Download, PencilLine } from 'lucide-react';
 import { WorksheetPreview } from '@/components/worksheet/worksheet-preview';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { PRESETS } from '@/lib/worksheet/presets';
-import { generateWorksheetPDF } from '@/lib/pdf/generate-pdf';
+import { generateWorksheetPDF } from '@/lib/pdf/actions';
 import { useToast } from '@/components/ui/toast';
 
 /** Real sheets, drawn by the same engine as the downloads: open one to edit, or take it as it is. */
@@ -35,21 +35,21 @@ export function SheetGallery() {
   };
 
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 sm:gap-8">
       {PRESETS.map((p, i) => (
         <article key={p.id} className="group flex flex-col">
-          <div className="desk rounded-2xl border-2 border-ink p-5 flex justify-center">
+          <div className="desk rounded-2xl border-2 border-ink p-2.5 sm:p-5 flex justify-center">
             <div className={`transition-transform duration-300 group-hover:rotate-0 group-hover:-translate-y-1 ${i % 2 ? 'rotate-1' : '-rotate-1'}`}>
               <WorksheetPreview config={p.config} tier="free" width={250} />
             </div>
           </div>
-          <h3 className="mt-4 text-xl font-extrabold text-ink">{p.title}</h3>
-          <p className="text-slate-600">{p.text}</p>
-          <div className="mt-3 flex gap-2">
-            <button type="button" onClick={() => open(p.id)} className="inline-flex items-center gap-1.5 h-11 px-4 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper">
+          <h3 className="mt-3 sm:mt-4 text-base sm:text-xl font-extrabold text-ink">{p.title}</h3>
+          <p className="text-sm sm:text-base text-slate-600">{p.text}</p>
+          <div className="mt-3 flex flex-col sm:flex-row gap-1 sm:gap-2">
+            <button type="button" onClick={() => open(p.id)} className="inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper">
               <PencilLine className="w-4 h-4" aria-hidden /> Modifică
             </button>
-            <button type="button" onClick={() => download(p.id)} disabled={busy === p.id} className="inline-flex items-center gap-1.5 h-11 px-4 rounded-xl font-extrabold text-ink hover:text-pen disabled:opacity-50" aria-label={`Descarcă ${p.title}`}>
+            <button type="button" onClick={() => download(p.id)} disabled={busy === p.id} className="inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-xl font-extrabold text-ink hover:text-pen disabled:opacity-50" aria-label={`Descarcă ${p.title}`}>
               <Download className="w-4 h-4" aria-hidden /> {busy === p.id ? 'Se pregătește…' : 'Descarcă'}
             </button>
           </div>

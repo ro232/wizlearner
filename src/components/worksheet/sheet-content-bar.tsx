@@ -28,7 +28,7 @@ export const SheetContentBar = () => {
   }
 
   return (
-    <div className="rounded-2xl bg-blue-50/70 border border-blue-100 px-5 py-4">
+    <div className="rounded-2xl bg-blue-50/70 border border-blue-100 px-5 py-4" data-private>
       <div className="flex items-center justify-between gap-4 mb-3">
         <p className="text-sm font-semibold text-slate-800">Pe fișă</p>
         <p className="text-xs text-slate-600">

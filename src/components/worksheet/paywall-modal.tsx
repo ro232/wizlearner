@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Crown, KeyRound, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
+import { track } from '@/lib/analytics';
 
 interface PaywallModalProps {
   isOpen: boolean;
@@ -20,6 +21,9 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  useEffect(() => {
+    if (isOpen) track('paywall_shown');
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

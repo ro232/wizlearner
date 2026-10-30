@@ -23,7 +23,7 @@ function Hero() {
   return (
     <section className="ruled border-b-2 border-ink">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-12 items-center">
-        <div className="space-y-7 animate-fade-up">
+        <div className="space-y-7">
           <p className="inline-block font-extrabold text-[13px] tracking-[0.12em] uppercase text-pen border-b-2 border-pen pb-1">
             Alfabetul românesc complet · Ă Â Î Ș Ț
           </p>
