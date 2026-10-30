@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
+import { track } from '@/lib/analytics';
 
 /** Sends a signed-in user to Stripe Checkout; anyone else signs in first and comes back here. */
 export function SubscribeButton({ plan, label, highlight }: { plan: string; label: string; highlight?: boolean }) {
@@ -19,6 +20,7 @@ export function SubscribeButton({ plan, label, highlight }: { plan: string; labe
     }
     setBusy(true);
     setError(null);
+    track('checkout_start', { plan });
     try {
       const res = await fetch('/api/stripe/checkout', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ plan }) });
       const data = (await res.json()) as { url?: string; error?: string };

@@ -3,6 +3,7 @@ import { Fraunces, Nunito } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { StoreHydration } from "@/components/store-hydration";
+import { Analytics } from "@/components/analytics";
 
 // latin-ext carries Ă Â Î Ș Ț. Nunito is also the worksheet font, so screen and paper match.
 const nunito = Nunito({ subsets: ["latin", "latin-ext"], variable: "--font-nunito", display: "swap" });
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="ro">
       <body className={`${nunito.variable} ${fraunces.variable} font-sans antialiased`}>
         <StoreHydration />
+        <Analytics />
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

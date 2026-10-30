@@ -44,6 +44,13 @@ export default function PrivacyPage() {
 
       <h2>Cookie-uri</h2>
       <p>Folosim doar cookie-urile necesare ca să rămâi autentificat. Nu folosim cookie-uri de analiză sau de marketing.</p>
+      <h2>Statistici de folosire</h2>
+      <p>
+        Ca să facem site-ul mai ușor de folosit, măsurăm anonim ce pagini și butoane sunt folosite (PostHog, cu servere în Uniunea
+        Europeană). Nu se salvează nimic în browserul tău și nu folosim cookie-uri pentru asta. Uneori înregistrăm anonim cum e
+        folosită pagina (mișcări și clicuri); tot ce scrii în câmpuri, inclusiv numele copilului, este ascuns. Dacă browserul tău
+        cere „Do Not Track”, nu măsurăm nimic.
+      </p>
 
       <h2>Drepturile tale</h2>
       <p>

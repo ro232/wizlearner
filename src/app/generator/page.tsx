@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { GeneratorControls } from '@/components/worksheet/generator-controls';
 import { WorksheetPreview } from '@/components/worksheet/worksheet-preview';
 import { SheetContentBar } from '@/components/worksheet/sheet-content-bar';
+import { QuickStart } from '@/components/worksheet/quick-start';
+import { track } from '@/lib/analytics';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
-import { generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/generate-pdf';
+import { generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/actions';
 import { countWorksheetPages, hasContent } from '@/lib/worksheet/layout';
 import { configForSaving, defaultSheetName } from '@/lib/worksheet/saved';
 import { useAuth } from '@/hooks/use-auth';
@@ -48,6 +50,7 @@ export default function GeneratorPage() {
       if (empty || busy) return;
       setBusy(what);
       try {
+        track(what === 'download' ? 'pdf_download' : 'pdf_print', { category: config.category, pages, tier });
         if (what === 'download') {
           await generateWorksheetPDF(config, tier);
           toast(pages > 1 ? `Fișa e descărcată, ${pages} pagini.` : 'Fișa e descărcată. Spor la scris!');
@@ -126,8 +129,9 @@ export default function GeneratorPage() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Preview first on phones, on the right on large screens */}
           <section aria-label="Previzualizare" className="order-1 lg:order-2 lg:w-[54%] lg:sticky lg:top-20 lg:self-start space-y-4">
-            <SheetContentBar />
-            <div className="rounded-2xl overflow-hidden desk border-2 border-ink p-4 sm:p-8 flex justify-center">
+            {empty ? <QuickStart /> : <SheetContentBar />}
+            {/* phones: no big blank page while the sheet is empty, the choices come first */}
+            <div className={`rounded-2xl overflow-hidden desk border-2 border-ink p-4 sm:p-8 justify-center ${empty ? 'hidden lg:flex' : 'flex'}`}>
               <WorksheetPreview config={config} tier={tier} />
             </div>
             <div className="hidden lg:block space-y-2">

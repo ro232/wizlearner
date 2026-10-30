@@ -13,7 +13,7 @@ import { ALPHABETS } from '@/lib/glyphs/data';
 import { buildGroupPages, parseNames, MAX_CHILDREN, MAX_LETTERS } from '@/lib/worksheet/group';
 import { SCHOOL_YEAR, WEEKS_IN_YEAR, weekLabel, weekOfSchoolYear } from '@/lib/calendar';
 import { loadGroups, storeGroups, type SavedGroup } from '@/lib/saved-groups';
-import { downloadPagesPdf } from '@/lib/pdf/generate-pdf';
+import { downloadPagesPdf } from '@/lib/pdf/actions';
 import type { Difficulty, LetterMode, Script } from '@/types';
 
 /** On the free plan the group sheets can be tried with a few children. */
