@@ -10,6 +10,7 @@ import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/g
 import { COUNT_RANGES, DOT_SHAPES, DOT_SHAPE_LABELS } from '@/lib/worksheet/activities';
 import { Button } from '@/components/ui/button';
 import { MathPicker } from './math-picker';
+import { TraceStylePicker } from './trace-style-picker';
 import { Lock, RotateCcw, Plus, X, ChevronDown, UserRound } from 'lucide-react';
 import { isCursive } from '@/lib/worksheet/layout';
 
@@ -57,7 +58,7 @@ function Slider({ label, value, min, max, onChange, left, right }: { label: stri
 export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   const {
     config, tier, setCategory, setAlphabet, setLetterMode, toggleItem, addItems, removeAllItems,
-    addCustomWord, removeCustomWord, setDifficulty, setFontStyle, setScript, setLetterSize, setVisibility,
+    addCustomWord, removeCustomWord, setDifficulty, setScript, setLetterSize, setVisibility,
     setBackgroundPattern, setGuideColor, setRowsPerPage, setRepetitionsPerItem, toggleGuideLines,
     toggleArrows, toggleStartDots, toggleEmoji, toggleReward, toggleFullPage, toggleLeftHanded,
     toggleFillPage, setChildName, resetConfig,
@@ -319,6 +320,12 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
         </div>
       </div>
 
+      {/* 4b. How the letters to trace look (shown, not named) */}
+      <div className={config.category === 'games' || config.category === 'math' ? 'hidden' : undefined}>
+        <SectionLabel>Cum arată literele de trasat</SectionLabel>
+        <TraceStylePicker />
+      </div>
+
       {/* 5. Everything else */}
       <details className="group rounded-xl border border-slate-200">
         <summary className="flex items-center justify-between cursor-pointer select-none px-4 py-3 text-sm font-semibold text-slate-700">
@@ -326,14 +333,6 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
           <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" aria-hidden />
         </summary>
         <div className="px-4 pb-4 space-y-5">
-          <div>
-            <SectionLabel>Stil de trasare</SectionLabel>
-            <div className="grid grid-cols-3 gap-2">
-              {([['dashed', 'Liniuțe'], ['dotted', 'Puncte'], ['outline', 'Contur']] as const).map(([v, l]) => (
-                <Choice key={v} active={config.fontStyle === v} onClick={() => setFontStyle(v)}><span className="text-sm">{l}</span></Choice>
-              ))}
-            </div>
-          </div>
           <div>
             <SectionLabel>Mărimea literelor</SectionLabel>
             <div className="grid grid-cols-3 gap-2">

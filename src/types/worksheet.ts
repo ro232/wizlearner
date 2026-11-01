@@ -49,6 +49,8 @@ export interface WorksheetConfig {
   leftHandedMode: boolean;
   /** Repeat the chosen rows until the page is full (a single page with few items looks unfinished). */
   fillPage?: boolean;
+  /** How close together the dashes or dots of the traced copies are. */
+  traceDensity?: 'sparse' | 'normal' | 'dense';
   /** Math sheets: numbers up to 5, 10, 20 or 100. */
   mathRange?: number;
   /** Math sheets: which random set of exercises (changed by „Alte exerciții”). */
