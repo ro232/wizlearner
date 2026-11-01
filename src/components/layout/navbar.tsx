@@ -34,18 +34,18 @@ export function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         <Logo />
 
-        <div className="hidden lg:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-0.5 xl:gap-1">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href}>
-              <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 text-ink hover:bg-white', pathname === link.href && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
-                <link.icon className="w-3.5 h-3.5" aria-hidden />
+              <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 px-2 xl:px-3 text-ink hover:bg-white', pathname === link.href && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
+                <link.icon className="hidden xl:block w-3.5 h-3.5" aria-hidden />
                 {link.label}
               </Button>
             </Link>
           ))}
           <Link href="/preturi">
-            <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 text-ink hover:bg-white', pathname === '/preturi' && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
-              <Crown className="w-3.5 h-3.5" aria-hidden /> Prețuri
+            <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 px-2 xl:px-3 text-ink hover:bg-white', pathname === '/preturi' && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
+              <Crown className="hidden xl:block w-3.5 h-3.5" aria-hidden /> Prețuri
             </Button>
           </Link>
         </div>
