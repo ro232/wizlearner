@@ -254,7 +254,34 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     return fit;
   };
   const heightOf = (row: RowItem) => rowHeightMm(row.glyphs, scaleOf(row), stroke, cursive && !row.pattern);
-  for (const row of rows) {
+  // Workbook: one page per item, the item on every row, its word on the last two rows.
+  const pageTitles: string[] = [];
+  if (config.pagePerItem) {
+    for (const row of rows) {
+      if (row.word) continue;
+      const page: RowItem[] = [];
+      const word = config.itemWords && config.category === 'letters' ? hintFor(row.item, alphabet) : undefined;
+      let wordRow: RowItem | null = null;
+      if (word?.word) {
+        const text = wordInCase(word.word, cursive && config.letterMode === 'uppercase' ? 'paired' : config.letterMode, 'theme');
+        const joined = cursive ? cursiveWord(text) : undefined;
+        const glyphs = cursive ? (joined ? [joined] : []) : glyphsForWord(text);
+        if (glyphs.length) wordRow = { item: text, glyphs, word: true, picture: word.emoji };
+      }
+      let yy = contentTop;
+      const tail = wordRow ? [wordRow, wordRow] : [];
+      const tailH = tail.reduce((a, r) => a + heightOf(r) + rowGap, 0);
+      while (page.length < maxRows - tail.length && yy + heightOf(row) + tailH <= contentBottom) {
+        page.push(row);
+        yy += heightOf(row) + rowGap;
+      }
+      if (!page.length) page.push(row);
+      pages.push([...page, ...tail]);
+      const kind = config.category === 'numbers' ? (row.item.length > 1 ? 'Numărul' : 'Cifra') : config.category === 'letters' ? 'Litera' : '';
+      pageTitles.push(kind ? `${kind} ${row.item}` : row.item);
+    }
+  }
+  for (const row of config.pagePerItem ? [] : rows) {
     const h = heightOf(row);
     const fits = y + h <= contentBottom && current.length < maxRows;
     if (!fits && current.length > 0) {
@@ -265,11 +292,12 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     current.push(row);
     y += h + rowGap;
   }
-  if (current.length > 0 || pages.length === 0) pages.push(current);
+  if (!config.pagePerItem && (current.length > 0 || pages.length === 0)) pages.push(current);
+  if (config.pagePerItem && pages.length === 0) pages.push([]);
 
   // A short (last) page: repeat its rows, in order, until the page is full, so no sheet
   // comes out half empty. With one page that is every chosen row.
-  if (config.fillPage !== false && rows.length > 0) {
+  if (config.fillPage !== false && rows.length > 0 && !config.pagePerItem) {
     const page = pages[pages.length - 1];
     const cycle = page.slice();
     y = contentTop + page.reduce((acc, r) => acc + heightOf(r) + rowGap, 0);
@@ -290,7 +318,7 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
 
     // header
     if (!config.fullPageMode) {
-      const title = config.customTitle?.trim() || L.title;
+      const title = pageTitles[pageIndex] ?? (config.customTitle?.trim() || L.title);
       // A long title gets smaller so it never runs into the brand or off the page.
       const titleRoom = W - margin * 2 - 26;
       const titleSize = Math.max(3.6, Math.min(6.5, 6.5 * (titleRoom / Math.max(1, textWidthMm(title, 6.5) * 1.08))));

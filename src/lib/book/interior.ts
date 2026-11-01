@@ -418,11 +418,11 @@ function titlePage(f: Frame, ops: DrawOp[], config: BookConfig): void {
     const w = (word.bbox.maxX - word.bbox.minX) * s;
     bigModel(ops, [word], cx - w / 2 - word.bbox.minX * s, capY, s, false, false, 6);
   } else {
-    const show = config.alphabet === 'ro' ? 'AăȘ3' : 'AbC3';
+    // the same word as the handwriting book, in print: the title page stays simple
     const s = 0.42;
-    const glyphs = glyphsOf(show);
+    const glyphs = glyphsOf('Abc');
     const w = itemWidth(glyphs) * s;
-    bigModel(ops, glyphs, cx - w / 2, capY, s);
+    bigModel(ops, glyphs, cx - w / 2, capY, s, false, false);
   }
   // ownership line
   const oy = f.y + f.h * 0.78;

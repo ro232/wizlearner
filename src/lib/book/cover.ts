@@ -1,6 +1,7 @@
 import type { DrawOp, PageOps } from '@/lib/glyphs/types';
 import { iconOps } from '@/lib/hints/icons';
 import { getGlyph, hintFor } from '@/lib/glyphs/data';
+import { cursiveGlyph } from '@/lib/glyphs/cursive';
 import { renderGlyph } from '@/lib/glyphs/render';
 import { patternGlyph } from '@/lib/glyphs/patterns';
 import { INK, ACCENT, PAPER, MUTED, itemOps, itemWidth, starPoints } from '@/lib/worksheet/rows';
@@ -24,7 +25,7 @@ const COVER_TEXT = {
     ages: 'Pentru copii de 4–7 ani',
     backTitle: 'Învață să scrii, pas cu pas',
     blurb:
-      'Un caiet gândit pentru primele litere: fiecare literă are un model mare cu puncte numerotate și săgeți, rânduri de trasat care se estompează treptat și spațiu pentru scris singur.',
+      'Un caiet gândit pentru primele litere: fiecare literă are un model mare cu cerculețe numerotate și săgeți, rânduri de trasat care se estompează treptat și spațiu pentru scris singur.',
     bullets: [
       'Exerciții grafice de pregătire a mâinii: linii, valuri, bucle',
       'Toate cele 31 de litere ale alfabetului românesc, mari și mici',
@@ -52,8 +53,8 @@ const COVER_TEXT = {
   },
 };
 
-function glyphs(text: string) {
-  return Array.from(text).map((c) => getGlyph(c)).filter((g): g is NonNullable<typeof g> => !!g);
+function glyphs(text: string, cursive = false) {
+  return Array.from(text).map((c) => (cursive ? cursiveGlyph(c) : getGlyph(c))).filter((g): g is NonNullable<typeof g> => !!g);
 }
 
 function dots(ops: DrawOp[], g: CoverGeometry): void {
@@ -98,20 +99,22 @@ export function buildCoverPage(config: BookConfig, pageCount: number): PageOps {
     const cx = fx + SAFE + 4 + col * (cardW + 10);
     const cy = topCards + row * (cardH + 8);
     ops.push({ t: 'rect', x: cx, y: cy, w: cardW, h: cardH, rx: 5, fill: PAPER, stroke: '#FBBF24', strokeWidth: 0.6 });
-    const gl = glyphs(ch);
-    const s = (cardH * 0.62) / 100;
+    // a handwriting book shows its letters in handwriting (capital and small: Aa, Bb, Șș, Țț)
+    const cursive = config.script === 'cursive';
+    const gl = glyphs(cursive ? ch + ch.toLowerCase() : ch, cursive);
+    const s = Math.min((cardH * 0.62) / 100, (cardW * 0.44) / Math.max(1, itemWidth(gl)));
     const w = itemWidth(gl) * s;
     const hint = hintFor(ch, config.alphabet);
-    const pic = Math.min(cardH * 0.62, cardW * 0.4);
-    const letterX = hint ? cx + cardW * 0.3 - w / 2 : cx + (cardW - w) / 2;
+    const pic = Math.min(cardH * 0.62, cardW * 0.3);
+    const letterX = hint ? cx + cardW * 0.06 : cx + (cardW - w) / 2;
     ops.push({
       t: 'group',
       tx: letterX,
       ty: cy + cardH * 0.18,
       scale: s,
-      ops: itemOps(gl, { color: INK, strokeWidth: 10, variant: 'solid', startDots: true, arrows: true, accent: ACCENT, dotText: PAPER, paper: PAPER, minDotRadius: 1.8 / s }),
+      ops: itemOps(gl, { color: INK, strokeWidth: cursive ? 6 : 10, variant: 'solid', startDots: true, arrows: true, accent: ACCENT, dotText: PAPER, paper: PAPER, minDotRadius: 1.8 / s }),
     });
-    if (hint) ops.push(...iconOps(hint.emoji, cx + cardW * 0.72, cy + cardH / 2, pic));
+    if (hint) ops.push(...iconOps(hint.emoji, cx + cardW * 0.78, cy + cardH / 2, pic));
   });
 
   // wave strip + tagline
