@@ -49,6 +49,12 @@ export interface WorksheetConfig {
   leftHandedMode: boolean;
   /** Repeat the chosen rows until the page is full (a single page with few items looks unfinished). */
   fillPage?: boolean;
+  /** Math sheets: numbers up to 5, 10, 20 or 100. */
+  mathRange?: number;
+  /** Math sheets: which random set of exercises (changed by „Alte exerciții”). */
+  mathSeed?: number;
+  /** Math sheets: add a page with the answers. */
+  mathAnswers?: boolean;
   /** Pictures next to traced words (theme words): word as typed → emoji. */
   wordPictures?: Record<string, string>;
 

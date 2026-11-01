@@ -120,7 +120,7 @@ function ForWhom() {
 }
 
 function Pricing() {
-  const free = ['Literele A–E (și Ă, Â), cifrele 0–5', 'Trei forme și trei exerciții grafice', 'Jocuri: găsește litera A–E, numără până la 5, steaua cu puncte', 'Fișa cu numele copilului', 'Fișe pentru grupă: încearcă cu 3 copii', 'Caietul KDP, cu filigran'];
+  const free = ['Literele A–E (și Ă, Â), cifrele 0–5', 'Trei forme și trei exerciții grafice', 'Matematică până la 10', 'Jocuri: găsește litera A–E, numără până la 5, steaua cu puncte', 'Fișa cu numele copilului', 'Fișe pentru grupă: încearcă cu 3 copii', 'Caietul KDP, cu filigran'];
   const full = ['Fișe pentru toată grupa, până la 40 de copii, pe teme', 'Tot alfabetul românesc și englez, mari și mici', 'Cifre și numere 0–20, toate formele și exercițiile', 'Toate jocurile și pachetul săptămânii pentru grupă', 'Orice cuvânt de trasat, fișe salvate în cont', 'Caietul KDP fără filigran'];
   return (
     <section id="preturi" className="py-20 ruled border-y-2 border-ink">

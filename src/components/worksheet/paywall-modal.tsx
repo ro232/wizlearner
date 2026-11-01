@@ -50,10 +50,10 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
         </div>
 
         <h2 id="paywall-title" className="text-xl font-extrabold text-center text-slate-900 mb-2">Acest conținut este în versiunea completă</h2>
-        <p className="text-sm text-center text-slate-500 mb-5">Versiunea gratuită include literele A–E, cifrele 0–5, trei forme și trei exerciții grafice.</p>
+        <p className="text-sm text-center text-slate-500 mb-5">Versiunea gratuită include literele A–E, cifrele 0–5, trei forme, trei exerciții grafice și matematica până la 10.</p>
 
         <ul className="space-y-1.5 mb-6 text-sm text-slate-700">
-          {['Fișe pentru toată grupa, până la 40 de copii', 'Tot alfabetul românesc și englez, mari și mici', 'Cifrele și numerele 0–20', 'Toate formele și exercițiile grafice', 'Caietul KDP fără filigran'].map((f) => (
+          {['Fișe pentru toată grupa, până la 40 de copii', 'Tot alfabetul românesc și englez, mari și mici', 'Cifrele și numerele 0–20', 'Matematică până la 20 și 100', 'Toate formele și exercițiile grafice', 'Caietul KDP fără filigran'].map((f) => (
             <li key={f} className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600 flex-shrink-0" />{f}</li>
           ))}
         </ul>

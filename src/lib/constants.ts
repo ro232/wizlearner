@@ -53,10 +53,11 @@ export const STARTER_LIMITS = {
 
 // Only content types that actually produce a worksheet today. Math, games, word search and
 // templates exist as type names for later, but are not shown until they are built.
-export const CATEGORY_TABS: { id: 'letters' | 'numbers' | 'shapes' | 'prewrite' | 'games'; label: string; icon: string; locked?: boolean }[] = [
+export const CATEGORY_TABS: { id: 'letters' | 'numbers' | 'shapes' | 'prewrite' | 'math' | 'games'; label: string; icon: string; locked?: boolean }[] = [
   { id: 'letters', label: 'Litere', icon: '✏️' },
   { id: 'numbers', label: 'Cifre', icon: '🔢' },
   { id: 'shapes', label: 'Forme', icon: '◆' },
   { id: 'prewrite', label: 'Exerciții grafice', icon: '〰' },
+  { id: 'math', label: 'Matematică', icon: '➕' },
   { id: 'games', label: 'Jocuri', icon: '🧩' },
 ];
