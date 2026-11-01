@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Pencil, LogIn, LogOut, User, BookOpen, Menu, X, UserRound, Users, Crown } from 'lucide-react';
+import { Pencil, LogIn, LogOut, User, BookOpen, Menu, X, UserRound, Users, Crown, Library } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from './logo';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/use-auth';
 
 export const NAV_LINKS = [
   { href: '/generator', label: 'Fișe', icon: Pencil },
+  { href: '/caiete', label: 'Caiete gata', icon: Library },
   { href: '/nume', label: 'Fișa cu numele', icon: UserRound },
   { href: '/grupa', label: 'Pentru grupă', icon: Users },
   { href: '/book', label: 'Caiet KDP', icon: BookOpen },
