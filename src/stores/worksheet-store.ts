@@ -11,6 +11,7 @@ interface WorksheetState {
   // Actions
   setCategory: (category: ContentCategory) => void;
   setMathRange: (range: number) => void;
+  setTraceDensity: (density: 'sparse' | 'normal' | 'dense') => void;
   newMathSet: () => void;
   toggleMathAnswers: () => void;
   setAlphabet: (alphabet: Alphabet) => void;
@@ -82,6 +83,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
     config: { ...state.config, category, selectedItems: [] }
   })),
   setMathRange: (mathRange) => set((state) => ({ config: { ...state.config, mathRange } })),
+  setTraceDensity: (traceDensity) => set((state) => ({ config: { ...state.config, traceDensity } })),
   newMathSet: () => set((state) => ({ config: { ...state.config, mathSeed: (state.config.mathSeed ?? 1) + 1 } })),
   toggleMathAnswers: () => set((state) => ({ config: { ...state.config, mathAnswers: !state.config.mathAnswers } })),
   setAlphabet: (alphabet) => set((state) => {

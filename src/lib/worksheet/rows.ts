@@ -54,6 +54,8 @@ export interface RowStyle {
   modelArrows: boolean;
   /** Cells left empty at the end of the row (for writing without help). */
   blankCells: number;
+  /** Gap between dashes or dots of the copies: 1 = normal, less = closer together. */
+  gapScale?: number;
   /** Share of the row's copies that are traced (the rest are left blank), when set. */
   tracedShare?: number;
   /** At most this many traced copies, when set. */
@@ -165,7 +167,8 @@ function modelStyle(st: RowStyle): GlyphStyle {
 function copyStyle(st: RowStyle, fade: number): GlyphStyle {
   return {
     // Handwriting is all curves and thin loops: longer dashes keep the line readable.
-    ...(st.cursive ? { dash: [1.6, 1.4] as [number, number] } : {}),
+    dash: st.cursive ? [1.6, 1.4 * (st.gapScale ?? 1)] : [1, 2 * (st.gapScale ?? 1)],
+    dotGap: Math.max(1.2, 1.5 * (st.gapScale ?? 1)),
     color: mixColor(st.ink ?? INK, st.paper ?? PAPER, 1 - st.vis * 0.85 * fade),
     strokeWidth: st.stroke,
     variant: st.variant,

@@ -228,6 +228,7 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     // Less help at each level: Început traces almost the whole row, Mijlociu about half
     // (the rest is written alone), Avansat one faint copy, then the child writes alone.
     blankCells: 2,
+    gapScale: config.traceDensity === 'dense' ? 0.55 : config.traceDensity === 'sparse' ? 1.5 : 1,
     ...(config.difficulty === 'intermediate' ? { tracedShare: 0.5 } : {}),
     ...(config.difficulty === 'advanced' ? { maxTraced: 1 } : {}),
     maxCopies: 0,
