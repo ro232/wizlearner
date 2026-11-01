@@ -217,8 +217,11 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     showModel: true,
     modelDots: config.showStartDots !== false,
     modelArrows: config.showDirectionalArrows,
-    // Empty cells at the end of each row for writing without help.
-    blankCells: config.difficulty === 'advanced' ? 4 : config.difficulty === 'intermediate' ? 3 : 2,
+    // Less help at each level: Început traces almost the whole row, Mijlociu about half
+    // (the rest is written alone), Avansat one faint copy, then the child writes alone.
+    blankCells: 2,
+    ...(config.difficulty === 'intermediate' ? { tracedShare: 0.5 } : {}),
+    ...(config.difficulty === 'advanced' ? { maxTraced: 1 } : {}),
     maxCopies: 0,
     leftHanded: config.leftHandedMode,
     guideColor: config.showGuideLines ? guide : null,

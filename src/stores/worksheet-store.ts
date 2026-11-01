@@ -119,7 +119,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
     const presets: Record<string, Partial<WorksheetConfig>> = {
       beginner: { fontStyle: 'dashed', tracingVisibility: 8, letterSize: 'large', rowsPerPage: 4 },
       intermediate: { fontStyle: 'dotted', tracingVisibility: 5, letterSize: 'medium', rowsPerPage: 6 },
-      advanced: { fontStyle: 'outline', tracingVisibility: 3, letterSize: 'small', rowsPerPage: 8 },
+      advanced: { fontStyle: 'dotted', tracingVisibility: 3, letterSize: 'small', rowsPerPage: 8 },
     };
     return { config: { ...state.config, difficulty, ...presets[difficulty] } };
   }),
