@@ -76,13 +76,13 @@ export default function BookPage() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-5">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* LEFT: settings */}
-          <div className="lg:w-[42%] space-y-4 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+          <div className="lg:w-[42%] min-w-0 space-y-4 animate-fade-up" style={{ animationDelay: '0.1s' }}>
             <div className="w-full bg-white rounded-2xl shadow-lg p-6 space-y-6">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-blue-600" aria-hidden /> Caiet pentru Amazon KDP
-                  </h2>
+                  </h1>
                   <p className="text-xs text-slate-500 mt-1">Un caiet de scris complet, gata de încărcat pe Amazon KDP.</p>
                 </div>
                 {tier !== 'full' && <Badge variant="secondary">Cu filigran (planul Complet îl scoate)</Badge>}
@@ -215,7 +215,7 @@ export default function BookPage() {
           </div>
 
           {/* RIGHT: stats + preview + downloads */}
-          <div className="lg:w-[58%] lg:sticky lg:top-20 lg:self-start space-y-4 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+          <div className="lg:w-[58%] min-w-0 lg:sticky lg:top-20 lg:self-start space-y-4 animate-fade-up" style={{ animationDelay: '0.2s' }}>
             <Card className="shadow-md bg-white">
               <div className="p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                 <div>
@@ -283,7 +283,7 @@ export default function BookPage() {
               <Button
                 onClick={() => run('interior')}
                 disabled={busy !== null}
-                className="h-14 rounded-2xl text-white shadow-xl font-bold text-base disabled:opacity-50"
+                className="min-h-14 h-auto py-3 whitespace-normal rounded-2xl text-white shadow-xl font-bold text-base disabled:opacity-50"
                 data-btn="primary"
               >
                 <FileText className="w-5 h-5 mr-2" />
@@ -292,7 +292,7 @@ export default function BookPage() {
               <Button
                 onClick={() => run('cover')}
                 disabled={busy !== null}
-                className="h-14 rounded-2xl text-white shadow-xl font-bold text-base disabled:opacity-50"
+                className="min-h-14 h-auto py-3 whitespace-normal rounded-2xl text-white shadow-xl font-bold text-base disabled:opacity-50"
                 data-btn="ink"
               >
                 <ImageIcon className="w-5 h-5 mr-2" />

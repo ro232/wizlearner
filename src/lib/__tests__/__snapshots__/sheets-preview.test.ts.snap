@@ -1,0 +1,143 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`how every kind of sheet looks > caiet-alfabet-mana 1`] = `
+[
+  "58760e85eb66b7b1",
+  "e04077a3f2d0eb44",
+  "d6cd2648480d986a",
+]
+`;
+
+exports[`how every kind of sheet looks > caiet-kdp 1`] = `
+[
+  "6292f5c685d3c3a6",
+  "7bf70571c40c6655",
+  "1b070feda2e9308c",
+  "0d2b1d0931e774cb",
+  "462a27750d39f147",
+  "634b4e906ace3846",
+  "803b19e5ec7af965",
+  "ff0421a73dbfc12e",
+  "ffb28ad0f2b98643",
+]
+`;
+
+exports[`how every kind of sheet looks > caiet-nume 1`] = `
+[
+  "db6d7372a0307e2e",
+  "9fb6f979011abc2b",
+  "6c97601c92434208",
+  "6ceeb8752c810207",
+  "c928694e66c35fb6",
+  "ec8c52230177db0e",
+  "69d83c6343eb1d34",
+  "d2e778cb86a125db",
+  "fe8f063563913575",
+  "4967c3aae22ae4a9",
+]
+`;
+
+exports[`how every kind of sheet looks > cifre 1`] = `
+[
+  "820252960f6939a1",
+]
+`;
+
+exports[`how every kind of sheet looks > coperta-kdp-mana 1`] = `
+[
+  "649afd13af1ef269",
+]
+`;
+
+exports[`how every kind of sheet looks > forme 1`] = `
+[
+  "980786f48e43770f",
+]
+`;
+
+exports[`how every kind of sheet looks > grafice 1`] = `
+[
+  "68d5b815a43e3b25",
+]
+`;
+
+exports[`how every kind of sheet looks > grupa 1`] = `
+[
+  "9936ab2d56775ccc",
+  "d3c4a0c52f5ac12b",
+  "0084153a787ce509",
+  "da1967a3da56efe7",
+]
+`;
+
+exports[`how every kind of sheet looks > jocuri 1`] = `
+[
+  "ab712d34476aa5f5",
+  "835ca4198db9f410",
+  "28cbcb1ca7694b36",
+]
+`;
+
+exports[`how every kind of sheet looks > litere-mana-advanced 1`] = `
+[
+  "69525b238e5c60bb",
+]
+`;
+
+exports[`how every kind of sheet looks > litere-mana-beginner 1`] = `
+[
+  "82ae082fe139125d",
+]
+`;
+
+exports[`how every kind of sheet looks > litere-mana-intermediate 1`] = `
+[
+  "69525b238e5c60bb",
+]
+`;
+
+exports[`how every kind of sheet looks > litere-tipar-advanced 1`] = `
+[
+  "1bd42c58f6b55db6",
+]
+`;
+
+exports[`how every kind of sheet looks > litere-tipar-beginner 1`] = `
+[
+  "96940ed97077e91c",
+]
+`;
+
+exports[`how every kind of sheet looks > litere-tipar-intermediate 1`] = `
+[
+  "0e6e0477e56766aa",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-10 1`] = `
+[
+  "66b357fc86cbf2ca",
+  "fc63e3db12725bd5",
+  "a7bc08974243e382",
+  "95e4df845012946e",
+  "af9bc77a478c4c55",
+  "5785ee0907d13258",
+  "70e5fff5deb96134",
+  "d1a34a8c50589c0a",
+  "271e8bff94c5255a",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-100 1`] = `
+[
+  "f87dea203a911669",
+  "cd707ba8866fe9a3",
+  "5e233aead9db929b",
+]
+`;
+
+exports[`how every kind of sheet looks > optiuni 1`] = `
+[
+  "9d44e3259b71b779",
+]
+`;

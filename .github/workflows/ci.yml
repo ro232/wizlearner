@@ -1,0 +1,72 @@
+name: Verificări
+
+# Rulează la fiecare pull request și la fiecare schimbare pe main.
+# „cod” verifică codul și fișele; „browser” folosește site-ul ca un om, pe telefon, tabletă și PC.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cod:
+    name: Cod, teste și build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verificarea codului (lint)
+        run: npm run lint
+      - name: Tipuri (TypeScript)
+        run: npm run typecheck
+      - name: Teste (fișe, matematică, plăți, facturi, amprentele fișelor)
+        run: npm test
+      - name: Build
+        run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: .next
+          include-hidden-files: true
+          retention-days: 1
+
+  browser:
+    name: Browser (${{ matrix.project }})
+    needs: cod
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [pc-chrome, phone-chrome, phone-safari, tablet-safari, pc-firefox]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: .next
+      - name: Instalează browserul
+        run: npx playwright install --with-deps ${{ contains(matrix.project, 'safari') && 'webkit' || contains(matrix.project, 'firefox') && 'firefox' || 'chromium' }}
+      - name: Testele în browser
+        run: npx playwright test --project=${{ matrix.project }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: raport-${{ matrix.project }}
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7

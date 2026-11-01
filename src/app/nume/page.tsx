@@ -103,7 +103,7 @@ export default function NameSheetPage() {
     <div className="min-h-screen bg-paper">
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-2 gap-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 [&>*]:min-w-0">
         <section className="space-y-6">
           <div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Fișa cu numele copilului</h1>
