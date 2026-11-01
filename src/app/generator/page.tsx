@@ -10,6 +10,7 @@ import { SheetContentBar } from '@/components/worksheet/sheet-content-bar';
 import { QuickStart } from '@/components/worksheet/quick-start';
 import { LockedNotice } from '@/components/worksheet/locked-notice';
 import { track } from '@/lib/analytics';
+import { logDownload } from '@/lib/projects';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/actions';
@@ -54,6 +55,7 @@ export default function GeneratorPage() {
         track(what === 'download' ? 'pdf_download' : 'pdf_print', { category: config.category, pages, tier });
         if (what === 'download') {
           await generateWorksheetPDF(config, tier);
+          void logDownload('sheet', defaultSheetName(config), configForSaving(config), pages);
           toast(pages > 1 ? `Fișa e descărcată, ${pages} pagini.` : 'Fișa e descărcată. Spor la scris!');
         } else {
           await printWorksheetPDF(config, tier);

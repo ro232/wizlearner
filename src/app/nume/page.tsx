@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, Download, FileText, Printer, UserRound } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -14,6 +14,15 @@ import { buildNameBookPages } from '@/lib/worksheet/name-book';
 import { DEFAULT_CONFIG, type LetterMode, type Script, type WorksheetConfig } from '@/types';
 import { downloadPagesPdf, generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/actions';
 import { lettersOfWord } from '@/lib/glyphs/data';
+import { logDownload, takeProject } from '@/lib/projects';
+import { SaveProjectButton } from '@/components/projects/save-project-button';
+
+interface NameProject {
+  name?: string;
+  mode?: LetterMode;
+  script?: Script;
+  kind?: 'sheet' | 'book';
+}
 
 /**
  * The name sheet: one child's name, traced over a whole page. It is free on purpose:
@@ -30,6 +39,15 @@ export default function NameSheetPage() {
   const [kind, setKind] = useState<'sheet' | 'book'>('sheet');
   const [showPaywall, setShowPaywall] = useState(false);
   const tier = useWorksheetStore((s) => s.tier);
+  // reopened from the account: a saved name workbook, or settings from the history (without the name)
+  useEffect(() => {
+    const p = takeProject<NameProject>('name-book');
+    if (!p) return;
+    if (p.name) setName(p.name);
+    if (p.mode) setMode(p.mode);
+    if (p.script) setScript(p.script);
+    if (p.kind) setKind(p.kind);
+  }, []);
   const bookPages = useMemo(() => (kind === 'book' ? buildNameBookPages(name || 'Ana', script) : []), [kind, name, script]);
 
   const config: WorksheetConfig = useMemo(() => {
@@ -63,6 +81,8 @@ export default function NameSheetPage() {
       setBusy(true);
       try {
         await downloadPagesPdf(bookPages, `caietul-lui-${name.trim().toLowerCase().replace(/\s+/g, '-')}.pdf`);
+        // the history keeps how it was made, not the child's name
+        void logDownload('name-book', 'Caietul cu numele', { mode, script, kind: 'book' }, bookPages.length);
         toast(`Caietul lui ${name.trim()} e gata: ${bookPages.length} pagini.`);
       } finally {
         setBusy(false);
@@ -147,6 +167,9 @@ export default function NameSheetPage() {
               <Button onClick={() => run('download')} disabled={empty || busy} className="flex-1 h-12 rounded-2xl text-white font-bold disabled:opacity-50" data-btn="primary">
                 <Download className="w-5 h-5 mr-2" aria-hidden /> {kind === 'book' ? `Descarcă caietul (${bookPages.length} pagini)` : 'Descarcă PDF'}
               </Button>
+              {kind === 'book' && !empty && (
+                <SaveProjectButton kind="name-book" name={`Caietul lui ${name.trim()}`} configuration={{ name: name.trim(), mode, script, kind: 'book' }} onPaywall={() => setShowPaywall(true)} back="/nume" />
+              )}
               <Button variant="outline" onClick={() => run('print')} disabled={empty || busy || kind === 'book'} className="h-12 px-4 rounded-2xl border-2" aria-label="Printează">
                 <Printer className="w-5 h-5" aria-hidden />
               </Button>
