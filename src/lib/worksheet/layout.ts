@@ -6,6 +6,7 @@ import type { TraceVariant } from '@/lib/glyphs/render';
 import { isPatternId, type PatternId } from '@/lib/glyphs/patterns';
 import { isItemAllowed } from '@/lib/access';
 import { buildActivityPages } from './activities';
+import { textWidthMm } from '@/lib/book/text';
 import {
   INK,
   ACCENT,
@@ -164,7 +165,8 @@ export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[
     for (const raw of config.customWords ?? []) {
       if (!isWordAllowed(raw, tier) && normalizeKey(raw).trim() !== name) continue;
       const kind = normalizeKey(raw).trim() === name ? 'name' : config.wordPictures?.[raw] ? 'theme' : 'typed';
-      const text = wordInCase(raw, config.letterMode, kind);
+      // Handwriting is not written in capitals at school: words keep their normal form there.
+      const text = wordInCase(raw, cursive && config.letterMode === 'uppercase' ? 'paired' : config.letterMode, kind);
       const joined = cursive ? cursiveWord(text) : undefined;
       const glyphs = cursive ? (joined ? [joined] : []) : glyphsForWord(text);
       if (glyphs.length === 0) continue;
@@ -239,7 +241,10 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     const modelW = (itemWidth(row.glyphs) + cellPad(row.glyphs) * 2) * s;
     // Handwriting words: small enough for the model and two copies to trace on the same line.
     const cells = cursive ? 3 : 1;
-    return Math.min(s, s * ((contentW - pictureW - 3) / (modelW * cells)));
+    const fit = Math.min(s, s * ((contentW - pictureW - 3) / (modelW * cells)));
+    // A long name in handwriting would shrink to a scribble: write it once, across the row, instead.
+    if (cursive && fit < s * 0.55) return Math.min(s, s * ((contentW - pictureW - 3) / modelW));
+    return fit;
   };
   const heightOf = (row: RowItem) => rowHeightMm(row.glyphs, scaleOf(row), stroke, cursive && !row.pattern);
   for (const row of rows) {
@@ -255,12 +260,15 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
   }
   if (current.length > 0 || pages.length === 0) pages.push(current);
 
-  // One short page: repeat the chosen rows (in order) until the page is full.
-  if (config.fillPage !== false && pages.length === 1 && rows.length > 0) {
-    const page = pages[0];
+  // A short (last) page: repeat its rows, in order, until the page is full, so no sheet
+  // comes out half empty. With one page that is every chosen row.
+  if (config.fillPage !== false && rows.length > 0) {
+    const page = pages[pages.length - 1];
+    const cycle = page.slice();
+    y = contentTop + page.reduce((acc, r) => acc + heightOf(r) + rowGap, 0);
     let i = 0;
-    while (page.length < maxRows) {
-      const row = rows[i % rows.length];
+    while (page.length < maxRows && cycle.length) {
+      const row = cycle[i % cycle.length];
       const h = heightOf(row);
       if (y + h > contentBottom) break;
       page.push(row);
@@ -276,7 +284,10 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
     // header
     if (!config.fullPageMode) {
       const title = config.customTitle?.trim() || L.title;
-      ops.push({ t: 'text', x: margin, y: margin + 6.5, text: title, size: 6.5, fill: INK, weight: 'bold' });
+      // A long title gets smaller so it never runs into the brand or off the page.
+      const titleRoom = W - margin * 2 - 26;
+      const titleSize = Math.max(3.6, Math.min(6.5, 6.5 * (titleRoom / Math.max(1, textWidthMm(title, 6.5) * 1.08))));
+      ops.push({ t: 'text', x: margin, y: margin + 6.5, text: title, size: titleSize, fill: INK, weight: 'bold' });
       const fields: string[] = [];
       fields.push(`${L.name}: ${config.childName?.trim() || '______________'}`);
       if (config.dateField) fields.push(`${L.date}: ____________`);
@@ -320,9 +331,15 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
       ops.push({ t: 'rect', x: margin, y: by, w: contentW, h: rewardH - 2, rx: 2.5, fill: '#FFFBEB', stroke: '#FBBF24', strokeWidth: 0.4 });
       ops.push({ t: 'text', x: margin + 5, y: by + 7, text: L.reward, size: 4.4, fill: '#92400E', weight: 'bold' });
       ops.push({ t: 'text', x: margin + 5, y: by + 12.5, text: L.rewardSub, size: 3, fill: '#B45309' });
-      for (let i = 0; i < 5; i++) {
-        const cx = W - margin - 8 - i * 13;
-        ops.push({ t: 'polygon', points: starPoints(cx, by + (rewardH - 2) / 2, 5), stroke: '#D97706', strokeWidth: 0.5, fill: PAPER });
+      // One star for every row on this page, as the text says, in the room right of the text.
+      const textEnd = margin + 5 + Math.max(textWidthMm(L.rewardSub, 3), textWidthMm(L.reward, 4.4)) + 6;
+      const room = W - margin - 3 - textEnd;
+      const stars = Math.max(1, pageRows.length);
+      const step = Math.min(13, room / stars);
+      const r = Math.min(5, step * 0.42);
+      for (let i = 0; i < stars; i++) {
+        const cx = W - margin - 3 - step / 2 - i * step;
+        ops.push({ t: 'polygon', points: starPoints(cx, by + (rewardH - 2) / 2, r), stroke: '#D97706', strokeWidth: 0.5, fill: PAPER });
       }
     }
 

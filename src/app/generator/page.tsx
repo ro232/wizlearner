@@ -8,6 +8,7 @@ import { GeneratorControls } from '@/components/worksheet/generator-controls';
 import { WorksheetPreview } from '@/components/worksheet/worksheet-preview';
 import { SheetContentBar } from '@/components/worksheet/sheet-content-bar';
 import { QuickStart } from '@/components/worksheet/quick-start';
+import { LockedNotice } from '@/components/worksheet/locked-notice';
 import { track } from '@/lib/analytics';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
@@ -129,6 +130,7 @@ export default function GeneratorPage() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Preview first on phones, on the right on large screens */}
           <section aria-label="Previzualizare" className="order-1 lg:order-2 lg:w-[54%] lg:sticky lg:top-20 lg:self-start space-y-4">
+            <LockedNotice />
             {empty ? <QuickStart /> : <SheetContentBar />}
             {/* phones: no big blank page while the sheet is empty, the choices come first */}
             <div className={`rounded-2xl overflow-hidden desk border-2 border-ink p-4 sm:p-8 justify-center ${empty ? 'hidden lg:flex' : 'flex'}`}>

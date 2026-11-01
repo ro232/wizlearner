@@ -129,8 +129,12 @@ function dirAt(pts: Pt[], i: number, forward: boolean): Pt {
  */
 function ovalFromTop(main: Pt[]): Pt[] | undefined {
   const half = Math.floor(main.length * 0.5);
+  let minY = Infinity;
+  for (let i = 0; i < half; i++) minY = Math.min(minY, main[i].y);
+  // The first time the pen reaches the top: g comes back up a touch higher after its loop,
+  // and starting from that later point would drop the loop (g would read as j).
   let top = 0;
-  for (let i = 1; i < half; i++) if (main[i].y < main[top].y) top = i;
+  while (top < half && main[top].y > minY + 1.5) top++;
   return top > 2 ? main.slice(top) : undefined;
 }
 
@@ -144,8 +148,17 @@ export function cursiveWord(text: string): Glyph | undefined {
   let prevEnd: { p: Pt; d: Pt } | null = null;
   let prevMaxX = -Infinity;
   for (const raw of normalizeKey(text)) {
-    if (raw === ' ' || raw === '-') {
+    if (raw === ' ') {
       cursorX += SPACE;
+      prevEnd = null;
+      continue;
+    }
+    if (raw === '-') {
+      // Ana-Maria: a short dash at mid-height, then the next part starts on its own
+      const x0 = Math.max(cursorX, prevMaxX) + 6;
+      out.push({ pts: [{ x: x0, y: 76 }, { x: x0 + 14, y: 76 }], mark: true, main: false });
+      cursorX = x0 + 14 + 4;
+      prevMaxX = cursorX;
       prevEnd = null;
       continue;
     }
