@@ -77,3 +77,17 @@ describe('the child name', () => {
     expect(rowItems(config, 'free').map((r) => r.item)).toEqual(['ȘTEFAN']);
   });
 });
+
+describe('levels', () => {
+  it('each level leaves more of the row to write alone', async () => {
+    const { buildTraceRow, DEFAULT_ROW_STYLE } = await import('@/lib/worksheet/rows');
+    const glyphs = rowItems({ ...DEFAULT_CONFIG, selectedItems: ['A'], letterMode: 'uppercase' }, 'full')[0].glyphs;
+    const traced = (extra: object) => buildTraceRow([], glyphs, { x: 12, width: 186, baseline: 40 }, { ...DEFAULT_ROW_STYLE, s: 0.12, blankCells: 2, ...extra });
+    const beginner = traced({});
+    const intermediate = traced({ tracedShare: 0.5 });
+    const advanced = traced({ maxTraced: 1 });
+    expect(beginner).toBeGreaterThan(intermediate);
+    expect(intermediate).toBeGreaterThan(advanced);
+    expect(advanced).toBe(1);
+  });
+});

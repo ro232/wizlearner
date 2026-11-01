@@ -54,6 +54,10 @@ export interface RowStyle {
   modelArrows: boolean;
   /** Cells left empty at the end of the row (for writing without help). */
   blankCells: number;
+  /** Share of the row's copies that are traced (the rest are left blank), when set. */
+  tracedShare?: number;
+  /** At most this many traced copies, when set. */
+  maxTraced?: number;
   /** Upper bound on traced copies (0 = as many as fit). */
   maxCopies: number;
   leftHanded: boolean;
@@ -215,7 +219,9 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
   }
 
   const firstCopyX = st.leftHanded ? x : x + modelW;
-  const traced = copies === 0 ? 0 : Math.max(1, copies - (copies >= 4 ? st.blankCells : 0));
+  let traced = copies === 0 ? 0 : Math.max(1, copies - (copies >= 4 ? st.blankCells : 0));
+  if (copies > 0 && st.tracedShare !== undefined) traced = Math.max(1, Math.min(traced, Math.floor(copies * st.tracedShare)));
+  if (copies > 0 && st.maxTraced) traced = Math.min(traced, st.maxTraced);
   for (let k = 0; k < traced; k++) {
     const fade = traced > 1 ? 1 - (1 - st.fadeTo) * (k / (traced - 1)) : 1;
     ops.push({ t: 'group', tx: firstCopyX + k * cellMm + pad * s, ty: top, scale: s, ops: itemOps(glyphs, copyStyle(st, fade)) });

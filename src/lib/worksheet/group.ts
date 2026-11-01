@@ -46,7 +46,7 @@ export function parseNames(text: string): string[] {
 const LEVEL: Record<Difficulty, Partial<WorksheetConfig>> = {
   beginner: { fontStyle: 'dashed', tracingVisibility: 8 },
   intermediate: { fontStyle: 'dotted', tracingVisibility: 5 },
-  advanced: { fontStyle: 'outline', tracingVisibility: 3 },
+  advanced: { fontStyle: 'dotted', tracingVisibility: 3 },
 };
 
 /** The sheet of one child: their name first, then the letters of the week, then the theme words. */
