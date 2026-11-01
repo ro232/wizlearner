@@ -32,6 +32,9 @@ export function isItemAllowed(item: string, category: ContentCategory, tier: Tie
       if (kind === 'find') return isItemAllowed(arg, 'letters', tier);
       return item === 'count:5' || item === 'dots:star';
     }
+    case 'math':
+      // every exercise type is free; numbers above 10 are part of the full plan (see buildMathPages)
+      return true;
     default:
       return false;
   }

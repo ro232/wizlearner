@@ -10,6 +10,9 @@ interface WorksheetState {
 
   // Actions
   setCategory: (category: ContentCategory) => void;
+  setMathRange: (range: number) => void;
+  newMathSet: () => void;
+  toggleMathAnswers: () => void;
   setAlphabet: (alphabet: Alphabet) => void;
   setLetterMode: (mode: LetterMode) => void;
   toggleItem: (item: string) => void;
@@ -78,6 +81,9 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   setCategory: (category) => set((state) => ({
     config: { ...state.config, category, selectedItems: [] }
   })),
+  setMathRange: (mathRange) => set((state) => ({ config: { ...state.config, mathRange } })),
+  newMathSet: () => set((state) => ({ config: { ...state.config, mathSeed: (state.config.mathSeed ?? 1) + 1 } })),
+  toggleMathAnswers: () => set((state) => ({ config: { ...state.config, mathAnswers: !state.config.mathAnswers } })),
   setAlphabet: (alphabet) => set((state) => {
     // Keep only the letters that exist in the newly chosen alphabet.
     const allowed = new Set(ALPHABETS[alphabet]);

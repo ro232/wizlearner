@@ -6,6 +6,7 @@ import type { TraceVariant } from '@/lib/glyphs/render';
 import { isPatternId, type PatternId } from '@/lib/glyphs/patterns';
 import { isItemAllowed } from '@/lib/access';
 import { buildActivityPages } from './activities';
+import { buildMathPages, isMathType } from './math';
 import { textWidthMm } from '@/lib/book/text';
 import {
   INK,
@@ -144,7 +145,7 @@ export function glyphsForItem(item: string, category: WorksheetConfig['category'
 }
 
 export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[] {
-  if (config.category === 'games') return [];
+  if (config.category === 'games' || config.category === 'math') return [];
   const reps = Math.max(1, config.repetitionsPerItem || 1);
   const cursive = isCursive(config);
   const rows: RowItem[] = [];
@@ -179,6 +180,10 @@ export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[
 }
 
 export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOps[] {
+  if (config.category === 'math') {
+    const pages = buildMathPages(config, tier);
+    if (pages.length) return pages;
+  }
   if (config.category === 'games') {
     const pages = buildActivityPages(config, tier, (item) => isItemAllowed(item, 'games', tier));
     if (pages.length) return pages;
@@ -363,5 +368,6 @@ export function countWorksheetPages(config: WorksheetConfig, tier: Tier): number
 /** True when the sheet has something to print (rows, words or activity pages). */
 export function hasContent(config: WorksheetConfig, tier: Tier): boolean {
   if (config.category === 'games') return buildActivityPages(config, tier, (item) => isItemAllowed(item, 'games', tier)).length > 0;
+  if (config.category === 'math') return config.selectedItems.some(isMathType);
   return rowItems(config, tier).length > 0;
 }

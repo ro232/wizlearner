@@ -9,6 +9,7 @@ import { uppercaseLetters, lowercaseLetters, pairedLetters, hintFor } from '@/li
 import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
 import { COUNT_RANGES, DOT_SHAPES, DOT_SHAPE_LABELS } from '@/lib/worksheet/activities';
 import { Button } from '@/components/ui/button';
+import { MathPicker } from './math-picker';
 import { Lock, RotateCcw, Plus, X, ChevronDown, UserRound } from 'lucide-react';
 import { isCursive } from '@/lib/worksheet/layout';
 
@@ -102,7 +103,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   };
 
   const nameAdded = !!config.childName.trim() && config.customWords.includes(config.childName.trim());
-  const pickTitle = { letters: 'Alege literele', numbers: 'Alege cifrele', shapes: 'Alege formele', prewrite: 'Alege exercițiile', games: 'Alege jocurile' }[config.category as 'letters'] ?? 'Alege';
+  const pickTitle = { letters: 'Alege literele', numbers: 'Alege cifrele', shapes: 'Alege formele', prewrite: 'Alege exercițiile', math: 'Matematică', games: 'Alege jocurile' }[config.category as 'letters'] ?? 'Alege';
 
   return (
     <div className="w-full bg-white rounded-2xl shadow-lg p-5 sm:p-6 space-y-6">
@@ -116,7 +117,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       {/* 1. What we practise */}
       <div>
         <SectionLabel>Ce exersăm</SectionLabel>
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {CATEGORY_TABS.map((tab) => {
             const active = config.category === tab.id;
             const color = THEME.categories[tab.id];
@@ -169,7 +170,9 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       {/* 2. Which items */}
       <div>
         <SectionLabel right={<span className="text-xs text-slate-500">{config.selectedItems.length} alese</span>}>{pickTitle}</SectionLabel>
-        {config.category === 'games' ? (
+        {config.category === 'math' ? (
+          <MathPicker onShowPaywall={onShowPaywall} />
+        ) : config.category === 'games' ? (
           <div className="space-y-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
             {[
               { title: 'Găsește litera', text: 'O grilă de litere: copilul o colorează pe cea cerută.', items: allItems.filter((i) => i.startsWith('find:')), cols: 'grid-cols-8 sm:grid-cols-11', show: (i: string) => i.slice(5) },
@@ -264,7 +267,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
           <p className="text-[11px] text-slate-500 mt-1">Apare în antetul fișei. Cu „Trasează-l” devine și rând de scris.</p>
         </div>
         {/* Games draw their own page: no extra words to trace there. */}
-        <div className={config.category === 'games' ? 'hidden' : undefined}>
+        <div className={config.category === 'games' || config.category === 'math' ? 'hidden' : undefined}>
           <label htmlFor="custom-word" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Cuvinte de trasat</label>
           <div className="flex gap-2">
             <input
@@ -299,7 +302,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       </div>
 
       {/* 4. Level (not used by the games) */}
-      <div className={config.category === 'games' ? 'hidden' : undefined}>
+      <div className={config.category === 'games' || config.category === 'math' ? 'hidden' : undefined}>
         <SectionLabel>Nivel</SectionLabel>
         <div className="grid grid-cols-3 gap-2">
           {([
