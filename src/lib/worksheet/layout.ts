@@ -37,6 +37,7 @@ export const PAGE_SIZES_MM: Record<string, { width: number; height: number }> = 
 };
 
 export const GUIDE_COLORS: Record<string, string> = {
+  blue: '#29B6E8',
   gray: '#cbd5e1',
   green: '#86efac',
   orange: '#fdba74',

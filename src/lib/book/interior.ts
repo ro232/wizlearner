@@ -3,7 +3,7 @@ import type { Script } from '@/types';
 import { cursiveGlyph, cursiveWord } from '@/lib/glyphs/cursive';
 import { ALPHABETS, getGlyph, hintFor, normalizeKey, type Alphabet } from '@/lib/glyphs/data';
 import { iconOps, ICON_CREDIT, ICON_CREDIT_EN } from '@/lib/hints/icons';
-import { renderGlyph, type TraceVariant } from '@/lib/glyphs/render';
+import { MARK_INK, renderGlyph, type TraceVariant } from '@/lib/glyphs/render';
 import { PATTERN_IDS, PATTERN_LABELS, patternGlyph, type PatternId } from '@/lib/glyphs/patterns';
 import {
   INK,
@@ -79,9 +79,9 @@ const T = {
     fonts: 'Literele de trasat sunt desenate vectorial. Textul este cules cu fontul Nunito (SIL Open Font License).',
     made: 'Realizat cu WorksheetWiz.',
     howTitle: 'Cum folosim caietul',
-    howIntro: 'Fiecare literă are un model mare cu puncte numerotate și săgeți. Copilul urmărește ordinea și direcția liniilor, trasează peste literele punctate, apoi scrie singur în căsuțele goale.',
+    howIntro: 'Fiecare literă are un model mare cu cerculețe numerotate și săgeți. Copilul urmărește ordinea și direcția liniilor, trasează peste literele punctate, apoi scrie singur în căsuțele goale.',
     howBullets: [
-      'Punctul cu cifra 1 arată unde începe prima linie; săgeata arată direcția. Următoarele linii urmează cifrele 2, 3…',
+      'Cerculețul cu cifra 1 arată unde începe prima linie; săgeata arată direcția. Următoarele linii urmează cifrele 2, 3…',
       'Începeți cu exercițiile grafice, apoi literele mari, literele mici și cifrele. Nu săriți paginile de pregătire.',
       'Exersați 10–15 minute pe zi. Creionul se ține relaxat, aproape de vârf, iar caietul stă drept pe masă.',
       'Lăudați efortul, nu doar rezultatul. La sfârșitul fiecărei pagini colorați o stea.',
@@ -454,11 +454,13 @@ function instructionsPage(f: Frame, ops: DrawOp[], config: BookConfig): void {
   const g = glyphsOf('A');
   const gw = bigModel(ops, g, f.x + 6, legendY, s);
   const lx = f.x + gw + 16;
-  ops.push({ t: 'circle', cx: lx + 2, cy: legendY + 3, r: 2.2, fill: ACCENT });
-  ops.push({ t: 'text', x: lx + 2, y: legendY + 3.2, text: '1', size: 3, fill: PAPER, weight: 'bold', align: 'center', baseline: 'middle' });
-  ops.push({ t: 'text', x: lx + 7, y: legendY + 4.3, text: L.legend1, size: 3.6, fill: ACCENT, weight: 'bold' });
-  ops.push({ t: 'polygon', points: [{ x: lx + 5, y: legendY + 11 }, { x: lx - 1, y: legendY + 8.2 }, { x: lx - 1, y: legendY + 13.8 }], fill: ACCENT });
-  ops.push({ t: 'text', x: lx + 7, y: legendY + 12.3, text: L.legend2, size: 3.6, fill: ACCENT, weight: 'bold' });
+  // the same marks as on the letters: a ring where the pen starts with its number, a thin arrow
+  ops.push({ t: 'circle', cx: lx + 2.5, cy: legendY + 3, r: 1.1, fill: PAPER, stroke: MARK_INK, strokeWidth: 0.45 });
+  ops.push({ t: 'text', x: lx - 0.6, y: legendY + 2, text: '1', size: 3.2, fill: MARK_INK, align: 'center', baseline: 'middle' });
+  ops.push({ t: 'text', x: lx + 7, y: legendY + 4.3, text: L.legend1, size: 3.6, fill: MARK_INK, weight: 'bold' });
+  ops.push({ t: 'line', x1: lx - 1, y1: legendY + 11, x2: lx + 3.2, y2: legendY + 11, stroke: MARK_INK, strokeWidth: 0.45 });
+  ops.push({ t: 'polygon', points: [{ x: lx + 5, y: legendY + 11 }, { x: lx + 2.8, y: legendY + 9.9 }, { x: lx + 2.8, y: legendY + 12.1 }], fill: MARK_INK });
+  ops.push({ t: 'text', x: lx + 7, y: legendY + 12.3, text: L.legend2, size: 3.6, fill: MARK_INK, weight: 'bold' });
   // dashed copy + empty cell as example
   const exS = 0.22;
   const exY = legendY + 100 * s - 100 * exS;

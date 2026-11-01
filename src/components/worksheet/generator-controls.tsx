@@ -356,7 +356,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
           <div>
             <SectionLabel>Culoarea liniilor</SectionLabel>
             <div className="flex gap-3">
-              {([['gray', '#9CA3AF', 'gri'], ['green', '#10B981', 'verde'], ['orange', '#F97316', 'portocaliu'], ['purple', '#A855F7', 'mov']] as const).map(([c, hex, name]) => (
+              {([['blue', '#29B6E8', 'albastru'], ['gray', '#9CA3AF', 'gri'], ['green', '#10B981', 'verde'], ['orange', '#F97316', 'portocaliu'], ['purple', '#A855F7', 'mov']] as const).map(([c, hex, name]) => (
                 <button key={c} type="button" onClick={() => setGuideColor(c)} aria-label={`Linii ${name}`} aria-pressed={config.guideColor === c}
                   className={`w-8 h-8 rounded-full border-2 transition-all ${config.guideColor === c ? 'border-slate-900 scale-110' : 'border-slate-300'}`} style={{ backgroundColor: hex }} />
               ))}

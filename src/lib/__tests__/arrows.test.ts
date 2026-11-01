@@ -34,17 +34,21 @@ describe('direction arrows and start numbers', () => {
     }
   });
 
-  it('start numbers sit beside the ink, not on it', () => {
+  it('start numbers sit beside the ink, not on it, with a ring on each start', () => {
     for (const key of keys) {
       const g = getGlyph(key)!;
       const lines = g.strokes.flatMap((s) => s.subpaths.map((sp) => flattenSubpath(sp)));
-      const dots = renderGlyph(g, DEFAULT_GLYPH_STYLE).filter((op) => op.t === 'circle' && op.fill === DEFAULT_GLYPH_STYLE.accent);
-      expect(dots.length, key).toBe(g.strokes.length);
-      for (const d of dots) {
-        if (d.t !== 'circle') continue;
+      const ops = renderGlyph(g, DEFAULT_GLYPH_STYLE);
+      const nums = ops.filter((op) => op.t === 'text' && /^\d+$/.test(op.text));
+      const rings = ops.filter((op) => op.t === 'circle' && op.fill === DEFAULT_GLYPH_STYLE.paper);
+      expect(nums.length, key).toBeGreaterThan(0);
+      expect(rings.length, key).toBe(nums.length);
+      const r = W * 0.85 * 0.8;
+      for (const d of nums) {
+        if (d.t !== 'text') continue;
         let m = Infinity;
-        for (const pts of lines) for (let i = 1; i < pts.length; i++) m = Math.min(m, segDist({ x: d.cx, y: d.cy }, pts[i - 1], pts[i]));
-        expect(m, `${key}: number on a stroke`).toBeGreaterThanOrEqual(d.r + W * 0.5 - 0.01);
+        for (const pts of lines) for (let i = 1; i < pts.length; i++) m = Math.min(m, segDist({ x: d.x, y: d.y }, pts[i - 1], pts[i]));
+        expect(m, `${key}: number on a stroke`).toBeGreaterThanOrEqual(r + W * 0.5 - 0.01);
       }
     }
   });

@@ -141,9 +141,10 @@ export function guideOps(geom: RowGeometry, s: number, color: string, cursive = 
     return ops;
   }
   return [
-    { t: 'line', x1: x, y1: baseline - 100 * s, x2: x + width, y2: baseline - 100 * s, stroke: color, strokeWidth: 0.3 },
-    { t: 'line', x1: x, y1: baseline - 50 * s, x2: x + width, y2: baseline - 50 * s, stroke: color, strokeWidth: 0.25, dash: [1.5, 1.5] },
-    { t: 'line', x1: x, y1: baseline, x2: x + width, y2: baseline, stroke: color, strokeWidth: 0.35 },
+    // Clear enough to write between: solid top and bottom lines, dashed middle line.
+    { t: 'line', x1: x, y1: baseline - 100 * s, x2: x + width, y2: baseline - 100 * s, stroke: color, strokeWidth: 0.45 },
+    { t: 'line', x1: x, y1: baseline - 50 * s, x2: x + width, y2: baseline - 50 * s, stroke: color, strokeWidth: 0.35, dash: [1.8, 1.4] },
+    { t: 'line', x1: x, y1: baseline, x2: x + width, y2: baseline, stroke: color, strokeWidth: 0.5 },
   ];
 }
 
@@ -170,6 +171,8 @@ function copyStyle(st: RowStyle, fade: number): GlyphStyle {
     variant: st.variant,
     startDots: false,
     arrows: false,
+    // a small ring where the pen starts, on every copy
+    startRings: true,
     accent: st.accent ?? ACCENT,
     dotText: st.paper ?? PAPER,
     paper: st.paper ?? PAPER,
