@@ -3,7 +3,7 @@ import type { PageOps } from '@/lib/glyphs/types';
 import { drawPageToPdf, type PdfFontSet } from '@/lib/glyphs/backends/pdf';
 import { buildBookPages, type BookConfig } from '@/lib/book/interior';
 import { buildCoverPage } from '@/lib/book/cover';
-import { loadEmbeddedFonts, type EmbeddedFonts } from './generate-pdf';
+import { loadEmbeddedFonts, safeFilename, type EmbeddedFonts } from './generate-pdf';
 
 function newDoc(first: PageOps, fonts: EmbeddedFonts | null): { doc: jsPDF; font: PdfFontSet } {
   const doc = new jsPDF({
@@ -57,10 +57,10 @@ function slug(title: string): string {
 
 export async function downloadBookInterior(config: BookConfig): Promise<void> {
   const fonts = await loadEmbeddedFonts();
-  createBookInteriorPdf(config, fonts).save(`${slug(config.title)}-interior.pdf`);
+  createBookInteriorPdf(config, fonts).save(safeFilename(`${slug(config.title)}-interior.pdf`));
 }
 
 export async function downloadBookCover(config: BookConfig, pageCount: number): Promise<void> {
   const fonts = await loadEmbeddedFonts();
-  createBookCoverPdf(config, pageCount, fonts).save(`${slug(config.title)}-coperta.pdf`);
+  createBookCoverPdf(config, pageCount, fonts).save(safeFilename(`${slug(config.title)}-coperta.pdf`));
 }

@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "build:icons": "node scripts/build-hint-icons.mjs"
+    "build:icons": "node scripts/build-hint-icons.mjs",
+    "e2e": "playwright test",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck && npm test",
+    "sheets:preview": "RENDER_SHEETS=1 vitest run src/lib/__tests__/sheets-preview.test.ts"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
@@ -42,6 +46,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.0",
     "@twemoji/svg": "^15.0.0",
     "@types/node": "^20",
     "@types/react": "^18",

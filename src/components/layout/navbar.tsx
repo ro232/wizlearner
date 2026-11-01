@@ -34,7 +34,7 @@ export function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         <Logo />
 
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-1">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href}>
               <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 text-ink hover:bg-white', pathname === link.href && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
@@ -89,7 +89,7 @@ export function Navbar() {
 
           <button
             type="button"
-            className="md:hidden w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100"
+            className="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-controls="mobile-menu"
@@ -101,7 +101,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div id="mobile-menu" className="md:hidden border-t-2 border-ink bg-paper px-4 py-3 space-y-1">
+        <div id="mobile-menu" className="lg:hidden border-t-2 border-ink bg-paper px-4 py-3 space-y-1">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href} className={cn('flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50', pathname === link.href && 'bg-blue-50 text-blue-700')}>
               <link.icon className="w-4 h-4" aria-hidden /> {link.label}

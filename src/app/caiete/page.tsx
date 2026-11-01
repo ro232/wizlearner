@@ -118,7 +118,7 @@ export default function WorkbooksPage() {
   return (
     <div className="min-h-screen bg-paper">
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-2 gap-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 [&>*]:min-w-0">
         <section className="space-y-6">
           <div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Caiete gata făcute</h1>
@@ -170,8 +170,8 @@ export default function WorkbooksPage() {
             </div>
 
             <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
-            <div className="flex gap-2">
-            <Button onClick={download} disabled={busy || !mine.length} className="flex-1 h-12 rounded-2xl text-white font-bold disabled:opacity-50" data-btn="primary">
+            <div className="flex flex-wrap gap-2">
+            <Button onClick={download} disabled={busy || !mine.length} className="flex-1 min-w-[13rem] h-12 rounded-2xl text-white font-bold disabled:opacity-50" data-btn="primary">
               {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> : <Download className="w-5 h-5 mr-2" aria-hidden />}
               {tier === 'free' ? `Descarcă paginile gratuite (${mine.length})` : `Descarcă caietul (${all.length} pagini)`}
             </Button>

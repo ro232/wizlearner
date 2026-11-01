@@ -163,7 +163,7 @@ export default function GroupPage() {
     <div className="min-h-screen bg-paper">
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-2 gap-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 [&>*]:min-w-0">
         <section className="space-y-6">
           <div>
             <h1 className="text-4xl font-extrabold text-ink">Fișe pentru toată grupa</h1>
@@ -179,13 +179,13 @@ export default function GroupPage() {
               <span className={`${label} flex items-center gap-1.5 whitespace-nowrap`}>
                 <CalendarDays className="w-4 h-4" aria-hidden /> Săptămâna din plan
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 min-w-0">
                 <button type="button" aria-label="Săptămâna anterioară" disabled={!week || week <= 1} onClick={() => week && applyWeek(week - 1)}
                   className="w-9 h-9 rounded-lg border-2 border-ink flex items-center justify-center disabled:opacity-40">
                   <ChevronLeft className="w-4 h-4" aria-hidden />
                 </button>
                 <select aria-label="Alege săptămâna" value={week ?? ''} onChange={(e) => e.target.value && applyWeek(Number(e.target.value))}
-                  className="h-9 max-w-[220px] rounded-lg border-2 border-ink bg-white px-2 font-bold text-ink">
+                  className="h-9 min-w-0 w-full max-w-[220px] rounded-lg border-2 border-ink bg-white px-2 font-bold text-ink">
                   <option value="">alege…</option>
                   {SCHOOL_YEAR.map((w) => (
                     <option key={w.week} value={w.week}>

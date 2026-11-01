@@ -79,6 +79,20 @@ export function createPagesPdf(pages: PageOps[], fonts: EmbeddedFonts | null): j
   return doc;
 }
 
+/**
+ * A file name every browser accepts: no diacritics or odd characters. Chrome saves a file
+ * called „download” (without .pdf) when the name has letters like Ș.
+ */
+export function safeFilename(name: string): string {
+  const base = name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Za-z0-9._-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-(?=\.pdf$)/g, '');
+  return /\.pdf$/i.test(base) ? base : `${base || 'fisa'}.pdf`;
+}
+
 export function worksheetFilename(config: WorksheetConfig): string {
   const dateStr = new Date().toISOString().split('T')[0];
   const childNamePart = config.childName ? `-${config.childName.trim().replace(/\s+/g, '-')}` : '';
@@ -89,7 +103,7 @@ export function worksheetFilename(config: WorksheetConfig): string {
 export async function generateWorksheetPDF(config: WorksheetConfig, tier: Tier): Promise<void> {
   const fonts = await loadEmbeddedFonts();
   const doc = createWorksheetPdf(config, tier, fonts);
-  doc.save(worksheetFilename(config));
+  doc.save(safeFilename(worksheetFilename(config)));
 }
 
 /**
@@ -125,5 +139,5 @@ export async function printWorksheetPDF(config: WorksheetConfig, tier: Tier): Pr
 /** Download a list of pages as one PDF. */
 export async function downloadPagesPdf(pages: PageOps[], filename: string): Promise<void> {
   const fonts = await loadEmbeddedFonts();
-  createPagesPdf(pages, fonts).save(filename);
+  createPagesPdf(pages, fonts).save(safeFilename(filename));
 }
