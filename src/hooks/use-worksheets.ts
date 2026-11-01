@@ -4,10 +4,14 @@ import { useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { WorksheetConfig } from '@/types';
 
-interface SavedWorksheet {
+import type { ProjectKind } from '@/lib/projects';
+
+export interface SavedWorksheet {
   id: string;
   name: string;
   configuration: WorksheetConfig;
+  kind?: ProjectKind;
+  folder?: string | null;
   thumbnail_url: string | null;
   is_public: boolean;
   downloads_count: number;
@@ -34,11 +38,12 @@ export function useWorksheets(userId: string | undefined) {
     setLoading(false);
   }, [userId, supabase]);
 
-  const saveWorksheet = async (name: string, config: WorksheetConfig) => {
+  const saveWorksheet = async (name: string, config: unknown, kind: ProjectKind = 'sheet', folder: string | null = null) => {
     if (!userId) return null;
     const { data, error } = await supabase
       .from('saved_worksheets')
-      .insert({ user_id: userId, name, configuration: config })
+      // kind and folder only when set, so saving sheets also works before the dashboard migration is run
+      .insert({ user_id: userId, name, configuration: config, ...(kind !== 'sheet' ? { kind } : {}), ...(folder ? { folder } : {}) })
       .select()
       .single();
 

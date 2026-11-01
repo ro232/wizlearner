@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, Download, FileText, Image as ImageIcon, Eye } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -12,6 +12,9 @@ import { buildBookPages, DEFAULT_BOOK_CONFIG, type BookConfig } from '@/lib/book
 import { buildCoverPage } from '@/lib/book/cover';
 import { coverGeometry, interiorMargins, TRIM_SIZES, PAPER_LABELS, type TrimKey, type PaperKey } from '@/lib/book/spec';
 import { downloadBookInterior, downloadBookCover } from '@/lib/pdf/actions';
+import { logDownload, takeProject } from '@/lib/projects';
+import { SaveProjectButton } from '@/components/projects/save-project-button';
+import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { PATTERN_IDS } from '@/lib/glyphs/patterns';
 import { ALPHABETS } from '@/lib/glyphs/data';
 
@@ -34,6 +37,12 @@ export default function BookPage() {
   const [config, setConfig] = useState<BookConfig>({ ...DEFAULT_BOOK_CONFIG });
   const [view, setView] = useState<'interior' | 'cover'>('interior');
   const [busy, setBusy] = useState<'interior' | 'cover' | null>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
+  // a book opened from the account
+  useEffect(() => {
+    const saved = takeProject<BookConfig>('book');
+    if (saved) setConfig({ ...DEFAULT_BOOK_CONFIG, ...saved });
+  }, []);
 
   const effective = useMemo<BookConfig>(() => ({ ...config, watermark: tier !== 'full' }), [config, tier]);
   const pages = useMemo(() => buildBookPages(effective), [effective]);
@@ -50,6 +59,7 @@ export default function BookPage() {
     try {
       if (what === 'interior') await downloadBookInterior(effective);
       else await downloadBookCover(effective, pages.length);
+      if (what === 'interior') void logDownload('book', config.title || 'Caiet KDP', config, pages.length);
     } catch (err) {
       console.error('Book PDF failed', err);
     } finally {
@@ -265,6 +275,10 @@ export default function BookPage() {
               </CardContent>
             </Card>
 
+            <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
+            <div className="flex justify-end">
+              <SaveProjectButton kind="book" name={config.title || 'Caiet KDP'} configuration={config} onPaywall={() => setShowPaywall(true)} back="/book" />
+            </div>
             <div className="grid sm:grid-cols-2 gap-3">
               <Button
                 onClick={() => run('interior')}

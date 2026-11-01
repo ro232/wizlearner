@@ -18,13 +18,16 @@ export default function PrivacyPage() {
         <li><strong>Cu cont:</strong> adresa de email, numele afișat și, dacă intri cu Google, numele din contul Google. Le folosim ca să te autentificăm și să știm ce variantă ai (gratuită sau completă).</li>
         <li><strong>Coduri de acces:</strong> când activezi un cod, păstrăm codul și data activării, legate de contul tău.</li>
         <li><strong>Abonament:</strong> plata se face prin Stripe. Datele cardului ajung doar la Stripe, nu la noi. Noi păstrăm identificatorul de client Stripe, starea abonamentului și data reînnoirii.</li>
-        <li><strong>Fișe salvate:</strong> dacă salvezi o fișă în cont, păstrăm setările ei (literele, cuvintele, nivelul), fără numele copilului.</li>
+        <li><strong>Fișe și caiete salvate:</strong> dacă salvezi o fișă sau un caiet în cont, păstrăm setările lui (literele, cuvintele, nivelul), fără numele copilului. Excepție: caietul cu numele, pe care îl salvezi tocmai cu numele scris pe el.</li>
+        <li><strong>Istoricul descărcărilor:</strong> cât timp ești în cont, păstrăm setările ultimelor 60 de descărcări (fără numele copiilor), ca să le poți reface. Îl ștergi oricând din cont.</li>
       </ul>
 
       <h2>Datele copiilor</h2>
       <p>
-        Nu cerem și nu păstrăm date despre copii. Numele scris pe o fișă, inclusiv listele de nume de pe pagina „Pentru grupă”,
-        rămân în browserul tău. Când salvezi o fișă în cont, numele copilului este scos înainte de salvare.
+        Nu cerem date despre copii. Numele scris pe o fișă, inclusiv listele de nume de pe pagina „Pentru grupă”, rămân în
+        browserul tău. Când salvezi o fișă în cont, numele copilului este scos înainte de salvare. Păstrăm un prenume doar dacă
+        îl adaugi tu la „Copiii mei” (prenumele și nivelul, nimic altceva) sau salvezi un caiet cu numele. Le vezi și le ștergi
+        oricând din cont; la ștergerea contului se șterg și ele.
       </p>
 
       <h2>Temeiul și cât timp</h2>

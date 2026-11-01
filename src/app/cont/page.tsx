@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Crown, KeyRound, FileText, Trash2, LogOut, CreditCard, Receipt } from 'lucide-react';
+import { Crown, KeyRound, LogOut, CreditCard, Receipt, Users, FolderOpen, History } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useWorksheets } from '@/hooks/use-worksheets';
-import { useWorksheetStore } from '@/stores/worksheet-store';
-import { DEFAULT_CONFIG } from '@/types';
+import { ProjectsPanel } from '@/components/account/projects-panel';
+import { HistoryPanel } from '@/components/account/history-panel';
+import { ChildrenPanel } from '@/components/account/children-panel';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 
 interface FiscalInvoice {
@@ -33,8 +33,7 @@ const STATUS: Record<string, string> = {
 
 export default function AccountPage() {
   const { user, profile, loading, signOut, redeemAccessCode } = useAuth();
-  const { worksheets, fetchWorksheets, deleteWorksheet } = useWorksheets(user?.id);
-  const router = useRouter();
+  const { worksheets, fetchWorksheets, updateWorksheet, deleteWorksheet } = useWorksheets(user?.id);
   const [code, setCode] = useState('');
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [portalBusy, setPortalBusy] = useState(false);
@@ -97,10 +96,6 @@ export default function AccountPage() {
     if (res.success) setCode('');
   };
 
-  const openSheet = (configuration: typeof DEFAULT_CONFIG) => {
-    useWorksheetStore.setState({ config: { ...DEFAULT_CONFIG, ...configuration } });
-    router.push('/generator');
-  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -169,22 +164,18 @@ export default function AccountPage() {
         )}
 
         <section className="rounded-2xl bg-white shadow p-6">
-          <h2 className="text-lg font-bold text-slate-900 mb-3">Fișele salvate</h2>
-          {worksheets.length === 0 ? (
-            <p className="text-slate-600">Nu ai salvat încă nicio fișă. În generator, butonul „Salvează” o păstrează aici.</p>
-          ) : (
-            <ul className="divide-y divide-slate-100">
-              {worksheets.map((w) => (
-                <li key={w.id} className="flex items-center justify-between gap-3 py-3">
-                  <button type="button" onClick={() => openSheet(w.configuration)} className="flex items-center gap-2 text-left text-slate-800 hover:text-blue-700">
-                    <FileText className="w-4 h-4 shrink-0" aria-hidden />
-                    <span className="font-medium">{w.name}</span>
-                  </button>
-                  <Button variant="ghost" size="sm" onClick={() => deleteWorksheet(w.id)} aria-label={`Șterge ${w.name}`}><Trash2 className="w-4 h-4 text-slate-400" /></Button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <div className="flex items-center gap-2 mb-3"><Users className="w-5 h-5 text-pen" aria-hidden /><h2 className="text-lg font-bold text-slate-900">Copiii mei</h2></div>
+          <ChildrenPanel userId={user.id} />
+        </section>
+
+        <section className="rounded-2xl bg-white shadow p-6">
+          <div className="flex items-center gap-2 mb-3"><FolderOpen className="w-5 h-5 text-pen" aria-hidden /><h2 className="text-lg font-bold text-slate-900">Proiectele mele</h2></div>
+          <ProjectsPanel projects={worksheets} onUpdate={(id, patch) => void updateWorksheet(id, patch)} onDelete={(id) => void deleteWorksheet(id)} />
+        </section>
+
+        <section className="rounded-2xl bg-white shadow p-6">
+          <div className="flex items-center gap-2 mb-3"><History className="w-5 h-5 text-pen" aria-hidden /><h2 className="text-lg font-bold text-slate-900">Descărcate recent</h2></div>
+          <HistoryPanel userId={user.id} />
         </section>
       </main>
       <Footer />

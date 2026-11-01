@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Download, Loader2 } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -13,6 +13,17 @@ import { downloadPagesPdf } from '@/lib/pdf/actions';
 import { lowercaseLetters, pairedLetters, uppercaseLetters } from '@/lib/glyphs/data';
 import { DEFAULT_CONFIG, type Difficulty, type WorksheetConfig } from '@/types';
 import { track } from '@/lib/analytics';
+import { logDownload, takeProject } from '@/lib/projects';
+import { SaveProjectButton } from '@/components/projects/save-project-button';
+import { PaywallModal } from '@/components/worksheet/paywall-modal';
+
+interface WorkbookProject {
+  book: BookId;
+  level: Difficulty;
+  withWords: boolean;
+  /** only when opened for a child from the account; never saved */
+  name?: string;
+}
 
 /**
  * Ready-made workbooks: the whole alphabet (or the digits), one page per letter, at the
@@ -71,7 +82,17 @@ export default function WorkbooksPage() {
   const [withWords, setWithWords] = useState(true);
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
   const tier = useWorksheetStore((s) => s.tier);
+  // a workbook opened from the account (the child's name is never stored)
+  useEffect(() => {
+    const p = takeProject<WorkbookProject>('workbook');
+    if (!p) return;
+    if (BOOKS.some((b) => b.id === p.book)) setBook(p.book);
+    if (p.level) setLevel(p.level);
+    setWithWords(p.withWords !== false);
+    if (p.name) setName(p.name);
+  }, []);
   const toast = useToast();
 
   const config = useMemo(() => bookConfig(book, level, withWords, name), [book, level, withWords, name]);
@@ -85,6 +106,7 @@ export default function WorkbooksPage() {
     try {
       track('workbook_download', { book, level, words: withWords, tier });
       await downloadPagesPdf(mine, `caiet-${book}-${level}.pdf`);
+      void logDownload('workbook', `${BOOKS.find((b) => b.id === book)!.title} · ${LEVELS.find((l) => l[0] === level)![1]}`, { book, level, withWords }, mine.length);
       toast(tier === 'free' ? `Paginile gratuite sunt descărcate: ${mine.length}.` : `Caietul e gata: ${mine.length} pagini.`);
     } finally {
       setBusy(false);
@@ -147,10 +169,14 @@ export default function WorkbooksPage() {
                 className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
-            <Button onClick={download} disabled={busy || !mine.length} className="w-full h-12 rounded-2xl text-white font-bold disabled:opacity-50" data-btn="primary">
+            <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
+            <div className="flex gap-2">
+            <Button onClick={download} disabled={busy || !mine.length} className="flex-1 h-12 rounded-2xl text-white font-bold disabled:opacity-50" data-btn="primary">
               {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> : <Download className="w-5 h-5 mr-2" aria-hidden />}
               {tier === 'free' ? `Descarcă paginile gratuite (${mine.length})` : `Descarcă caietul (${all.length} pagini)`}
             </Button>
+            <SaveProjectButton kind="workbook" name={`${title} · ${LEVELS.find((l) => l[0] === level)![1]}`} configuration={{ book, level, withWords }} onPaywall={() => setShowPaywall(true)} back="/caiete" />
+            </div>
             {tier === 'free' && (
               <p className="text-sm text-slate-600">
                 Gratuit descarci paginile pentru A–E (și Ă, Â) sau cifrele 0–5. Tot caietul, cu toate cele {all.length} pagini, face parte din{' '}

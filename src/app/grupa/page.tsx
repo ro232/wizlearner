@@ -14,6 +14,7 @@ import { buildGroupPages, parseNames, MAX_CHILDREN, MAX_LETTERS } from '@/lib/wo
 import { SCHOOL_YEAR, WEEKS_IN_YEAR, weekLabel, weekOfSchoolYear } from '@/lib/calendar';
 import { loadGroups, storeGroups, type SavedGroup } from '@/lib/saved-groups';
 import { downloadPagesPdf } from '@/lib/pdf/actions';
+import { logDownload, takeProject } from '@/lib/projects';
 import type { Difficulty, LetterMode, Script } from '@/types';
 
 /** On the free plan the group sheets can be tried with a few children. */
@@ -49,6 +50,18 @@ export default function GroupPage() {
   const [groups, setGroups] = useState<SavedGroup[]>([]);
   const [groupId, setGroupId] = useState<string>('');
   const [groupName, setGroupName] = useState('');
+
+  // Settings reopened from the account's history (the names stay in this browser).
+  useEffect(() => {
+    const p = takeProject<{ themeId?: string; letters?: string[]; letterMode?: LetterMode; script?: Script; difficulty?: Difficulty; withFind?: boolean }>('group');
+    if (!p) return;
+    setThemeId(p.themeId);
+    if (p.letters) setLetters(p.letters);
+    if (p.letterMode) setLetterMode(p.letterMode);
+    if (p.script) setScript(p.script);
+    if (p.difficulty) setDifficulty(p.difficulty);
+    if (p.withFind !== undefined) setWithFind(p.withFind);
+  }, []);
 
   // Restore saved groups (this browser only) and jump to this week of the school year.
   useEffect(() => {
@@ -135,6 +148,8 @@ export default function GroupPage() {
     try {
       const plan = week ? `-sapt-${week}` : '';
       await downloadPagesPdf(pages, `fise-grupa${plan}-${themeId ?? 'litere'}.pdf`);
+      // history keeps the settings only, never the children's names
+      void logDownload('group', `Grupă: ${names.length} copii${themeId ? ` · ${themeById(themeId)?.title ?? themeId}` : ''}`, { themeId, letters, letterMode, script, difficulty, withFind }, pages.length);
       toast(`Gata: ${names.length} fișe, câte una pentru fiecare copil.`);
     } finally {
       setBusy(false);
