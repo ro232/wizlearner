@@ -196,7 +196,8 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
   let copies = Math.max(0, Math.floor((width - modelW) / cellMm));
   if (st.maxCopies > 0) copies = Math.min(copies, st.maxCopies);
   // A word with room for a single copy looks unfinished next to rows that have none: trace the model itself.
-  if (isWordish(glyphs) && copies < 2 && st.maxCopies === 0) copies = 0;
+  // (Not at the higher levels: there the model stays solid and the child writes after it.)
+  if (isWordish(glyphs) && copies < 2 && st.maxCopies === 0 && !st.maxTraced && st.tracedShare === undefined) copies = 0;
   const top = baseline - 100 * s;
 
   const modelX = st.leftHanded ? x + width - cellMm : x;
@@ -244,7 +245,9 @@ export function buildPatternRow(ops: DrawOp[], pattern: PatternId, geom: RowGeom
   const modelPeriods = st.showModel ? 2 : 0;
   const model = modelPeriods ? patternGlyph(pattern, modelPeriods) : null;
   const modelUnits = model ? model.width + 20 : 0;
-  const restPeriods = patternPeriods(pattern, unitsAvailable - modelUnits, 1);
+  // The level decides how much of the row is traced; the rest is left for drawing alone.
+  const share = st.tracedShare ?? (st.maxTraced ? 0.3 : 1);
+  const restPeriods = patternPeriods(pattern, (unitsAvailable - modelUnits) * share, 1);
   const rest = patternGlyph(pattern, restPeriods);
   const totalUnits = modelUnits + rest.width;
   const startX = st.leftHanded ? x + width - padMm - totalUnits * s : x + padMm;
