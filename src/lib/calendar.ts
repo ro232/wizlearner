@@ -45,22 +45,40 @@ export const SCHOOL_YEAR: PlanWeek[] = (() => {
   return weeks;
 })();
 
+const MONTHS = ['ianuarie', 'februarie', 'martie', 'aprilie', 'mai', 'iunie', 'iulie', 'august', 'septembrie', 'octombrie', 'noiembrie', 'decembrie'];
+
+/** "2026-09-07" → [2026, 8, 7] (month from 0, as Date wants it). */
+function parseDay(iso: string): [number, number, number] {
+  const [y, m, d] = iso.split('-').map(Number);
+  return [y, m - 1, d];
+}
+
+/**
+ * Whole calendar days from the start day to the date, both read on the wall calendar of
+ * this device. Counting milliseconds instead goes wrong by a day after a clock change
+ * (the last Sunday of October has 25 hours, the last Sunday of March 23).
+ */
+function calendarDaysSince(date: Date, start: string): number {
+  const [y, m, d] = parseDay(start);
+  return Math.round((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(y, m, d)) / 86_400_000);
+}
+
 /** Which plan week a date falls in (1 … 34), or null outside the school year. */
 export function weekOfSchoolYear(date: Date, start = SCHOOL_YEAR_START): number | null {
-  const s = new Date(`${start}T00:00:00`);
-  const days = Math.floor((date.getTime() - s.getTime()) / 86_400_000);
+  const days = calendarDaysSince(date, start);
   if (days < 0) return null;
   const w = Math.floor(days / 7) + 1;
   return w <= WEEKS_IN_YEAR ? w : null;
 }
 
-/** "7–11 septembrie" for a plan week. */
+/** "7–11 septembrie" for a plan week (Monday to Friday). */
 export function weekLabel(week: number, start = SCHOOL_YEAR_START): string {
-  const s = new Date(`${start}T00:00:00`);
-  const mon = new Date(s.getTime() + (week - 1) * 7 * 86_400_000);
-  const fri = new Date(mon.getTime() + 4 * 86_400_000);
-  const month = (d: Date) => d.toLocaleDateString('ro-RO', { month: 'long' });
-  return month(mon) === month(fri)
-    ? `${mon.getDate()}–${fri.getDate()} ${month(fri)}`
-    : `${mon.getDate()} ${month(mon)} – ${fri.getDate()} ${month(fri)}`;
+  const [y, m, d] = parseDay(start);
+  // Day arithmetic in UTC: no clock changes there, so Monday stays Monday all year.
+  const mon = new Date(Date.UTC(y, m, d + (week - 1) * 7));
+  const fri = new Date(Date.UTC(y, m, d + (week - 1) * 7 + 4));
+  const month = (x: Date) => MONTHS[x.getUTCMonth()];
+  return mon.getUTCMonth() === fri.getUTCMonth()
+    ? `${mon.getUTCDate()}–${fri.getUTCDate()} ${month(fri)}`
+    : `${mon.getUTCDate()} ${month(mon)} – ${fri.getUTCDate()} ${month(fri)}`;
 }
