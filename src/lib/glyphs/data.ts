@@ -47,8 +47,13 @@ const UPPER: Record<string, GlyphDef> = {
 UPPER['Ă'] = { marks: 1, width: 80, strokes: [...UPPER.A.strokes, 'A 40 -30 16 10 200 -20'], arrows: [0.5, 0.5, 0.5, null] };
 UPPER['Â'] = { marks: 1, width: 80, strokes: [...UPPER.A.strokes, 'M 24 -20 L 40 -34 L 56 -20'], arrows: [0.5, 0.5, 0.5, null] };
 UPPER['Î'] = { marks: 1, width: 0, strokes: [...UPPER.I.strokes, 'M -16 -20 L 0 -34 L 16 -20'], arrows: [0.5, null] };
-UPPER['Ș'] = { marks: 1, width: 64, strokes: [...UPPER.S.strokes, 'M 35 106 C 36 114 33 121 27 126'], arrows: [[0.2, 0.75], null] };
-UPPER['Ț'] = { marks: 1, width: 70, strokes: [...UPPER.T.strokes, 'M 37 106 C 38 114 35 121 29 126'], arrows: [0.5, 0.5, null] };
+// The comma of Ș and Ț is a small separate sign under the letter: it starts well below the
+// baseline (a clear gap, never touching the letter — touching, it reads as the old cedilla Ş/Ţ)
+// and is drawn with a finer pen.
+const COMMA_PEN = 0.72;
+const comma = (x: number) => `M ${x} 118 C ${x + 0.8} 123 ${x - 1.2} 127.5 ${x - 6} 131`;
+UPPER['Ș'] = { marks: 1, markPen: COMMA_PEN, width: 64, strokes: [...UPPER.S.strokes, comma(35)], arrows: [[0.2, 0.75], null] };
+UPPER['Ț'] = { marks: 1, markPen: COMMA_PEN, width: 70, strokes: [...UPPER.T.strokes, comma(38)], arrows: [0.5, 0.5, null] };
 
 // ───────────────────────── lowercase ─────────────────────────
 
@@ -88,8 +93,8 @@ const LOWER: Record<string, GlyphDef> = {
 LOWER['ă'] = { marks: 1, width: 52, strokes: [...LOWER.a.strokes, 'A 26 26 14 9 200 -20'], arrows: [0.25, 0.5, null] };
 LOWER['â'] = { marks: 1, width: 52, strokes: [...LOWER.a.strokes, 'M 12 34 L 26 20 L 40 34'], arrows: [0.25, 0.5, null] };
 LOWER['î'] = { marks: 1, width: 0, strokes: ['M 0 50 L 0 100', 'M -14 34 L 0 20 L 14 34'], arrows: [0.5, null] };
-LOWER['ș'] = { marks: 1, width: 44, strokes: [...LOWER.s.strokes, 'M 24 106 C 25 114 22 121 16 126'], arrows: [[0.2, 0.75], null] };
-LOWER['ț'] = { marks: 1, width: 30, strokes: [...LOWER.t.strokes, 'M 17 106 C 18 114 15 121 9 126'], arrows: [0.4, 0.5, null] };
+LOWER['ș'] = { marks: 1, markPen: COMMA_PEN, width: 44, strokes: [...LOWER.s.strokes, comma(25)], arrows: [[0.2, 0.75], null] };
+LOWER['ț'] = { marks: 1, markPen: COMMA_PEN, width: 30, strokes: [...LOWER.t.strokes, comma(22)], arrows: [0.4, 0.5, null] };
 
 // ───────────────────────── digits ─────────────────────────
 
@@ -163,6 +168,45 @@ export function normalizeKey(key: string): string {
     .replace(/ţ/g, 'ț');
 }
 
+// ───────────────────────── letters from other alphabets ─────────────────────────
+
+/** Letters that do not decompose into a base letter and an accent. */
+const FOREIGN_BASE: Record<string, string> = {
+  ø: 'o', Ø: 'O', ł: 'l', Ł: 'L', đ: 'd', Đ: 'D', ð: 'd', Ð: 'D', ı: 'i', ß: 'ss', æ: 'ae', Æ: 'AE', œ: 'oe', Œ: 'OE', þ: 'th', Þ: 'Th',
+};
+
+/**
+ * The text as it is traced: a letter we have no drawing for (á, é, ö, ő, ü, ñ, ł …) becomes its
+ * base letter (László → Laszlo), so that no letter of a name silently disappears. Romanian
+ * letters and everything else we can draw stay as they are. `has` tells which letters can be drawn
+ * (print glyphs by default; handwriting passes its own test).
+ */
+export function traceLetters(text: string, has: (ch: string) => boolean = hasGlyph): string {
+  let out = '';
+  for (const ch of normalizeKey(text)) {
+    if (!/\p{L}/u.test(ch) || has(ch)) {
+      out += ch;
+      continue;
+    }
+    const base = FOREIGN_BASE[ch] ?? ch.normalize('NFD').replace(/\p{M}/gu, '');
+    out += [...base].every((b) => has(b)) ? base : ch;
+  }
+  return out;
+}
+
+/**
+ * The letters of a text that have no drawing of their own, each once, as typed: the ones traced
+ * as their base letter (á, ö) and the ones that cannot be traced at all (ж). For a warning in the
+ * interface; an empty list means the text is traced exactly as written.
+ */
+export function unsupportedLetters(text: string): string[] {
+  const out: string[] = [];
+  for (const ch of normalizeKey(text)) {
+    if (/\p{L}/u.test(ch) && !hasGlyph(ch) && !out.includes(ch)) out.push(ch);
+  }
+  return out;
+}
+
 // ───────────────────────── alphabets ─────────────────────────
 
 export type Alphabet = 'ro' | 'en';
@@ -192,7 +236,7 @@ export function baseLetter(letter: string): string {
 /** Letters of a word that we can draw, in the requested case. */
 export function lettersOfWord(word: string, mode: 'uppercase' | 'lowercase' | 'paired'): string[] {
   const out: string[] = [];
-  for (const ch of normalizeKey(word).toUpperCase()) {
+  for (const ch of traceLetters(word).toUpperCase()) {
     if (!hasGlyph(ch) || !/\p{L}/u.test(ch)) continue;
     const item = mode === 'uppercase' ? ch : mode === 'lowercase' ? ch.toLowerCase() : `${ch}${ch.toLowerCase()}`;
     if (!out.includes(item)) out.push(item);
@@ -217,11 +261,11 @@ export const LETTER_HINTS: Record<Alphabet, Record<string, LetterHint>> = {
     D: { word: 'delfin', emoji: '🐬' },
     E: { word: 'elefant', emoji: '🐘' },
     F: { word: 'fluture', emoji: '🦋' },
-    G: { word: 'girafă', emoji: '🦒' },
+    G: { word: 'găină', emoji: '🐔' },
     H: { word: 'hipopotam', emoji: '🦛' },
-    I: { word: 'iepure', emoji: '🐰' },
+    I: { word: 'inimă', emoji: '❤️' },
     Î: { word: 'înghețată', emoji: '🍦' },
-    J: { word: 'jucărie', emoji: '🧸' },
+    J: { word: 'jaguar', emoji: '🐆' },
     K: { word: 'koala', emoji: '🐨' },
     L: { word: 'leu', emoji: '🦁' },
     M: { word: 'măr', emoji: '🍎' },
@@ -236,9 +280,9 @@ export const LETTER_HINTS: Record<Alphabet, Record<string, LetterHint>> = {
     Ț: { word: 'țestoasă', emoji: '🐢' },
     U: { word: 'urs', emoji: '🐻' },
     V: { word: 'vulpe', emoji: '🦊' },
-    W: { word: 'web', emoji: '🕸️' },
-    X: { word: 'xilofon', emoji: '🎵' },
-    Y: { word: 'yoga', emoji: '🧘' },
+    W: { word: 'watt', emoji: '💡' },
+    X: { word: 'xilofon', emoji: '🎹' },
+    Y: { word: 'yo-yo', emoji: '🪀' },
     Z: { word: 'zebră', emoji: '🦓' },
   },
   en: {
@@ -265,7 +309,7 @@ export const LETTER_HINTS: Record<Alphabet, Record<string, LetterHint>> = {
     U: { word: 'umbrella', emoji: '☂️' },
     V: { word: 'violin', emoji: '🎻' },
     W: { word: 'whale', emoji: '🐋' },
-    X: { word: 'xylophone', emoji: '🎵' },
+    X: { word: 'xylophone', emoji: '🎹' },
     Y: { word: 'yarn', emoji: '🧶' },
     Z: { word: 'zebra', emoji: '🦓' },
   },

@@ -42,7 +42,8 @@ describe('direction arrows and start numbers', () => {
       const nums = ops.filter((op) => op.t === 'text' && /^\d+$/.test(op.text));
       const rings = ops.filter((op) => op.t === 'circle' && op.fill === DEFAULT_GLYPH_STYLE.paper);
       expect(nums.length, key).toBeGreaterThan(0);
-      expect(rings.length, key).toBe(nums.length);
+      // every stroke has a ring on its start, except the small comma of Ș/Ț (numbered, but too small for a ring)
+      expect(rings.length, key).toBe(nums.length - g.strokes.filter((st) => st.pen !== undefined && st.pen < 1).length);
       const r = W * 0.85 * 0.8;
       for (const d of nums) {
         if (d.t !== 'text') continue;

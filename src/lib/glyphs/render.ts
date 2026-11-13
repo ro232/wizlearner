@@ -1,4 +1,4 @@
-import type { DrawOp, Glyph, Pt, Stroke, Subpath } from './types';
+import type { DrawOp, Glyph, Pt, Seg, Stroke, Subpath } from './types';
 import { dist, flattenSubpath, pointAlong, polylineLength, strokeStart } from './geometry';
 
 export type TraceVariant = 'solid' | 'dashed' | 'dotted' | 'outline';
@@ -27,6 +27,11 @@ export interface GlyphStyle {
   maxArrows?: number;
   /** Dash pattern for the `dashed` variant, in stroke widths (default 1 on, 2 off). */
   dash?: [number, number];
+  /**
+   * Length of one dash + gap of the `dashed` variant, in glyph units. Left out, it is worked out
+   * from the letter (see dashPeriod); a word passes the same value to all its letters.
+   */
+  dashPeriod?: number;
   /** Gap between dots of the `dotted` variant, in stroke widths (default 1.5). */
   dotGap?: number;
   /** A small ring where each stroke starts, without number or arrows (traced copies). */
@@ -58,6 +63,7 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
   const w = style.strokeWidth;
 
   // 1. strokes
+  const period = style.variant === 'dashed' ? style.dashPeriod ?? dashPeriod(glyph, style) : 0;
   for (const stroke of glyph.strokes) {
     if (isDotStroke(stroke)) {
       const p = strokeStart(stroke);
@@ -65,6 +71,7 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
       continue;
     }
     const subpaths = stroke.subpaths;
+    const pen = stroke.pen ?? 1; // the comma of Ș/Ț is finer than the letter
     // A breve, circumflex or comma is too short to survive a dash pattern drawn at letter
     // thickness: it breaks into one or two blobs and the letter stops being recognisable.
     // Trace copies draw it as a slimmer continuous mark in the same faded colour.
@@ -74,17 +81,24 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
     }
     switch (style.variant) {
       case 'solid':
-        ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w, cap: 'round' });
+        ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w * pen, cap: 'round' });
         break;
-      case 'dashed':
-        ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w, cap: 'round', dash: [w * (style.dash?.[0] ?? 1), w * (style.dash?.[1] ?? 2)] });
+      case 'dashed': {
+        // Every straight or curved piece gets its own pattern, fitted to its length: it starts
+        // and ends on a dash, so stroke ends and corners are always drawn.
+        const spec = dashSpec(style, w);
+        for (const piece of dashPieces(subpaths, w)) {
+          const dash = fitDash(piece.length, period, spec, piece.closed);
+          ops.push({ t: 'path', subpaths: [piece.subpath], stroke: style.color, strokeWidth: w, cap: 'round', ...(dash ? { dash } : {}) });
+        }
         break;
+      }
       case 'dotted':
         ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w, cap: 'round', dash: [0.01, w * (style.dotGap ?? 1.5)] });
         break;
       case 'outline':
-        ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w * 1.3, cap: 'round' });
-        ops.push({ t: 'path', subpaths, stroke: style.paper, strokeWidth: w * 0.7, cap: 'round' });
+        ops.push({ t: 'path', subpaths, stroke: style.color, strokeWidth: w * (1 + 0.3 * pen), cap: 'round' });
+        ops.push({ t: 'path', subpaths, stroke: style.paper, strokeWidth: w * (1 + 0.3 * pen) - w * 0.6 * Math.min(1, pen + 0.1), cap: 'round' });
         break;
     }
   }
@@ -98,13 +112,16 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
   const numbers: { p: Pt; n: number }[] = [];
   const r = Math.max(w * 0.85, style.minDotRadius ?? 0);
   const ringR = w * 0.42;
-  const rings: Pt[] = [];
+  const rings: { p: Pt; r: number }[] = [];
   if (style.startDots || style.startRings) {
+    const lines = glyph.strokes.map((st) => st.subpaths.map((sp) => densify(flattenSubpath(sp), w * 0.3)));
     glyph.strokes.forEach((stroke, i) => {
       if (i >= (style.maxDots ?? Infinity) || isDotStroke(stroke)) return;
-      rings.push(flattenSubpath(stroke.subpaths[0])[0]);
+      // no ring on the comma of Ș/Ț: a circle on so small a sign would change its shape
+      if (!stroke.pen || stroke.pen >= 1) rings.push({ p: flattenSubpath(stroke.subpaths[0])[0], r: ringR });
       if (!style.startDots) return;
-      const p = dotPosition(stroke, outline, numbers.map((d) => d.p), r * 0.8, w, centre);
+      const others = lines.filter((_, j) => j !== i).flat(2);
+      const p = dotPosition(stroke, outline, numbers.map((d) => d.p), r * 0.8, w, centre, others);
       numbers.push({ p, n: i + 1 });
       taken.push(p, ...Array.from({ length: 8 }, (_, k) => ({ x: p.x + r * 0.8 * Math.cos((k * Math.PI) / 4), y: p.y + r * 0.8 * Math.sin((k * Math.PI) / 4) })));
     });
@@ -123,8 +140,8 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
   }
 
   const ringColor = style.startDots ? ink : style.color;
-  for (const p of rings) {
-    ops.push({ t: 'circle', cx: p.x, cy: p.y, r: ringR, fill: style.paper, stroke: ringColor, strokeWidth: w * 0.2 });
+  for (const ring of rings) {
+    ops.push({ t: 'circle', cx: ring.p.x, cy: ring.p.y, r: ring.r, fill: style.paper, stroke: ringColor, strokeWidth: w * 0.2 });
   }
   for (const { p, n } of numbers) {
     ops.push({ t: 'text', x: p.x, y: p.y + r * 0.04, text: String(n), size: r * 1.9, fill: ink, align: 'center', baseline: 'middle' });
@@ -136,12 +153,47 @@ export function renderGlyph(glyph: Glyph, style: GlyphStyle): DrawOp[] {
 /** Colour of the stroke-order marks: start rings, numbers and arrows. */
 export const MARK_INK = '#2B2F38';
 
+/** Shortest distance from p to a set of points (Infinity for none). */
+function nearest(p: Pt, pts: Pt[]): number {
+  let m = Infinity;
+  for (const q of pts) m = Math.min(m, dist(p, q));
+  return m;
+}
+
+/**
+ * The first stretch of a stroke that is its own: where the stroke begins on another one
+ * (the arch of n starts on the stem, the two lines of A leave the same point) the part still
+ * running over or beside the other stroke is skipped. This is what the number must sit next to.
+ */
+export function ownLead(stroke: Stroke, others: Pt[], w: number): { pts: Pt[]; dirs: Pt[] } {
+  const line = densify(flattenSubpath(stroke.subpaths[0]), 2);
+  const along: number[] = [0];
+  for (let i = 1; i < line.length; i++) along.push(along[i - 1] + dist(line[i - 1], line[i]));
+  const LEAD = w * 3;
+  let from = line.findIndex((p, i) => along[i] <= w * 3 && nearest(p, others) > w * 0.75);
+  if (from < 0) from = 0;
+  const pts: Pt[] = [];
+  const dirs: Pt[] = [];
+  for (let i = from; i < line.length && along[i] <= along[from] + LEAD; i++) {
+    const a = line[Math.max(0, i - 1)], b = line[Math.min(line.length - 1, i + 1)];
+    const l = dist(a, b) || 1;
+    pts.push(line[i]);
+    dirs.push({ x: (b.x - a.x) / l, y: (b.y - a.y) / l });
+  }
+  return { pts, dirs };
+}
+
 /**
  * The number of a stroke goes just outside its start, off the ink: first behind the start
  * (where the pen comes from), then turning round it, outer side first. It keeps clear of
  * every stroke and of the numbers already placed.
+ *
+ * It must also read as the number of this stroke and no other: closer to this stroke's own
+ * first stretch than to any other stroke. So when two strokes leave the same point (A, E, F, 5)
+ * or one starts on another (the arch of n on its stem), the number moves beside its own stroke,
+ * a little way along it, where the arrow of that stroke follows.
  */
-export function dotPosition(stroke: Stroke, outline: Pt[], placed: Pt[], r: number, w: number, centre: Pt): Pt {
+export function dotPosition(stroke: Stroke, outline: Pt[], placed: Pt[], r: number, w: number, centre: Pt, others: Pt[] = []): Pt {
   const pts = flattenSubpath(stroke.subpaths[0]);
   const start = pts[0];
   const total = polylineLength(pts);
@@ -151,30 +203,46 @@ export function dotPosition(stroke: Stroke, outline: Pt[], placed: Pt[], r: numb
   const back = Math.atan2(-fwd.y, -fwd.x);
   const needInk = r + w * 0.6;
   const needDot = r * 2.15;
+  const lead = ownLead(stroke, others, w);
+  // the other strokes, without the parts this stroke runs over (u: the second line goes back down the first)
+  const mine = densify(pts, w * 0.3);
+  const apart = others.filter((q) => nearest(q, mine) > w * 0.75);
   const room = (c: Pt) => {
-    let ink = Infinity;
-    for (const o of outline) ink = Math.min(ink, dist(c, o));
-    let dot = Infinity;
-    for (const q of placed) dot = Math.min(dot, dist(c, q));
-    return Math.min(ink - needInk, dot - needDot);
+    const own = apart.length ? nearest(c, apart) - nearest(c, lead.pts) - OWN_MARGIN : Infinity;
+    return Math.min(nearest(c, outline) - needInk, nearest(c, placed) - needDot, own);
   };
   let best: { c: Pt; room: number } | null = null;
+  const tryAll = (cands: Pt[]): Pt | null => {
+    for (const c of cands) {
+      const free = room(c);
+      if (free >= 0) return c;
+      if (!best || free > best.room) best = { c, room: free };
+    }
+    return null;
+  };
+  const outerFirst = (c1: Pt, c2: Pt) => dist(c2, centre) - dist(c1, centre) || c1.y - c2.y || c1.x - c2.x;
+  // round the start: behind it first
   for (const reach of [1, 1.35]) {
     const d = (r + w * 0.65) * reach;
     for (const turn of [0, 45, 90, 135]) {
       const sides = turn === 0 ? [0] : [turn, -turn].map((t) => (t * Math.PI) / 180);
-      const cands = sides
-        .map((t) => ({ x: start.x + Math.cos(back + t) * d, y: start.y + Math.sin(back + t) * d }))
-        .sort((c1, c2) => dist(c2, centre) - dist(c1, centre));
-      for (const c of cands) {
-        const free = room(c);
-        if (free >= 0) return c;
-        if (!best || free > best.room) best = { c, room: free };
-      }
+      const hit = tryAll(sides.map((t) => ({ x: start.x + Math.cos(back + t) * d, y: start.y + Math.sin(back + t) * d })).sort(outerFirst));
+      if (hit) return hit;
+    }
+  }
+  // beside the stroke's own first stretch, as near its beginning as there is room
+  for (const off of [needInk + 0.5, (needInk + 0.5) * 1.3]) {
+    for (let i = 0; i < lead.pts.length; i++) {
+      const p = lead.pts[i], t = lead.dirs[i];
+      const hit = tryAll([1, -1].map((k) => ({ x: p.x - t.y * off * k, y: p.y + t.x * off * k })).sort(outerFirst));
+      if (hit) return hit;
     }
   }
   return best!.c;
 }
+
+/** A number is this much nearer to its own stroke than to any other one (glyph units). */
+export const OWN_MARGIN = 3;
 
 /** A stretch of one pen-down run that an arrow follows: the run's points and an arc range on it. */
 export interface ArrowSpan {
@@ -363,6 +431,152 @@ function strokeArrow(span: ArrowSpan, outline: Pt[], centre: Pt, w: number, ink:
     { t: 'path', subpaths: [{ start: shaft[0] ?? path[0], segs: [...shaft.slice(1), base].map((q) => ({ kind: 'L' as const, p: q })) }], stroke: ink, strokeWidth: w * 0.2, cap: 'round' },
     { t: 'polygon', points: [tip, { x: base.x - dir.y * half, y: base.y + dir.x * half }, { x: base.x + dir.y * half, y: base.y - dir.x * half }], fill: ink },
   ];
+}
+
+// ───────────────────────── dashes ─────────────────────────
+
+/** The dash pattern of a style, in glyph units: its usual size and the smallest it may shrink to. */
+interface DashSpec {
+  on: number;
+  off: number;
+  minOn: number;
+  minOff: number;
+}
+
+function dashSpec(style: GlyphStyle, w: number): DashSpec {
+  const on = w * (style.dash?.[0] ?? 1);
+  const off = w * (style.dash?.[1] ?? 2);
+  // Round caps make a dash look one pen width longer and a gap one pen width shorter:
+  // the tightest pattern still shows a gap of about half a pen width between short dashes.
+  return { on, off, minOn: Math.min(on, w * 0.6), minOff: Math.min(off, w * 1.5) };
+}
+
+/** The gap that goes with a period (dash + gap): both shrink together from the usual size to the smallest. */
+function gapAt(period: number, spec: DashSpec): number {
+  const lo = spec.minOn + spec.minOff, hi = spec.on + spec.off;
+  if (hi - lo < 1e-6 || period >= hi) return spec.off;
+  if (period <= lo) return spec.minOff;
+  return spec.minOff + ((spec.off - spec.minOff) * (period - lo)) / (hi - lo);
+}
+
+interface DashPiece {
+  subpath: Subpath;
+  length: number;
+  /** Ends where it starts (O, 0, the bowl of b). */
+  closed: boolean;
+  /** Mean radius of its curves (Infinity for straight pieces). */
+  radius: number;
+}
+
+const tangentIn = (from: Pt, s: Seg): Pt => (s.kind === 'L' ? sub(s.p, from) : dist(from, s.c1) > 1e-6 ? sub(s.c1, from) : sub(s.c2, from));
+const tangentOut = (from: Pt, s: Seg): Pt => (s.kind === 'L' ? sub(s.p, from) : dist(s.c2, s.p) > 1e-6 ? sub(s.p, s.c2) : sub(s.p, s.c1));
+function sub(a: Pt, b: Pt): Pt {
+  return { x: a.x - b.x, y: a.y - b.y };
+}
+function angleBetween(a: Pt, b: Pt): number {
+  let d = Math.abs(Math.atan2(b.y, b.x) - Math.atan2(a.y, a.x));
+  if (d > Math.PI) d = 2 * Math.PI - d;
+  return d;
+}
+
+/**
+ * The pen-down runs of a stroke, cut at their sharp corners (V, Z, M, 7 …): each piece is dashed
+ * on its own, so a corner is never lost in a gap. Smooth joins and the tiny segments of a
+ * handwriting curve are not cut.
+ */
+export function dashPieces(subpaths: Subpath[], w: number): DashPiece[] {
+  const out: DashPiece[] = [];
+  for (const sp of subpaths) {
+    const cuts: Subpath[] = [];
+    let cur: Subpath = { start: sp.start, segs: [] };
+    let pen = sp.start;
+    sp.segs.forEach((seg, i) => {
+      const next = sp.segs[i + 1];
+      cur.segs.push(seg);
+      if (next) {
+        const here = tangentOut(pen, seg), there = tangentIn(seg.p, next);
+        const long = Math.hypot(here.x, here.y) > w * 0.8 && Math.hypot(there.x, there.y) > w * 0.8;
+        if (long && angleBetween(here, there) > (40 * Math.PI) / 180) {
+          cuts.push(cur);
+          cur = { start: seg.p, segs: [] };
+        }
+      }
+      pen = seg.p;
+    });
+    cuts.push(cur);
+    for (const piece of cuts) {
+      const pts = flattenSubpath(piece);
+      const length = polylineLength(pts);
+      // how much the piece turns, over its curves only
+      let turn = 0, curved = 0;
+      let p0 = piece.start;
+      for (const seg of piece.segs) {
+        if (seg.kind === 'C') {
+          const c = flattenSubpath({ start: p0, segs: [seg] });
+          for (let k = 1; k < c.length; k++) {
+            curved += dist(c[k - 1], c[k]);
+            if (k > 1) turn += angleBetween(sub(c[k - 1], c[k - 2]), sub(c[k], c[k - 1]));
+          }
+        }
+        p0 = seg.p;
+      }
+      out.push({
+        subpath: piece,
+        length,
+        closed: length > w * 3 && dist(pts[0], pts[pts.length - 1]) < w * 0.3,
+        radius: turn > 0.9 ? curved / turn : Infinity,
+      });
+    }
+  }
+  return out;
+}
+
+/** Dash + gap per unit of curve radius: a dash never spans more than about a tenth of a circle. */
+const PERIOD_PER_RADIUS = 0.63;
+
+/**
+ * The dash period (dash + gap, glyph units) that suits a letter: the usual pattern for big, open
+ * shapes (O, C, straight capitals), shorter dashes the tighter its curves are (the arch of n, the
+ * bowl of a, the bends of s), so that a curve always shows as several dashes following its shape.
+ */
+export function dashPeriod(glyph: Glyph, style: GlyphStyle): number {
+  const w = style.strokeWidth;
+  const spec = dashSpec(style, w);
+  let period = spec.on + spec.off;
+  for (const stroke of glyph.strokes) {
+    if (stroke.mark || isDotStroke(stroke)) continue;
+    for (const piece of dashPieces(stroke.subpaths, w)) period = Math.min(period, piece.radius * PERIOD_PER_RADIUS);
+  }
+  return Math.max(spec.minOn + spec.minOff, period);
+}
+
+/**
+ * [dash, gap] for a piece of the given length, as close to `period` as lets a whole number of
+ * dashes fit exactly: the piece begins and ends on a dash (a closed one ends on a gap, so its
+ * first and last dash do not run together). Undefined = too short to dash, draw it whole.
+ */
+export function fitDash(length: number, period: number, spec: DashSpec, closed = false): [number, number] | undefined {
+  const lo = spec.minOn + spec.minOff, hi = spec.on + spec.off;
+  const target = Math.max(lo, Math.min(hi, period));
+  if (closed) {
+    let n = Math.max(3, Math.round(length / target));
+    while (n > 3 && length / n < lo) n--;
+    const p = length / n;
+    const g = Math.min(gapAt(p, spec), p * 0.75);
+    return [p - g, g];
+  }
+  let n = Math.round((length + gapAt(target, spec)) / target);
+  if (n < 2) n = length >= 2 * spec.minOn + spec.minOff ? 2 : 1;
+  // n dashes and n − 1 gaps make up the length: n·period − gap(period) = length
+  const b = hi - lo > 1e-6 ? (spec.off - spec.minOff) / (hi - lo) : 0;
+  const a = spec.minOff - b * lo;
+  for (; n >= 2; n--) {
+    const p = (length + a) / (n - b);
+    const g = p >= hi ? spec.off : p <= lo ? spec.minOff : a + b * p;
+    const d = (length - (n - 1) * g) / n;
+    if (d >= spec.minOn * 0.7) return [d, g];
+  }
+  return undefined;
 }
 
 /** Visual bounding box including stroke width, diacritics and dots. */

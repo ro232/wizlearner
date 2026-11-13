@@ -1,6 +1,6 @@
 import type { Glyph, Pt, Seg, Stroke, Subpath } from './types';
 import { flattenSubpath } from './geometry';
-import { normalizeKey } from './data';
+import { normalizeKey, traceLetters } from './data';
 import MODEL from './cursive-model.json';
 
 /**
@@ -140,14 +140,15 @@ function ovalFromTop(main: Pt[]): Pt[] | undefined {
 
 /**
  * A word written as one joined line. Small letters join; capitals stand on their own, as in the
- * book. Characters without a handwriting form are skipped.
+ * book. Letters from other alphabets are written as their base letter (á → a); other signs are skipped.
  */
 export function cursiveWord(text: string): Glyph | undefined {
   const out: { pts: Pt[]; mark: boolean; main: boolean }[] = [];
   let cursorX = 0; // right edge of what is written so far (for capitals, spaces and the first letter)
   let prevEnd: { p: Pt; d: Pt } | null = null;
   let prevMaxX = -Infinity;
-  for (const raw of normalizeKey(text)) {
+  // letters without a handwriting form (á, ö, ł …) are written as their base letter
+  for (const raw of traceLetters(text, hasCursive)) {
     if (raw === ' ') {
       cursorX += SPACE;
       prevEnd = null;

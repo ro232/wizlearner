@@ -3,6 +3,8 @@ import type { Tier, WorksheetConfig } from '@/types';
 import { getGlyph, normalizeKey } from '@/lib/glyphs/data';
 import { flattenSubpath, pointAlong, polylineLength } from '@/lib/glyphs/geometry';
 import { iconOps, hasIcon } from '@/lib/hints/icons';
+import { glyphBounds } from '@/lib/glyphs/render';
+import { madeWith } from '@/lib/brand';
 import { INK, ACCENT, PAPER, MUTED, itemOps, itemWidth, starPoints } from './rows';
 
 /**
@@ -84,7 +86,7 @@ function reward(ops: DrawOp[], text: string): void {
 }
 
 function footer(ops: DrawOp[], tier: Tier): void {
-  if (tier === 'free') ops.push({ t: 'text', x: W - M, y: H - M + 2, text: 'Creat cu WorksheetWiz.com', size: 2.6, fill: '#94a3b8', align: 'right' });
+  if (tier === 'free') ops.push({ t: 'text', x: W - M, y: H - M + 2, text: madeWith('ro'), size: 2.6, fill: '#94a3b8', align: 'right' });
 }
 
 // ───────────────────────── find the letter ─────────────────────────
@@ -101,6 +103,8 @@ const LOWER_LOOKALIKES: Record<string, string[]> = {
   a: ['o', 'd', 'ă', 'â'], e: ['c', 'o'], i: ['l', 'j', 'î'], l: ['i', 't'], h: ['n', 'b'], g: ['q', 'y'], s: ['ș', 'z'], t: ['ț', 'f', 'l'],
 };
 const OTHERS = 'ABCDEFGHIJKLMNOPRSTUVZ'.split('');
+/** Height of the band between the instruction and the grid that holds the model letter (mm). */
+export const FIND_MODEL_BAND = 38;
 
 function findPage(config: WorksheetConfig, target: string, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
@@ -109,11 +113,15 @@ function findPage(config: WorksheetConfig, target: string, tier: Tier): PageOps 
   const top = frame(ops, config, `Găsește litera ${t}`, `Colorează toate literele ${t}. Câte ai găsit?`);
   const rand = rng(seedOf(`find:${t}`));
 
-  // the model, solid, with its numbered start dots
+  // the model, solid, with its numbered start dots: in its own band above the grid, sized so that
+  // accents (Ă Â Î), the comma of Ș/Ț and tails (g j p q y) never reach the instruction or the grid
+  const gy = top + FIND_MODEL_BAND;
   const model = getGlyph(t);
   if (model) {
-    const s = 0.22;
-    ops.push({ t: 'group', tx: M + 4, ty: top + 4, scale: s, ops: itemOps([model], { color: INK, strokeWidth: 10, variant: 'solid', startDots: true, arrows: true, accent: ACCENT, dotText: PAPER, paper: PAPER, minDotRadius: 1.4 / s }) });
+    const b = glyphBounds(model, 10);
+    const marks = 16; // room for the stroke numbers and arrows around the ink (glyph units)
+    const s = Math.min(0.22, (FIND_MODEL_BAND - 5) / (b.maxY - b.minY + marks));
+    ops.push({ t: 'group', tx: M + 9, ty: top + 1 + (marks / 2 - b.minY) * s, scale: s, ops: itemOps([model], { color: INK, strokeWidth: 10, variant: 'solid', startDots: true, arrows: true, accent: ACCENT, dotText: PAPER, paper: PAPER, minDotRadius: 1.4 / s }) });
   }
   // "how many?" box
   ops.push({ t: 'text', x: W - M - 32, y: top + 16, text: 'Am găsit:', size: 4, fill: INK, weight: 'bold', align: 'right' });
@@ -137,10 +145,9 @@ function findPage(config: WorksheetConfig, target: string, tier: Tier): PageOps 
   const grid = shuffle(letters, rand);
 
   const gx = M;
-  const gy = top + 30;
   const cw = (W - 2 * M) / cols;
   const ch = (H - M - 22 - gy) / rows;
-  const s = Math.min(ch * 0.55, cw * 0.5) / 100;
+  const s = Math.min(ch * 0.44, cw * 0.5) / 100; // room in the cell for accents above and the comma below
   grid.forEach((ltr, i) => {
     const c = i % cols;
     const r = Math.floor(i / cols);
