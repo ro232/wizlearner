@@ -7,7 +7,7 @@ import { safeNextPath } from '@/lib/safe-redirect';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import {
   Mail,
   Lock,
@@ -127,7 +127,7 @@ export default function LoginPage() {
       <main className="min-h-screen flex items-center justify-center ruled p-4">
         <Card className="w-full max-w-md border-blue-200 shadow-xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-blue-600"><h1>Verifică emailul</h1></CardTitle>
+            <h1 className="text-2xl font-semibold leading-none tracking-tight text-blue-600">Verifică emailul</h1>
             <CardDescription className="mt-2">
               Ți-am trimis un link de autentificare la{' '}
               <span className="font-semibold text-slate-900">{email}</span>
@@ -172,7 +172,7 @@ export default function LoginPage() {
           
           <div className="relative">
             <CardHeader className="pb-3">
-              <CardTitle className="text-xl"><h2>{isSignUp && !useMagicLink ? 'Cont nou' : 'Autentificare'}</h2></CardTitle>
+              <h2 className="text-xl font-semibold leading-none tracking-tight">{isSignUp && !useMagicLink ? 'Cont nou' : 'Autentificare'}</h2>
               <CardDescription>
                 {useMagicLink
                   ? 'Primești pe email un link cu care intri direct.'
