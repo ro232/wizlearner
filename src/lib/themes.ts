@@ -8,6 +8,8 @@
 export interface ThemeWord {
   word: string;
   emoji: string;
+  /** A proper name: it keeps its capitals when the sheet is written with small letters ("România"). */
+  proper?: boolean;
 }
 
 export interface Theme {
@@ -23,7 +25,7 @@ export const THEMES: Theme[] = [
   {
     id: 'toamna', title: 'Toamna', when: 'septembrie–noiembrie', icon: '🍂',
     words: [
-      { word: 'MĂR', emoji: '🍎' }, { word: 'PARĂ', emoji: '🍐' }, { word: 'NUCĂ', emoji: '🌰' },
+      { word: 'MĂR', emoji: '🍎' }, { word: 'PARĂ', emoji: '🍐' }, { word: 'CASTANĂ', emoji: '🌰' },
       { word: 'FRUNZĂ', emoji: '🍂' }, { word: 'DOVLEAC', emoji: '🎃' }, { word: 'STRUGURI', emoji: '🍇' },
     ],
   },
@@ -42,10 +44,31 @@ export const THEMES: Theme[] = [
     ],
   },
   {
+    id: '1-decembrie', title: '1 Decembrie', when: 'săptămâna de 1 decembrie', icon: '🇷🇴',
+    words: [
+      { word: 'ROMÂNIA', emoji: '🇷🇴', proper: true }, { word: 'HARTĂ', emoji: '🗺️' }, { word: 'CETATE', emoji: '🏰' },
+      { word: 'UNIRE', emoji: '🤝' }, { word: 'MUNTE', emoji: '⛰️' }, { word: 'INIMĂ', emoji: '❤️' },
+    ],
+  },
+  {
+    id: 'mos-nicolae', title: 'Moș Nicolae', when: 'săptămâna de 6 decembrie', icon: '🥾',
+    words: [
+      { word: 'MOȘ NICOLAE', emoji: '🎅', proper: true }, { word: 'GHETE', emoji: '🥾' }, { word: 'CADOU', emoji: '🎁' },
+      { word: 'BOMBOANE', emoji: '🍬' }, { word: 'PORTOCALĂ', emoji: '🍊' }, { word: 'CIOCOLATĂ', emoji: '🍫' },
+    ],
+  },
+  {
+    id: 'craciun', title: 'Crăciun', when: 'decembrie', icon: '🎄',
+    words: [
+      { word: 'BRAD', emoji: '🎄' }, { word: 'MOȘ CRĂCIUN', emoji: '🎅', proper: true }, { word: 'CADOU', emoji: '🎁' },
+      { word: 'STEA', emoji: '⭐' }, { word: 'REN', emoji: '🦌' }, { word: 'CLOPOȚEL', emoji: '🔔' },
+    ],
+  },
+  {
     id: 'iarna', title: 'Iarna', when: 'decembrie–februarie', icon: '⛄',
     words: [
-      { word: 'OM DE ZĂPADĂ', emoji: '⛄' }, { word: 'BRAD', emoji: '🎄' }, { word: 'SANIE', emoji: '🛷' },
-      { word: 'FULG', emoji: '❄️' }, { word: 'CADOU', emoji: '🎁' }, { word: 'MĂNUȘI', emoji: '🧤' },
+      { word: 'OM DE ZĂPADĂ', emoji: '⛄' }, { word: 'SANIE', emoji: '🛷' }, { word: 'FULG', emoji: '❄️' },
+      { word: 'MĂNUȘI', emoji: '🧤' }, { word: 'FULAR', emoji: '🧣' }, { word: 'PATINE', emoji: '⛸️' },
     ],
   },
   {
@@ -80,4 +103,11 @@ export const THEMES: Theme[] = [
 
 export function themeById(id: string | undefined): Theme | undefined {
   return THEMES.find((t) => t.id === id);
+}
+
+const PROPER = new Set(THEMES.flatMap((t) => t.words.filter((w) => w.proper).map((w) => w.word.toUpperCase())));
+
+/** True for the theme words that are proper names (written with capitals even among small letters). */
+export function isProperNoun(word: string): boolean {
+  return PROPER.has(word.normalize('NFC').trim().toUpperCase());
 }
