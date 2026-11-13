@@ -7,7 +7,8 @@ import { Footer } from '@/components/layout/footer';
 import { WorksheetPreview } from '@/components/worksheet/worksheet-preview';
 import { SheetActions } from '@/components/seo/sheet-actions';
 import { KIND_TITLES, SEO_SHEETS, relatedSheets, seoSheetBySlug } from '@/lib/seo/catalog';
-import { SITE_URL } from '@/lib/seo/site';
+import { absoluteUrl } from '@/lib/seo/site';
+import { pageMetadata } from '@/lib/seo/metadata';
 
 export const dynamicParams = false;
 
@@ -18,13 +19,7 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const s = seoSheetBySlug(params.slug);
   if (!s) return {};
-  const url = `${SITE_URL}/fise/${s.slug}`;
-  return {
-    title: `${s.title} · WorksheetWiz`,
-    description: s.description,
-    alternates: { canonical: url },
-    openGraph: { title: s.title, description: s.description, url, type: 'article', locale: 'ro_RO', siteName: 'WorksheetWiz' },
-  };
+  return pageMetadata({ title: s.title, absoluteTitle: true, description: s.description, path: `/fise/${s.slug}`, type: 'article' });
 }
 
 const PERKS = ['Liniatură ca în caietul de școală', 'Ordinea liniilor, puncte de start și săgeți', 'O pagină A4, gata de printat'];
@@ -37,8 +32,8 @@ export default function SeoSheetPage({ params }: { params: { slug: string } }) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Fișe gratuite', item: `${SITE_URL}/fise` },
-      { '@type': 'ListItem', position: 2, name: s.label, item: `${SITE_URL}/fise/${s.slug}` },
+      { '@type': 'ListItem', position: 1, name: 'Fișe gratuite', item: absoluteUrl('/fise') },
+      { '@type': 'ListItem', position: 2, name: s.label, item: absoluteUrl(`/fise/${s.slug}`) },
     ],
   };
 
@@ -83,7 +78,7 @@ export default function SeoSheetPage({ params }: { params: { slug: string } }) {
             <ul className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {related.map((r) => (
                 <li key={r.slug}>
-                  <Link href={`/fise/${r.slug}`} className="block h-full rounded-xl bg-white border-2 border-ink px-4 py-3 font-extrabold text-ink hover:-translate-y-0.5 hover:shadow-md transition-transform">
+                  <Link href={`/fise/${r.slug}`} prefetch={false} className="block h-full rounded-xl bg-white border-2 border-ink px-4 py-3 font-extrabold text-ink hover:-translate-y-0.5 hover:shadow-md transition-transform">
                     {r.label}
                   </Link>
                 </li>

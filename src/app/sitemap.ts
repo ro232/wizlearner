@@ -1,10 +1,11 @@
 import { MetadataRoute } from 'next';
 import { SEO_SHEETS } from '@/lib/seo/catalog';
-import { SITE_URL } from '@/lib/seo/site';
+import { CONTENT_UPDATED, absoluteUrl } from '@/lib/seo/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
-  const page = (path: string, priority: number, changeFrequency: 'weekly' | 'monthly' | 'yearly' = 'monthly') => ({ url: `${SITE_URL}${path}`, lastModified: now, changeFrequency, priority });
+  // The date of the last content change, not of the build: search engines ignore a lastmod that moves on every deploy.
+  const lastModified = CONTENT_UPDATED;
+  const page = (path: string, priority: number, changeFrequency: 'weekly' | 'monthly' | 'yearly' = 'monthly') => ({ url: absoluteUrl(path), lastModified, changeFrequency, priority });
   return [
     page('', 1, 'weekly'),
     page('/generator', 0.9, 'weekly'),
