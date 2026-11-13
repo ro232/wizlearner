@@ -13,6 +13,8 @@ import { MathPicker } from './math-picker';
 import { TraceStylePicker } from './trace-style-picker';
 import { Lock, RotateCcw, Plus, X, ChevronDown, UserRound } from 'lucide-react';
 import { isCursive } from '@/lib/worksheet/layout';
+import { cleanWord } from '@/stores/sanitize-config';
+import { alese } from './plural';
 
 interface GeneratorControlsProps {
   onShowPaywall: () => void;
@@ -103,7 +105,16 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
     addCustomWord(w);
   };
 
-  const nameAdded = !!config.childName.trim() && config.customWords.includes(config.childName.trim());
+  // The same comparison the store uses, so "Ştefan" (typed with a cedilla) counts as its row "Ștefan".
+  const cleanName = cleanWord(config.childName);
+  const nameAdded = !!cleanName && config.customWords.some((w) => cleanWord(w) === cleanName);
+  // Math and game pages draw themselves: no traced words there, so no „Trasează-l” either.
+  const wordsFit = config.category !== 'games' && config.category !== 'math';
+  // exerciții, jocuri: „1 ales”; litere, cifre, forme: „1 aleasă”
+  const pickedGender = config.category === 'prewrite' || config.category === 'games' || config.category === 'math' ? 'n' : 'f';
+  // The example in the box must be one the visitor can really trace: on the free plan that means
+  // words made of A–E (with Ă, Â); „MAMA” there led straight to the plans window.
+  const wordExample = tier === 'free' ? (alphabet === 'ro' ? 'ex. BEC, ac' : 'e.g. BED, cab') : alphabet === 'ro' ? 'ex. MAMA, toamna' : 'e.g. CAT';
   const pickTitle = { letters: 'Alege literele', numbers: 'Alege cifrele', shapes: 'Alege formele', prewrite: 'Alege exercițiile', math: 'Matematică', games: 'Alege jocurile' }[config.category as 'letters'] ?? 'Alege';
 
   return (
@@ -170,7 +181,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
 
       {/* 2. Which items */}
       <div>
-        <SectionLabel right={<span className="text-xs text-slate-500">{config.selectedItems.length} alese</span>}>{pickTitle}</SectionLabel>
+        <SectionLabel right={<span className="text-xs text-slate-500">{alese(config.selectedItems.length, pickedGender)}</span>}>{pickTitle}</SectionLabel>
         {config.category === 'math' ? (
           <MathPicker onShowPaywall={onShowPaywall} />
         ) : config.category === 'games' ? (
@@ -189,7 +200,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                     const selected = config.selectedItems.includes(item);
                     return (
                       <button key={item} type="button" onClick={() => handleItemClick(item)} aria-pressed={selected}
-                        aria-label={`${group.title}: ${group.show(item)}${free ? '' : ' (versiunea completă)'}`}
+                        aria-label={`${group.title}: ${group.show(item)}${free ? '' : ' (varianta completă)'}`}
                         className={`relative min-h-[2.5rem] px-1 rounded-lg border-2 text-sm font-bold ${selected ? 'border-blue-500 bg-blue-50 text-blue-700' : free ? 'border-slate-300 bg-white text-slate-700 hover:border-blue-300' : 'border-slate-200 bg-slate-100 text-slate-400'}`}>
                         {group.show(item)}
                         {!free && <Lock className="absolute top-0.5 right-0.5 w-3 h-3 text-amber-600" aria-hidden />}
@@ -213,7 +224,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                 type="button"
                 onClick={() => handleItemClick(item)}
                 aria-pressed={selected}
-                aria-label={free ? label : `${label} (versiunea completă)`}
+                aria-label={free ? label : `${label} (varianta completă)`}
                 className={`relative min-h-[3rem] p-1 rounded-lg border-2 transition-all flex flex-col items-center justify-center text-sm font-bold ${
                   selected ? 'border-blue-500 bg-blue-50 text-blue-700' : free ? 'border-slate-300 bg-white text-slate-700 hover:border-blue-300' : 'border-slate-200 bg-slate-100 text-slate-400'
                 }`}
@@ -261,14 +272,18 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               autoComplete="off"
               className="flex-1 min-w-0 px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <Button size="sm" variant="outline" className="h-10 text-xs whitespace-nowrap" disabled={!config.childName.trim() || nameAdded} onClick={() => addWord(config.childName, true)}>
-              {nameAdded ? 'Adăugat' : 'Trasează-l'}
-            </Button>
+            {wordsFit && (
+              <Button size="sm" variant="outline" className="h-10 text-xs whitespace-nowrap" disabled={!cleanName || nameAdded} onClick={() => addWord(config.childName, true)}>
+                {nameAdded ? 'Adăugat' : 'Trasează-l'}
+              </Button>
+            )}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Apare în antetul fișei. Cu „Trasează-l” devine și rând de scris.</p>
+          <p className="text-[11px] text-slate-500 mt-1">
+            {wordsFit ? 'Apare în antetul fișei. Cu „Trasează-l” devine și rând de scris.' : 'Apare în antetul fișei.'}
+          </p>
         </div>
         {/* Games draw their own page: no extra words to trace there. */}
-        <div className={config.category === 'games' || config.category === 'math' ? 'hidden' : undefined}>
+        <div className={wordsFit ? undefined : 'hidden'}>
           <label htmlFor="custom-word" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Cuvinte de trasat</label>
           <div className="flex gap-2">
             <input
@@ -282,7 +297,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                   setWordInput('');
                 }
               }}
-              placeholder={alphabet === 'ro' ? 'ex. MAMA, toamna' : 'e.g. CAT'}
+              placeholder={wordExample}
               autoComplete="off"
               className="flex-1 min-w-0 px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -290,6 +305,9 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               <Plus className="w-4 h-4" />
             </Button>
           </div>
+          {tier === 'free' && (
+            <p className="text-[11px] text-slate-500 mt-1">Gratuit: cuvinte din literele A–E (și Ă, Â), ca BEC sau AC. Numele copilului se trasează întreg.</p>
+          )}
           {config.customWords.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {config.customWords.map((word) => (

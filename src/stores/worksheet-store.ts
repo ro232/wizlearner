@@ -2,11 +2,17 @@ import { create } from 'zustand';
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, Script, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
 import { ALPHABETS, normalizeKey } from '@/lib/glyphs/data';
+import { cleanWord, itemFitsCategory, sanitizeConfig } from './sanitize-config';
 
 interface WorksheetState {
   config: WorksheetConfig;
   tier: Tier;
   language: 'en' | 'ro';
+  /**
+   * Where the traced name row was when the name field was emptied (select all, type again):
+   * the row comes back in the same place with the next name typed. Never stored.
+   */
+  nameSlot: number | null;
 
   // Actions
   setCategory: (category: ContentCategory) => void;
@@ -78,6 +84,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   config: { ...DEFAULT_CONFIG },
   tier: 'free',
   language: 'en',
+  nameSlot: null,
 
   setCategory: (category) => set((state) => ({
     config: { ...state.config, category, selectedItems: [] }
@@ -97,30 +104,43 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   setLetterMode: (mode) => set((state) => ({
     config: { ...state.config, letterMode: mode, selectedItems: [] }
   })),
-  toggleItem: (item) => set((state) => ({
-    config: {
-      ...state.config,
-      selectedItems: state.config.selectedItems.includes(item)
-        ? state.config.selectedItems.filter((i) => i !== item)
-        : [...state.config.selectedItems, item],
-    }
-  })),
+  // Only what the category on screen can draw gets on the sheet ("add" is an exercise, not letters).
+  toggleItem: (item) => set((state) => {
+    const { selectedItems, category } = state.config;
+    if (selectedItems.includes(item)) return { config: { ...state.config, selectedItems: selectedItems.filter((i) => i !== item) } };
+    if (!itemFitsCategory(item, category)) return state;
+    return { config: { ...state.config, selectedItems: [...selectedItems, item] } };
+  }),
   addItems: (items) => set((state) => ({
     config: {
       ...state.config,
-      selectedItems: Array.from(new Set([...state.config.selectedItems, ...items])),
+      selectedItems: Array.from(new Set([...state.config.selectedItems, ...items.filter((i) => itemFitsCategory(i, state.config.category))])),
     }
   })),
   removeAllItems: () => set((state) => ({
     config: { ...state.config, selectedItems: [] }
   })),
   // A word or name becomes its own tracing row (the whole word), not a list of letters.
+  // Words are traced on letter sheets: coming from Cifre, Forme, Matematică … the sheet becomes a
+  // letter sheet and what was chosen there stays behind (it used to be traced as "add", "circle").
   addCustomWord: (word) => set((state) => {
-    const clean = normalizeKey(word).trim().replace(/\s+/g, ' ');
-    if (!clean || state.config.customWords.includes(clean)) return state;
-    return { config: { ...state.config, category: 'letters', customWords: [...state.config.customWords, clean] } };
+    const clean = cleanWord(word);
+    const c = state.config;
+    if (!clean) return state;
+    const known = c.customWords.some((w) => cleanWord(w) === clean);
+    if (known && c.category === 'letters') return state;
+    return {
+      nameSlot: null,
+      config: {
+        ...c,
+        category: 'letters',
+        selectedItems: c.category === 'letters' ? c.selectedItems : [],
+        customWords: known ? c.customWords : [...c.customWords, clean],
+      },
+    };
   }),
   removeCustomWord: (word) => set((state) => ({
+    nameSlot: null,
     config: { ...state.config, customWords: state.config.customWords.filter((w) => w !== word) }
   })),
   setDifficulty: (difficulty) => set((state) => {
@@ -157,19 +177,64 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   toggleFullPage: () => set((state) => ({ config: { ...state.config, fullPageMode: !state.config.fullPageMode } })),
   toggleLeftHanded: () => set((state) => ({ config: { ...state.config, leftHandedMode: !state.config.leftHandedMode } })),
   toggleFillPage: () => set((state) => ({ config: { ...state.config, fillPage: state.config.fillPage === false } })),
-  setChildName: (childName) => set((state) => ({ config: { ...state.config, childName } })),
+  // The name in the header. When it is also a traced row („Trasează-l”), the row follows every
+  // edit: correcting "Stefanut" to "Ștefănuț" replaces the row instead of leaving the old one behind.
+  setChildName: (childName) => set((state) => {
+    const c = state.config;
+    const prev = cleanWord(c.childName);
+    const next = cleanWord(childName);
+    let customWords = c.customWords;
+    let nameSlot = state.nameSlot;
+    const at = prev ? customWords.findIndex((w) => cleanWord(w) === prev) : -1;
+    if (at >= 0 && next !== prev) {
+      const others = customWords.filter((w, i) => i !== at && cleanWord(w) !== next);
+      const slot = Math.min(at, others.length);
+      customWords = next ? [...others.slice(0, slot), next, ...others.slice(slot)] : others;
+      nameSlot = next ? null : at;
+    } else if (at < 0 && !prev && next && nameSlot !== null) {
+      if (!customWords.some((w) => cleanWord(w) === next)) {
+        const slot = Math.min(nameSlot, customWords.length);
+        customWords = [...customWords.slice(0, slot), next, ...customWords.slice(slot)];
+      }
+      nameSlot = null;
+    }
+    // one space between the parts of a name, as the traced row has it ("Ana  Maria" would not match its row)
+    return { nameSlot, config: { ...c, childName: childName.replace(/\s+/g, ' '), customWords } };
+  }),
   setCustomTitle: (customTitle) => set((state) => ({ config: { ...state.config, customTitle } })),
   setSchoolName: (schoolName) => set((state) => ({ config: { ...state.config, schoolName } })),
-  resetConfig: () => set({ config: { ...DEFAULT_CONFIG } }),
+  resetConfig: () => set({ nameSlot: null, config: { ...DEFAULT_CONFIG } }),
   setTier: (tier) => set({ tier }),
   setLanguage: (language) => set({ language }),
 }), {
   name: 'wizlearner-last-sheet',
-  version: 1,
+  version: 2,
   storage: createJSONStorage(() => safeStorage),
   // Only the sheet is remembered, in this browser. The plan comes from the account, never from storage.
   partialize: (state) => ({ config: state.config }),
-  merge: (persisted, current) => ({ ...current, config: { ...DEFAULT_CONFIG, ...((persisted as { config?: Partial<WorksheetConfig> })?.config ?? {}) } }),
+  // Whatever an older version (or anything else) left in storage is read through sanitizeConfig:
+  // unknown values fall back to the defaults instead of breaking the page at every visit.
+  migrate: (persisted) => ({ config: sanitizeConfig((persisted as { config?: unknown } | null | undefined)?.config) }),
+  merge: (persisted, current) => {
+    const stored = persisted && typeof persisted === 'object' ? (persisted as { config?: unknown }).config : undefined;
+    return { ...current, config: stored === undefined ? current.config : sanitizeConfig(stored) };
+  },
   // Rehydrated once after the first render (see StoreHydration), so server and client HTML match.
   skipHydration: true,
 }));
+
+/**
+ * Other parts of the site hand a whole sheet to the generator with `setState({ config })`:
+ * a ready-made start, a free sheet page, a project or a history row opened from the account.
+ * Those come from outside this file — some from the server, saved long ago — so every one is
+ * read through sanitizeConfig here, in one place, before it reaches the pages that draw it.
+ */
+const rawSetState = useWorksheetStore.setState;
+useWorksheetStore.setState = ((partial: Parameters<typeof rawSetState>[0], replace?: boolean) => {
+  const guarded = (state: WorksheetState) => {
+    const next = typeof partial === 'function' ? partial(state) : partial;
+    if (!next || typeof next !== 'object' || !('config' in next) || next.config === state.config) return next;
+    return { ...next, nameSlot: null, config: sanitizeConfig(next.config) };
+  };
+  return (rawSetState as (p: unknown, r?: boolean) => void)(guarded, replace);
+}) as typeof rawSetState;
