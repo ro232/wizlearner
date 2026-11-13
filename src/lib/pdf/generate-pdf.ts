@@ -3,6 +3,7 @@ import type { WorksheetConfig, Tier } from '@/types';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
 import { drawPageToPdf, type PdfFontSet } from '@/lib/glyphs/backends/pdf';
 import type { PageOps } from '@/lib/glyphs/types';
+import { FontLoadError } from './errors';
 
 /**
  * PDF export. Pages come from the shared layout (same as the live preview), so
@@ -15,7 +16,7 @@ export interface EmbeddedFonts {
   bold: string; // base64 TTF
 }
 
-let fontCache: Promise<EmbeddedFonts | null> | null = null;
+let fontCache: Promise<EmbeddedFonts> | null = null;
 
 function bufferToBase64(buf: ArrayBuffer): string {
   const bytes = new Uint8Array(buf);
@@ -30,18 +31,35 @@ function bufferToBase64(buf: ArrayBuffer): string {
 async function fetchFont(url: string): Promise<string> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Font ${url}: ${res.status}`);
-  return bufferToBase64(await res.arrayBuffer());
+  const buf = await res.arrayBuffer();
+  // a captive portal or a filter can answer 200 with a web page instead of the font
+  if (buf.byteLength < 10_000) throw new Error(`Font ${url}: only ${buf.byteLength} bytes`);
+  return bufferToBase64(buf);
 }
 
-/** Load (once) the fonts served from /public/fonts. Falls back to Helvetica when unavailable. */
-export function loadEmbeddedFonts(): Promise<EmbeddedFonts | null> {
+const loadBoth = async (): Promise<EmbeddedFonts> => {
+  const [regular, bold] = await Promise.all([fetchFont('/fonts/Nunito-Regular.ttf'), fetchFont('/fonts/Nunito-Bold.ttf')]);
+  return { regular, bold };
+};
+
+/**
+ * Load (once) the fonts served from /public/fonts. One hiccup is forgiven: a failed load is
+ * tried again after a moment. If that fails too, a FontLoadError is thrown — a PDF is never
+ * made in a stand-in font (it would print „4 " 2 =” for a subtraction and drop the diacritics).
+ * A later call starts over, so the next click can succeed once the connection is back.
+ */
+export function loadEmbeddedFonts(retryDelayMs = 600): Promise<EmbeddedFonts> {
   if (!fontCache) {
-    fontCache = Promise.all([fetchFont('/fonts/Nunito-Regular.ttf'), fetchFont('/fonts/Nunito-Bold.ttf')])
-      .then(([regular, bold]) => ({ regular, bold }))
-      .catch(() => {
+    const attempt = loadBoth()
+      .catch(async () => {
+        await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+        return loadBoth();
+      })
+      .catch((err) => {
         fontCache = null;
-        return null;
+        throw new FontLoadError(err);
       });
+    fontCache = attempt;
   }
   return fontCache;
 }
@@ -51,9 +69,8 @@ export function createWorksheetPdf(config: WorksheetConfig, tier: Tier, fonts: E
   return createPagesPdf(buildWorksheetPages(config, tier), fonts);
 }
 
-/** Any list of pages (e.g. the sheets of a whole group) as one PDF. */
-export function createPagesPdf(pages: PageOps[], fonts: EmbeddedFonts | null): jsPDF {
-  const first = pages[0];
+/** A new document sized for the first page, with Nunito registered when the fonts are given. */
+export function newPdfDocument(first: PageOps, fonts: EmbeddedFonts | null): { doc: jsPDF; font: PdfFontSet } {
   const doc = new jsPDF({
     orientation: first.width > first.height ? 'landscape' : 'portrait',
     unit: 'mm',
@@ -63,6 +80,8 @@ export function createPagesPdf(pages: PageOps[], fonts: EmbeddedFonts | null): j
     putOnlyUsedFonts: true,
   });
 
+  // Without the fonts (only in tests and scripts; the browser paths insist on them) the text is
+  // drawn in Helvetica, folded to the characters that font has.
   let font: PdfFontSet = { family: 'helvetica', unicode: false };
   if (fonts) {
     doc.addFileToVFS('Nunito-Regular.ttf', fonts.regular);
@@ -71,6 +90,13 @@ export function createPagesPdf(pages: PageOps[], fonts: EmbeddedFonts | null): j
     doc.addFont('Nunito-Bold.ttf', 'Nunito', 'bold');
     font = { family: 'Nunito', unicode: true };
   }
+  return { doc, font };
+}
+
+/** Any list of pages (e.g. the sheets of a whole group) as one PDF. */
+export function createPagesPdf(pages: PageOps[], fonts: EmbeddedFonts | null): jsPDF {
+  if (!pages.length) throw new Error('No pages to put in the PDF');
+  const { doc, font } = newPdfDocument(pages[0], fonts);
 
   pages.forEach((page, i) => {
     if (i > 0) doc.addPage([page.width, page.height], page.width > page.height ? 'landscape' : 'portrait');

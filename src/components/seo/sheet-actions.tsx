@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Download, PencilLine, UserRound } from 'lucide-react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
-import { useToast } from '@/components/ui/toast';
+import { useDownload } from '@/hooks/use-download';
+import { DownloadError } from '@/components/worksheet/download-error';
 import { seoSheetBySlug } from '@/lib/seo/catalog';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
 import { downloadPagesPdf } from '@/lib/pdf/actions';
@@ -15,20 +15,16 @@ import { downloadPagesPdf } from '@/lib/pdf/actions';
  */
 export function SheetActions({ slug }: { slug: string }) {
   const router = useRouter();
-  const toast = useToast();
-  const [busy, setBusy] = useState(false);
+  const { busy: busyWith, error, run } = useDownload();
+  const busy = busyWith !== null;
   const sheet = seoSheetBySlug(slug);
   if (!sheet) return null;
 
-  const download = async () => {
-    setBusy(true);
-    try {
+  const download = () =>
+    run('download', async () => {
       await downloadPagesPdf(buildWorksheetPages(sheet.config, 'full').slice(0, 1), `fisa-${sheet.slug}.pdf`);
-      toast(`„${sheet.label}” e descărcată. Spor la scris!`);
-    } finally {
-      setBusy(false);
-    }
-  };
+      return `„${sheet.label}” e descărcată. Spor la scris!`;
+    });
 
   const edit = () => {
     useWorksheetStore.setState({ config: sheet.config });
@@ -37,6 +33,7 @@ export function SheetActions({ slug }: { slug: string }) {
 
   return (
     <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
+      <DownloadError message={error} className="sm:basis-full" />
       <button type="button" onClick={download} disabled={busy} data-btn="primary" className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-14 px-7 rounded-xl text-base disabled:opacity-60">
         <Download className="w-5 h-5" aria-hidden /> {busy ? 'Se pregătește…' : 'Descarcă PDF gratuit'}
       </button>

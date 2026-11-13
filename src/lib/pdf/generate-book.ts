@@ -1,32 +1,18 @@
-import { jsPDF } from 'jspdf';
+import type { jsPDF } from 'jspdf';
 import type { PageOps } from '@/lib/glyphs/types';
-import { drawPageToPdf, type PdfFontSet } from '@/lib/glyphs/backends/pdf';
+import { drawPageToPdf } from '@/lib/glyphs/backends/pdf';
 import { buildBookPages, type BookConfig } from '@/lib/book/interior';
 import { buildCoverPage } from '@/lib/book/cover';
-import { loadEmbeddedFonts, safeFilename, type EmbeddedFonts } from './generate-pdf';
+import { loadEmbeddedFonts, newPdfDocument, safeFilename, type EmbeddedFonts } from './generate-pdf';
+import { FontLoadError } from './errors';
 
-function newDoc(first: PageOps, fonts: EmbeddedFonts | null): { doc: jsPDF; font: PdfFontSet } {
-  const doc = new jsPDF({
-    orientation: first.width > first.height ? 'landscape' : 'portrait',
-    unit: 'mm',
-    format: [first.width, first.height],
-    compress: true,
-    // Only list fonts that are drawn: KDP rejects PDFs that reference non-embedded fonts.
-    putOnlyUsedFonts: true,
-  });
-  let font: PdfFontSet = { family: 'helvetica', unicode: false };
-  if (fonts) {
-    doc.addFileToVFS('Nunito-Regular.ttf', fonts.regular);
-    doc.addFont('Nunito-Regular.ttf', 'Nunito', 'normal');
-    doc.addFileToVFS('Nunito-Bold.ttf', fonts.bold);
-    doc.addFont('Nunito-Bold.ttf', 'Nunito', 'bold');
-    font = { family: 'Nunito', unicode: true };
-  }
-  return { doc, font };
-}
-
+/**
+ * A book for print: KDP rejects files whose fonts are not embedded, so there is no stand-in
+ * font here. Without the embedded fonts no document is made at all.
+ */
 function pagesToDoc(pages: PageOps[], fonts: EmbeddedFonts | null): jsPDF {
-  const { doc, font } = newDoc(pages[0], fonts);
+  if (!fonts || !fonts.regular || !fonts.bold) throw new FontLoadError();
+  const { doc, font } = newPdfDocument(pages[0], fonts);
   pages.forEach((page, i) => {
     if (i > 0) doc.addPage([page.width, page.height], page.width > page.height ? 'landscape' : 'portrait');
     drawPageToPdf(doc, page, font);
