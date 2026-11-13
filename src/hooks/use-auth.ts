@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { useWorksheetStore } from '@/stores/worksheet-store';
@@ -25,57 +25,110 @@ export interface UserProfile {
   preferences: Record<string, unknown>;
 }
 
-export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const setTier = useWorksheetStore((s) => s.setTier);
+/**
+ * One sign-in state for the whole page. The menu, the page and the plans window all call
+ * useAuth(); they used to open three listeners and ask for the profile three times. Now the
+ * first caller starts a single listener and everyone reads the same state.
+ */
+interface AuthState {
+  user: User | null;
+  profile: UserProfile | null;
+  loading: boolean;
+  /** The profile (and so the plan) could not be read; the last known plan is kept meanwhile. */
+  profileError: boolean;
+}
 
+let state: AuthState = { user: null, profile: null, loading: true, profileError: false };
+const SERVER_STATE: AuthState = state;
+const listeners = new Set<() => void>();
+let started = false;
+let profileRequest = 0;
+
+function setState(patch: Partial<AuthState>) {
+  state = { ...state, ...patch };
+  listeners.forEach((l) => l());
+}
+
+const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+};
+
+/**
+ * Read the profile and, with it, the plan. A failed read (weak signal, a hiccup of the server)
+ * is tried once more and otherwise leaves the last known plan in place: a subscriber is never
+ * shown the free plan just because one request did not get through.
+ */
+async function fetchProfile(userId: string, attempt = 0): Promise<void> {
+  const request = ++profileRequest;
+  let data: unknown = null;
+  let failed = false;
+  try {
+    const res = await createClient().from('users_profile').select('*').eq('id', userId).single();
+    data = res.data;
+    failed = !!res.error || !res.data;
+  } catch {
+    failed = true;
+  }
+  if (request !== profileRequest || state.user?.id !== userId) return; // a newer answer is on its way, or the person signed out
+  if (!failed && data) {
+    const profile = data as UserProfile;
+    setState({ profile, profileError: false });
+    useWorksheetStore.getState().setTier(profile.tier);
+    return;
+  }
+  if (attempt < 1) {
+    setTimeout(() => void fetchProfile(userId, attempt + 1), 1500);
+    return;
+  }
+  console.error('Could not read the profile; keeping the last known plan');
+  setState({ profileError: true });
+}
+
+function signedOut() {
+  profileRequest++;
+  setState({ user: null, profile: null, profileError: false });
+  useWorksheetStore.getState().setTier('free');
+}
+
+function start() {
+  if (started || typeof window === 'undefined') return;
+  started = true;
   const supabase = createClient();
 
-  const fetchProfile = useCallback(
-    async (userId: string) => {
-      const { data } = await supabase
-        .from('users_profile')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (data) {
-        setProfile(data as UserProfile);
-        setTier(data.tier as Tier);
+  supabase.auth
+    .getUser()
+    .then(({ data: { user } }) => {
+      if (user) {
+        setState({ user });
+        return fetchProfile(user.id);
       }
-    },
-    [supabase, setTier]
-  );
+    })
+    .catch(() => undefined)
+    .finally(() => setState({ loading: false }));
 
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) await fetchProfile(user.id);
-      setLoading(false);
-    };
+  // The callback must stay synchronous and must not call Supabase itself: the library holds a
+  // lock while it runs, and awaiting another Supabase call inside it can deadlock every later
+  // request (also in other tabs). The profile is read right after, outside the callback.
+  supabase.auth.onAuthStateChange((_event, session) => {
+    const next = session?.user ?? null;
+    const previousId = state.user?.id;
+    if (!next) {
+      if (previousId || state.profile) signedOut();
+      return;
+    }
+    setState({ user: next });
+    // a refreshed token of the same person does not need the profile again
+    if (next.id !== previousId || !state.profile) setTimeout(() => void fetchProfile(next.id), 0);
+  });
+}
 
-    getUser();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        await fetchProfile(currentUser.id);
-      } else {
-        setProfile(null);
-        setTier('free');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [supabase, fetchProfile, setTier]);
+export function useAuth() {
+  const { user, profile, loading, profileError } = useSyncExternalStore(subscribe, () => state, () => SERVER_STATE);
+  useEffect(() => start(), []);
+  const supabase = createClient();
 
   const signInWithGoogle = async () => {
     await supabase.auth.signInWithOAuth({
@@ -107,9 +160,7 @@ export function useAuth() {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    setUser(null);
-    setProfile(null);
-    setTier('free');
+    signedOut();
   };
 
   const redeemAccessCode = async (
@@ -125,7 +176,7 @@ export function useAuth() {
     if (data === 'too_many_attempts') return { success: false, error: 'Prea multe coduri greșite. Încearcă din nou peste o oră.' };
     if (data !== 'starter' && data !== 'full') return { success: false, error: 'Nu am putut activa codul.' };
 
-    await fetchProfile(user.id);
+    await fetchProfile(user.id, 1);
     return { success: true };
   };
 
@@ -133,6 +184,7 @@ export function useAuth() {
     user,
     profile,
     loading,
+    profileError,
     signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,

@@ -15,5 +15,6 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/?error=auth`);
+  // Back to the sign-in page, which explains what happened (and keeps where the person was going).
+  return NextResponse.redirect(`${origin}/auth/login?error=auth&next=${encodeURIComponent(next)}`);
 }
