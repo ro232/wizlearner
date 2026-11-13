@@ -6,7 +6,8 @@ import { opsOutside } from './bounds';
 
 describe('group sheets', () => {
   it('reads a pasted class list', () => {
-    expect(parseNames('1. Ana Popescu\n2) ştefan\n\nAna Popescu, Maria-Ioana ; Luca')).toEqual(['Ana Popescu', 'ștefan', 'Maria-Ioana', 'Luca']);
+    // two children with the same name both stay: each gets a sheet
+    expect(parseNames('1. Ana Popescu\n2) ştefan\n\nAna Popescu, Maria-Ioana ; Luca')).toEqual(['Ana Popescu', 'ștefan', 'Ana Popescu', 'Maria-Ioana', 'Luca']);
     expect(parseNames(Array.from({ length: 60 }, (_, i) => `Copil ${i}`).join('\n'))).toHaveLength(MAX_CHILDREN);
   });
 

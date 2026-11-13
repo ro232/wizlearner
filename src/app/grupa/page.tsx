@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { Download, Users, Check, ChevronLeft, ChevronRight, CalendarDays, Save, Trash2, Loader2 } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Download, Users, Check, ChevronLeft, ChevronRight, CalendarDays, Save, Trash2, Loader2, Eraser } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { useToast } from '@/components/ui/toast';
@@ -10,9 +10,13 @@ import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { THEMES, themeById } from '@/lib/themes';
 import { ALPHABETS } from '@/lib/glyphs/data';
-import { buildGroupPages, parseNames, MAX_CHILDREN, MAX_LETTERS } from '@/lib/worksheet/group';
+import { buildGroupPages, parseNameList, MAX_CHILDREN, MAX_LETTERS } from '@/lib/worksheet/group';
 import { SCHOOL_YEAR, WEEKS_IN_YEAR, weekLabel, weekOfSchoolYear } from '@/lib/calendar';
-import { loadGroups, storeGroups, type SavedGroup } from '@/lib/saved-groups';
+import { clearGroupDraft, loadGroupDraft, loadGroups, storeGroupDraft, storeGroups, type SavedGroup } from '@/lib/saved-groups';
+import { sanitizeGroupProject } from '@/components/projects/sanitize-project';
+import { DownloadError } from '@/components/worksheet/download-error';
+import { copii, countOf, fise, pagini } from '@/components/worksheet/plural';
+import { useDownload } from '@/hooks/use-download';
 import { downloadPagesPdf } from '@/lib/pdf/actions';
 import { logDownload, takeProject } from '@/lib/projects';
 import type { Difficulty, LetterMode, Script } from '@/types';
@@ -44,42 +48,75 @@ export default function GroupPage() {
   const [script, setScript] = useState<Script>('print');
   const [difficulty, setDifficulty] = useState<Difficulty>('beginner');
   const [withFind, setWithFind] = useState(true);
-  const [busy, setBusy] = useState(false);
+  const { busy: busyWith, error, run } = useDownload();
+  const busy = busyWith !== null;
   const [showPaywall, setShowPaywall] = useState(false);
 
   const [groups, setGroups] = useState<SavedGroup[]>([]);
   const [groupId, setGroupId] = useState<string>('');
   const [groupName, setGroupName] = useState('');
 
-  // Settings reopened from the account's history (the names stay in this browser).
+  // What was on the page last time comes back by itself (kept in this browser only): the pasted
+  // list, the group, the levels and, within the same week, the week, theme and letters.
+  // Settings reopened from the account's history („Refă”) win over the plan of the week.
+  const [restored, setRestored] = useState(false);
+  const started = useRef(false);
   useEffect(() => {
-    const p = takeProject<{ themeId?: string; letters?: string[]; letterMode?: LetterMode; script?: Script; difficulty?: Difficulty; withFind?: boolean }>('group');
-    if (!p) return;
-    setThemeId(p.themeId);
-    if (p.letters) setLetters(p.letters);
-    if (p.letterMode) setLetterMode(p.letterMode);
-    if (p.script) setScript(p.script);
-    if (p.difficulty) setDifficulty(p.difficulty);
-    if (p.withFind !== undefined) setWithFind(p.withFind);
-  }, []);
-
-  // Restore saved groups (this browser only) and jump to this week of the school year.
-  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    const project = sanitizeGroupProject(takeProject<unknown>('group'));
     const saved = loadGroups();
     setGroups(saved);
-    if (saved[0]) openGroup(saved[0]);
+    const draft = loadGroupDraft();
     const now = weekOfSchoolYear(new Date());
-    if (now) applyWeek(now);
+    if (draft) {
+      setNamesText(draft.namesText);
+      setGroupName(draft.groupName);
+      setGroupId(saved.some((g) => g.id === draft.groupId) ? draft.groupId : '');
+      setLevels(draft.levels);
+      setLetterMode(draft.letterMode);
+      setScript(draft.script);
+      setDifficulty(draft.difficulty);
+      setWithFind(draft.withFind);
+    } else if (saved[0]) {
+      openGroup(saved[0]);
+    }
+    if (project) {
+      setWeek(null);
+      setThemeId(project.themeId);
+      setLetters(project.letters);
+      setLetterMode(project.letterMode);
+      setScript(project.script);
+      setDifficulty(project.difficulty);
+      setWithFind(project.withFind);
+    } else if (draft && draft.writtenInWeek === now) {
+      setWeek(draft.week && SCHOOL_YEAR[draft.week - 1] ? draft.week : null);
+      setThemeId(draft.themeId && themeById(draft.themeId) ? draft.themeId : undefined);
+      setLetters(draft.letters.filter((l) => ALPHABETS.ro.includes(l)).slice(0, MAX_LETTERS));
+    } else if (now) {
+      applyWeek(now);
+    }
+    setRestored(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const names = useMemo(() => parseNames(namesText), [namesText]);
+  // …and is written back at every change. Nothing here is sent anywhere.
+  useEffect(() => {
+    if (!restored) return;
+    storeGroupDraft({ namesText, groupName, groupId, levels, week, writtenInWeek: weekOfSchoolYear(new Date()), themeId, letters, letterMode, script, difficulty, withFind });
+  }, [restored, namesText, groupName, groupId, levels, week, themeId, letters, letterMode, script, difficulty, withFind]);
+
+  const list = useMemo(() => parseNameList(namesText), [namesText]);
+  const names = list.names;
+  const overFree = tier === 'free' && names.length > FREE_GROUP_LIMIT;
   const limit = tier === 'free' ? FREE_GROUP_LIMIT : MAX_CHILDREN;
+  // What the preview shows is exactly what the button downloads.
   const previewNames = names.length ? names.slice(0, limit) : ['Ana'];
+  const previewKeys = names.length ? list.keys.slice(0, limit) : ['Ana'];
   const { pages } = useMemo(
-    () => buildGroupPages({ names: previewNames, themeId, letters, letterMode, script, difficulty, levels, withFindPages: withFind }),
+    () => buildGroupPages({ names: previewNames, keys: previewKeys, themeId, letters, letterMode, script, difficulty, levels, withFindPages: withFind }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [previewNames.join('\n'), themeId, letters, letterMode, script, difficulty, levels, withFind],
+    [previewKeys.join('\n'), themeId, letters, letterMode, script, difficulty, levels, withFind],
   );
 
   function applyWeek(w: number) {
@@ -102,6 +139,13 @@ export default function GroupPage() {
     setGroupName('');
     setNamesText('');
     setLevels({});
+  };
+
+  // Empties the list here and in the browser's memory (a shared computer in the staff room).
+  const clearList = () => {
+    newGroup();
+    clearGroupDraft();
+    toast('Lista a fost golită. Grupele salvate rămân.');
   };
 
   const saveGroup = () => {
@@ -139,22 +183,18 @@ export default function GroupPage() {
   const toggleLetter = (l: string) =>
     setLetters((cur) => (cur.includes(l) ? cur.filter((x) => x !== l) : cur.length >= MAX_LETTERS ? [...cur.slice(1), l] : [...cur, l]));
 
-  const download = async () => {
-    if (names.length > limit) {
-      setShowPaywall(true);
-      return;
-    }
-    setBusy(true);
-    try {
-      const plan = week ? `-sapt-${week}` : '';
-      await downloadPagesPdf(pages, `fise-grupa${plan}-${themeId ?? 'litere'}.pdf`);
+  // Free plan: the first children only; the button says so before it is pressed.
+  const download = () =>
+    run('download', async () => {
+      const count = previewNames.length;
+      const planPart = week ? `-sapt-${week}` : '';
+      await downloadPagesPdf(pages, `fise-grupa${planPart}-${themeId ?? 'litere'}.pdf`);
       // history keeps the settings only, never the children's names
-      void logDownload('group', `Grupă: ${names.length} copii${themeId ? ` · ${themeById(themeId)?.title ?? themeId}` : ''}`, { themeId, letters, letterMode, script, difficulty, withFind }, pages.length);
-      toast(`Gata: ${names.length} fișe, câte una pentru fiecare copil.`);
-    } finally {
-      setBusy(false);
-    }
-  };
+      void logDownload('group', `Grupă: ${copii(count)}${themeId ? ` · ${themeById(themeId)?.title ?? themeId}` : ''}`, { themeId, letters, letterMode, script, difficulty, withFind }, pages.length);
+      return overFree
+        ? `Gata: fișele primilor ${count} copii. Toată grupa (${copii(names.length)}) e în varianta completă.`
+        : count === 1 ? 'Gata: fișa copilului.' : `Gata: ${fise(count)}, câte una pentru fiecare copil.`;
+    });
 
   const plan = week ? SCHOOL_YEAR[week - 1] : null;
   const planTheme = plan ? themeById(plan.themeId) : undefined;
@@ -240,24 +280,42 @@ export default function GroupPage() {
                 <label htmlFor="names" className={`${label} flex items-center gap-1.5`}>
                   <Users className="w-3.5 h-3.5" aria-hidden /> Copiii din grupă
                 </label>
-                <span className="text-xs text-slate-600">{names.length} {names.length === 1 ? 'copil' : 'copii'}</span>
+                <span className="flex items-center gap-3 text-xs text-slate-600">
+                  {copii(names.length)}
+                  {namesText && (
+                    <button type="button" onClick={clearList} className="inline-flex items-center gap-1 font-bold text-ink underline underline-offset-2 hover:text-pen">
+                      <Eraser className="w-3.5 h-3.5" aria-hidden /> Golește lista
+                    </button>
+                  )}
+                </span>
               </div>
               <textarea id="names" rows={5} value={namesText} onChange={(e) => setNamesText(e.target.value)} placeholder={EXAMPLE}
                 className="w-full px-3 py-2 border-2 border-slate-300 rounded-xl text-sm bg-white focus:outline-none focus:border-ink" />
               <p className="text-[11px] text-slate-600 mt-1">
-                Câte un nume pe rând (merge și copiat din catalog). Numele și grupele rămân doar în browserul tău.
+                Câte un nume pe rând (merge și copiat din catalog sau din Excel). Lista se păstrează singură, doar în browserul tău.
                 {tier === 'free' && ` Gratuit poți încerca cu ${FREE_GROUP_LIMIT} copii.`}
               </p>
+              {list.total > MAX_CHILDREN && (
+                <p role="status" className="mt-2 rounded-lg border-2 border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                  Lista are {countOf(list.total, 'nume', 'nume')}. Pe un PDF intră cel mult {MAX_CHILDREN}: primii {MAX_CHILDREN} primesc fișă, pentru ceilalți {list.total - MAX_CHILDREN} fă o a doua grupă.
+                </p>
+              )}
+              {list.repeated.length > 0 && (
+                <p role="status" className="mt-2 text-xs font-semibold text-slate-700">
+                  {list.repeated.map((r) => `${r.count} copii cu același nume: ${r.name}`).join(' · ')}. Fiecare primește fișa lui.
+                </p>
+              )}
 
               {names.length > 0 && (
                 <div className="mt-3">
                   <p className="text-xs text-slate-600 mb-2">Apasă pe un copil ca să-i dai alt nivel decât grupei (Î = Început, M = Mijlociu, A = Avansat).</p>
                   <ul className="flex flex-wrap gap-1.5">
-                    {names.map((n) => {
-                      const lv = LEVELS.find((l) => l.id === levels[n]);
+                    {names.map((n, i) => {
+                      const key = list.keys[i];
+                      const lv = LEVELS.find((l) => l.id === levels[key]);
                       return (
-                        <li key={n}>
-                          <button type="button" onClick={() => cycleLevel(n)} aria-label={`${n}: ${lv ? `nivel ${lv.label}` : 'nivelul grupei'}`}
+                        <li key={key}>
+                          <button type="button" onClick={() => cycleLevel(key)} aria-label={`${n}: ${lv ? `nivel ${lv.label}` : 'nivelul grupei'}`}
                             className={`inline-flex items-center gap-1.5 rounded-full border-2 pl-3 pr-1 py-0.5 text-sm font-bold ${lv ? 'border-ink bg-white text-ink' : 'border-slate-300 bg-paper text-slate-700'}`}>
                             {n}
                             <span className={`w-6 h-6 rounded-full text-[11px] flex items-center justify-center ${lv ? 'bg-pen text-white' : 'bg-slate-200 text-slate-600'}`}>{lv ? lv.short : '–'}</span>
@@ -333,19 +391,30 @@ export default function GroupPage() {
               </span>
             </label>
 
+            <DownloadError message={error} />
             <button type="button" onClick={download} disabled={busy || names.length === 0} data-btn="primary"
-              className="w-full h-14 rounded-xl text-base inline-flex items-center justify-center gap-2 disabled:opacity-50">
-              {busy ? <Loader2 className="w-5 h-5 animate-spin" aria-hidden /> : <Download className="w-5 h-5" aria-hidden />}
-              {busy ? 'Se pregătește…' : names.length === 0 ? 'Adaugă numele copiilor' : `Descarcă fișele (${names.length} ${names.length === 1 ? 'copil' : 'copii'}, ${pages.length} pagini)`}
+              className="w-full min-h-14 py-2 px-3 rounded-xl text-base inline-flex items-center justify-center gap-2 disabled:opacity-50">
+              {busy ? <Loader2 className="w-5 h-5 animate-spin shrink-0" aria-hidden /> : <Download className="w-5 h-5 shrink-0" aria-hidden />}
+              {busy ? 'Se pregătește…'
+                : names.length === 0 ? 'Adaugă numele copiilor'
+                : overFree ? `Descarcă fișele primilor ${FREE_GROUP_LIMIT} copii (${pagini(pages.length)})`
+                : `Descarcă fișele (${copii(names.length)}, ${pagini(pages.length)})`}
             </button>
+            {overFree && (
+              <p className="text-sm text-slate-700" data-free-note>
+                Gratuit descarci fișele primilor {FREE_GROUP_LIMIT} copii din listă. Toată grupa ({copii(names.length)}) face parte din varianta completă.{' '}
+                <button type="button" onClick={() => setShowPaywall(true)} className="font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-2">Vezi varianta completă</button>
+              </p>
+            )}
           </div>
         </section>
 
         <section aria-label="Previzualizare" className="lg:sticky lg:top-24 lg:self-start flex flex-col items-center gap-3">
           <div className="desk rounded-2xl border-2 border-ink p-4 sm:p-8 w-full flex justify-center">
-            <PagesPreview pages={pages} width={440} pageLabel="Fișa" />
+            <PagesPreview pages={pages} width={440} pageLabel="Pagina" />
           </div>
           {!names.length && <p className="text-sm text-slate-600">Exemplu pentru „Ana”. Adaugă numele copiilor ca să le vezi fișele.</p>}
+          {overFree && <p className="text-sm text-slate-600">Previzualizare pentru primii {FREE_GROUP_LIMIT} copii din {names.length}.</p>}
         </section>
       </main>
       <Footer />
