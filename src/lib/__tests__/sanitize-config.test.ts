@@ -84,7 +84,7 @@ describe('projects reopened from the account', () => {
     }
     expect(sanitizeBookConfig({ ...DEFAULT_BOOK_CONFIG, script: 'cursive', trim: 'a4' })).toEqual({ ...DEFAULT_BOOK_CONFIG, script: 'cursive', trim: 'a4' });
     expect(sanitizeBookConfig({ watermark: true }).watermark).toBe(false);
-  });
+  }, 30_000); // builds a whole KDP book per garbage value: slow on CI runners
 
   it('workbook, name workbook and group settings', () => {
     expect(sanitizeWorkbookProject({ book: 'upper', level: 'nope', withWords: 'x' })).toEqual({ book: 'upper', level: 'beginner', withWords: true, name: '' });
