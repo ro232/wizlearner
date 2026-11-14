@@ -147,7 +147,14 @@ function findPage(config: WorksheetConfig, target: string, tier: Tier): PageOps 
   const gx = M;
   const cw = (W - 2 * M) / cols;
   const ch = (H - M - 22 - gy) / rows;
-  const s = Math.min(ch * 0.44, cw * 0.5) / 100; // room in the cell for accents above and the comma below
+  // One size and one baseline for every letter of the grid, chosen so the highest ink (an
+  // accent) and the lowest (the comma of Ș/Ț, a tail) both stay inside the box with a margin:
+  // the comma of Ț used to touch the box edge.
+  const PAD = 3; // mm between the ink and the box edge
+  const inks = grid.map((ltr) => getGlyph(ltr)).filter(Boolean).map((g) => glyphBounds(g!, 10));
+  const inkTop = Math.min(0, ...inks.map((b) => b.minY));
+  const inkBottom = Math.max(100, ...inks.map((b) => b.maxY));
+  const s = Math.min((ch - 3 - 2 * PAD) / (inkBottom - inkTop), (cw * 0.5) / 100);
   grid.forEach((ltr, i) => {
     const c = i % cols;
     const r = Math.floor(i / cols);
@@ -160,7 +167,7 @@ function findPage(config: WorksheetConfig, target: string, tier: Tier): PageOps 
     ops.push({
       t: 'group',
       tx: x + (cw - w) / 2,
-      ty: y + ch / 2 - (lower ? 75 : 50) * s,
+      ty: y + ch / 2 - ((inkTop + inkBottom) / 2) * s,
       scale: s,
       ops: itemOps([g], { color: INK, strokeWidth: 10, variant: 'outline', startDots: false, arrows: false, accent: ACCENT, dotText: PAPER, paper: PAPER }),
     });

@@ -1,5 +1,6 @@
 'use client';
 
+import { ForeignLettersNote } from '@/components/worksheet/foreign-letters-note';
 import React, { useState } from 'react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { CATEGORY_TABS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
@@ -281,6 +282,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
           <p className="text-[11px] text-slate-500 mt-1">
             {wordsFit ? 'Apare în antetul fișei. Cu „Trasează-l” devine și rând de scris.' : 'Apare în antetul fișei.'}
           </p>
+          <ForeignLettersNote text={config.childName} className="mt-1.5" />
         </div>
         {/* Games draw their own page: no extra words to trace there. */}
         <div className={wordsFit ? undefined : 'hidden'}>

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ALPHABETS, getGlyph, hintFor, LETTER_HINTS, lettersOfWord, traceLetters, unsupportedLetters } from '@/lib/glyphs/data';
 import { cursiveWord } from '@/lib/glyphs/cursive';
-import { DEFAULT_GLYPH_STYLE, dashPeriod, dashPieces, glyphBounds, ownLead, renderGlyph, OWN_MARGIN } from '@/lib/glyphs/render';
+import { DEFAULT_GLYPH_STYLE, dashPeriod, dashPieces, ownLead, renderGlyph, OWN_MARGIN } from '@/lib/glyphs/render';
 import { flattenOps, flattenSubpath, polylineLength } from '@/lib/glyphs/geometry';
 import type { DrawOp, Glyph, Pt } from '@/lib/glyphs/types';
 import { DEFAULT_CONFIG } from '@/types';
@@ -225,13 +225,15 @@ describe('find the letter', () => {
         expect(instruction.text).toContain('Colorează');
         expect(gridTop - Math.max(...boxes.map((b) => b.maxY)), `${mode} ${items[i]}: grid`).toBeGreaterThanOrEqual(1);
         expect(Math.min(...boxes.map((b) => b.minY)) - instruction.y, `${mode} ${items[i]}: instruction`).toBeGreaterThanOrEqual(1);
-        // grid letters stay inside their cells, even the tallest (Ă) and the deepest (Ș with its comma)
+        // every grid letter's own ink (accent above, comma of Ș/Ț or tail below) stays inside its
+        // box with a visible margin — the comma of Ț used to touch the box edge
         const letters = page.ops.filter((o) => o.t === 'group').slice(1) as Extract<DrawOp, { t: 'group' }>[];
-        const tall = glyphBounds(getGlyph(mode === 'lowercase' ? 'ă' : 'Ă')!, 7).minY;
-        const deep = glyphBounds(getGlyph(mode === 'lowercase' ? 'g' : 'Ș')!, 7).maxY;
         letters.forEach((grp, k) => {
-          expect(grp.ty + tall * grp.scale, `${items[i]} cell ${k}`).toBeGreaterThanOrEqual(cells[k].y);
-          expect(grp.ty + deep * grp.scale, `${items[i]} cell ${k}`).toBeLessThanOrEqual(cells[k].y + cells[k].h);
+          const ink = flattenOps([grp]).map((o) => opBox(o)!).filter(Boolean);
+          const top = Math.min(...ink.map((b) => b.minY));
+          const bottom = Math.max(...ink.map((b) => b.maxY));
+          expect(top - cells[k].y, `${items[i]} cell ${k}: top`).toBeGreaterThanOrEqual(1.5);
+          expect(cells[k].y + cells[k].h - bottom, `${items[i]} cell ${k}: bottom`).toBeGreaterThanOrEqual(1.5);
         });
       });
     }

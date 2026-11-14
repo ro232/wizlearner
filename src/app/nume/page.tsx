@@ -1,5 +1,6 @@
 'use client';
 
+import { ForeignLettersNote } from '@/components/worksheet/foreign-letters-note';
 import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, Download, FileText, Printer, UserRound } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
@@ -117,6 +118,7 @@ export default function NameSheetPage() {
               </label>
               <input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="ex. Ștefan" autoComplete="off" maxLength={28}
                 className="w-full px-4 py-3 border border-slate-300 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <ForeignLettersNote text={name} className="mt-2" />
             </div>
             <div>
               <span className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Cum scriem</span>

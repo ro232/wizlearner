@@ -32,7 +32,7 @@ export function useDownload<K extends string = 'download'>() {
         console.error('PDF failed', err);
         const message = downloadErrorMessage(err);
         setError(message);
-        toast(message);
+        toast(message, { error: true });
         return false;
       } finally {
         running.current = false;

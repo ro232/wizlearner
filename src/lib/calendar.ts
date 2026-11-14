@@ -25,6 +25,14 @@ const THEME_BY_TERM: string[][] = [
   ['primavara', 'animale-domestice', 'fructe-legume', 'mijloace-de-transport'], // weeks 25–34: spring
 ];
 
+/** Weeks that get a holiday theme instead of the term's rotation (2026–2027: week 13 = 30 nov.–4 dec.). */
+const HOLIDAY_WEEKS: Record<number, string> = {
+  13: '1-decembrie', // 1 Decembrie
+  14: 'mos-nicolae', // 6 decembrie
+  15: 'craciun',
+  16: 'craciun',
+};
+
 function pairs(): string[][] {
   const out: string[][] = [];
   for (let i = 0; i < LETTER_ORDER.length; i += 2) out.push(LETTER_ORDER.slice(i, i + 2));
@@ -37,7 +45,7 @@ export const SCHOOL_YEAR: PlanWeek[] = (() => {
   for (let w = 1; w <= WEEKS_IN_YEAR; w++) {
     const term = w <= 12 ? 0 : w <= 24 ? 1 : 2;
     const themes = THEME_BY_TERM[term];
-    const themeId = w <= 2 ? 'familia' : themes[(w - 1) % themes.length];
+    const themeId = HOLIDAY_WEEKS[w] ?? (w <= 2 ? 'familia' : themes[(w - 1) % themes.length]);
     // weeks 1–2: no letters; 3–18: new letters; 19–34: the same pairs again, for practice
     const letters = w <= 2 ? [] : p[(w - 3) % p.length];
     weeks.push({ week: w, themeId, letters });

@@ -2,7 +2,8 @@
 process.env.TZ = 'Europe/Bucharest';
 
 import { describe, expect, it } from 'vitest';
-import { SCHOOL_YEAR_START, WEEKS_IN_YEAR, weekLabel, weekOfSchoolYear } from '@/lib/calendar';
+import { SCHOOL_YEAR, SCHOOL_YEAR_START, WEEKS_IN_YEAR, weekLabel, weekOfSchoolYear } from '@/lib/calendar';
+import { themeById } from '@/lib/themes';
 
 /**
  * Romania changes the clock on the last Sunday of October (25 Oct 2026, a 25-hour day) and
@@ -62,5 +63,19 @@ describe('school-year weeks across the clock changes (Europe/Bucharest)', () => 
       ['2026-09-06T23:59:00', null],
     ];
     for (const [iso, week] of cases) expect(weekOfSchoolYear(new Date(iso)), iso).toBe(week);
+  });
+});
+
+describe('holiday weeks in the plan', () => {
+  it('December weeks carry the December themes, at the right dates', () => {
+    const byWeek = (w: number) => SCHOOL_YEAR[w - 1].themeId;
+    expect(weekLabel(13)).toContain('30 noiembrie');
+    expect(byWeek(13)).toBe('1-decembrie');
+    expect(weekLabel(14)).toContain('7–11 decembrie');
+    expect(byWeek(14)).toBe('mos-nicolae');
+    expect(byWeek(15)).toBe('craciun');
+    expect(byWeek(16)).toBe('craciun');
+    // and every theme of the plan exists
+    for (const w of SCHOOL_YEAR) expect(themeById(w.themeId), `week ${w.week}`).toBeDefined();
   });
 });

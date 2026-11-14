@@ -38,7 +38,8 @@ export function SaveProjectButton({ kind, name, configuration, onPaywall, back, 
     setBusy(true);
     try {
       const res = await saveWorksheet(name.slice(0, 80), configuration, kind);
-      toast(res?.error ? 'Nu am putut salva. Încearcă din nou.' : `Salvat în cont: ${name}`);
+      if (res?.error) toast('Nu am putut salva. Încearcă din nou.', { error: true });
+      else toast(`Salvat în cont: ${name}`);
     } finally {
       setBusy(false);
     }
