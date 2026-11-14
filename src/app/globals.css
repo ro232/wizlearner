@@ -167,18 +167,26 @@
   opacity: 0;
 }
 
-/* Worksheet font (also embedded in the PDF) – full Romanian diacritics */
+/*
+ * Nunito – the text font of the site and of the worksheets. One family, one download: the page
+ * text and the canvas preview both use the name "Nunito". A single variable file carries latin
+ * and latin-ext (Ă Â Î Ș Ț); the site uses weights 400–800. The PDF embeds its own TTF copies
+ * (/fonts/Nunito-Regular.ttf, /fonts/Nunito-Bold.ttf), fetched only when a PDF is made.
+ */
 @font-face {
   font-family: 'Nunito';
-  src: url('/fonts/Nunito-Regular.ttf') format('truetype');
-  font-weight: 400;
+  src: url('/fonts/nunito-v3602-latin-ext-wght.woff2') format('woff2');
+  font-weight: 400 800;
   font-style: normal;
   font-display: swap;
 }
+/* Arial resized to Nunito's proportions, so the text does not jump when the font arrives. */
 @font-face {
-  font-family: 'Nunito';
-  src: url('/fonts/Nunito-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+  font-family: 'Nunito Fallback';
+  src: local('Arial');
+  ascent-override: 99.71%;
+  descent-override: 34.82%;
+  line-gap-override: 0%;
+  size-adjust: 101.39%;
 }
+:root { --font-nunito: 'Nunito', 'Nunito Fallback'; }

@@ -1,17 +1,22 @@
 import type { Metadata } from 'next';
-import { LegalPage } from '@/components/layout/legal-page';
-import { OPERATOR } from '@/lib/legal';
+import { LegalPage, LEGAL_UPDATED } from '@/components/layout/legal-page';
+import { OPERATOR, operatorSentence } from '@/lib/legal';
+import { pageMetadata } from '@/lib/seo/metadata';
 
-export const metadata: Metadata = { title: 'Termeni · WorksheetWiz' };
+export const metadata: Metadata = pageMetadata({
+  title: 'Termeni și condiții',
+  description: 'Termenii de folosire WorksheetWiz: ce poți face cu fișele și caietele, licența imaginilor, codurile de acces și datele de contact.',
+  path: '/termeni',
+});
 
 export default function TermsPage() {
   return (
-    <LegalPage title="Termeni și condiții" updated="23 octombrie 2026">
-      <p>Folosind WorksheetWiz, operat de {OPERATOR.name} (CUI {OPERATOR.cui}), accepți termenii de mai jos.</p>
+    <LegalPage title="Termeni și condiții" updated={LEGAL_UPDATED}>
+      <p>{operatorSentence()} Folosind WorksheetWiz, accepți termenii de mai jos.</p>
 
       <h2>Ce poți face cu fișele</h2>
       <ul>
-        <li>Varianta gratuită și cea completă: poți printa și folosi fișele acasă, la grădiniță sau la școală, oricâte copii ai.</li>
+        <li>Varianta gratuită și cea completă: poți printa și folosi fișele acasă, la grădiniță sau la școală, pentru oricâți copii ai.</li>
         <li>Caietele generate pe pagina „Caiet KDP” cu varianta completă le poți publica și vinde sub numele tău, de exemplu pe Amazon KDP.</li>
         <li>Nu poți revinde fișele ca pachete de fișiere pe alte platforme de fișe sau șabloane.</li>
       </ul>
@@ -29,7 +34,16 @@ export default function TermsPage() {
       </p>
 
       <h2>Contact</h2>
-      <p>Pentru orice întrebare: {OPERATOR.email}.</p>
+      {OPERATOR.email || OPERATOR.phone ? (
+        <p>
+          Pentru orice întrebare ne găsești
+          {OPERATOR.email && <> pe e-mail, la <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a></>}
+          {OPERATOR.email && OPERATOR.phone && ' sau'}
+          {OPERATOR.phone && <> la telefon, {OPERATOR.phone}</>}.
+        </p>
+      ) : (
+        <p>Datele de contact ale firmei care operează site-ul vor fi afișate aici și în subsolul paginii.</p>
+      )}
     </LegalPage>
   );
 }
