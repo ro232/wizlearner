@@ -47,7 +47,8 @@ export default function GeneratorPage() {
     if (tier === 'free') return setShowPaywall(true);
     const name = defaultSheetName(config).slice(0, 80);
     const res = await saveWorksheet(name, configForSaving(config));
-    toast(res?.error ? 'Nu am putut salva fișa. Încearcă din nou.' : `Salvată în cont: ${name}`);
+    if (res?.error) toast('Nu am putut salva fișa. Încearcă din nou.', { error: true });
+    else toast(`Salvată în cont: ${name}`);
   };
 
   const { empty, pages } = useMemo(

@@ -15,6 +15,7 @@ import { SCHOOL_YEAR, WEEKS_IN_YEAR, weekLabel, weekOfSchoolYear } from '@/lib/c
 import { clearGroupDraft, loadGroupDraft, loadGroups, storeGroupDraft, storeGroups, type SavedGroup } from '@/lib/saved-groups';
 import { sanitizeGroupProject } from '@/components/projects/sanitize-project';
 import { DownloadError } from '@/components/worksheet/download-error';
+import { ForeignLettersNote } from '@/components/worksheet/foreign-letters-note';
 import { copii, countOf, fise, pagini } from '@/components/worksheet/plural';
 import { useDownload } from '@/hooks/use-download';
 import { downloadPagesPdf } from '@/lib/pdf/actions';
@@ -51,6 +52,10 @@ export default function GroupPage() {
   const { busy: busyWith, error, run } = useDownload();
   const busy = busyWith !== null;
   const [showPaywall, setShowPaywall] = useState(false);
+  /** after a free download of part of the group: how many children were left out */
+  const [leftOut, setLeftOut] = useState(0);
+  // a changed list makes the offer stale
+  useEffect(() => setLeftOut(0), [namesText]);
 
   const [groups, setGroups] = useState<SavedGroup[]>([]);
   const [groupId, setGroupId] = useState<string>('');
@@ -191,8 +196,9 @@ export default function GroupPage() {
       await downloadPagesPdf(pages, `fise-grupa${planPart}-${themeId ?? 'litere'}.pdf`);
       // history keeps the settings only, never the children's names
       void logDownload('group', `Grupă: ${copii(count)}${themeId ? ` · ${themeById(themeId)?.title ?? themeId}` : ''}`, { themeId, letters, letterMode, script, difficulty, withFind }, pages.length);
+      setLeftOut(overFree ? names.length - count : 0);
       return overFree
-        ? `Gata: fișele primilor ${count} copii. Toată grupa (${copii(names.length)}) e în varianta completă.`
+        ? `Gata: fișele primilor ${count} copii.`
         : count === 1 ? 'Gata: fișa copilului.' : `Gata: ${fise(count)}, câte una pentru fiecare copil.`;
     });
 
@@ -295,6 +301,7 @@ export default function GroupPage() {
                 Câte un nume pe rând (merge și copiat din catalog sau din Excel). Lista se păstrează singură, doar în browserul tău.
                 {tier === 'free' && ` Gratuit poți încerca cu ${FREE_GROUP_LIMIT} copii.`}
               </p>
+              <ForeignLettersNote names={names} className="mt-2" />
               {list.total > MAX_CHILDREN && (
                 <p role="status" className="mt-2 rounded-lg border-2 border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
                   Lista are {countOf(list.total, 'nume', 'nume')}. Pe un PDF intră cel mult {MAX_CHILDREN}: primii {MAX_CHILDREN} primesc fișă, pentru ceilalți {list.total - MAX_CHILDREN} fă o a doua grupă.
@@ -400,7 +407,19 @@ export default function GroupPage() {
                 : overFree ? `Descarcă fișele primilor ${FREE_GROUP_LIMIT} copii (${pagini(pages.length)})`
                 : `Descarcă fișele (${copii(names.length)}, ${pagini(pages.length)})`}
             </button>
-            {overFree && (
+            {overFree && leftOut > 0 && (
+              <div role="status" data-free-offer className="rounded-xl border-2 border-ink bg-white p-4 shadow-[4px_4px_0_#F2B632]">
+                <p className="font-extrabold text-ink">Ai fișele pentru primii {FREE_GROUP_LIMIT} copii.</p>
+                <p className="mt-1 text-sm text-slate-700">
+                  Pentru restul grupei ({copii(leftOut)}), cu numele fiecăruia, în fiecare săptămână: varianta completă.
+                </p>
+                <button type="button" onClick={() => setShowPaywall(true)} data-btn="primary"
+                  className="mt-3 w-full min-h-11 rounded-xl px-3 font-bold">
+                  Fișe pentru toată grupa
+                </button>
+              </div>
+            )}
+            {overFree && !leftOut && (
               <p className="text-sm text-slate-700" data-free-note>
                 Gratuit descarci fișele primilor {FREE_GROUP_LIMIT} copii din listă. Toată grupa ({copii(names.length)}) face parte din varianta completă.{' '}
                 <button type="button" onClick={() => setShowPaywall(true)} className="font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-2">Vezi varianta completă</button>
