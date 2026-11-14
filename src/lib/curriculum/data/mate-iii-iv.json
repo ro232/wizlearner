@@ -1,0 +1,425 @@
+{
+ "id": "mate-iii-iv",
+ "subject": "Matematică",
+ "levels": [
+  "III",
+  "IV"
+ ],
+ "order": "Anexa nr. 2 la ordinul ministrului educației naționale nr. 5003 /02.12.2014",
+ "inForce2026": {
+  "status": "da",
+  "evidence": "Nu am găsit nicio programă nouă aprobată pentru clasele a III-a – a IV-a care să înlocuiască OMEN 5003/02.12.2014 pentru 2026-2027; programele noi aprobate în 2026 vizează liceul (clasa a IX-a din sept. 2026). Standardele naționale de evaluare aprobate prin OMEC nr. 4.615/2026 (MO nr. 674 bis/14.08.2026), aplicabile din 2026-2027, sunt formulate 'în relație cu fiecare competență specifică din programa școlară' (edupedu) și anexa lor pentru clasele III-IV (CNCE, București 2026) reia textual competențele specifice ale programei din 2014. Concluzie: programa din 2014 rămâne în vigoare în 2026-2027.",
+  "urls": [
+   "https://www.edupedu.ro/oficial-standardele-nationale-de-evaluare-pentru-clasele-i-viii-care-se-aplica-din-anul-scolar-2026-2027-pentru-evaluarea-la-clasa-si-examenele-nationale/",
+   "https://www.edu.ro/press_rel_29_2026",
+   "https://www.edupedu.ro/oficial-noile-programe-scolare-de-liceu-pentru-clasele-a-x-a-a-xi-a-si-a-xii-a-au-fost-publicate-de-ministerul-educatiei/",
+   "https://alba24.ro/wp-content/uploads/2026/07/Standarde-nationale-de-evaluare_Matematica-si-explorarea-mediului-I-II-a-Matematica-III-IV.pdf"
+  ]
+ },
+ "sources": [
+  {
+   "title": "Programa școlară pentru disciplina MATEMATICĂ CLASELE a III-a – a IV-a (București, 2014), Anexa nr. 2 la OMEN nr. 5003/02.12.2014 — copie PDF pe edums.ro (ISJ Mureș)",
+   "url": "https://www.edums.ro/invprimar/MATEMATICA%20III%20IV%202014.pdf",
+   "role": "primary"
+  },
+  {
+   "title": "Standarde naționale de evaluare — Anexa nr. 28, Matematică și explorarea mediului I–II / Matematică III–IV (MEC/CNCE, București 2026) — verificare competențe specifice",
+   "url": "https://alba24.ro/wp-content/uploads/2026/07/Standarde-nationale-de-evaluare_Matematica-si-explorarea-mediului-I-II-a-Matematica-III-IV.pdf",
+   "role": "check"
+  },
+  {
+   "title": "Editura Corint — planificare calendaristică Matematică clasa a III-a (verificare coduri și conținuturi)",
+   "url": "https://m.edituracorint.ro/planificare-calendaristica/matematica-clasa-III.pdf",
+   "role": "check"
+  },
+  {
+   "title": "Editura Corint — planificare calendaristică Matematică clasa a IV-a (verificare 'Aria unei suprafețe')",
+   "url": "https://m.edituracorint.ro/planificare-calendaristica/matematica-clasa-IV.pdf",
+   "role": "check"
+  }
+ ],
+ "normalisation": "ș/ț/Ș/Ț (sedilă) → ș/ț/Ș/Ț (virgulă dedesubt); ghilimele drepte. Liniuța de început de rând ('- ') eliminată. Spațierea din intervale ('0- 10 000', '0 – 1000 000', '0-1 000 000', '10,100, 1000', '10.000') și greșelile de tipar ('scriere comparare') păstrate ca în document.",
+ "verification": {
+  "secondPass": "Pass 1: extragere din PDF-ul edums.ro (competențe + conținuturi pe domenii). Pass 2: lecturi WebFetch separate ale aceluiași PDF (competențe; domeniul Numere rând cu rând; Geometrie rând cu rând; Măsurări și date rând cu rând) + comparare a competențelor specifice cu anexa SNE 2026 (identice, cu excepția ș/ț și a punctuației finale) + planificările Corint III și IV pentru conținuturi. O a doua copie a PDF-ului oficial nu a fost găsită (racovita.ro programa_mate_2014.pdf este programa concursului LERIS, nu programa școlară).",
+  "differences": [
+   "Competențe generale și specifice: identice în cele două lecturi; identice și cu SNE 2026 (SNE are doar diacritice cu virgulă și puncte finale la câteva).",
+   "Geometrie III: pass 1 'semidreaptă segment' (un rând), pass 2 'semidreaptă' + 'segment' (rânduri separate). Am păstrat două itemi, fără a adăuga virgulă.",
+   "Geometrie IV corpuri: pass 1 a separat 'identificare, desfășurare, construcție...' ca item separat; pass 2 îl dă între paranteze după listă (ca la clasa a III-a). Am păstrat forma pass 2, un item.",
+   "'Aria unei suprafețe...': ambele lecturi nu au putut stabili coloana sigur; rezolvat prin planificările Corint → clasa a IV-a.",
+   "Pass 2 a numit rândurile domeniului Geometrie 'Localizarea unor obiecte / Figuri geometrice / Corpuri geometrice'; doar 'Corpuri geometrice' apare și în pass 1 ca rând propriu-zis, deci n-am folosit celelalte ca subdomenii (posibil inventate de instrument).",
+   "Fracții IV: Corint IV are 'Compararea si ordonarea fracțiilor cu același numitor', dar programa nu conține un astfel de rând la clasa a IV-a (confirmat explicit în pass 2); compararea apare doar în competențele 2.2/2.3.",
+   "Rândul 'Numerele naturale cuprinse între 0 - 10 000' / '0 - 1 000 000' citat în pass 1; pass 2 a redat doar intervalul. Păstrat ca în pass 1.",
+   "Instrumentul de citire poate normaliza liniuțele (– vs -); nu am putut verifica vizual tipografia."
+  ]
+ },
+ "generalCompetences": [
+  {
+   "code": "1",
+   "text": "Identificarea unor relații / regularități din mediul apropiat"
+  },
+  {
+   "code": "2",
+   "text": "Utilizarea numerelor în calcule"
+  },
+  {
+   "code": "3",
+   "text": "Explorarea caracteristicilor geometrice ale unor obiecte localizate în mediul apropiat"
+  },
+  {
+   "code": "4",
+   "text": "Utilizarea unor etaloane convenționale pentru măsurări și estimări"
+  },
+  {
+   "code": "5",
+   "text": "Rezolvarea de probleme în situații familiare"
+  }
+ ],
+ "specificCompetences": [
+  {
+   "level": "III",
+   "code": "1.1",
+   "text": "Observarea unor modele / regularități din cotidian, pentru crearea de raționamente proprii"
+  },
+  {
+   "level": "III",
+   "code": "1.2",
+   "text": "Aplicarea unei reguli pentru continuarea unor modele repetitive"
+  },
+  {
+   "level": "III",
+   "code": "2.1",
+   "text": "Recunoașterea numerelor naturale din concentrul 0- 10 000 și a fracțiilor subunitare sau echiunitare, cu numitori mai mici sau egali cu 10"
+  },
+  {
+   "level": "III",
+   "code": "2.2",
+   "text": "Compararea numerelor naturale în concentrul 0 – 10 000, respectiv a fracțiilor subunitare sau echiunitare care au același numitor, mai mic sau egal cu 10"
+  },
+  {
+   "level": "III",
+   "code": "2.3",
+   "text": "Ordonarea numerelor naturale în concentrul 0 – 10 000 și respectiv a fracțiilor subunitare sau echiunitare care au același numitor, mai mic sau egal cu 10"
+  },
+  {
+   "level": "III",
+   "code": "2.4",
+   "text": "Efectuarea de adunări și scăderi de numere naturale în concentrul 0 - 10 000 sau cu fracții cu același numitor"
+  },
+  {
+   "level": "III",
+   "code": "2.5",
+   "text": "Efectuarea de înmulțiri de numere în concentrul 0 - 10 000 și de împărțiri folosind tabla înmulțirii, respectiv tabla împărțirii"
+  },
+  {
+   "level": "III",
+   "code": "3.1",
+   "text": "Localizarea unor obiecte în spațiu și în reprezentări, în situații familiare"
+  },
+  {
+   "level": "III",
+   "code": "3.2",
+   "text": "Explorarea caracteristicilor simple ale figurilor și corpurilor geometrice în contexte familiare"
+  },
+  {
+   "level": "III",
+   "code": "4.1",
+   "text": "Utilizarea unor instrumente și unități de măsură standardizate, în situații concrete"
+  },
+  {
+   "level": "III",
+   "code": "4.2",
+   "text": "Operarea cu unități de măsură standardizate, fără transformări"
+  },
+  {
+   "level": "III",
+   "code": "5.1",
+   "text": "Utilizarea terminologiei specifice și a unor simboluri matematice în rezolvarea și/sau compunerea de probleme cu raționamente simple"
+  },
+  {
+   "level": "III",
+   "code": "5.2",
+   "text": "Înregistrarea în tabele a unor date observate din cotidian"
+  },
+  {
+   "level": "III",
+   "code": "5.3",
+   "text": "Rezolvarea de probleme cu operațiile aritmetice studiate, în concentrul 0 - 10 000"
+  },
+  {
+   "level": "IV",
+   "code": "1.1",
+   "text": "Explicarea unor modele / regularități, pentru crearea de raționamente proprii"
+  },
+  {
+   "level": "IV",
+   "code": "1.2",
+   "text": "Generarea unor modele repetitive / regularități"
+  },
+  {
+   "level": "IV",
+   "code": "2.1",
+   "text": "Recunoașterea numerelor naturale în concentrul 0- 1 000 000 și a fracțiilor cu numitori mai mici sau egali cu 10, respectiv egali cu 100"
+  },
+  {
+   "level": "IV",
+   "code": "2.2",
+   "text": "Compararea numerelor naturale în concentrul 0 – 1000 000, respectiv a fracțiilor care au același numărător sau același numitor, mai mic sau egal cu 10 sau numitor egal cu 100"
+  },
+  {
+   "level": "IV",
+   "code": "2.3",
+   "text": "Ordonarea numerelor naturale în concentrul 0 – 1 000 000 și respectiv a fracțiilor care au același numărător sau același numitor, mai mic sau egal cu 10 sau numitor egal cu 100"
+  },
+  {
+   "level": "IV",
+   "code": "2.4",
+   "text": "Efectuarea de adunări și scăderi de numere naturale în concentrul 0 - 1 000 000 sau cu numere fracționare"
+  },
+  {
+   "level": "IV",
+   "code": "2.5",
+   "text": "Efectuarea de înmulțiri de numere în concentrul 0 - 1 000 000 când factorii au cel mult trei cifre și de împărțiri la numere de o cifră sau două cifre"
+  },
+  {
+   "level": "IV",
+   "code": "3.1",
+   "text": "Localizarea unor obiecte în spațiu și a unor simboluri în diverse reprezentări"
+  },
+  {
+   "level": "IV",
+   "code": "3.2",
+   "text": "Explorarea caracteristicilor, relațiilor și a proprietăților figurilor și corpurilor geometrice identificate în diferite contexte"
+  },
+  {
+   "level": "IV",
+   "code": "4.1",
+   "text": "Utilizarea unor instrumente și unități de măsură standardizate, în situații concrete, inclusiv pentru validarea unor transformări"
+  },
+  {
+   "level": "IV",
+   "code": "4.2",
+   "text": "Operarea cu unități de măsură standardizate, folosind transformări"
+  },
+  {
+   "level": "IV",
+   "code": "5.1",
+   "text": "Utilizarea terminologiei specifice și a unor simboluri matematice în rezolvarea și/sau compunerea de probleme cu raționamente diverse"
+  },
+  {
+   "level": "IV",
+   "code": "5.2",
+   "text": "Organizarea datelor în tabele și reprezentarea lor grafică"
+  },
+  {
+   "level": "IV",
+   "code": "5.3",
+   "text": "Rezolvarea de probleme cu operațiile aritmetice studiate, în concentrul 0 - 1 000 000"
+  }
+ ],
+ "contents": [
+  {
+   "level": "III",
+   "domain": "Numere și operații cu numere",
+   "items": [
+    "Numerele naturale cuprinse între 0 - 10 000",
+    "formare, citire, scriere comparare, ordonare, rotunjire",
+    "formarea, citirea, scrierea numerelor cu cifrele romane I, V, X",
+    "Adunarea și scăderea numerelor naturale în concentrul 0 – 10 000, fără trecere și cu trecere peste ordin",
+    "adunarea și scăderea; proprietăți ale adunării",
+    "număr necunoscut: aflare prin diverse metode ( metoda mersului invers, metoda balanței)",
+    "Înmulțirea numerelor naturale în concentrul 0 – 10 000",
+    "înmulțirea a două numere de o cifră (tabla înmulțirii)",
+    "înmulțirea unui număr cu 10, 100",
+    "înmulțirea a două numere dintre care unul este scris cu o cifră",
+    "proprietățile înmulțirii",
+    "înmulțirea când factorii au cel puțin două cifre și rezultatul nu depășește 10.000",
+    "Împărțirea numerelor naturale în concentrul 0 - 100",
+    "împărțirea numerelor de două cifre la un număr de o cifră cu rest 0 (tabla împărțirii dedusă din tabla înmulțirii)",
+    "Ordinea efectuării operațiilor și folosirea parantezelor rotunde",
+    "Probleme care se rezolvă prin operațiile aritmetice cunoscute; metoda reprezentării grafice",
+    "Fracții subunitare și echiunitare cu numitorul mai mic sau egal cu 10",
+    "diviziuni ale unui întreg: doime, treime, ..., zecime; reprezentări prin desene",
+    "terminologie specifică: fracție, numitor, numărător",
+    "compararea, ordonarea fracțiilor subunitare cu același numitor"
+   ],
+   "note": "Rândurile care încep cu majusculă sunt rânduri-titlu din celula clasei; celelalte sunt liniuțe ('-') sub ele în document."
+  },
+  {
+   "level": "III",
+   "domain": "Elemente intuitive de geometrie",
+   "items": [
+    "coordonate într-o reprezentare grafică sub formă de rețea",
+    "punct, linie dreaptă, linie frântă, linie curbă, semidreaptă",
+    "segment",
+    "unghi",
+    "poligoane: pătrat, dreptunghi, triunghi",
+    "cerc",
+    "Axa de simetrie",
+    "Perimetrul",
+    "Corpuri geometrice",
+    "cub, paralelipiped, cilindru, sferă, con (recunoaștere, identificarea unor elemente specifice)"
+   ]
+  },
+  {
+   "level": "III",
+   "domain": "Unități și instrumente de măsură",
+   "subdomain": "Unități de măsură pentru lungime",
+   "items": [
+    "unități de măsură: metrul, cu submultiplii, multiplii",
+    "instrumente de măsură: riglă, metrul de tâmplărie, metrul de croitorie, ruleta",
+    "operații cu unitățile de măsură pentru lungime (fără transformări)"
+   ]
+  },
+  {
+   "level": "III",
+   "domain": "Unități și instrumente de măsură",
+   "subdomain": "Unități de măsură pentru volumul lichidelor",
+   "items": [
+    "unități de măsură: litrul cu multiplii și submultiplii",
+    "operații cu unitățile de măsură pentru volumul lichidelor (fără transformări)"
+   ]
+  },
+  {
+   "level": "III",
+   "domain": "Unități și instrumente de măsură",
+   "subdomain": "Unități de măsură pentru masă",
+   "items": [
+    "unități de măsură: kilogramul cu multiplii și submultiplii",
+    "instrumente de măsură: cântarul, balanța",
+    "operații cu unitățile de măsură pentru masă (fără transformări)"
+   ]
+  },
+  {
+   "level": "III",
+   "domain": "Unități și instrumente de măsură",
+   "subdomain": "Unități de măsură pentru timp",
+   "items": [
+    "unități de măsură: ora (citirea ceasului), ziua, săptămâna, anul",
+    "instrument de măsură: ceasul"
+   ]
+  },
+  {
+   "level": "III",
+   "domain": "Unități și instrumente de măsură",
+   "subdomain": "Unități de măsură monetare",
+   "items": [
+    "unități de măsură: leul și banul, euro și eurocentul",
+    "schimburi monetare echivalente în aceeași unitate monetară"
+   ]
+  },
+  {
+   "level": "III",
+   "domain": "Organizarea și reprezentarea datelor",
+   "items": [
+    "tabel: rând, coloană, celulă a tabelului, date din tabel",
+    "date din tabele: sortare, extragere, ordonare",
+    "grafice cu bare: construire, extragerea unor informații"
+   ]
+  },
+  {
+   "level": "IV",
+   "domain": "Numere și operații cu numere",
+   "items": [
+    "Numerele naturale cuprinse între 0 - 1 000 000",
+    "formare, citire, scriere, comparare, ordonare, rotunjire",
+    "scrierea numerelor cu cifrele romane I, V, X, L, C, D, M",
+    "Adunarea și scăderea numerelor naturale în concentrul 0 – 1 000 000, fără trecere și cu trecere peste ordin",
+    "adunarea și scăderea; proprietăți ale adunării",
+    "număr necunoscut: aflare prin diverse metode (metoda mersului invers, metoda balanței)",
+    "Înmulțirea numerelor naturale în concentrul 0 – 1 000 000",
+    "înmulțirea unui număr cu 10, 100, 1 000",
+    "înmulțirea numerelor când factorii au cel mult trei cifre",
+    "proprietățile înmulțirii",
+    "Împărțirea numerelor naturale în concentrul 0-1 000 000",
+    "împărțirea unui număr cu 10,100, 1000",
+    "împărțirea numerelor mai mici de 1 000 000 la un număr de cel mult două cifre (cu rest zero sau diferit de zero)",
+    "Ordinea efectuării operațiilor și folosirea parantezelor rotunde și pătrate",
+    "Probleme care se rezolvă prin operațiile aritmetice cunoscute; metoda reprezentării grafice, metoda comparației, metoda mersului invers",
+    "Fracții cu numitorul mai mic sau egal cu 10 sau cu numitorul egal cu 100",
+    "diviziuni ale unui întreg: sutime; reprezentări prin desene",
+    "fracții subunitare, echiunitare, supraunitare",
+    "adunarea și scăderea fracțiilor cu același numitor",
+    "scrierea procentuală (numai pentru 25%, 50%, 75%)"
+   ],
+   "note": "Rândurile care încep cu majusculă sunt rânduri-titlu din celula clasei; celelalte sunt liniuțe ('-') sub ele în document."
+  },
+  {
+   "level": "IV",
+   "domain": "Elemente intuitive de geometrie",
+   "items": [
+    "terminologie specifică: paralel, perpendicular",
+    "coordonate într-o reprezentare grafică sub formă de rețea",
+    "hărți",
+    "drepte perpendiculare, paralele",
+    "unghiuri drepte, ascuțite, obtuze",
+    "poligoane: pătrat, dreptunghi, romb, paralelogram, triunghi",
+    "cerc",
+    "Axa de simetrie",
+    "Perimetrul",
+    "Aria unei suprafețe (prin reprezentări, estimând cu ajutorul unei rețele de pătrate cu latura de 1 cm)",
+    "Corpuri geometrice",
+    "cub, paralelipiped, piramidă, cilindru, sferă, con (identificare, desfășurare, construcție folosind tipare sau diverse materiale)",
+    "volumul cubului și paralelipipedului (folosind cubul cu latura 1 cm)"
+   ],
+   "note": "'Aria unei suprafețe' atribuită clasei a IV-a: extragerea PDF nu a arătat clar coloana; confirmat de planificarea Corint pentru clasa a IV-a (o conține) și de cea pentru clasa a III-a (nu o conține)."
+  },
+  {
+   "level": "IV",
+   "domain": "Unități și instrumente de măsură",
+   "subdomain": "Unități de măsură pentru lungime",
+   "items": [
+    "unități de măsură: metrul, cu multiplii și submultiplii",
+    "transformări pentru lungime în limita operațiilor cunoscute",
+    "instrumente de măsură: rigla, metrul de tâmplărie, metrul de croitorie, ruleta",
+    "operații cu unitățile de măsură pentru lungime"
+   ]
+  },
+  {
+   "level": "IV",
+   "domain": "Unități și instrumente de măsură",
+   "subdomain": "Unități de măsură pentru volumul lichidelor",
+   "items": [
+    "unități de măsură: litrul cu multiplii și submultiplii",
+    "transformări pentru volum în limita operațiilor cunoscute",
+    "operații cu unitățile de măsură pentru volumul lichidelor"
+   ]
+  },
+  {
+   "level": "IV",
+   "domain": "Unități și instrumente de măsură",
+   "subdomain": "Unități de măsură pentru masă",
+   "items": [
+    "unități de măsură: kilogramul, multiplii și submultiplii (inclusiv tona și chintalul)",
+    "transformările unităților de măsură în limita operațiilor cunoscute",
+    "instrumente de măsură: cântarul, balanța",
+    "operații cu unitățile de măsură pentru masă"
+   ]
+  },
+  {
+   "level": "IV",
+   "domain": "Unități și instrumente de măsură",
+   "subdomain": "Unități de măsură pentru timp",
+   "items": [
+    "calculul unor intervale temporale, transformări din unități mai mari în unități mai mici de timp",
+    "instrumente de măsură: ceasul, cronometrul"
+   ]
+  },
+  {
+   "level": "IV",
+   "domain": "Unități și instrumente de măsură",
+   "subdomain": "Unități de măsură monetare",
+   "items": [
+    "unități de măsură: leul și banul, euro și eurocentul (monede și bancnote în uz)",
+    "schimburi monetare echivalente în aceeași unitate monetară"
+   ]
+  },
+  {
+   "level": "IV",
+   "domain": "Organizarea și reprezentarea datelor",
+   "items": [
+    "date din tabele: analiza datelor, interpretare",
+    "grafice cu bare și liniare: construire, extragerea unor informații și prelucrarea lor"
+   ]
+  }
+ ]
+}
