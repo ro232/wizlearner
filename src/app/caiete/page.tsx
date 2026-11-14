@@ -5,7 +5,6 @@ import { Download, Loader2 } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/toast';
 import { PagesPreview } from '@/components/worksheet/pages-preview';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
@@ -16,14 +15,11 @@ import { track } from '@/lib/analytics';
 import { logDownload, takeProject } from '@/lib/projects';
 import { SaveProjectButton } from '@/components/projects/save-project-button';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
+import { sanitizeWorkbookProject, type WorkbookId } from '@/components/projects/sanitize-project';
+import { DownloadError } from '@/components/worksheet/download-error';
+import { pagini } from '@/components/worksheet/plural';
+import { useDownload } from '@/hooks/use-download';
 
-interface WorkbookProject {
-  book: BookId;
-  level: Difficulty;
-  withWords: boolean;
-  /** only when opened for a child from the account; never saved */
-  name?: string;
-}
 
 /**
  * Ready-made workbooks: the whole alphabet (or the digits), one page per letter, at the
@@ -31,7 +27,7 @@ interface WorkbookProject {
  * Free: the pages of the free letters (A–E, Ă, Â, 0–5); the whole workbook with the full plan.
  */
 
-type BookId = 'upper' | 'lower' | 'paired' | 'cursive' | 'digits' | 'numbers20';
+type BookId = WorkbookId;
 
 const BOOKS: { id: BookId; title: string; text: string; sample: string; italic?: boolean }[] = [
   { id: 'upper', title: 'Alfabetul cu litere mari', text: 'A–Z, cu Ă Â Î Ș Ț. Grădiniță.', sample: 'A B C' },
@@ -81,19 +77,19 @@ export default function WorkbooksPage() {
   const [level, setLevel] = useState<Difficulty>('beginner');
   const [withWords, setWithWords] = useState(true);
   const [name, setName] = useState('');
-  const [busy, setBusy] = useState(false);
+  const { busy: busyWith, error, run } = useDownload();
+  const busy = busyWith !== null;
   const [showPaywall, setShowPaywall] = useState(false);
   const tier = useWorksheetStore((s) => s.tier);
   // a workbook opened from the account (the child's name is never stored)
   useEffect(() => {
-    const p = takeProject<WorkbookProject>('workbook');
+    const p = sanitizeWorkbookProject(takeProject<unknown>('workbook'));
     if (!p) return;
-    if (BOOKS.some((b) => b.id === p.book)) setBook(p.book);
-    if (p.level) setLevel(p.level);
-    setWithWords(p.withWords !== false);
+    setBook(p.book);
+    setLevel(p.level);
+    setWithWords(p.withWords);
     if (p.name) setName(p.name);
   }, []);
-  const toast = useToast();
 
   const config = useMemo(() => bookConfig(book, level, withWords, name), [book, level, withWords, name]);
   const all = useMemo(() => buildWorksheetPages(config, 'full'), [config]);
@@ -101,17 +97,13 @@ export default function WorkbooksPage() {
   const isLetters = book !== 'digits' && book !== 'numbers20';
   const title = BOOKS.find((b) => b.id === book)!.title;
 
-  const download = async () => {
-    setBusy(true);
-    try {
+  const download = () =>
+    run('download', async () => {
       track('workbook_download', { book, level, words: withWords, tier });
       await downloadPagesPdf(mine, `caiet-${book}-${level}.pdf`);
       void logDownload('workbook', `${BOOKS.find((b) => b.id === book)!.title} · ${LEVELS.find((l) => l[0] === level)![1]}`, { book, level, withWords }, mine.length);
-      toast(tier === 'free' ? `Paginile gratuite sunt descărcate: ${mine.length}.` : `Caietul e gata: ${mine.length} pagini.`);
-    } finally {
-      setBusy(false);
-    }
-  };
+      return tier === 'free' ? `Paginile gratuite sunt descărcate: ${mine.length}.` : `Caietul e gata: ${pagini(mine.length)}.`;
+    });
 
   const pill = (on: boolean) => `p-2 rounded-lg border-2 text-center ${on ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`;
 
@@ -170,16 +162,17 @@ export default function WorkbooksPage() {
             </div>
 
             <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
+            <DownloadError message={error} />
             <div className="flex flex-wrap gap-2">
             <Button onClick={download} disabled={busy || !mine.length} className="flex-1 min-w-[13rem] h-12 rounded-2xl text-white font-bold disabled:opacity-50" data-btn="primary">
               {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" aria-hidden /> : <Download className="w-5 h-5 mr-2" aria-hidden />}
-              {tier === 'free' ? `Descarcă paginile gratuite (${mine.length})` : `Descarcă caietul (${all.length} pagini)`}
+              {tier === 'free' ? `Descarcă paginile gratuite (${mine.length})` : `Descarcă caietul (${pagini(all.length)})`}
             </Button>
             <SaveProjectButton kind="workbook" name={`${title} · ${LEVELS.find((l) => l[0] === level)![1]}`} configuration={{ book, level, withWords }} onPaywall={() => setShowPaywall(true)} back="/caiete" />
             </div>
             {tier === 'free' && (
               <p className="text-sm text-slate-600">
-                Gratuit descarci paginile pentru A–E (și Ă, Â) sau cifrele 0–5. Tot caietul, cu toate cele {all.length} pagini, face parte din{' '}
+                Gratuit descarci paginile pentru A–E (și Ă, Â) sau cifrele 0–5. Tot caietul, cu toate cele {pagini(all.length)}, face parte din{' '}
                 <a href="/preturi" className="font-semibold text-blue-700 underline">varianta completă</a>.
               </p>
             )}
@@ -187,7 +180,7 @@ export default function WorkbooksPage() {
         </section>
 
         <section aria-label="Previzualizare" className="lg:sticky lg:top-24 lg:self-start space-y-2">
-          <p className="text-sm font-semibold text-slate-700">{title}: {all.length} pagini</p>
+          <p className="text-sm font-semibold text-slate-700">{title}: {pagini(all.length)}</p>
           <div className="desk rounded-2xl border-2 border-ink p-4 sm:p-8 flex justify-center">
             <PagesPreview pages={all} width={420} pageLabel="Pagina" />
           </div>

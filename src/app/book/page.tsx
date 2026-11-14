@@ -17,6 +17,10 @@ import { SaveProjectButton } from '@/components/projects/save-project-button';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { PATTERN_IDS } from '@/lib/glyphs/patterns';
 import { ALPHABETS } from '@/lib/glyphs/data';
+import { sanitizeBookConfig } from '@/components/projects/sanitize-project';
+import { DownloadError } from '@/components/worksheet/download-error';
+import { litere, pagini } from '@/components/worksheet/plural';
+import { useDownload } from '@/hooks/use-download';
 
 const CURSIVE_TITLE = 'Literele de mână';
 
@@ -36,12 +40,12 @@ export default function BookPage() {
   const tier = useWorksheetStore((s) => s.tier);
   const [config, setConfig] = useState<BookConfig>({ ...DEFAULT_BOOK_CONFIG });
   const [view, setView] = useState<'interior' | 'cover'>('interior');
-  const [busy, setBusy] = useState<'interior' | 'cover' | null>(null);
+  const { busy, error, run: runDownload } = useDownload<'interior' | 'cover'>();
   const [showPaywall, setShowPaywall] = useState(false);
   // a book opened from the account
   useEffect(() => {
-    const saved = takeProject<BookConfig>('book');
-    if (saved) setConfig({ ...DEFAULT_BOOK_CONFIG, ...saved });
+    const saved = takeProject<unknown>('book');
+    if (saved) setConfig(sanitizeBookConfig(saved));
   }, []);
 
   const effective = useMemo<BookConfig>(() => ({ ...config, watermark: tier !== 'full' }), [config, tier]);
@@ -54,18 +58,17 @@ export default function BookPage() {
   const set = <K extends keyof BookConfig>(key: K, value: BookConfig[K]) => setConfig((c) => ({ ...c, [key]: value }));
   const flip = (key: keyof BookConfig) => setConfig((c) => ({ ...c, [key]: !c[key] }));
 
-  const run = async (what: 'interior' | 'cover') => {
-    setBusy(what);
-    try {
-      if (what === 'interior') await downloadBookInterior(effective);
-      else await downloadBookCover(effective, pages.length);
-      if (what === 'interior') void logDownload('book', config.title || 'Caiet KDP', config, pages.length);
-    } catch (err) {
-      console.error('Book PDF failed', err);
-    } finally {
-      setBusy(null);
-    }
-  };
+  // No PDF is made without the embedded font (KDP would reject it): the error is shown instead.
+  const run = (what: 'interior' | 'cover') =>
+    runDownload(what, async () => {
+      if (what === 'cover') {
+        await downloadBookCover(effective, pages.length);
+        return 'Coperta e descărcată.';
+      }
+      await downloadBookInterior(effective);
+      void logDownload('book', config.title || 'Caiet KDP', config, pages.length);
+      return `Interiorul e descărcat: ${pagini(pages.length)}.`;
+    });
 
   const mm = (v: number) => `${v.toFixed(1)} mm`;
   const inch = (v: number) => `${(v / 25.4).toFixed(2)} in`;
@@ -85,7 +88,7 @@ export default function BookPage() {
                   </h1>
                   <p className="text-xs text-slate-500 mt-1">Un caiet de scris complet, gata de încărcat pe Amazon KDP.</p>
                 </div>
-                {tier !== 'full' && <Badge variant="secondary">Cu filigran (planul Complet îl scoate)</Badge>}
+                {tier !== 'full' && <Badge variant="secondary">Cu filigran (varianta completă îl scoate)</Badge>}
               </div>
 
               <div className="space-y-2">
@@ -111,8 +114,8 @@ export default function BookPage() {
                 <label className={labelClass}>Alfabet</label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { value: 'ro' as const, label: 'Română', display: 'A Ă Â Î Ș Ț · 31 litere' },
-                    { value: 'en' as const, label: 'Engleză', display: 'A–Z · 26 litere' },
+                    { value: 'ro' as const, label: 'Română', display: `A Ă Â Î Ș Ț · ${litere(ALPHABETS.ro.length)}` },
+                    { value: 'en' as const, label: 'Engleză', display: `A–Z · ${litere(ALPHABETS.en.length)}` },
                   ].map(({ value, label, display }) => (
                     <button
                       key={value}
@@ -204,9 +207,9 @@ export default function BookPage() {
               </div>
 
               <div className="space-y-1 pt-3 border-t border-slate-200">
-                <Toggle label={`Exerciții grafice (${PATTERN_IDS.length} pagini)`} checked={config.includePrewriting} onChange={() => flip('includePrewriting')} />
-                <Toggle label={`Literele, câte o pagină (${letterCount} pagini)`} checked={config.includeLetters} onChange={() => flip('includeLetters')} />
-                <Toggle label={`Cifre și numere 0–${config.numbersMax} (${config.numbersMax + 1} pagini)`} checked={config.includeNumbers} onChange={() => flip('includeNumbers')} />
+                <Toggle label={`Exerciții grafice (${pagini(PATTERN_IDS.length)})`} checked={config.includePrewriting} onChange={() => flip('includePrewriting')} />
+                <Toggle label={`Literele, câte o pagină (${pagini(letterCount)})`} checked={config.includeLetters} onChange={() => flip('includeLetters')} />
+                <Toggle label={`Cifre și numere 0–${config.numbersMax} (${pagini(config.numbersMax + 1)})`} checked={config.includeNumbers} onChange={() => flip('includeNumbers')} />
                 <Toggle label="Pagini de recapitulare" checked={config.includeReview} onChange={() => flip('includeReview')} />
                 <Toggle label="Diplomă la final" checked={config.includeCertificate} onChange={() => flip('includeCertificate')} />
                 <Toggle label="Bleed (doar dacă desenele ajung la marginea foii)" checked={config.bleed} onChange={() => flip('bleed')} />
@@ -279,6 +282,7 @@ export default function BookPage() {
             <div className="flex justify-end">
               <SaveProjectButton kind="book" name={config.title || 'Caiet KDP'} configuration={config} onPaywall={() => setShowPaywall(true)} back="/book" />
             </div>
+            <DownloadError message={error} />
             <div className="grid sm:grid-cols-2 gap-3">
               <Button
                 onClick={() => run('interior')}
@@ -287,7 +291,7 @@ export default function BookPage() {
                 data-btn="primary"
               >
                 <FileText className="w-5 h-5 mr-2" />
-                {busy === 'interior' ? 'Se pregătește…' : `PDF interior (${pages.length} pagini)`}
+                {busy === 'interior' ? 'Se pregătește…' : `PDF interior (${pagini(pages.length)})`}
               </Button>
               <Button
                 onClick={() => run('cover')}

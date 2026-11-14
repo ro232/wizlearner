@@ -26,15 +26,28 @@ function subpathsToLegs(subpaths: Subpath[], closed?: boolean): PathLeg[] {
   return legs;
 }
 
-/** Standard-14 fonts only know Latin-1: fold the Romanian letters they lack. */
+const LATIN1_FOLD: Record<string, string> = {
+  Ș: 'S', ș: 's', Ț: 'T', ț: 't', Ş: 'S', ş: 's', Ţ: 'T', ţ: 't', Ă: 'A', ă: 'a',
+  '−': '-', '–': '-', '—': '-', '„': '"', '”': '"', '“': '"', '’': "'", '‘': "'", '…': '...',
+  Ő: 'O', ő: 'o', Ű: 'U', ű: 'u',
+};
+
+/**
+ * Standard-14 fonts only know Latin-1: fold what they lack — the Romanian letters, and the
+ * typographic signs the sheets use (the minus of „7 − 2”, quotes, dashes), which would
+ * otherwise print as stray characters. Anything else outside Latin-1 loses its accent.
+ */
 export function foldDiacritics(text: string): string {
-  return text
-    .replace(/Ș/g, 'S')
-    .replace(/ș/g, 's')
-    .replace(/Ț/g, 'T')
-    .replace(/ț/g, 't')
-    .replace(/Ă/g, 'A')
-    .replace(/ă/g, 'a');
+  let out = '';
+  for (const ch of text) {
+    if (ch.charCodeAt(0) <= 0xff && ch.length === 1) out += ch;
+    else if (LATIN1_FOLD[ch] !== undefined) out += LATIN1_FOLD[ch];
+    else {
+      const base = ch.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      out += base && [...base].every((c) => c.charCodeAt(0) <= 0xff && c.length === 1) ? base : '?';
+    }
+  }
+  return out;
 }
 
 /** Draw one page (mm) into a jsPDF document whose unit is mm. The caller adds pages. */

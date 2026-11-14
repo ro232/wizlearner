@@ -19,28 +19,79 @@ export interface GroupOptions {
   letters: string[];
   letterMode: LetterMode;
   difficulty: Difficulty;
-  /** A different level for some children (keyed by name as listed). */
+  /** A different level for some children, by the child's key (see NameList.keys; the name, for a name that appears once). */
   levels?: Record<string, Difficulty>;
+  /** The key of each child, in the order of `names`; without it the name is the key. */
+  keys?: string[];
   /** Weekly pack: after each child's sheet, a "find the letter" page per letter of the week. */
   withFindPages?: boolean;
   /** Print letters (default) or joined handwriting, for the first grade. */
   script?: Script;
 }
 
-/** A pasted list (one per line, or separated by commas) → clean, unique names. */
-export function parseNames(text: string): string[] {
-  const seen = new Set<string>();
-  const out: string[] = [];
-  for (const raw of text.split(/[\n,;]+/)) {
-    const name = normalizeKey(raw).replace(/^\s*\d+[.)]\s*/, '').replace(/\s+/g, ' ').trim();
-    if (!name) continue;
-    const key = name.toLocaleLowerCase('ro');
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(name);
-    if (out.length >= MAX_CHILDREN) break;
+export interface NameList {
+  /** One entry per child, in the order of the list, at most MAX_CHILDREN. Namesakes are kept. */
+  names: string[];
+  /** A stable key per child for settings kept beside the list (the level): the name, and
+   *  "Maria#2" for the second child with the same name. */
+  keys: string[];
+  /** How many names the list has in all (more than `names.length` when it passes the cap). */
+  total: number;
+  /** Names that appear more than once, each with how many times ("Maria", 2). */
+  repeated: { name: string; count: number }[];
+}
+
+/** One cell or line → a name: no row number in front, single spaces, ş → ș. */
+function cleanName(raw: string): string {
+  return normalizeKey(raw)
+    .replace(/^\s*\d+\s*[.):\-–]?\s*/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** A table cell that can be part of a name: it has letters and no digits (not "3", "5 ani", "12.03.2021"). */
+const isNameCell = (cell: string) => /\p{L}/u.test(cell) && !/\d/.test(cell);
+
+/**
+ * A pasted list → the children, one sheet each.
+ *   - one name per line, or names separated by commas or semicolons;
+ *   - a row copied from a spreadsheet (names separated by tabs);
+ *   - a table copied from the class register (several lines with tabs: "1 ⇥ Popescu Ana ⇥ 5 ani"):
+ *     one child per line, made of the cells that look like a name.
+ * Two children with the same name both stay on the list: each gets a sheet.
+ */
+export function parseNameList(text: string): NameList {
+  const lines = text.split(/[\r\n]+/);
+  const table = lines.filter((l) => l.includes('\t') && l.trim()).length > 1;
+  const all: string[] = [];
+  for (const line of lines) {
+    const cells = line.includes('\t') ? line.split('\t').map((c) => c.trim()).filter(isNameCell) : [line];
+    const entries = table && line.includes('\t') ? [cells.join(' ')] : cells;
+    for (const entry of entries) {
+      for (const raw of entry.split(/[,;]+/)) {
+        const name = cleanName(raw);
+        if (name) all.push(name);
+      }
+    }
   }
-  return out;
+
+  const names = all.slice(0, MAX_CHILDREN);
+  const seen = new Map<string, number>();
+  const firstSpelling = new Map<string, string>();
+  const keys = names.map((name) => {
+    const k = name.toLocaleLowerCase('ro');
+    const n = (seen.get(k) ?? 0) + 1;
+    seen.set(k, n);
+    if (n === 1) firstSpelling.set(k, name);
+    return n === 1 ? name : `${name}#${n}`;
+  });
+  const repeated = [...seen.entries()].filter(([, n]) => n > 1).map(([k, count]) => ({ name: firstSpelling.get(k) ?? k, count }));
+  return { names, keys, total: all.length, repeated };
+}
+
+/** The names of a pasted list (see parseNameList). */
+export function parseNames(text: string): string[] {
+  return parseNameList(text).names;
 }
 
 const LEVEL: Record<Difficulty, Partial<WorksheetConfig>> = {
@@ -85,9 +136,9 @@ export function childSheetConfig(name: string, opts: Omit<GroupOptions, 'names'>
 export function buildGroupPages(opts: GroupOptions): { pages: PageOps[]; perChild: number[] } {
   const pages: PageOps[] = [];
   const perChild: number[] = [];
-  for (const name of opts.names) {
+  opts.names.forEach((name, i) => {
     // Built as "full": the group feature itself is what is paid for (checked by the page).
-    const difficulty = opts.levels?.[name] ?? opts.difficulty;
+    const difficulty = opts.levels?.[opts.keys?.[i] ?? name] ?? opts.difficulty;
     const sheet = buildWorksheetPages(childSheetConfig(name, { ...opts, difficulty }), 'full');
     if (opts.withFindPages && opts.letters.length) {
       const games = { ...childSheetConfig(name, { ...opts, difficulty }), category: 'games' as const, selectedItems: opts.letters.slice(0, MAX_LETTERS).map((l) => `find:${l}`) };
@@ -95,6 +146,6 @@ export function buildGroupPages(opts: GroupOptions): { pages: PageOps[]; perChil
     }
     perChild.push(sheet.length);
     pages.push(...sheet);
-  }
+  });
   return { pages, perChild };
 }

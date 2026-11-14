@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { expectNoSidewaysScroll, watchErrors } from './helpers';
 
-const PAGES = ['/', '/generator', '/caiete', '/nume', '/grupa', '/book', '/fise', '/fise/litera-m', '/fise/litera-m-de-mana', '/preturi', '/cont', '/confidentialitate', '/termeni'];
+const PAGES = ['/', '/generator', '/caiete', '/nume', '/grupa', '/book', '/fise', '/fise/litera-m', '/fise/litera-m-de-mana', '/preturi', '/cont', '/auth/login', '/confidentialitate', '/termeni'];
 
 for (const path of PAGES) {
   test(`${path} opens cleanly`, async ({ page }) => {

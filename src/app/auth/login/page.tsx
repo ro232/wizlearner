@@ -1,17 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { authErrorMessage } from '../auth-errors';
 import { safeNextPath } from '@/lib/safe-redirect';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import {
   Mail,
   Lock,
   Chrome,
   Sparkles,
+  MailCheck,
   ArrowRight,
   Loader2,
 } from 'lucide-react';
@@ -27,6 +29,16 @@ export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [useMagicLink, setUseMagicLink] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+  // shown in the page, in place of the browser's blocking alert()
+  const [notice, setNotice] = useState('');
+  const [signUpSent, setSignUpSent] = useState(false);
+
+  // Why this page opened: a sign-in link that did not work (auth/callback), or „Salvează” pressed without an account.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('error') === 'auth') setError('Linkul de autentificare nu mai e valabil sau a fost deja folosit. Intră din nou sau cere alt link.');
+    if (params.get('reason') === 'save') setNotice('Intră în cont ca să salvezi. Ce ai lucrat rămâne în acest browser și te așteaptă când te întorci.');
+  }, []);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -44,8 +56,15 @@ export default function LoginPage() {
     setIsLoading(true);
     setError('');
 
+    setSignUpSent(false);
+
     if (!email || !password) {
       setError('Completează emailul și parola.');
+      setIsLoading(false);
+      return;
+    }
+    if (isSignUp && password.length < 8) {
+      setError('Alege o parolă de cel puțin 8 caractere.');
       setIsLoading(false);
       return;
     }
@@ -56,17 +75,23 @@ export default function LoginPage() {
         : await signInWithEmail(email, password);
 
       if (result?.error) {
-        setError('Emailul sau parola nu sunt corecte.');
-      } else {
-        if (isSignUp) {
-          setError('');
-          alert('Ți-am trimis un email de confirmare. Deschide linkul din el.');
-        } else {
+        setError(authErrorMessage(result.error, isSignUp ? 'signup' : 'signin'));
+      } else if (isSignUp) {
+        // For an address that already has an account the server answers "ok" with no identities.
+        const identities = result?.data?.user?.identities;
+        if (Array.isArray(identities) && identities.length === 0) {
+          setError(authErrorMessage({ code: 'user_already_exists' }, 'signup'));
+        } else if (result?.data?.session) {
           router.push(safeNextPath(new URLSearchParams(window.location.search).get('next')));
+        } else {
+          setNotice('');
+          setSignUpSent(true);
         }
+      } else {
+        router.push(safeNextPath(new URLSearchParams(window.location.search).get('next')));
       }
-    } catch {
-      setError('A apărut o eroare. Încearcă din nou.');
+    } catch (err) {
+      setError(authErrorMessage(err, isSignUp ? 'signup' : 'signin'));
     } finally {
       setIsLoading(false);
     }
@@ -86,12 +111,12 @@ export default function LoginPage() {
     try {
       const result = await signInWithMagicLink(email);
       if (result?.error) {
-        setError('Nu am putut trimite linkul. Încearcă din nou.');
+        setError(authErrorMessage(result.error, 'link'));
       } else {
         setMagicLinkSent(true);
       }
-    } catch {
-      setError('A apărut o eroare. Încearcă din nou.');
+    } catch (err) {
+      setError(authErrorMessage(err, 'link'));
     } finally {
       setIsLoading(false);
     }
@@ -99,10 +124,10 @@ export default function LoginPage() {
 
   if (magicLinkSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center ruled p-4">
+      <main className="min-h-screen flex items-center justify-center ruled p-4">
         <Card className="w-full max-w-md border-blue-200 shadow-xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-blue-600">Verifică emailul</CardTitle>
+            <h1 className="text-2xl font-semibold leading-none tracking-tight text-blue-600">Verifică emailul</h1>
             <CardDescription className="mt-2">
               Ți-am trimis un link de autentificare la{' '}
               <span className="font-semibold text-slate-900">{email}</span>
@@ -124,12 +149,12 @@ export default function LoginPage() {
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center ruled p-4">
+    <main className="min-h-screen flex items-center justify-center ruled p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
@@ -139,7 +164,7 @@ export default function LoginPage() {
               WorksheetWiz
             </h1>
           </div>
-          <p className="text-slate-600">Intră în contul tău</p>
+          <p className="text-slate-600">{isSignUp && !useMagicLink ? 'Creează-ți un cont' : 'Intră în contul tău'}</p>
         </div>
 
         {/* Main Card */}
@@ -147,7 +172,7 @@ export default function LoginPage() {
           
           <div className="relative">
             <CardHeader className="pb-3">
-              <CardTitle className="text-xl">Autentificare</CardTitle>
+              <h2 className="text-xl font-semibold leading-none tracking-tight">{isSignUp && !useMagicLink ? 'Cont nou' : 'Autentificare'}</h2>
               <CardDescription>
                 {useMagicLink
                   ? 'Primești pe email un link cu care intri direct.'
@@ -157,9 +182,22 @@ export default function LoginPage() {
 
             <CardContent className="space-y-4">
               {/* Error Message */}
+              {notice && !error && !signUpSent && (
+                <div role="status" className="p-3 bg-amber-50 border border-amber-300 rounded-lg text-sm text-amber-900">
+                  {notice}
+                </div>
+              )}
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                <div role="alert" className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
                   {error}
+                </div>
+              )}
+              {signUpSent && !error && (
+                <div role="status" className="p-3 bg-green-50 border border-green-300 rounded-lg text-sm text-green-900 flex items-start gap-2">
+                  <MailCheck className="w-5 h-5 shrink-0 mt-0.5" aria-hidden />
+                  <span>
+                    Ți-am trimis un email de confirmare la <b className="break-all">{email}</b>. Deschide linkul din el ca să-ți activezi contul; dacă nu-l găsești, uită-te și în Spam.
+                  </span>
                 </div>
               )}
 
@@ -193,11 +231,13 @@ export default function LoginPage() {
               {!useMagicLink && (
                 <form onSubmit={handleEmailAuth} className="space-y-3">
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">Email</label>
+                    <label htmlFor="login-email" className="block text-sm font-medium text-slate-700">Email</label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" aria-hidden />
                       <input
+                        id="login-email"
                         type="email"
+                        autoComplete="email"
                         placeholder="nume@exemplu.ro"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -208,12 +248,14 @@ export default function LoginPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">Parolă</label>
+                    <label htmlFor="login-password" className="block text-sm font-medium text-slate-700">Parolă</label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" aria-hidden />
                       <input
+                        id="login-password"
                         type="password"
-                        placeholder="••••••••"
+                        autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                        placeholder={isSignUp ? 'cel puțin 8 caractere' : '••••••••'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
@@ -244,6 +286,7 @@ export default function LoginPage() {
                       type="button"
                       onClick={() => {
                         setIsSignUp(!isSignUp);
+                        setSignUpSent(false);
                         setError('');
                       }}
                       className="text-blue-600 hover:text-blue-700 font-semibold transition"
@@ -258,11 +301,13 @@ export default function LoginPage() {
               {useMagicLink && (
                 <form onSubmit={handleMagicLink} className="space-y-3">
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">Email</label>
+                    <label htmlFor="link-email" className="block text-sm font-medium text-slate-700">Email</label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" aria-hidden />
                       <input
+                        id="link-email"
                         type="email"
+                        autoComplete="email"
                         placeholder="nume@exemplu.ro"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -304,7 +349,7 @@ export default function LoginPage() {
             {/* Footer */}
             <div className="border-t border-slate-200 px-6 py-4 bg-slate-50/50">
               <Button
-                onClick={() => router.push('/generator')}
+                onClick={() => router.push(safeNextPath(new URLSearchParams(window.location.search).get('next')))}
                 variant="ghost"
                 className="w-full text-slate-700 hover:text-slate-900 hover:bg-slate-100"
               >
@@ -315,14 +360,11 @@ export default function LoginPage() {
           </div>
         </Card>
 
-        {/* Security Badge */}
-        <div className="flex items-center justify-center gap-2">
-          <Badge variant="outline" className="bg-white border-blue-200">
-            <Sparkles className="w-3 h-3 mr-1 text-blue-600" />
-            Secure & Fast
-          </Badge>
-        </div>
+        <p className="text-center text-xs text-slate-600">
+          Conectare securizată.{' '}
+          <Link href="/confidentialitate" className="underline font-semibold">Cum avem grijă de datele tale</Link>
+        </p>
       </div>
-    </div>
+    </main>
   );
 }

@@ -33,6 +33,7 @@ export function PagesPreview({ pages, width = 420, className, pageLabel = 'Pagin
   };
   const safeIndex = Math.max(0, Math.min(index, pages.length - 1));
   const page = pages[safeIndex];
+  const ratio = page && page.height ? (page.width / page.height).toFixed(4) : '0.7071';
 
   useEffect(() => {
     if (index !== safeIndex) setIndex(safeIndex);
@@ -61,9 +62,10 @@ export function PagesPreview({ pages, width = 420, className, pageLabel = 'Pagin
   }, [page, width]);
 
   return (
-    <div className={`relative group w-full ${className || ''}`} style={{ maxWidth: width }}>
+    // A page that sets --sheet-fit (the height left for the sheet) gets a preview that fits it.
+    <div className={`relative group w-full mx-auto ${className || ''}`} style={{ maxWidth: `min(${width}px, calc(var(--sheet-fit, 100000px) * ${ratio}))` }}>
 
-      <div key={`${safeIndex}-${pages.length}`} className="sheet-in relative rounded-[3px] overflow-hidden bg-white w-full shadow-xl" style={{ maxWidth: width }}>
+      <div key={`${safeIndex}-${pages.length}`} data-sheet className="sheet-in relative rounded-[3px] overflow-hidden bg-white w-full shadow-xl">
         <canvas ref={canvasRef} className="block w-full h-auto" style={{ background: '#fff' }} />
         {emptyMessage && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
