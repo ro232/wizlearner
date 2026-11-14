@@ -2,14 +2,22 @@ import { NextResponse } from 'next/server';
 import { createServerSupabase } from '@/lib/supabase/server';
 import { createAdminSupabase } from '@/lib/supabase/admin';
 import { stripe, siteUrl } from '@/lib/stripe';
-import { billingConfigured, priceIdFor } from '@/lib/billing/plans';
+import { billingConfigured, priceIdFor, warnIfBillingHalfConfigured } from '@/lib/billing/plans';
 import { subscriptionGivesAccess } from '@/lib/billing/tier';
+import { subscriptionIsOurs } from '@/lib/billing/ownership';
 
 export const runtime = 'nodejs';
 
 /** Start a Stripe Checkout for a subscription. The tier is only granted later, by the webhook. */
+//
+// Refused (503) until the whole chain is configured, webhook included: taking a payment that the
+// webhook cannot turn into access would leave a paying customer on the free tier. The browser gets
+// one neutral message; which variable is missing goes only to the server log.
 export async function POST(request: Request) {
-  if (!billingConfigured()) return NextResponse.json({ error: 'Plata online nu este încă disponibilă.' }, { status: 503 });
+  if (!billingConfigured()) {
+    warnIfBillingHalfConfigured('checkout refuzat');
+    return NextResponse.json({ error: 'Plata online nu este încă disponibilă.' }, { status: 503 });
+  }
 
   const supabase = createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
@@ -29,7 +37,7 @@ export async function POST(request: Request) {
   if (customer) {
     // The webhook may not have arrived yet: ask Stripe directly before taking a second payment.
     const existing = await stripe().subscriptions.list({ customer, status: 'all', limit: 20 });
-    if (existing.data.some((s) => subscriptionGivesAccess(s.status))) {
+    if (existing.data.some((s) => subscriptionIsOurs(s) && subscriptionGivesAccess(s.status))) {
       return NextResponse.json({ error: 'Ai deja un abonament activ. Îl poți schimba din cont.' }, { status: 409 });
     }
   }

@@ -1,142 +1,56 @@
-# Supabase Integration Setup Guide
+# Supabase: configurare
 
-All 10 required integration files have been created for WorksheetWiz. Here's what was set up:
+Listă de urmat în ordine. Variabilele se pun în Vercel (și în `.env.local` pentru lucru local).
 
-## Files Created
+## 1. Chei (Project Settings → API)
 
-### 1. Environment Configuration
-- **`.env.local`** - Supabase credentials template
-  - Add your `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- [ ] `NEXT_PUBLIC_SUPABASE_URL` și `NEXT_PUBLIC_SUPABASE_ANON_KEY`: ajung în browser, e normal.
+- [ ] `SUPABASE_SERVICE_ROLE_KEY`: **doar pe server**, niciodată într-o variabilă `NEXT_PUBLIC_`. O folosește numai webhook-ul Stripe, ca să scrie abonamentul și facturile. Fără ea plata online rămâne oprită.
 
-### 2. Supabase Client Libraries
-- **`src/lib/supabase/client.ts`** - Browser-side Supabase client
-  - Use in Client Components with `createClient()`
-  
-- **`src/lib/supabase/server.ts`** - Server-side Supabase client
-  - Use in Server Components with `createServerSupabase()`
-  
-- **`src/lib/supabase/middleware.ts`** - Middleware for auth session management
-  - Handles cookie updates and auth state in middleware
-  
-- **`src/middleware.ts`** - Root middleware configuration
-  - Runs on every request to refresh auth session
+## 2. Baza de date (SQL Editor)
 
-### 3. Database Schema
-- **`src/lib/supabase/schema.sql`** - Complete database schema
-  - Tables: users_profile, saved_worksheets, access_codes, children_progress, community_templates, template_ratings
-  - Row Level Security (RLS) policies configured
-  - Auto-trigger for user profile creation on signup
-  - **Execute in Supabase SQL Editor to set up your database**
+- [ ] Bază nouă: rulează întâi `src/lib/supabase/schema.sql`.
+- [ ] Apoi toate cele 5 fișiere din `supabase/migrations/`, în ordinea numelui (pot fi rulate de mai multe ori):
 
-### 4. Authentication Hooks
-- **`src/hooks/use-auth.ts`** - Main auth hook with:
-  - Google OAuth sign-in
-  - Email/password authentication
-  - Magic link (passwordless) sign-in
-  - Access code redemption (server-side, via `redeem_access_code`)
-  - Profile management
-  
-- **`src/hooks/use-worksheets.ts`** - Worksheet management hook with:
-  - Fetch user's saved worksheets
-  - Save new worksheets
-  - Update existing worksheets
-  - Delete worksheets
+| Fișier | Ce face |
+| --- | --- |
+| `20261023000000_securizare_acces.sql` | nivelul contului și codurile de acces nu mai pot fi scrise sau citite din browser; `redeem_access_code`, `generate_access_codes` |
+| `20261024000000_abonamente.sql` | coloanele de abonament Stripe pe `users_profile`, tabelul `stripe_events` |
+| `20261025000000_intarire.sql` | limită de 10 coduri greșite pe oră, drepturi de scriere restrânse |
+| `20261027000000_facturi.sql` | tabelul `fiscal_invoices` (facturile Oblio; fiecare își vede doar facturile lui) |
+| `20261102000000_dashboard.sql` | proiecte de toate felurile, dosare, istoricul descărcărilor, „Copiii mei” |
 
-### 5. OAuth Callback
-- **`src/app/auth/callback/route.ts`** - Handles OAuth redirects
-  - Exchanges auth code for session
-  - Redirects to `/generator` on success
+- [ ] Bază existentă: rulează doar migrările care lipsesc.
+- [ ] Coduri de acces: `SELECT * FROM generate_access_codes('starter', 10);` (sau `'full'`).
 
-### 6. Login Page
-- **`src/app/auth/login/page.tsx`** - Premium login UI with:
-  - Google OAuth button (primary)
-  - Email/password form
-  - Magic link (passwordless) option
-  - Continue without account option
-  - Loading and error states
-  - Responsive design with gradients and glass-card styling
-  - Lucide React icons
+## 3. Autentificare (Authentication)
 
-## Quick Start
+Aplicația folosește: Google, email + parolă cu confirmare pe email, link magic.
 
-### 1. Install Dependencies
-```bash
-npm install @supabase/supabase-js @supabase/ssr lucide-react
+- [ ] **SMTP propriu (obligatoriu în producție):** Authentication → Emails → SMTP Settings. Serviciul de email implicit al Supabase trimite doar către membrii echipei proiectului și cel mult câteva mesaje pe oră, deci fără SMTP propriu un părinte care se înregistrează cu email nu primește nimic. Alege un furnizor (Resend, Brevo, Postmark), setează SPF, DKIM și DMARC pe domeniul expeditor și ridică limita de trimitere.
+- [ ] **Șabloanele de email** (confirmare, link magic) traduse în română.
+- [ ] **URL Configuration → Site URL:** `https://DOMENIU` (adresa reală, aceeași ca în `NEXT_PUBLIC_SITE_URL`).
+- [ ] **Redirect URLs:** `https://DOMENIU/auth/callback` și, pentru lucru local, `http://localhost:3000/auth/callback`. **Fără wildcard pe domeniu** (niciodată `https://*.vercel.app/**`): cu un asemenea tipar, cineva poate porni un link de autentificare care se întoarce pe un site al lui și poate prelua contul.
+- [ ] **Google** (Providers → Google): datele OAuth din Google Cloud; adresa de redirect din Google rămâne cea a Supabase.
+- [ ] **Test:** deschide `/cont` nelogat, intră cu link magic și apoi cu email + parolă pe un cont nou. După click pe linkul din email trebuie să ajungi logat pe `/cont`. Dacă ajungi pe prima pagină, adresa de întoarcere nu se potrivește cu lista de la Redirect URLs.
+
+## 4. Verificare (doar citire)
+
+```sql
+-- RLS pornit pe toate tabelele
+select relname, relrowsecurity from pg_class where relnamespace = 'public'::regnamespace and relkind = 'r' order by 1;
+-- din browser se pot modifica doar display_name, children, preferences, updated_at
+select column_name from information_schema.column_privileges
+ where table_name = 'users_profile' and grantee = 'authenticated' and privilege_type = 'UPDATE';
 ```
 
-### 2. Set Up Environment
-Edit `.env.local` with your Supabase credentials:
-```
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
-```
-
-### 3. Initialize Database
-Copy the contents of `src/lib/supabase/schema.sql` and run it in your Supabase SQL Editor,
-then run every file in `supabase/migrations/` in name order (they are safe to re-run).
-**Existing database:** run only the migrations — `20261023000000_securizare_acces.sql` closes
-the access-code and tier holes. Create access codes from the SQL Editor with
-`SELECT * FROM generate_access_codes('starter', 10);`
-```
-https://app.supabase.com/project/[YOUR_PROJECT_ID]/sql/new
-```
-
-### 4. Configure OAuth (Google)
-In Supabase Dashboard:
-1. Go to Authentication → Providers
-2. Enable Google provider
-3. Add Google OAuth credentials
-4. Set redirect URL to: `https://your-domain.com/auth/callback`
-
-### 5. Start Using
-```typescript
-// In Client Components
-import { useAuth } from '@/hooks/use-auth';
-
-const { user, profile, signInWithGoogle, signOut } = useAuth();
-
-// In Server Components
-import { createServerSupabase } from '@/lib/supabase/server';
-
-const supabase = createServerSupabase();
-const { data } = await supabase.from('saved_worksheets').select('*');
-```
-
-## Key Features
-
-- **Type-safe**: Full TypeScript support
-- **Server & Client**: Separate clients for optimal performance
-- **Row Level Security**: Database policies for user privacy
-- **Access Codes**: Support for premium tier redemption
-- **Progress Tracking**: Children progress management
-- **Community Templates**: Shared templates with ratings
-- **OAuth Ready**: Google authentication pre-configured
-
-## File Paths Reference
+## Unde e codul
 
 ```
-wizlearner/
-├── .env.local                              # Environment variables
-├── src/
-│   ├── lib/supabase/
-│   │   ├── client.ts                       # Browser client
-│   │   ├── server.ts                       # Server client
-│   │   ├── middleware.ts                   # Auth middleware logic
-│   │   └── schema.sql                      # Database schema
-│   ├── hooks/
-│   │   ├── use-auth.ts                     # Auth hook
-│   │   └── use-worksheets.ts               # Worksheets hook
-│   ├── app/auth/
-│   │   ├── callback/route.ts               # OAuth callback
-│   │   └── login/page.tsx                  # Login page UI
-│   └── middleware.ts                       # Root middleware
+src/lib/supabase/client.ts      client pentru browser
+src/lib/supabase/server.ts      client pentru server (cu sesiunea utilizatorului)
+src/lib/supabase/admin.ts       client cu service-role, doar pentru webhook-ul Stripe
+src/lib/supabase/middleware.ts  reîmprospătează sesiunea la fiecare cerere
+src/app/auth/callback/route.ts  întoarcerea de la Google / linkul din email (respectă ?next=)
+src/hooks/use-auth.ts           autentificare, profil, activarea codului de acces
 ```
-
-## Next Steps
-
-1. Deploy your Supabase project
-2. Add credentials to `.env.local`
-3. Run schema.sql in Supabase SQL Editor
-4. Configure OAuth providers
-5. Test login flow at `/auth/login`
-6. Integrate hooks into your app components
