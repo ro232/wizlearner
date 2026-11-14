@@ -1,5 +1,4 @@
-'use client';
-
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, Check, UserRound, BookOpen, Users } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
@@ -8,6 +7,9 @@ import { WorksheetPreview } from '@/components/worksheet/worksheet-preview';
 import { GuidedStart } from '@/components/home/guided-start';
 import { SheetGallery } from '@/components/home/sheet-gallery';
 import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
+import { routeMetadata } from '@/lib/seo/metadata';
+
+export const metadata: Metadata = routeMetadata('/');
 
 // A real sheet, drawn by the same engine as the downloads: what you see is what you print.
 const SAMPLE: WorksheetConfig = {
