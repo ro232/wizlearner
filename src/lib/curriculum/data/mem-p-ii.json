@@ -1,0 +1,752 @@
+{
+ "id": "mem-p-ii",
+ "subject": "Matematică și explorarea mediului",
+ "levels": [
+  "CP",
+  "I",
+  "II"
+ ],
+ "order": "Anexa nr. 2 la ordinul ministrului educației naționale nr. 3418/19.03.2013",
+ "inForce2026": {
+  "status": "da",
+  "evidence": "Nu s-a găsit nicio programă nouă aprobată pentru clasa pregătitoare–a II-a. Edupedu (4.09.2026) despre noutățile anului școlar 2026-2027: programele noi se aplică doar la clasa a IX-a (introduse progresiv); pentru clasele I-VIII intră în vigoare doar standardele naționale de evaluare, nu programe noi. ROCNEE (centrul național de curriculum) găzduiește în folderul programelor în vigoare pentru învățământul primar (datat 05112024) fișiere OMEN_3418_2013_CP_I_II (pagina nu a putut fi citită automat – robots). Edituri (Litera, Paralela 45, Art) publică planificări 2023-2024 pe baza acestei programe. Concluzie: în vigoare și în 2026-2027, cu rezerva că pagina ROCNEE nu a putut fi verificată direct.",
+  "urls": [
+   "https://www.edupedu.ro/cand-incepe-scoala-in-septembrie-2026-si-care-sunt-noutatile-pentru-elevi-profesori-si-parinti-calendarul-anului-scolar-2026-2027-noile-programe-pentru-clasa-a-ix-a-manualele-evaluarea-elevilor/",
+   "https://rocnee.eu/index.php/en/dcee-oriz/curriculum-oriz/programe-scolare-front/planuri-cadru-de-invatamant-si-programe-scolare-invatamant-primar",
+   "https://edu.litera.ro/manuale/2023_MEM1/2023_548_MEM1_planificare.pdf"
+  ]
+ },
+ "sources": [
+  {
+   "title": "Programa școlară Matematică și explorarea mediului CP, I, II (OMEN 3418/2013) – copie ISJ Mureș",
+   "url": "https://www.edums.ro/invprimar/25_Matematica_explorarea_mediului_CP_II_OMEN.pdf",
+   "role": "primary"
+  },
+  {
+   "title": "Aceeași programă (Anexa nr. 2, OMEN 3418/19.03.2013) – copie Edupedu",
+   "url": "https://cdn.edupedu.ro/wp-content/uploads/2018/09/Matematica_-Programa-scolara-Matematica-si-explorarea-mediului_Clasa-pregatitoare.pdf",
+   "role": "check"
+  }
+ ],
+ "normalisation": "ș/ț/Ș/Ț (sedilă) → ș/ț/Ș/Ț (virgulă dedesubt); ghilimelele „…” din document păstrate; nicio altă modificare",
+ "verification": {
+  "secondPass": "Două copii independente ale aceluiași PDF oficial (ISJ Mureș edums.ro și cdn.edupedu.ro), citite separat cu WebFetch; comparate item cu item: antet/ordin, 6 competențe generale, toate competențele specifice pe clase, întregul tabel de conținuturi (domenii, subtitluri, celule goale). Planificările editurilor nu au fost necesare ca a treia sursă.",
+  "differences": [
+   "Clasa I, 2.1: copia Edupedu redă «...oblic , interior, exterior,» (spațiu înainte de virgulă și virgulă finală, la o întrerupere de pagină); copia edums: «...oblic, interior, exterior». Rezolvat: varianta edums (fără virgulă finală) – de verificat vizual dacă exactitatea punctuației contează.",
+   "Subrubricile «de la 0 la 10» etc.: Edupedu le redă cu liniuță «- de la 0 la 10», edums fără. Păstrat cu liniuță (marcaj de listă din document).",
+   "Numele domeniului fizic: prima trecere l-a redat «Științe fizice», a doua «Științele fizicii»; verificare țintită pe ambele copii: tabelul are «Științele fizicii», nota de prezentare «Științe fizice». Folosit «Științele fizicii».",
+   "«Unde și vibrații»: prima trecere l-a prezentat ca subdomeniu separat, a doua în «Forme și transfer de energie»; verificare țintită pe ambele copii: este rând în interiorul celulei «Forme și transfer de energie». Rezolvat ca atare.",
+   "«Elemente intuitive privind:» – lipsea în prima trecere; confirmat în ambele copii ca text în celulele domeniului «Științele Pământului».",
+   "Spațiere «Figuri plane/ 2D» (CP) vs «Figuri plane / 2D» (I, II) – așa în ambele treceri; păstrat.",
+   "Altfel, niciun cuvânt diferit între cele două treceri la competențe generale, specifice și conținuturi."
+  ]
+ },
+ "generalCompetences": [
+  {
+   "code": "1",
+   "text": "Utilizarea numerelor în calcule elementare"
+  },
+  {
+   "code": "2",
+   "text": "Evidențierea caracteristicilor geometrice ale unor obiecte localizate în spațiul înconjurător"
+  },
+  {
+   "code": "3",
+   "text": "Identificarea unor fenomene/relații/ regularități/structuri din mediul apropiat"
+  },
+  {
+   "code": "4",
+   "text": "Generarea unor explicații simple prin folosirea unor elemente de logică"
+  },
+  {
+   "code": "5",
+   "text": "Rezolvarea de probleme pornind de la sortarea și reprezentarea unor date"
+  },
+  {
+   "code": "6",
+   "text": "Utilizarea unor etaloane convenționale pentru măsurări și estimări"
+  }
+ ],
+ "specificCompetences": [
+  {
+   "level": "CP",
+   "code": "1.1",
+   "text": "Recunoașterea și scrierea numerelor în concentrul 0-31"
+  },
+  {
+   "level": "CP",
+   "code": "1.2",
+   "text": "Compararea numerelor în concentrul 0-31"
+  },
+  {
+   "level": "CP",
+   "code": "1.3",
+   "text": "Ordonarea numerelor în concentrul 0-31, folosind poziționarea pe axa numerelor"
+  },
+  {
+   "level": "CP",
+   "code": "1.4",
+   "text": "Efectuarea de adunări și scăderi în concentrul 0-31, prin adăugarea /extragerea a 1-5 elemente dintr-o mulțime dată"
+  },
+  {
+   "level": "CP",
+   "code": "1.5",
+   "text": "Efectuarea de adunări repetate/ scăderi repetate prin numărare și reprezentări obiectuale în concentrul 0-31"
+  },
+  {
+   "level": "CP",
+   "code": "1.6",
+   "text": "Utilizarea unor denumiri și simboluri matematice (sumă, total, diferență, =, +. -) în rezolvarea și/sau compunerea de probleme"
+  },
+  {
+   "level": "CP",
+   "code": "2.1",
+   "text": "Orientarea și mișcarea în spațiu în raport cu repere/direcții precizate, folosind sintagme de tipul: în, pe, deasupra, dedesubt, lângă, în fața, în spatele, sus, jos, stânga, dreapta, orizontal, vertical, oblic"
+  },
+  {
+   "level": "CP",
+   "code": "2.2",
+   "text": "Identificarea unor forme geometrice plane (pătrat, triunghi, dreptunghi, cerc) și a unor corpuri geometrice (cub, cuboid, sferă) în obiecte manipulate de copii și în mediul înconjurător"
+  },
+  {
+   "level": "CP",
+   "code": "3.1",
+   "text": "Descrierea unor fenomene/procese/ structuri repetitive simple din mediul apropiat, în scopul identificării unor regularități"
+  },
+  {
+   "level": "CP",
+   "code": "3.2",
+   "text": "Manifestarea grijii pentru comportarea corectă în relație cu mediul familiar"
+  },
+  {
+   "level": "CP",
+   "code": "4.1",
+   "text": "Formularea unor observații asupra mediului apropiat folosind limbajul comun, reprezentări prin desene și operatorii logici „și”, „nu”"
+  },
+  {
+   "level": "CP",
+   "code": "4.2",
+   "text": "Identificarea relațiilor de tipul „dacă... atunci…” între două evenimente succesive"
+  },
+  {
+   "level": "CP",
+   "code": "5.1",
+   "text": "Sortarea/clasificarea unor obiecte/ materiale etc., pe baza unui criteriu dat"
+  },
+  {
+   "level": "CP",
+   "code": "5.2",
+   "text": "Rezolvarea de probleme în care intervin operații de adunare sau scădere cu 1-5 unități în concentrul 0-31, cu ajutorul obiectelor"
+  },
+  {
+   "level": "CP",
+   "code": "6.1",
+   "text": "Utilizarea unor măsuri neconvenționale pentru determinarea și compararea lungimilor"
+  },
+  {
+   "level": "CP",
+   "code": "6.2",
+   "text": "Utilizarea unor unități de măsură pentru determinarea/ estimarea duratelor unor evenimente familiare"
+  },
+  {
+   "level": "CP",
+   "code": "6.3",
+   "text": "Realizarea unor schimburi echivalente valoric folosind reprezentări neconvenționale în probleme-joc simple de tip venituri-cheltuieli, cu numere din concentrul 0-31"
+  },
+  {
+   "level": "I",
+   "code": "1.1",
+   "text": "Scrierea, citirea și formarea numerelor până la 100"
+  },
+  {
+   "level": "I",
+   "code": "1.2",
+   "text": "Compararea numerelor în concentrul 0-100"
+  },
+  {
+   "level": "I",
+   "code": "1.3",
+   "text": "Ordonarea numerelor în concentrul 0 -100, folosind poziționarea pe axa numerelor, estimări, aproximări"
+  },
+  {
+   "level": "I",
+   "code": "1.4",
+   "text": "Efectuarea de adunări și scăderi, mental și în scris, în concentrul 0-100, recurgând frecvent la numărare"
+  },
+  {
+   "level": "I",
+   "code": "1.5",
+   "text": "Efectuarea de adunări repetate/ scăderi repetate prin numărare și reprezentări obiectuale în concentrul 0-100"
+  },
+  {
+   "level": "I",
+   "code": "1.6",
+   "text": "Utilizarea unor denumiri și simboluri matematice (termen, sumă, total, diferență, <, >, =, +. -) în rezolvarea și/sau compunerea de probleme"
+  },
+  {
+   "level": "I",
+   "code": "2.1",
+   "text": "Orientarea și mișcarea în spațiu în raport cu repere/direcții date folosind sintagme de tipul: în, pe, deasupra, dedesubt, lângă, în față, în spate, stânga, dreapta, orizontal, vertical, oblic, interior, exterior"
+  },
+  {
+   "level": "I",
+   "code": "2.2",
+   "text": "Recunoașterea unor figuri și corpuri geometrice în mediul apropiat și în reprezentări plane accesibile (incluzând desene, reproduceri de artă, reprezentări schematice)"
+  },
+  {
+   "level": "I",
+   "code": "3.1",
+   "text": "Rezolvarea de probleme prin observarea unor regularități din mediul apropiat"
+  },
+  {
+   "level": "I",
+   "code": "3.2",
+   "text": "Manifestarea grijii pentru comportarea corectă în relație cu mediul natural"
+  },
+  {
+   "level": "I",
+   "code": "4.1",
+   "text": "Formularea rezultatelor unor observații, folosind câțiva termeni științifici, reprezentări prin desene și operatorii logici „și”, „sau”, „nu”"
+  },
+  {
+   "level": "I",
+   "code": "4.2",
+   "text": "Identificarea unor consecințe ale unor acțiuni, fenomene, procese simple"
+  },
+  {
+   "level": "I",
+   "code": "5.1",
+   "text": "Sortarea și clasificarea unor date din mediul apropiat pe baza a două criterii"
+  },
+  {
+   "level": "I",
+   "code": "5.2",
+   "text": "Rezolvarea de probleme simple în care intervin operații de adunare sau scădere în concentrul 0-100, cu sprijin în obiecte, imagini sau reprezentări schematice"
+  },
+  {
+   "level": "I",
+   "code": "6.1",
+   "text": "Utilizarea unor măsuri neconvenționale pentru determinarea și compararea capacităților și a lungimilor"
+  },
+  {
+   "level": "I",
+   "code": "6.2",
+   "text": "Utilizarea unor unități de măsură pentru determinarea și compararea duratelor unor activități cotidiene"
+  },
+  {
+   "level": "I",
+   "code": "6.3",
+   "text": "Realizarea unor schimburi echivalente valoric folosind reprezentări convenționale standard și nonstandard în probleme-joc simple de tip venituri-cheltuieli, cu numere din concentrul 0-100"
+  },
+  {
+   "level": "I",
+   "code": "6.4",
+   "text": "Identificarea unităților de măsură uzuale pentru lungime, capacitate (centimetrul, litrul) și a unor instrumente adecvate"
+  },
+  {
+   "level": "II",
+   "code": "1.1",
+   "text": "Scrierea, citirea și formarea numerelor până la 1000"
+  },
+  {
+   "level": "II",
+   "code": "1.2",
+   "text": "Compararea numerelor în concentrul 0-1000"
+  },
+  {
+   "level": "II",
+   "code": "1.3",
+   "text": "Ordonarea numerelor în concentrul 0-1000, folosind poziționarea pe axa numerelor, estimări, aproximări"
+  },
+  {
+   "level": "II",
+   "code": "1.4",
+   "text": "Efectuarea de adunări și scăderi, mental și în scris, în concentrul 0-1000, recurgând la numărare și/sau grupare ori de câte ori este necesar"
+  },
+  {
+   "level": "II",
+   "code": "1.5",
+   "text": "Efectuarea de înmulțiri și împărțiri în concentrul 0-1000 prin adunări/scăderi repetate"
+  },
+  {
+   "level": "II",
+   "code": "1.6",
+   "text": "Utilizarea unor denumiri și simboluri matematice (sumă, total, termenii unei sume, diferență, rest, descăzut, scăzător, produs, factorii unui produs, cât, deîmpărțit, împărțitor, <, >, =, +, -, ·, :) în rezolvarea și/sau compunerea de probleme"
+  },
+  {
+   "level": "II",
+   "code": "2.1",
+   "text": "Localizarea unor obiecte prin stabilirea unor coordonate în raport cu un sistem de referință dat, folosind sintagmele învățate"
+  },
+  {
+   "level": "II",
+   "code": "2.2",
+   "text": "Evidențierea unor caracteristici simple specifice formelor geometrice plane și corpurilor geometrice identificate în diferite contexte"
+  },
+  {
+   "level": "II",
+   "code": "3.1",
+   "text": "Rezolvarea de probleme în cadrul unor investigații, prin observarea și generalizarea unor modele sau regularități din mediul apropiat"
+  },
+  {
+   "level": "II",
+   "code": "3.2",
+   "text": "Manifestarea grijii pentru comportarea corectă în relație cu mediul natural și social"
+  },
+  {
+   "level": "II",
+   "code": "4.1",
+   "text": "Descrierea unui plan de lucru folosind câțiva termeni științifici, reprezentări prin desene și operatorii logici „ și”, „sau”, „nu”"
+  },
+  {
+   "level": "II",
+   "code": "4.2",
+   "text": "Formularea unor consecințe rezultate în urma observării unor relații, fenomene, procese simple"
+  },
+  {
+   "level": "II",
+   "code": "5.1",
+   "text": "Sortarea, clasificarea și înregistrarea prin desene și tabele a unor date din mediul cunoscut"
+  },
+  {
+   "level": "II",
+   "code": "5.2",
+   "text": "Rezolvarea de probleme de tipul a±b=x; a±b±c=x în concentrul 0-1000; a·b=x; a:b=x, în concentrul 0-100, cu sprijin în obiecte, imagini sau reprezentări schematice"
+  },
+  {
+   "level": "II",
+   "code": "6.1",
+   "text": "Utilizarea unor măsuri neconvenționale pentru determinarea și compararea maselor, lungimilor și capacităților"
+  },
+  {
+   "level": "II",
+   "code": "6.2",
+   "text": "Utilizarea unor unități de măsură pentru determinarea, compararea și ordonarea duratelor unor evenimente variate"
+  },
+  {
+   "level": "II",
+   "code": "6.3",
+   "text": "Realizarea unor schimburi echivalente valoric prin reprezentări convenționale standard și nonstandard și prin utilizarea banilor în probleme-joc simple de tip venituri-cheltuieli, cu numere din concentrul 0-1000"
+  },
+  {
+   "level": "II",
+   "code": "6.4",
+   "text": "Identificarea și utilizarea unităților de măsură uzuale pentru lungime, capacitate, masă (metrul, centimetrul, litrul, mililitrul, kilogramul, gramul) și a unor instrumente adecvate"
+  }
+ ],
+ "contents": [
+  {
+   "level": "CP",
+   "domain": "Numere",
+   "subdomain": null,
+   "items": [
+    "Numerele naturale 0-31: recunoaștere, formare, citire, scriere (cu cifre), comparare, ordonare:",
+    "- de la 0 la 10",
+    "- de la 10 la 20",
+    "- de la 20 la 31",
+    "Adunarea și scăderea în concentrul 0 – 10, prin numărare",
+    "Adunarea și scăderea în concentrul 0 – 31 fără și cu trecere peste ordin, prin numărare/cu suport intuitiv",
+    "Probleme simple de adunare sau scădere cu 1-5 unități în concentrul 0-31, cu suport intuitiv"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Figuri și corpuri geometrice",
+   "subdomain": "Orientare spațială și localizări în spațiu",
+   "items": [
+    "Repere/direcții în spațiu : în, pe, deasupra, dedesubt, lângă, în fața, în spatele, sus, jos, stânga, dreapta, orizontal, vertical, oblic"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Figuri și corpuri geometrice",
+   "subdomain": "Figuri plane/ 2D",
+   "items": [
+    "Pătrat, dreptunghi, triunghi, cerc: denumire; conturare"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Figuri și corpuri geometrice",
+   "subdomain": "Corpuri/ 3D",
+   "items": [
+    "Cub, cuboid, sferă: denumire"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Măsurări",
+   "subdomain": "Lungime",
+   "items": [
+    "Unități nonstandard"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Măsurări",
+   "subdomain": "Timp",
+   "items": [
+    "Ziua, săptămâna, luna: denumire, ordonare",
+    "Anotimpurile: denumire, ordonare"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Măsurări",
+   "subdomain": "Bani",
+   "items": [
+    "Leul (bancnotele de 1 leu, 5 lei, 10 lei)",
+    "Schimburi echivalente valoric în concentrul 0-31"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Date",
+   "subdomain": null,
+   "items": [
+    "Colectarea și gruparea datelor"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Științele vieții",
+   "subdomain": "Corpul omenesc",
+   "items": [
+    "Părți componente și rolul lor",
+    "Simțurile",
+    "Igiena corpului",
+    "Hrana ca sursă de energie: importanța hranei pentru creștere și dezvoltare; igiena alimentației"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Științele vieții",
+   "subdomain": "Plante și animale",
+   "items": [
+    "Părți componente",
+    "Hrana ca sursă de energie: importanța hranei pentru creștere și dezvoltare",
+    "Condiții de viață (apă, aer, lumină, căldură)"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Științele Pământului",
+   "subdomain": "Elemente intuitive privind: Pământul",
+   "items": [
+    "Prezența apei în natură sub diverse forme (precipitații, râuri, lacuri, mare etc.)",
+    "Fenomene ale naturii: ploaie, ninsoare, vânt, fulger, tunet"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Științele Pământului",
+   "subdomain": "Elemente intuitive privind: Universul",
+   "items": [
+    "Pământul, Soarele și Luna: recunoaștere în modele simple"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Științele fizicii",
+   "subdomain": "Forțe și mișcare",
+   "items": [
+    "Efecte observabile ale forțelor: împingere, tragere",
+    "Mișcarea corpurilor și schimbarea formei: deformare, rupere"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Științele fizicii",
+   "subdomain": "Forme și transfer de energie",
+   "items": [
+    "Electricitate: aparate care utilizează electricitatea și reguli de siguranță în mânuirea aparatelor electrice",
+    "Unde și vibrații: producerea sunetelor"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Numere",
+   "subdomain": null,
+   "items": [
+    "Numere naturale 0 -100: recunoaștere, formare, citire, scriere (cu cifre), comparare, ordonare, numere pare/impare:",
+    "- de la 0 la 31",
+    "- de la 31 la 100",
+    "Adunarea și scăderea în concentrul 0 – 10",
+    "Evidențierea proprietăților adunării (comutativitate, asociativitate, element neutru - fără precizarea terminologiei)",
+    "Adunarea și scăderea în concentrul 0 – 100, fără și cu trecere peste ordin",
+    "Proba adunării. Proba scăderii",
+    "Probleme care se rezolvă printr-o operație",
+    "Probleme care se rezolvă prin două operații de adunare și/sau scădere"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Figuri și corpuri geometrice",
+   "subdomain": "Orientare spațială și localizări în spațiu",
+   "items": [
+    "Poziții ale unui obiect: verticală, orizontală, oblică; interior, exterior"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Figuri și corpuri geometrice",
+   "subdomain": "Figuri plane / 2D",
+   "items": [
+    "Pătrat, dreptunghi, triunghi, cerc: reprezentare grafică"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Figuri și corpuri geometrice",
+   "subdomain": "Corpuri/ 3D",
+   "items": [
+    "Cub, cuboid, cilindru, sferă: descriere (fețe – formă, număr)"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Măsurări",
+   "subdomain": "Lungime",
+   "items": [
+    "Unități standard: centimetrul (1m = 100 cm)",
+    "Instrumente de măsură: rigla"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Măsurări",
+   "subdomain": "Capacitate",
+   "items": [
+    "Unități nonstandard",
+    "Unități standard: litrul"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Măsurări",
+   "subdomain": "Timp",
+   "items": [
+    "Ora (ora fixă, jumătatea de oră),",
+    "Ziua, săptămâna, luna, anul: durată",
+    "Anotimpurile: durată"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Măsurări",
+   "subdomain": "Bani",
+   "items": [
+    "Leul (1 leu = 100 de bani); monede și bancnote (maxim 100 lei)",
+    "Schimburi echivalente valoric în concentrul 0-100"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Date",
+   "subdomain": null,
+   "items": [
+    "Colectarea, citirea și înregistrarea datelor"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Științele vieții",
+   "subdomain": "Corpul omenesc",
+   "items": [
+    "Scheletul și organe majore ale corpului (creier, inimă, plămâni, stomac, rinichi); localizare și roluri"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Științele vieții",
+   "subdomain": "Plante și animale",
+   "items": [
+    "Rolul structurilor de bază la plante",
+    "Scheletul și organele majore la animale (creier, inimă, plămâni, stomac, rinichi); localizare și roluri"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Științele Pământului",
+   "subdomain": "Elemente intuitive privind: Pământul",
+   "items": [
+    "Transformări ale apei: solidificare, topire, evaporare, fierbere, condensare"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Științele Pământului",
+   "subdomain": "Elemente intuitive privind: Universul",
+   "items": [
+    "Soarele, sursă de căldură și lumină"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Științele fizicii",
+   "subdomain": "Forțe și mișcare",
+   "items": [
+    "Căderea liberă a corpurilor"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Științele fizicii",
+   "subdomain": "Forme și transfer de energie",
+   "items": [
+    "Forme de energie (lumina, căldura electricitatea), surse de energie (soarele, apa, vântul, cărbunii, petrolul) și utilizări în practică",
+    "Unde și vibrații: producerea și propagarea sunetelor"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Numere",
+   "subdomain": null,
+   "items": [
+    "Numerele naturale 0-1000: recunoaștere, formare, citire, scriere, (cu cifre și litere) comparare, ordonare, numere pare/impare:",
+    "- de la 0 la 100",
+    "- de la 100 la 1000",
+    "Adunarea și scăderea în concentrul 0 – 1000, fără trecere peste ordin",
+    "Înmulțirea în concentrul 0-100",
+    "Evidențierea proprietăților înmulțirii (comutativitate, asociativitate, element neutru - fără precizarea terminologiei)",
+    "Împărțirea cu rest 0 în concentrul 0-100",
+    "Proba înmulțirii. Proba împărțirii",
+    "Fracții: ½ (jumătate/doime), ¼ (sfert/pătrime)",
+    "Fracții echivalente: ½= 2/4",
+    "Probleme care se rezolvă prin una, două sau mai multe operații de adunare și/sau scădere, înmulțire, împărțire"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Figuri și corpuri geometrice",
+   "subdomain": "Figuri plane / 2D",
+   "items": [
+    "Pătrat, dreptunghi, triunghi, cerc, semicerc: axa de simetrie"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Figuri și corpuri geometrice",
+   "subdomain": "Corpuri/ 3D",
+   "items": [
+    "Cub, cuboid, cilindru, sferă, con: construcție după desfășurare dată"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Măsurări",
+   "subdomain": "Lungime",
+   "items": [
+    "Unități standard: metrul, centimetrul, milimetru (1m = 1000 mm);",
+    "Instrumente de măsură: metrul de tâmplărie, panglica de croitorie, ruleta"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Măsurări",
+   "subdomain": "Capacitate",
+   "items": [
+    "Unități standard: litrul, mililitrul (1l = 1000ml)"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Măsurări",
+   "subdomain": "Masă",
+   "items": [
+    "Unități standard: kilogramul, gramul (1 kg = 1000 g);",
+    "Instrumente de măsură: cântarul, balanța"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Măsurări",
+   "subdomain": "Timp",
+   "items": [
+    "Ora (1 oră = 60 de minute; 5 minute; jumătatea de oră, sfertul de oră),",
+    "Ziua (ieri, alaltăieri, mâine, poimâine), săptămâna, luna, anul (calendarul)",
+    "Anotimpurile: lunile corespunzătoare",
+    "Instrumente de măsură: ceasul"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Măsurări",
+   "subdomain": "Bani",
+   "items": [
+    "Leul: bancnote de 200 de lei, 500 de lei",
+    "Euro (1 euro = 100 de cenți) monede și bancnote",
+    "Schimburi echivalente valoric în concentrul 0-1000"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Date",
+   "subdomain": null,
+   "items": [
+    "Organizarea și reprezentarea datelor (tabele, grafice cu bare)"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Științele vieții",
+   "subdomain": "Corpul omenesc",
+   "items": [
+    "Menținerea stării de sănătate – dietă, igiena personală, exercițiul fizic etc.",
+    "Boli provocate de virusuri - metode de prevenție și tratare"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Științele vieții",
+   "subdomain": "Plante și animale",
+   "items": [
+    "Caracteristici comune viețuitoarelor (reproducere, creștere, nevoi de bază: aer, hrană, apă)",
+    "Medii de viață: lacul/iazul/balta, pădurea, Delta Dunării, Marea Neagră, deșertul, Polul Nord, Polul Sud"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Științele Pământului",
+   "subdomain": "Elemente intuitive privind: Pământul",
+   "items": [
+    "Alcătuire: uscat, apă și atmosferă",
+    "Forme de relief: munți, dealuri, câmpii"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Științele Pământului",
+   "subdomain": "Elemente intuitive privind: Universul",
+   "items": [
+    "Planetele sistemului solar",
+    "Ciclul zi-noapte"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Științele fizicii",
+   "subdomain": "Forțe și mișcare",
+   "items": [
+    "Forțe exercitate de magneți"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Științele fizicii",
+   "subdomain": "Forme și transfer de energie",
+   "items": [
+    "Electricitate: corpuri și materiale care conduc electricitatea",
+    "Unde și vibrații: intensitatea și tăria sunetelor"
+   ]
+  }
+ ],
+ "notes": [
+  "Tabelul «Conținuturile învățării» are capul «Domenii | CLASA PREGĂTITOARE | CLASA I | CLASA a II-a»; domeniile (prima coloană) sunt cele 7 din câmpul domain. Câmpul subdomain conține subtitlurile scrise ÎN celulele fiecărei clase (Orientare..., Figuri plane/ 2D, Corpuri/ 3D, Lungime, Capacitate, Masă, Timp, Bani, Corpul omenesc, Plante și animale, «Elemente intuitive privind:» + Pământul/Universul, Forțe și mișcare, Forme și transfer de energie). Celule goale: CP Capacitate, CP și I Masă, II Orientare spațială.",
+  "Nota de prezentare numește domeniul «Științe fizice», tabelul de conținuturi îl numește «Științele fizicii» (am păstrat varianta din tabel).",
+  "Conținuturi clasa a II-a: «Adunarea și scăderea în concentrul 0 – 1000, fără trecere peste ordin», dar exemplele de activități la 1.4 (clasa a II-a) spun «efectuarea de adunări/scăderi cu numere mai mici decât 1000, fără și cu trecere peste ordin» – neconcordanță în documentul oficial.",
+  "Rânduri continuate (despărțite de așezarea în pagină) au fost unite cu un spațiu: enunțurile competențelor pe două rânduri; II Numere «...(cu cifre și litere) comparare, ordonare...»; I «Forme de energie ... și utilizări în practică».",
+  "Greșeli/particularități păstrate exact ca în original: «+. -» (punct în loc de virgulă) la 1.6 CP și I; «„ și”» cu spațiu la 4.1 II; «milimetru (1m = 1000 mm)»; «căldura electricitatea» fără virgulă; «Numere naturale 0 -100».",
+  "Exemplele de activități de învățare NU au fost extrase."
+ ]
+}

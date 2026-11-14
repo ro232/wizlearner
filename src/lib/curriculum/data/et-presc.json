@@ -1,0 +1,917 @@
+{
+ "id": "et-presc",
+ "subject": "Curriculum pentru educația timpurie",
+ "levels": [
+  "3-6"
+ ],
+ "order": "Anexa la ordinul ministrului Educației Naționale nr. 4.694/2.08.2019",
+ "inForce2026": {
+  "status": "da",
+  "evidence": "Pagina edu.ro „Învățământ preșcolar” listează ca document curent OMEN nr. 4.694/02.08.2019; nu am găsit pe edu.ro, edupedu.ro (tag „noul curriculum de grădiniță” – ultimul articol 27.08.2019) sau în căutări niciun curriculum nou aprobat ori proiect în consultare pentru educația timpurie (2023–2026). În 2026 MEC a modificat doar metodologia de înscriere (OMEC 3706/21.04.2026), nu curriculumul. Planificarea Editura Diana 2025 (grupa mare) reproduce integral comportamentele din curriculumul 2019. Status = da, cu rezerva că absența unui act nou e dovedită doar prin căutare.",
+  "urls": [
+   "https://edu.ro/invatamant-prescolar",
+   "https://www.edu.ro/node/3426",
+   "https://www.edupedu.ro/tag/noul-curriculum-de-gradinita/",
+   "https://www.edupedu.ro/dezvoltarea-copiilor-in-cresa-si-la-gradinita-care-sunt-indicatorii-pe-care-ii-vor-urmari-educatoarele-prin-noile-fise-de-progres-al-copilului-la-cresa-si-gradinita/amp/",
+   "https://cdn.contentspeed.ro/0754242992.websales.ro/cs-content/cs-docs/1952_Planificare grupa mare Editura Diana 2025.pdf"
+  ]
+ },
+ "sources": [
+  {
+   "title": "Curriculum ET_2019_aug.pdf (edu.ro, atașat la OMEN 4.694/02.08.2019), 42 p., SHA256 9763b287…",
+   "url": "https://www.edu.ro/sites/default/files/Curriculum%20ET_2019_aug.pdf",
+   "role": "primary"
+  },
+  {
+   "title": "Curriculum-ET_2019_aug.pdf (ISJ Vaslui), 42 p., re-salvare a aceluiași document (ModDate 10.09.2019), text identic cuvânt cu cuvânt",
+   "url": "https://isj.vs.edu.ro/download/Curriculum-ET_2019_aug.pdf",
+   "role": "check"
+  },
+  {
+   "title": "Planificare grupa mare, Editura Diana 2025 (reproduce comportamentele nivel preșcolar)",
+   "url": "https://cdn.contentspeed.ro/0754242992.websales.ro/cs-content/cs-docs/1952_Planificare grupa mare Editura Diana 2025.pdf",
+   "role": "check"
+  },
+  {
+   "title": "Pagina ordinului pe edu.ro",
+   "url": "https://www.edu.ro/node/3426",
+   "role": "check"
+  }
+ ],
+ "normalisation": "ş/ţ/Ş/Ţ (sedilă) → ș/ț/Ș/Ț (virgulă); ghilimele curbe → drepte. Restul neatins, inclusiv greșelile de tipar din original (marcate în verification.originalTypos).",
+ "verification": {
+  "secondPass": "Pas 1: transcriere manuală din textul extras (pdftotext -layout) al copiei ISJ Vaslui. Pas 2: (a) am descărcat separat PDF-ul oficial de pe edu.ro (fișier diferit, SHA256 diferit, același document Word din 22.08.2019) — textul extras e identic cuvânt cu cuvânt cu copia ISJ Vaslui (diff = 0); (b) fiecare text din JSON (domenii, descrieri, 61 comportamente, teme, descrieri teme, indicatori Anexa 4, categorii) a fost căutat automat, exact, în textul ambelor PDF-uri; (c) dimensiunile (19) și paginile 18–25 verificate vizual pe imaginea paginilor PDF edu.ro; (d) comportamentele comparate cu planificarea Editura Diana 2025 (grupa mare).",
+  "differences": [
+   "Pas 1 vs PDF: D(a) 3.2 transcris greșit 'diferențiază' — originalul are 'Discriminează/diferențiează' (confirmat vizual p.22). Corectat după original.",
+   "Pas 1 vs PDF: E 3.1 transcris greșit 'Evidenţiază' — originalul are 'Evidenţiează' (confirmat vizual p.24). Corectat după original.",
+   "'Domeniul Estetic și creativ' nu apare contiguu în textul extras (celule de diagramă intercalate); confirmat vizual în Anexa nr.1 p.25.",
+   "'Domeniul Psihomotric': în diagramă e despărțit la capăt de rând 'Psiho-/motric'; pdftotext îl unește 'Psihomotric'. Am păstrat 'Domeniul Psihomotric'.",
+   "Diana 2025 vs oficial: C 2.2 'întâmpină' (oficial: 'întâmplină'); E 1.1 'caracteristice' (oficial: 'caracterisice'); D(a) 3.2 'diferențiază' (oficial: 'diferențiează'); E 3.1 'Evidenţiază' (oficial: 'Evidenţiează'); descrierea E 'abilitățile de gândire' (oficial: 'ablităţile de gîndire'). Am păstrat textul oficial.",
+   "Numele domeniului C diferă în document: p.17 'CAPACITĂȚI ȘI ATITUDINI FAȚĂ DE ÎNVĂŢARE', iar antetul tabelelor p.20 'C. CAPACITĂȚI ȘI ATITUDINI ÎN ÎNVĂȚARE' (și RFIDT/Anexe: 'capacităţi și atitudini în învăţare'). Ambele păstrate (text / tableHeading).",
+   "Numele temelor diferă în document: Metodologia pct.18 'Cine sunt/ suntem?', 'Când, cum şi de ce se întâmplă?', 'Cum este, a fost şi va fi aici pe pământ?', 'Cum exprimăm ceea ce simţim?'; Anexa 1 (conținut): 'CINE SUNT/SUNTEM?', 'CÂND/CUM ŞI DE CE SE ÎNTÂMPLĂ?', 'CUM ESTE/A FOST ŞI VA FI AICI PE PĂMÂNT?'. Tema 5 este 'Cum exprimăm ceea ce simţim?' — NU 'Cu ce și cum exprimăm ceea ce simțim?' (aceea e formularea din curriculumul 2008).",
+   "Numerotarea: codurile comportamentelor sunt tipărite cu punct final ('1.1.'), excepție E 2.1 tipărit '2.1' fără punct; în JSON codurile sunt normalizate fără punct final. Dimensiunile preșcolare sunt tipărite '1','2','3' (fără punct)."
+  ],
+  "originalTypos": [
+   "C 2.2 'întâmplină'",
+   "E 1.1 'caracterisice'",
+   "D(a) 3.2 'diferențiează'",
+   "D(b) 1.2 'Înțeleg' (plural)",
+   "D(b) 2.1 'Pronunță corectă'",
+   "Anexa 4: 'anurajul', 'dec siguranță', 'îți acoperă', 'fară'",
+   "descriere E: 'ablităţile', 'gîndire'",
+   "tema 4: 'caracteristiclor'"
+  ],
+  "domainDVariants": "D are două tabele preșcolare: varianta 'a' (limba de predare / limba maternă — cea relevantă pentru grădinițele cu predare în română) și varianta 'b' (limba română ca limbă nematernă, pentru învățământul în limbile minorităților). Codurile se repetă între variante — folosiți câmpul 'variant'."
+ },
+ "generalCompetences": [
+  {
+   "code": "A",
+   "text": "DEZVOLTAREA FIZICĂ, A SĂNĂTĂȚII ȘI IGIENEI PERSONALE",
+   "description": "cuprinde o gamă largă de deprinderi și abilități (de la mișcări largi, cum sunt săritul, alergarea, până la mișcări fine de tipul realizării desenelor sau modelarea), dar și coordonarea, dezvoltarea senzorială, alături de cunoștințe și abilități referitoare la îngrijire și igienă personală, nutriție, alte practici de menținere a securității personale.",
+   "tableHeading": "A . DEZVOLTAREA FIZICĂ, A SĂNĂTĂȚII ȘI IGIENEI PERSONALE"
+  },
+  {
+   "code": "B",
+   "text": "DEZVOLTAREA SOCIO-EMOȚIONALĂ",
+   "description": "vizează debutul vieții sociale a copilului, capacitatea lui de a stabili și menține interacțiuni cu adulți și copii. Interacțiunile sociale mediază modul în care copiii se privesc pe ei înșiși și lumea din jur. Dezvoltarea emoțională vizează îndeosebi capacitatea copiilor de a-și percepe și exprima emoțiile, de a înțelege și răspunde emoțiilor celorlalți, precum și dezvoltarea conceptului de sine, crucial pentru acest domeniu. În strânsă corelație cu conceptul de sine se dezvoltă imaginea despre sine a copilului, care influențează decisiv procesul de învățare.",
+   "tableHeading": "B. DEZVOLTAREA SOCIO-EMOȚIONALĂ"
+  },
+  {
+   "code": "C",
+   "text": "CAPACITĂȚI ȘI ATITUDINI FAȚĂ DE ÎNVĂȚARE",
+   "description": "se referă la modul în care copilul se implică într-o activitate de învățare, modul în care abordează sarcinile și contextele de învățare, precum și la atitudinea sa în interacțiunea cu mediul și persoanele din jur, în afara deprinderilor și abilităților menționate în cadrul celorlalte domenii de dezvoltare.",
+   "tableHeading": "C. CAPACITĂȚI ȘI ATITUDINI ÎN ÎNVĂȚARE"
+  },
+  {
+   "code": "D",
+   "text": "DEZVOLTAREA LIMBAJULUI, A COMUNICĂRII ȘI A PREMISELOR CITIRII ȘI SCRIERII",
+   "description": "vizează dezvoltarea limbajului (sub aspectele vocabularului, gramaticii, sintaxei, dar și a înțelegerii semnificației), a comunicării (cuprinzând abilități de ascultare, comunicare orală și scrisă, nonverbală și verbală) și preachizițiile pentru scris-citit și însoțește dezvoltarea în fiecare dintre celelalte domenii.",
+   "tableHeading": "D. DEZVOLTAREA LIMBAJULUI, A COMUNICĂRII ȘI A PREMISELOR CITIRII ȘI SCRIERII"
+  },
+  {
+   "code": "E",
+   "text": "DEZVOLTAREA COGNITIVĂ ȘI CUNOAȘTEREA LUMII",
+   "description": "a fost definită în termenii abilității copilului de a înțelege relațiile dintre obiecte, fenomene, evenimente și persoane, dincolo de caracteristicile lor fizice. Domeniul include ablitățile de gîndire logică și rezolvare de probleme, cunoștințe elementare matematice ale copilului și cele referitoare la lume și mediul înconjurător.",
+   "tableHeading": "E. DEZVOLTAREA COGNITIVĂ ȘI CUNOAȘTEREA LUMII"
+  }
+ ],
+ "specificCompetences": [
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "1",
+   "text": "Motricitate grosieră și motricitate fină în contexte de viață familiare",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "1.1",
+   "text": "Își coordonează mușchii în desfășurarea unor activități diversificate, specifice vârstei",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "1.2",
+   "text": "Participă la activități fizice variate, adecvate nivelului lui de dezvoltare",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "1.3",
+   "text": "Utilizează mâinile și degetele pentru realizarea de activități variate",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "2",
+   "text": "Conduită senzorio-motorie, pentru orientarea mișcării",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "2.1",
+   "text": "Utilizează simțurile (văzul, auzul, simțul tactil, mirosul etc.) în interacțiunea cu mediul apropiat.",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "2.2",
+   "text": "Se orientează în spațiu pe baza simțurilor.",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "2.3",
+   "text": "Își coordonează mișcările în funcție de ritm, cadență, pauză, semnale sonore, melodii.",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "3",
+   "text": "Sănătate (nutriție, îngrijire, igienă personală) și practici privind securitatea personală",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "3.1",
+   "text": "Exersează, cu sprijin, respectarea unor principii de bază specifice unei alimentații sănătoase",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "3.2",
+   "text": "Manifestă deprinderi de păstrare a igienei personale",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "3.3",
+   "text": "Demonstrează abilități de autoprotecție față de obiecte și situații periculoase",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "A",
+   "code": "3.4",
+   "text": "Utilizează reguli de securitate fizică personală",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "1",
+   "text": "Interacțiuni cu adulții și cu copiii de vârste apropiate",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "1.1",
+   "text": "Manifestă încredere în adulții cunoscuți, prin exersarea interacțiunii cu aceștia",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "1.2",
+   "text": "Demonstrează abilități de solicitare și de primire a ajutorului în situații problematice specifice",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "1.3",
+   "text": "Inițiază/participă la interacțiuni pozitive cu copii de vârstă apropiată",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "2",
+   "text": "Comportamente prosociale, de acceptare și de respectare a diversității",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "2.1",
+   "text": "Exprimă recunoașterea și respectarea asemănărilor și a deosebirilor dintre oameni",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "2.2",
+   "text": "Își însușește și respectă reguli; înțelege efectele acestora în planul relațiilor sociale, în contexte familiare",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "2.3",
+   "text": "Exersează, cu sprijin, asumarea unor responsabilități specifice vârstei, în contexte variate",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "2.4",
+   "text": "Exersează, cu sprijin, abilități de negociere și de participare la luarea deciziilor",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "2.5",
+   "text": "Demonstrează acceptare și înțelegere față de celelalte persoane din mediul apropiat",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "3",
+   "text": "Conceptul de sine",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "3.1",
+   "text": "Exersează, cu sprijin, autoaprecierea pozitivă, în diferite situații educaționale",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "3.2",
+   "text": "Își promovează imaginea de sine, prin manifestarea sa ca persoană unică, cu caracteristici specifice",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "4",
+   "text": "Autocontrol și expresivitate emoțională",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "4.1",
+   "text": "Recunoaște și exprimă emoții de bază, produse de piese muzicale, texte literare, obiecte de artă etc.",
+   "kind": "comportament",
+   "dimension": "4"
+  },
+  {
+   "level": "3-6",
+   "domain": "B",
+   "code": "4.2",
+   "text": "Demonstrează abilități de autocontrol emoțional",
+   "kind": "comportament",
+   "dimension": "4"
+  },
+  {
+   "level": "3-6",
+   "domain": "C",
+   "code": "1",
+   "text": "Curiozitate, interes și inițiativă în învățare",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "C",
+   "code": "1.1",
+   "text": "Manifestă curiozitate și interes pentru experimentarea și învățarea în situații noi",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "C",
+   "code": "1.2",
+   "text": "Inițiază activități de învățare și interacțiuni cu copiii sau cu adulții din mediul apropiat",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "C",
+   "code": "2",
+   "text": "Finalizarea sarcinilor și a acțiunilor (persistență în activități)",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "C",
+   "code": "2.1",
+   "text": "Realizează sarcinile de lucru cu consecvență",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "C",
+   "code": "2.2",
+   "text": "Integrează ajutorul primit, pentru realizarea sarcinilor de lucru la care întâmplină dificultăți.",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "C",
+   "code": "3",
+   "text": "Activare și manifestare a potențialului creativ",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "C",
+   "code": "3.1",
+   "text": "Manifestă creativitate în activități diverse",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "C",
+   "code": "3.2",
+   "text": "Demonstrează creativitate prin activități artistico-plastice, muzicale și practice, în conversații și povestiri creative",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "C",
+   "code": "3.3",
+   "text": "Demonstrează simț muzical ritmic, armonic prin cântec, joc cu text și cânt, dans etc.",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "1",
+   "text": "Mesaje orale în contexte de comunicare cunoscute",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "1.1",
+   "text": "Exersează, cu sprijin, ascultarea activă a unui mesaj, în vederea înțelegerii și receptării lui (comunicare receptivă)",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "1.2",
+   "text": "Demonstrează înțelegerea unui mesaj oral, ca urmare a valorificării ideilor, emoțiilor, semnificațiilor etc. (comunicare expresivă)",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "2",
+   "text": "Mesaje orale în diverse situații de comunicare",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "2.1",
+   "text": "Demonstrează capacitate de comunicare clară a unor idei, nevoi, curiozități, acțiuni, emoții proprii (comunicare expresivă)",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "2.2",
+   "text": "Respectă regulile de exprimare corectă, în diferite contexte de comunicare",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "2.3",
+   "text": "Demonstrează extinderea progresivă a vocabularului",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "3",
+   "text": "Premise ale citirii și scrierii, în contexte de comunicare cunoscute",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "3.1",
+   "text": "Participă la experiențe de lucru cu cartea, pentru cunoașterea și aprecierea cărții",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "3.2",
+   "text": "Discriminează/diferențiează fonetic cuvinte, silabe, sunete și asociază sunete cu litere",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "3.3",
+   "text": "Identifică prezența mesajului scris, apreciază și valorifică mesajul scris în activitățile curente",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "a",
+   "code": "3.4",
+   "text": "Asimilează unele elemente ale scrisului și folosește diferite modalități de comunicare grafică și orală pentru transmiterea unui mesaj",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "1",
+   "text": "Ascultarea activă a mesajului pentru înțelegerea și receptarea lui (comunicare receptivă)",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "1.1",
+   "text": "Se familiarizează cu sunetele specifice limbii române",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "1.2",
+   "text": "Înțeleg mesaje simple",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "1.3",
+   "text": "Participă la activitățile de grup și la activitățile de joc în calitate de auditor",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "2",
+   "text": "Exprimarea orală a mesajului, a emoțiilor etc. (comunicare expresivă)",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "2.1",
+   "text": "Pronunță corectă sunetele specifice limbii române",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "2.2",
+   "text": "Participă la activitățile de grup și la activitățile de joc, în situații uzuale, în calitate de vorbitor",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "2.3",
+   "text": "Utilizează structuri orale simple",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "2.4",
+   "text": "Exersează și extinde progresiv vocabularul",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "3",
+   "text": "Manifestarea unei atitudini pozitive față de limba română",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "3.1",
+   "text": "Participă, cu interes și cu plăcere, la activitățile în limba română",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "D",
+   "variant": "b",
+   "code": "3.2",
+   "text": "Utilizează structurile orale însușite în contexte familiare, cunoscute (ex. în cadrul jocurilor de rol, sau în dramatizări, teatru de păpuși, etc.)",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "1",
+   "text": "Relații, operații și deducții logice în mediul apropiat",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "1.1",
+   "text": "Identifică elementele caracterisice ale unor fenomene/relații din mediul apropiat",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "1.2",
+   "text": "Compară experiențe, acțiuni, evenimente, fenomene/relații din mediul apropiat",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "1.3",
+   "text": "Construiește noi experiențe, pornind de la experiențe trecute",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "1.4",
+   "text": "Identifică posibile răspunsuri/soluții la întrebări, situații - problemă și provocări din viața proprie și a grupului de colegi",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "1.5",
+   "text": "Realizează, în mod dirijat, activități simple de investigare a mediului, folosind instrumente și metode specifice",
+   "kind": "comportament",
+   "dimension": "1"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "2",
+   "text": "Cunoștințe și deprinderi elementare matematice pentru rezolvarea de probleme și cunoașterea mediului apropiat",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "2.1",
+   "text": "Demonstrează familiarizarea cu conceptul de număr și cu numerația",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "2.2",
+   "text": "Demonstrează familiarizarea cu informații despre mărime, formă, greutate, înălțime, lungime, volum",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "2.3",
+   "text": "Identifică și numește formele obiectelor din mediul înconjurător",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "2.4",
+   "text": "Efectuează operații de seriere, grupare, clasificare, măsurare a obiectelor",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "2.5",
+   "text": "Rezolvă situații-problemă, pornind de la sortarea și reprezentarea unor date",
+   "kind": "comportament",
+   "dimension": "2"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "3",
+   "text": "Caracteristici structurale și funcționale ale lumii înconjurătoare",
+   "kind": "dimensiune"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "3.1",
+   "text": "Evidențiează caracteristicile unor obiecte localizate în spațiul înconjurător",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "3.2",
+   "text": "Identifică și valorifică unele caracteristici ale lumii vii, ale Pământului și Spațiului",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "3.3",
+   "text": "Descrie unele caracteristici ale lumii vii, ale Pământului și Spațiului",
+   "kind": "comportament",
+   "dimension": "3"
+  },
+  {
+   "level": "3-6",
+   "domain": "E",
+   "code": "3.4",
+   "text": "Demonstrează cunoașterea poziției omului în univers, ca parte a lumii vii și ca ființă socială",
+   "kind": "comportament",
+   "dimension": "3"
+  }
+ ],
+ "contents": [
+  {
+   "level": "3-6",
+   "domain": "Teme anuale de studiu (teme de integrare curriculară) – Metodologia, pct. 18",
+   "items": [
+    "Cine sunt/ suntem?",
+    "Când, cum și de ce se întâmplă?",
+    "Cum este, a fost și va fi aici pe pământ?",
+    "Cine și cum planifică/organizează o activitate?",
+    "Cum exprimăm ceea ce simțim?",
+    "Ce și cum vreau să fiu?"
+   ]
+  },
+  {
+   "level": "3-6",
+   "domain": "Conținutul temelor anuale de studiu – CINE SUNT/SUNTEM?",
+   "items": [
+    "O explorare a naturii umane, a convingerilor și valorilor personale, a corpului uman, a stării de sănătate proprii și a familiei, a grupului de prieteni, a comunității de apartenență, a culturilor cu care venim în contact, a drepturilor și a responsabilităților proprii, a ceea ce înseamnă să fii om."
+   ]
+  },
+  {
+   "level": "3-6",
+   "domain": "Conținutul temelor anuale de studiu – CÂND/CUM ȘI DE CE SE ÎNTÂMPLĂ?",
+   "items": [
+    "O explorare a lumii fizice și materiale, a universului apropiat sau îndepărtat, a relației cauză-efect, a fenomenelor naturale și a celor produse de om, a anotimpurilor, a domeniului științei și tehnologiei."
+   ]
+  },
+  {
+   "level": "3-6",
+   "domain": "Conținutul temelor anuale de studiu – CUM ESTE/A FOST ȘI VA FI AICI PE PĂMÂNT?",
+   "items": [
+    "O explorare a evoluției vieții pe Pământ, cu identificarea factorilor care întrețin viața, a problemelor lumii contemporane (poluarea, încălzirea globală, suprapopularea etc.)",
+    "O explorare a orientării noastre în spațiu și timp, a istoriilor noastre personale, a istoriei și geografiei din perspectivă locală și globală, a căminelor și a călătoriilor noastre, a descoperirilor, a contribuției oamenilor și civilizațiilor la evoluția noastră în timp și spațiu."
+   ]
+  },
+  {
+   "level": "3-6",
+   "domain": "Conținutul temelor anuale de studiu – CINE ȘI CUM PLANIFICĂ/ORGANIZEAZĂ O ACTIVITATE?",
+   "items": [
+    "O explorare a modalităților în care comunitatea/individul își planifică și își organizează activitățile, precum și a caracteristiclor produselor activității/ muncii și, implicit, a modalităților prin care acestea sunt realizate.",
+    "O incursiune în lumea sistemelor și a comunităților umane, a specificului activităților umane și a profesiilor/ ocupațiilor, a rolului capacităților antreprenoriale."
+   ]
+  },
+  {
+   "level": "3-6",
+   "domain": "Conținutul temelor anuale de studiu – CUM EXPRIMĂM CEEA CE SIMȚIM?",
+   "items": [
+    "O explorare a felurilor în care ne descoperim și ne exprimăm ideile, sentimentele, convingerile și valorile, atât în relațiile interpersonale, cât și prin limbaj și prin arte.",
+    "O incursiune în lumea patrimoniului cultural național și universal."
+   ]
+  },
+  {
+   "level": "3-6",
+   "domain": "Conținutul temelor anuale de studiu – CE ȘI CUM VREAU SĂ FIU?",
+   "items": [
+    "O explorare a drepturilor și a responsabilităților, a gândurilor și năzuințelor noastre de dezvoltare personală și profesională.",
+    "O incursiune în universul jocului, învățării și al muncii, al naturii și al valorilor personale și sociale ale acestora.",
+    "O incursiune în lumea profesiilor, a activității umane în genere, în vederea descoperirii aptitudinilor și abilităților proprii, a propriei valori și a încurajării stimei de sine."
+   ]
+  },
+  {
+   "level": "3-6",
+   "domain": "Domenii experiențiale (Anexa nr.1, coloana 3 – 6 ani)",
+   "items": [
+    "Domeniul Limbă și comunicare",
+    "Domeniul Științe",
+    "Domeniul Estetic și creativ",
+    "Domeniul Om și societate",
+    "Domeniul Psihomotric"
+   ]
+  },
+  {
+   "level": "3-6",
+   "domain": "Categorii/Tipuri de activități de învățare – nivel preșcolar (Metodologia, pct. 5)",
+   "items": [
+    "Activități pe domenii experiențiale (care pot fi activități integrate sau pe discipline), Jocuri și activități liber-alese și Activități pentru dezvoltare personală."
+   ]
+  },
+  {
+   "level": "3-5",
+   "domain": "Planul de învățământ – 37 – 60 luni (activități/zi; total/săptămână)",
+   "items": [
+    "Jocuri și activități liber-alese – 2h zilnic/tură – 10 h/săptămână",
+    "Activități pentru dezvoltare personală – 2h zilnic/tură – 10 h/săptămână",
+    "Activități pe domenii experiențiale – 1h zilnic/tură – 5h/săptămână",
+    "TOTAL – 25 h/săptămână"
+   ]
+  },
+  {
+   "level": "5-6",
+   "domain": "Planul de învățământ – 61 – 72/84 luni (activități/zi; total/săptămână)",
+   "items": [
+    "Jocuri și activități liber-alese – 2h zilnic/tură – 10 h/săptămână",
+    "Activități pentru dezvoltare personală – 1½h zilnic/tură – 7½h/săptămână",
+    "Activități pe domenii experiențiale – 1½h zilnic/tură – 7½h/săptămână",
+    "TOTAL – 25 h/săptămână"
+   ]
+  }
+ ],
+ "assessmentIndicators": {
+  "source": "Anexa nr.4 – Fișă pentru aprecierea progresului individual al copilului, înainte de intrarea în învățământul primar (indicatori comportamentali, fără coduri; numerotarea domeniilor e cea din Anexa 4, nu A–E)",
+  "level": "5-6 (final grupa mare)",
+  "domains": [
+   {
+    "order": 1,
+    "domain": "Dezvoltare socio-emoțională",
+    "domainCode": "B",
+    "items": [
+     "Urmează indicațiile adulților în ceea ce privește comportamentul adecvat în anumite situații",
+     "Interacționează, din proprie inițiativă, cu copiii apropiați ca vârstă, în diferite contexte",
+     "Își adaptează comportamentul în funcție de regulile diferitelor situații (de ex.: vorbește în șoaptă când intră la bibliotecă, când merge la muzeu etc.)",
+     "Își spune corect numele, prenumele, vârsta, luna, ziua, orașul și țara în care s-a născut",
+     "Împărtășește celorlalți (copii, adulți din anurajul propriu) trăirile/emoțiile sale și reacționează adaptativ la contexte sociale variate"
+    ]
+   },
+   {
+    "order": 2,
+    "domain": "Dezvoltarea limbajului, a comunicării și a premiselor citirii și scrierii",
+    "domainCode": "D",
+    "items": [
+     "Povestește un eveniment sau o poveste cunoscută, respectând succesiunea evenimentelor",
+     "Utilizează în vorbire acordul de gen, număr, persoană, timp",
+     "Utilizează în vorbire propoziții dezvoltate și fraze",
+     "Stă și ascultă, în momente de lectură, fără să deranjeze, rămâne până la finalul ei",
+     "Recunoaște litere mari/mici de tipar și le pune în corespondență cu sunetul asociat",
+     "Înțelege conceptul de scriere pentru comunicarea unei informații, a unui mesaj (etichetează lucrările, scrie scurte mesaje de felicitare etc.)"
+    ]
+   },
+   {
+    "order": 3,
+    "domain": "Dezvoltare fizică, a sănătății și igienei personale",
+    "domainCode": "A",
+    "items": [
+     "Poziționează corpul și membrele în mod corespunzător pentru a imita ceva sau pe cineva sau pentru a executa o mișcare (a prinde o minge, a arunca ceva etc.)",
+     "Își pune singur pantofii și își leagă șireturile/se îmbracă și se dezbracă singur",
+     "Demonstrează conștientizarea simțurilor în acțiuni (recunoaște obiecte ascunse prin pipăit, fară să le vadă, execută mișcări la auzirea unor comenzi, recunoaște mirosuri etc.)",
+     "Demonstrează independență în igiena personală (se spală și se șterge singur pe mâini, îți acoperă gura cu mâna când strănută, când tușește, folosește independent toaleta, folosește batista etc.)",
+     "Demonstrează cunoașterea regulilor dec siguranță în jocul simbolic"
+    ]
+   },
+   {
+    "order": 4,
+    "domain": "Dezvoltare cognitivă și cunoașterea lumii",
+    "domainCode": "E",
+    "items": [
+     "Grupează obiecte care întrunesc două criterii concomitent",
+     "Lucrează în grup pentru soluționarea unei probleme, utilizând strategiile dezvoltate de grup",
+     "Numără cu ușurință până la 10/20",
+     "Creează, copiază și construiește forme (cerc, pătrat, triunghi etc.)",
+     "Descrie și compară nevoile de bază ale ființelor vii",
+     "Descrie timpul probabil și ilustrează o anumită stare a vremii (utilizează semne convenționale pentru ape, ploaie, munți, ninsoare, anotimpuri, zile ale săptămânii etc.)"
+    ]
+   },
+   {
+    "order": 5,
+    "domain": "Capacități și atitudini în învățare",
+    "domainCode": "C",
+    "items": [
+     "Formulează întrebări referitoare la schimbările din jur",
+     "Exprimă dorința de a învăța să realizeze anumite acțiuni de autoservire, să confecționeze obiecte, jucării sau să găsească informații despre subiecte de care este interesat",
+     "Face planul unei activități (din 3-4 pași) și îl pune în practică",
+     "Se concentrează la o activitate 20 de minute, fară supervizare",
+     "Găsește forme și mijloace noi de exprimare a gândurilor și emoțiilor (prin muzică, desen, dans, joc simbolic)",
+     "Utilizează sau combină materiale și strategii în modalități noi pentru a explora sau rezolva probleme"
+    ]
+   }
+  ]
+ },
+ "contentsNote": "Curriculumul 2019 NU conține conținuturi detaliate pe domenii experiențiale (nici liste de grafisme/litere/numere). Domeniile experiențiale apar doar ca etichete în schema din Anexa nr.1 (coloana 3 – 6 ani); temele anuale au doar 'Descrierea temei'. Pentru etichetarea fișelor (D: litere, sunete, silabe, grafisme; E: număr, forme, seriere) singurele formulări oficiale sunt comportamentele D 3.2, D 3.4, E 2.1–2.5 și indicatorii din Anexa 4 (assessmentIndicators). Nu există cuvântul 'grafisme' în document.",
+ "levelsNote": "Documentul NU împarte comportamentele pe benzi 3-5 / 5-6: există un singur tabel per domeniu, \"Nivel preșcolar (de la 3 la 6 ani)\", cu comportamente așteptate \"La finalul perioadei preșcolare\". Planul de învățământ folosește intervalele \"37 – 60 luni\" și \"61 – 72/84 luni\"; Metodologia (pct. 18) vorbește de \"nivelul 3-5 ani\" și \"grupele cu copii de 5-6 ani\"; Programul zilnic: \"(3-5/6 ani)\". Toate comportamentele au level=\"3-6\".",
+ "orderNote": "Pe edu.ro: „Ordinul ministrului Educației Naționale nr. 4.694/02.08.2019 privind aprobarea Curriculumului pentru educaţie timpurie” (publicat pe site 22.08.2019). Edupedu: publicat în Monitorul Oficial pe 20 august 2019; înlocuiește curriculumul din 2008.",
+ "subjectNote": "Titlul de pe copertă: „CURRICULUM PENTRU EDUCAŢIA TIMPURIE -2019-”; antetul secțiunii de comportamente: „CURRICULUM PENTRU EDUCAȚIE TIMPURIE”; ordinul (edu.ro) îl numește „Curriculumul pentru educaţie timpurie”."
+}

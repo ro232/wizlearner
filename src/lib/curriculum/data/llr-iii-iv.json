@@ -1,0 +1,340 @@
+{
+ "id": "llr-iii-iv",
+ "subject": "Limba și literatura română",
+ "levels": [
+  "III",
+  "IV"
+ ],
+ "order": "Anexa nr. 2 la ordinul ministrului educației naționale nr. 5003 /02.12.2014",
+ "inForce2026": {
+  "status": "da",
+  "evidence": "Nu am găsit nicio programă nouă aprobată pentru clasele a III-a – a IV-a care să înlocuiască OMEN 5003/02.12.2014 pentru 2026-2027; programele noi aprobate în 2026 vizează liceul (clasa a IX-a din sept. 2026). Standardele naționale de evaluare aprobate prin OMEC nr. 4.615/2026 (MO nr. 674 bis/14.08.2026), aplicabile din 2026-2027, sunt formulate 'în relație cu fiecare competență specifică din programa școlară' (edupedu) și anexa lor pentru clasele III-IV (CNCE, București 2026) reia textual competențele specifice ale programei din 2014. Concluzie: programa din 2014 rămâne în vigoare în 2026-2027.",
+  "urls": [
+   "https://www.edupedu.ro/oficial-standardele-nationale-de-evaluare-pentru-clasele-i-viii-care-se-aplica-din-anul-scolar-2026-2027-pentru-evaluarea-la-clasa-si-examenele-nationale/",
+   "https://www.edu.ro/press_rel_29_2026",
+   "https://www.edupedu.ro/oficial-noile-programe-scolare-de-liceu-pentru-clasele-a-x-a-a-xi-a-si-a-xii-a-au-fost-publicate-de-ministerul-educatiei/",
+   "https://alba24.ro/wp-content/uploads/2026/07/Standarde-nationale-de-evaluare_Comunivcare-in-limba-romana_I-II_Limba-si-literatura-romana_III-IV.pdf"
+  ]
+ },
+ "sources": [
+  {
+   "title": "Programa școlară pentru disciplina LIMBA ȘI LITERATURA ROMÂNĂ CLASELE a III-a – a IV-a (București, 2014), Anexa nr. 2 la OMEN nr. 5003/02.12.2014 — copie PDF găzduită de liis.ro (nume fișier înșelător: 'pentru clasa a IV-a', conținut III–IV; nu este programa pentru minorități)",
+   "url": "https://www.liis.ro/Documents/download/Programa_limba_si_literatura_romana_pentru_clasa_a_IV-a.pdf",
+   "role": "primary"
+  },
+  {
+   "title": "Standarde naționale de evaluare — Anexa nr. 6, Comunicare în limba română I–II / Limba și literatura română III–IV (MEC/CNCE, București 2026) — reia competențele specifice; folosit doar ca verificare",
+   "url": "https://alba24.ro/wp-content/uploads/2026/07/Standarde-nationale-de-evaluare_Comunivcare-in-limba-romana_I-II_Limba-si-literatura-romana_III-IV.pdf",
+   "role": "check"
+  }
+ ],
+ "normalisation": "ș/ț/Ș/Ț (sedilă) → ș/ț/Ș/Ț (virgulă dedesubt); ghilimele drepte. Restul textului (spații în jurul barelor oblice, liniuțe –/-, greșeli de tipar) păstrat ca în document.",
+ "verification": {
+  "secondPass": "Pass 1: extragere completă din PDF-ul liis.ro (competențe generale, specifice III și IV, conținuturi). Pass 2: trei lecturi WebFetch separate ale aceluiași PDF cu solicitări diferite (1.1–2.5; 3.1–4.5; tabelul de conținuturi cu antete) + comparare item cu item cu anexa SNE 2026 (MEC/CNCE), care reia competențele specifice. Nu am găsit o a doua copie online a PDF-ului oficial (edums.ro are doar varianta pentru minorități; media.hotnews.ro 19107164-0.pdf este programa de Limbă modernă).",
+  "differences": [
+   "Pass 1 vs pass 2 (același PDF): competențele generale și toate cele 42 de competențe specifice identice.",
+   "Textul, clasa a III-a: pass 1 a dat 'în funcție de dotări – email' ca rând separat; pass 2 îl dă în continuarea rândului '... carte poștală, invitație;'. Am păstrat un singur item (pass 2), fiindcă rândul anterior se termină cu ';'. Analog la clasa a IV-a ('hartă și plan simplu...' și 'în funcție de dotări – mesaj text și email' unite într-un item).",
+   "'subiectpredicat' apare fără cratimă în ambele lecturi; probabil cratimă pierdută la extragere ('subiect-predicat'), dar NU am corectat — de verificat vizual pe PDF.",
+   "Programă vs SNE 2026 (diferențe ale SNE, programa are prioritate): III 2.1 SNE 'obiect/a unei ființe' vs programă 'obiect/ unei ființe'; III 3.4 SNE 'cuvintecheie' (artefact) vs 'cuvinte-cheie'; III 3.3/4.4 spațiere la '/'; IV 4.1 SNE 'redactarea de texte' vs programă 'redactarea de text'; IV 4.4 SNE prescurtat ('dintr-o poveste / film / activitate'); IV 4.5 SNE fără 'pentru' înainte de 'redactarea'. Toate rezolvate în favoarea programei.",
+   "Instrumentul de citire (WebFetch) poate normaliza liniuțele (– vs -) și spațiile; nu am putut verifica vizual tipografia."
+  ]
+ },
+ "generalCompetences": [
+  {
+   "code": "1",
+   "text": "Receptarea de mesaje orale în diverse contexte de comunicare"
+  },
+  {
+   "code": "2",
+   "text": "Exprimarea de mesaje orale în diverse situații de comunicare"
+  },
+  {
+   "code": "3",
+   "text": "Receptarea de mesaje scrise în diverse contexte de comunicare"
+  },
+  {
+   "code": "4",
+   "text": "Redactarea de mesaje în diverse situații de comunicare"
+  }
+ ],
+ "specificCompetences": [
+  {
+   "level": "III",
+   "code": "1.1",
+   "text": "Extragerea unor informații de detaliu dintr-un text informativ sau literar accesibil"
+  },
+  {
+   "level": "III",
+   "code": "1.2",
+   "text": "Deducerea sensului unui cuvânt prin raportare la mesajul audiat în contexte de comunicare familiare"
+  },
+  {
+   "level": "III",
+   "code": "1.3",
+   "text": "Sesizarea unor regularități ale limbii prin raportare la mesaje audiate"
+  },
+  {
+   "level": "III",
+   "code": "1.4",
+   "text": "Manifestarea curiozității față de diverse tipuri de mesaje în contexte familiare"
+  },
+  {
+   "level": "III",
+   "code": "1.5",
+   "text": "Manifestarea unei atitudini deschise față de comunicare în condițiile neînțelegerii mesajului audiat"
+  },
+  {
+   "level": "III",
+   "code": "2.1",
+   "text": "Descrierea unui obiect/ unei ființe din universul apropiat pe baza unui plan simplu"
+  },
+  {
+   "level": "III",
+   "code": "2.2",
+   "text": "Povestirea unei întâmplări cunoscute pe baza unui suport adecvat din partea profesorului"
+  },
+  {
+   "level": "III",
+   "code": "2.3",
+   "text": "Prezentarea unei activități realizate individual sau în grup"
+  },
+  {
+   "level": "III",
+   "code": "2.4",
+   "text": "Participarea la interacțiuni pentru găsirea de soluții la probleme"
+  },
+  {
+   "level": "III",
+   "code": "2.5",
+   "text": "Adaptarea vorbirii la diferite situații de comunicare în funcție de partenerul de dialog"
+  },
+  {
+   "level": "III",
+   "code": "3.1",
+   "text": "Extragerea unor informații de detaliu din texte informative sau literare"
+  },
+  {
+   "level": "III",
+   "code": "3.2",
+   "text": "Formularea unui răspuns emoțional față de textul literar citit"
+  },
+  {
+   "level": "III",
+   "code": "3.3",
+   "text": "Formularea unei păreri despre o povestire/personajele acesteia"
+  },
+  {
+   "level": "III",
+   "code": "3.4",
+   "text": "Evaluarea conținutului unui text pentru a evidenția cuvinte-cheie și alte aspecte importante ale acestuia"
+  },
+  {
+   "level": "III",
+   "code": "3.5",
+   "text": "Sesizarea unor regularități ale limbii pe baza textului citit"
+  },
+  {
+   "level": "III",
+   "code": "3.6",
+   "text": "Aprecierea valorii cărților"
+  },
+  {
+   "level": "III",
+   "code": "4.1",
+   "text": "Aplicarea regulilor de despărțire în silabe la capăt de rând, de ortografie și de punctuație în redactarea de text"
+  },
+  {
+   "level": "III",
+   "code": "4.2",
+   "text": "Redactarea unor texte funcționale simple care conțin limbaj vizual și verbal"
+  },
+  {
+   "level": "III",
+   "code": "4.3",
+   "text": "Realizarea unei scurte descrieri ale unor elemente din mediul apropiat pornind de la întrebări de sprijin"
+  },
+  {
+   "level": "III",
+   "code": "4.4",
+   "text": "Povestirea pe scurt a unei întâmplări imaginate/ trăite"
+  },
+  {
+   "level": "III",
+   "code": "4.5",
+   "text": "Manifestarea disponibilității pentru transmiterea în scris a unor idei"
+  },
+  {
+   "level": "IV",
+   "code": "1.1",
+   "text": "Realizarea de deducții simple pe baza audierii unui text literar sau informativ accesibil"
+  },
+  {
+   "level": "IV",
+   "code": "1.2",
+   "text": "Deducerea sensului unui cuvânt prin raportare la mesajul audiat în contexte de comunicare previzibile"
+  },
+  {
+   "level": "IV",
+   "code": "1.3",
+   "text": "Sesizarea abaterilor din mesajele audiate în vederea corectării acestora"
+  },
+  {
+   "level": "IV",
+   "code": "1.4",
+   "text": "Manifestarea atenției față de diverse tipuri de mesaje în contexte previzibile"
+  },
+  {
+   "level": "IV",
+   "code": "1.5",
+   "text": "Manifestarea interesului pentru receptarea mesajului oral indiferent de perturbările de canal"
+  },
+  {
+   "level": "IV",
+   "code": "2.1",
+   "text": "Descrierea unui personaj dintr-o carte/ dintr-un film /a unui personaj imaginar urmărind un set de repere"
+  },
+  {
+   "level": "IV",
+   "code": "2.2",
+   "text": "Relatarea unei întâmplări imaginate pe baza unor întrebări de sprijin"
+  },
+  {
+   "level": "IV",
+   "code": "2.3",
+   "text": "Prezentarea ordonată logic și cronologic a unui proiect/ a unei activități derulate în școală sau extrașcolar"
+  },
+  {
+   "level": "IV",
+   "code": "2.4",
+   "text": "Inițierea și menținerea unei interacțiuni în vederea rezolvării de probleme individuale sau de grup"
+  },
+  {
+   "level": "IV",
+   "code": "2.5",
+   "text": "Manifestarea interesului pentru participarea la interacțiuni orale"
+  },
+  {
+   "level": "IV",
+   "code": "3.1",
+   "text": "Formularea de concluzii simple pe baza lecturii textelor informative sau literare"
+  },
+  {
+   "level": "IV",
+   "code": "3.2",
+   "text": "Asocierea elementelor descoperite în textul citit cu experiențe proprii"
+  },
+  {
+   "level": "IV",
+   "code": "3.3",
+   "text": "Extragerea dintr-un text a unor elemente semnificative pentru a susține o opinie referitoare la mesajul citit"
+  },
+  {
+   "level": "IV",
+   "code": "3.4",
+   "text": "Evaluarea elementelor textuale care conduc la înțelegerea de profunzime în cadrul lecturii"
+  },
+  {
+   "level": "IV",
+   "code": "3.5",
+   "text": "Sesizarea abaterilor din textele citite în vederea corectării acestora"
+  },
+  {
+   "level": "IV",
+   "code": "3.6",
+   "text": "Manifestarea interesului pentru lectura literară și de informare"
+  },
+  {
+   "level": "IV",
+   "code": "4.1",
+   "text": "Recunoașterea și remedierea greșelilor de ortografie și de punctuație în redactarea de text"
+  },
+  {
+   "level": "IV",
+   "code": "4.2",
+   "text": "Redactarea unor texte funcționale scurte pe suport de hârtie sau digital"
+  },
+  {
+   "level": "IV",
+   "code": "4.3",
+   "text": "Redactarea unei descrieri tip portret pe baza unui plan simplu"
+  },
+  {
+   "level": "IV",
+   "code": "4.4",
+   "text": "Povestirea pe scurt a unei secvențe dintr-o poveste/ dintr-un film/ desen animat / a unei activități/ a unei întâmplări imaginate/trăite"
+  },
+  {
+   "level": "IV",
+   "code": "4.5",
+   "text": "Manifestarea interesului pentru scrierea creativă și pentru redactarea de texte informative și funcționale"
+  }
+ ],
+ "contents": [
+  {
+   "level": "III",
+   "domain": "Funcții ale limbii (acte de vorbire)",
+   "items": [
+    "descrierea (de obiecte, ființe din universul imediat)",
+    "relatarea unei acțiuni/ întâmplări cunoscute (trăite, vizionate, citite)",
+    "oferirea de informații (referitoare la universul apropiat)",
+    "solicitarea de informații (referitoare la universul apropiat)",
+    "cererea simplă familiară, cerere politicoasă",
+    "prezentarea (de persoane, de cărți, a unor activități)",
+    "inițierea unui schimb verbal"
+   ]
+  },
+  {
+   "level": "III",
+   "domain": "Textul",
+   "items": [
+    "textul pentru lectură are minimum 450 cuvinte",
+    "textul literar: cu precădere narativ; fragmente descriptive scurte; poezii scurte adecvate nivelului de vârstă",
+    "text de informare și funcțional: afiș, fluturaș, tabel sau alt tip de organizator grafic, carte poștală, invitație; în funcție de dotări – email"
+   ]
+  },
+  {
+   "level": "III",
+   "domain": "Variabilitatea limbii și a comunicării în contexte diferite",
+   "items": [
+    "intuirea claselor morfologice – substantiv, adjectiv calificativ, pronume personal, verb",
+    "intuirea numărului, a genului",
+    "intuirea persoanei, a timpului",
+    "intuirea relațiilor simple dintre cuvinte: subiectpredicat"
+   ],
+   "note": "Celula este comună claselor a III-a și a IV-a în tabelul programei (nu este separată pe clase)."
+  },
+  {
+   "level": "IV",
+   "domain": "Funcții ale limbii (acte de vorbire)",
+   "items": [
+    "descrierea (de personaje imaginare, de film/ carte)",
+    "relatarea unei întâmplări imaginate",
+    "oferirea de informații referitoare la universul școlii sau extrașcolar",
+    "formularea de solicitări formale și informale",
+    "prezentarea (unor rezultate/ proiecte)",
+    "inițierea și menținerea unui schimb verbal"
+   ]
+  },
+  {
+   "level": "IV",
+   "domain": "Textul",
+   "items": [
+    "textul pentru lectură are minimum 800 cuvinte",
+    "text literar narativ; text descriptiv de tip portret; poezii scurte adecvate nivelului de vârstă",
+    "text de informare și funcțional: afiș, tabele, diagramă Venn sau orice alt tip de organizator grafic adecvat vârstei, hartă și plan simplu de oraș/ traseu turistic etc., carte poștală, invitație; în funcție de dotări – mesaj text și email"
+   ]
+  },
+  {
+   "level": "IV",
+   "domain": "Variabilitatea limbii și a comunicării în contexte diferite",
+   "items": [
+    "intuirea claselor morfologice – substantiv, adjectiv calificativ, pronume personal, verb",
+    "intuirea numărului, a genului",
+    "intuirea persoanei, a timpului",
+    "intuirea relațiilor simple dintre cuvinte: subiectpredicat"
+   ],
+   "note": "Celula este comună claselor a III-a și a IV-a în tabelul programei (nu este separată pe clase)."
+  }
+ ],
+ "contentsNote": "Conținuturile din lista de mai jos constituie mijloace pentru dezvoltarea competențelor de comunicare, respectiv baza de operare prin care se structurează competențele; conținuturile nu se tratează în sine; se va evita metalimbajul."
+}

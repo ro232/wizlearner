@@ -1,0 +1,540 @@
+{
+ "id": "clr-p-ii",
+ "subject": "Comunicare în limba română",
+ "levels": [
+  "CP",
+  "I",
+  "II"
+ ],
+ "order": "OMEN nr. 3418/19.03.2013",
+ "inForce2026": {
+  "status": "da",
+  "evidence": "Nu am găsit nicio programă nouă aprobată pentru CP–II care să o înlocuiască pe cea din 2013. Noile planuri-cadru și programe din 2026–2027 se aplică doar la clasa a IX-a (edupedu, 4.09.2026). Noul cadru al curriculumului național 2026 era doar în consultare publică, ca proiect de ordin, fără calendar pentru primar (edupedu, 31.05.2026). Din 2026–2027 intră în vigoare standardele naționale de evaluare I–VIII, care nu înlocuiesc programa. O planificare de editură pentru 2025–2026 (Sigma, clasa I) citează încă programa aprobată prin OMEN 3418/19.03.2013. Concluzia se sprijină pe faptul că nu există o programă mai nouă, nu pe o confirmare oficială explicită. Pagina de programe a ROCNEE (rocnee.eu) nu a putut fi consultată, fiindcă blochează accesul automat.",
+  "urls": [
+   "https://www.edupedu.ro/cand-incepe-scoala-in-septembrie-2026-si-care-sunt-noutatile-pentru-elevi-profesori-si-parinti-calendarul-anului-scolar-2026-2027-noile-programe-pentru-clasa-a-ix-a-manualele-evaluarea-elevilor/",
+   "https://www.edupedu.ro/evaluarea-elevilor-va-fi-legata-de-standarde-de-invatare-iar-profesorii-vor-fi-formati-ca-evaluatori-noul-cadru-al-curriculumului-national-2026-in-consultare-publica-schimbarile-pentru-scoli-si/",
+   "https://editurasigma.ro/wp-content/uploads/2025/09/Planificarea-anuala-a-materiei-Comunicare-in-Limba-Romana.pdf",
+   "https://www.edupedu.ro/tag/programa-scolara-clasa-pregatitoare/"
+  ]
+ },
+ "sources": [
+  {
+   "title": "Programa școlară pentru disciplina Comunicare în limba română, Clasa pregătitoare, clasa I și clasa a II-a (Anexa nr. 2 la OMEN nr. 3418/19.03.2013), copie ISJ Mehedinți, 22 p., MD5 401ee6b09489d2078f4ea80681d5232b",
+   "url": "https://www.edums.ro/invprimar/Lb%20romana%20P%20I%20II.pdf",
+   "role": "primary"
+  },
+  {
+   "title": "Același PDF citit a doua oară, independent, prin WebFetch (alt motor de extragere)",
+   "url": "https://www.edums.ro/invprimar/Lb%20romana%20P%20I%20II.pdf",
+   "role": "check"
+  },
+  {
+   "title": "Editura Sigma – Planificarea anuală Comunicare în limba română, clasa I, 2025–2026 (textele competențelor specifice clasa I)",
+   "url": "https://editurasigma.ro/wp-content/uploads/2025/09/Planificarea-anuala-a-materiei-Comunicare-in-Limba-Romana.pdf",
+   "role": "check"
+  },
+  {
+   "title": "Litera – planificare CLR clasa I (doar codurile 1.1–4.3 și ordinul citat)",
+   "url": "https://edu.litera.ro/manuale/2023_CLR1/2023_545_CLR1_planificare.pdf",
+   "role": "check"
+  },
+  {
+   "title": "Litera – planificare CLR clasa a II-a (doar codurile 1.1–4.3 și ordinul citat)",
+   "url": "https://edu.litera.ro/manuale/2023_CLR2/2023_546_CLR2_planificare.pdf",
+   "role": "check"
+  }
+ ],
+ "normalisation": "ș/ț/Ș/Ț (sedilă) → ș/ț/Ș/Ț (virgulă dedesubt); spațiile multiple din alinierea la stânga-dreapta au fost reduse la un singur spațiu; rândurile rupte în celulele tabelului au fost unite într-un singur item. Textul nu are ghilimele drepte de normalizat. Codurile competențelor sunt date fără punctul final (în document apar ca «1.1.», dar la clasa a II-a 1.2 și 2.2 sunt tipărite fără punct).",
+ "verification": {
+  "secondPass": "Trecerea 1: am descărcat PDF-ul edums.ro și l-am extras cu pdftotext, coloană cu coloană după coordonate (paginile 17–19 pentru Conținuturi). Pentru titlurile competențelor specifice am folosit pdftohtml -xml (textul bold, pe coloane). Trecerea 2: am citit separat același PDF prin WebFetch, cu cereri pe coloane (CP, clasa I, clasa a II-a) și pentru cele 45 de competențe specifice. Am comparat item cu item. Verificare încrucișată: textele competențelor de clasa I din planificarea Sigma 2025–2026 coincid integral (15/15); codurile 1.1–4.3 și ordinul OMEN 3418/19.03.2013 coincid cu planificările Litera pentru clasele I și a II-a. N-am găsit a doua copie oficială utilizabilă: isjcta.ro dă 404, rocnee.eu blochează accesul automat, cererea către Wayback Machine nu a primit aprobare la timp, iar hotnews/stirileprotv duc la alte documente. Ciorna anterioară (competențe generale 1–4, CP 4.1, I 4.1, II 4.1) a fost confirmată.",
+  "differences": [
+   "Conținuturi CP, Citire/ lectură: WebFetch a pus «(introduse progresiv)» ca item separat la CP. După coordonate (x=332 pt, coloana CLASA I), este continuarea itemului de clasa I «Citirea cuvintelor mono și plurisilabice», rupt la trecerea de la pagina 17 la 18. Am rezolvat în favoarea coordonatelor: item de clasa I «Citirea cuvintelor mono și plurisilabice (introduse progresiv)».",
+   "Conținuturi clasa a II-a, Elemente de construcție a comunicării: WebFetch a omis subtitlurile «Vocabular» și «Fonetică», care apar în PDF (pagina 19). Le-am păstrat.",
+   "Spațiere: în PDF apar spații multiple din aliniere (ex. «Simboluri    uzuale», «Reguli      de vorbire», «Scrierea    funcțională                 folosind»). WebFetch le-a redat cu un singur spațiu. Am normalizat la un spațiu; nu este o diferență de text.",
+   "Competențe specifice: cele 45 de titluri sunt identice în ambele treceri. Ciorna anterioară nu avea textele complete, așa că nu există alte diferențe față de ea."
+  ]
+ },
+ "generalCompetences": [
+  {
+   "code": "1",
+   "text": "Receptarea de mesaje orale în contexte de comunicare cunoscute"
+  },
+  {
+   "code": "2",
+   "text": "Exprimarea de mesaje orale în diverse situații de comunicare"
+  },
+  {
+   "code": "3",
+   "text": "Receptarea unei varietăți de mesaje scrise, în contexte de comunicare cunoscute"
+  },
+  {
+   "code": "4",
+   "text": "Redactarea de mesaje în diverse situații de comunicare"
+  }
+ ],
+ "specificCompetences": [
+  {
+   "level": "CP",
+   "code": "1.1",
+   "text": "Identificarea semnificației unui mesaj scurt, pe teme familiare, rostit clar și rar"
+  },
+  {
+   "level": "CP",
+   "code": "1.2",
+   "text": "Identificarea unor informații variate dintr-un mesaj scurt, rostit clar și rar"
+  },
+  {
+   "level": "CP",
+   "code": "1.3",
+   "text": "Identificarea sunetului inițial și/ sau final dintr-un cuvânt, a silabelor și a cuvintelor din propoziții rostite clar și rar"
+  },
+  {
+   "level": "CP",
+   "code": "1.4",
+   "text": "Exprimarea interesului pentru receptarea de mesaje orale, în contexte de comunicare cunoscute"
+  },
+  {
+   "level": "CP",
+   "code": "2.1",
+   "text": "Pronunțarea clară a sunetelor și a cuvintelor în enunțuri simple"
+  },
+  {
+   "level": "CP",
+   "code": "2.2",
+   "text": "Transmiterea unor informații referitoare la sine și la universul apropiat, prin mesaje scurte"
+  },
+  {
+   "level": "CP",
+   "code": "2.3",
+   "text": "Participarea cu interes la dialoguri scurte, în situații de comunicare uzuală"
+  },
+  {
+   "level": "CP",
+   "code": "2.4",
+   "text": "Exprimarea propriilor idei în contexte cunoscute, manifestând interes pentru comunicare"
+  },
+  {
+   "level": "CP",
+   "code": "3.1",
+   "text": "Recunoașterea unor cuvinte uzuale, din universul apropiat, scrise cu litere mari și mici de tipar"
+  },
+  {
+   "level": "CP",
+   "code": "3.2",
+   "text": "Identificarea semnificației unei/ unor imagini care prezintă întâmplări, fenomene, evenimente familiare"
+  },
+  {
+   "level": "CP",
+   "code": "3.3",
+   "text": "Identificarea semnificației unor simboluri care transmit mesaje de necesitate imediată, din universul familiar"
+  },
+  {
+   "level": "CP",
+   "code": "3.4",
+   "text": "Exprimarea în cuvinte proprii a mesajelor redate pe suport vizual sau auditiv, manifestând interes pentru lucrul cu cartea"
+  },
+  {
+   "level": "CP",
+   "code": "4.1",
+   "text": "Trasarea elementelor grafice și a contururilor literelor, folosind resurse variate"
+  },
+  {
+   "level": "CP",
+   "code": "4.2",
+   "text": "Redactarea unor mesaje simple, în contexte uzuale de comunicare"
+  },
+  {
+   "level": "CP",
+   "code": "4.3",
+   "text": "Exprimarea unor idei, trăiri personale și informații prin intermediul limbajelor neconvenționale"
+  },
+  {
+   "level": "I",
+   "code": "1.1",
+   "text": "Identificarea semnificației unui mesaj oral, pe teme accesibile, rostit cu claritate"
+  },
+  {
+   "level": "I",
+   "code": "1.2",
+   "text": "Identificarea unor informații variate dintr-un mesaj rostit cu claritate"
+  },
+  {
+   "level": "I",
+   "code": "1.3",
+   "text": "Identificarea unor sunete, silabe, cuvinte în enunțuri rostite cu claritate"
+  },
+  {
+   "level": "I",
+   "code": "1.4",
+   "text": "Exprimarea interesului pentru receptarea de mesaje orale, în contexte de comunicare cunoscute"
+  },
+  {
+   "level": "I",
+   "code": "2.1",
+   "text": "Formularea unor enunțuri proprii în diverse situații de comunicare"
+  },
+  {
+   "level": "I",
+   "code": "2.2",
+   "text": "Transmiterea unor informații prin intermediul mesajelor simple"
+  },
+  {
+   "level": "I",
+   "code": "2.3",
+   "text": "Participarea cu interes la dialoguri simple, în diferite contexte de comunicare"
+  },
+  {
+   "level": "I",
+   "code": "2.4",
+   "text": "Exprimarea propriilor idei referitoare la contexte familiare, manifestând interes și încredere în sine"
+  },
+  {
+   "level": "I",
+   "code": "3.1",
+   "text": "Citirea unor cuvinte și propoziții scurte, scrise cu litere de tipar sau de mână"
+  },
+  {
+   "level": "I",
+   "code": "3.2",
+   "text": "Identificarea mesajului unui scurt text care prezintă întâmplări, fenomene, evenimente familiare"
+  },
+  {
+   "level": "I",
+   "code": "3.3",
+   "text": "Identificarea semnificației unor simboluri din universul familiar, care transmit mesaje simple"
+  },
+  {
+   "level": "I",
+   "code": "3.4",
+   "text": "Exprimarea interesului pentru lectura unor texte simple, susținute de suport imagistic"
+  },
+  {
+   "level": "I",
+   "code": "4.1",
+   "text": "Scrierea literelor de mână"
+  },
+  {
+   "level": "I",
+   "code": "4.2",
+   "text": "Redactarea unor mesaje scurte, formate din cuvinte scrise cu litere de mână, folosind materiale diverse"
+  },
+  {
+   "level": "I",
+   "code": "4.3",
+   "text": "Exprimarea unor idei și sentimente prin intermediul limbajelor convenționale și neconvenționale"
+  },
+  {
+   "level": "II",
+   "code": "1.1",
+   "text": "Identificarea semnificației unui mesaj oral din texte accesibile variate"
+  },
+  {
+   "level": "II",
+   "code": "1.2",
+   "text": "Identificarea unor informații variate dintr-un text audiat"
+  },
+  {
+   "level": "II",
+   "code": "1.3",
+   "text": "Identificarea sunetelor și silabelor în cuvinte și a cuvintelor în enunțuri rostite cu claritate"
+  },
+  {
+   "level": "II",
+   "code": "1.4",
+   "text": "Exprimarea interesului pentru receptarea de mesaje orale, în contexte de comunicare cunoscute"
+  },
+  {
+   "level": "II",
+   "code": "2.1",
+   "text": "Formularea unor enunțuri proprii în situații concrete de comunicare"
+  },
+  {
+   "level": "II",
+   "code": "2.2",
+   "text": "Transmiterea unor informații printr-o suită de enunțuri înlănțuite logic"
+  },
+  {
+   "level": "II",
+   "code": "2.3",
+   "text": "Participarea cu interes la dialoguri, în diferite contexte de comunicare"
+  },
+  {
+   "level": "II",
+   "code": "2.4",
+   "text": "Exprimarea expresivă a ideilor în contexte familiare manifestând interes și încredere în sine"
+  },
+  {
+   "level": "II",
+   "code": "3.1",
+   "text": "Citirea unor mesaje scrise, întâlnite în mediul cunoscut"
+  },
+  {
+   "level": "II",
+   "code": "3.2",
+   "text": "Identificarea mesajului unui text în care se relatează întâmplări, fenomene din universul cunoscut"
+  },
+  {
+   "level": "II",
+   "code": "3.3",
+   "text": "Identificarea semnificației unor simboluri, în contexte cunoscute"
+  },
+  {
+   "level": "II",
+   "code": "3.4",
+   "text": "Exprimarea interesului pentru lectura unor cărți adecvate vârstei"
+  },
+  {
+   "level": "II",
+   "code": "4.1",
+   "text": "Scrierea unor mesaje, în diverse contexte de comunicare"
+  },
+  {
+   "level": "II",
+   "code": "4.2",
+   "text": "Redactarea unor mesaje simple, cu respectarea convențiilor de bază"
+  },
+  {
+   "level": "II",
+   "code": "4.3",
+   "text": "Exprimarea unor idei, sentimente, păreri prin intermediul limbajelor convenționale"
+  }
+ ],
+ "contents": [
+  {
+   "level": "CP",
+   "domain": "Comunicare orală (ascultare, vorbire, interacțiune)",
+   "items": [
+    "Acte de vorbire: a saluta persoane cunoscute, a se prezenta, a identifica un obiect, o persoană, a formula o rugăminte",
+    "Cuvântul. Propoziția/ Enunțul",
+    "Utilizarea cuvintelor noi în enunțuri adecvate",
+    "Dialogul",
+    "Formularea de întrebări și răspunsuri despre: jocuri și jucării, membrii familiei, prieteni, animale, reguli de igienă alimentară și personală",
+    "Forme ale discursului oral",
+    "Povestirea după imagini"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Citire/ lectură",
+   "items": [
+    "Cartea",
+    "Coperte, foaie, pagină, text, ilustrații",
+    "Literele mici și mari de tipar",
+    "Simboluri uzuale din universul apropiat: metrou, intrare, ieșire, spital, trecere de pietoni etc.",
+    "Citirea cuvintelor pe etichete asociate unor imagini sau obiecte",
+    "Propoziția/ enunțul (fără teoretizări)",
+    "Formularea de propoziții cu suport intuitiv",
+    "Ordonarea propozițiilor pe baza unui suport intuitiv"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Scriere/ redactare",
+   "items": [
+    "Elemente grafice care intră în componența literelor de mână: linii, puncte, bastonașe, zale, bucle, semiovale, ovale, nodulețe",
+    "Desenarea literelor de tipar",
+    "Simboluri neconvenționale folosite în exprimarea scrisă",
+    "Scrierea funcțională folosind desene, simboluri",
+    "Felicitarea",
+    "Biletul"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Elemente de construcție a comunicării",
+   "items": [
+    "Vocabular",
+    "Cuvântul",
+    "Cuvinte cu sens asemănător",
+    "Cuvinte cu sens opus",
+    "Fonetică",
+    "Sunete specifice limbii române",
+    "Despărțirea cuvintelor în silabe",
+    "Cuvinte alcătuite din una, două sau trei silabe, care nu conțin diftongi, triftongi sau consoane redate în scris prin grupurile de litere ce, ci, ge, gi, che, chi, ghe, ghi"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Comunicare orală (ascultare, vorbire, interacțiune)",
+   "items": [
+    "Acte de vorbire: a saluta, a se prezenta, a formula o rugăminte, o idee/ o părere, o cerere",
+    "Cuvântul. Propoziția/ Enunțul",
+    "Utilizarea cuvintelor noi în contexte adecvate",
+    "Intonarea propozițiilor enunțiative și interogative",
+    "Dialogul",
+    "Oferirea unor informații despre: identitatea proprie, desene animate, filme pentru copii, viața de școlar, familie, prieteni, colegi de clasă, reguli de circulație, mediul social și natural apropiat, igiena personală",
+    "Reguli de vorbire eficientă: vorbirea pe rând, ascultarea interlocutorului, păstrarea ideii",
+    "Forme ale discursului oral",
+    "Povestirea unor întâmplări trăite",
+    "Repovestirea unor întâmplări auzite",
+    "Descrierea unui obiect/ a unei persoane"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Citire/ lectură",
+   "items": [
+    "Cartea",
+    "Numerotarea paginilor, direcții de orientare în pagină",
+    "Literele mici și mari de tipar și de mână",
+    "Grupurile de litere ce, ci, ge, gi, che, chi, ghe, ghi",
+    "Alfabetul limbii române",
+    "Citirea cuvintelor mono și plurisilabice (introduse progresiv)",
+    "Cuvinte care conțin diftongii: oa, ea, ia, ie, ua, uă (fără terminologie)",
+    "Citirea propozițiilor/ enunțurilor",
+    "Citirea textelor scurte (de maxim 75 de cuvinte, introduse progresiv)",
+    "Așezarea textului în pagină",
+    "Titlu. Autor. Alineate"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Scriere/ redactare",
+   "items": [
+    "Alfabetul limbii române",
+    "Literele mici și mari de mână",
+    "Grupurile de litere ce, ci, ge, gi, che, chi, ghe, ghi",
+    "Ortografia",
+    "Scrierea ortografică a cuvintelor",
+    "Scrierea cu majusculă la începutul propoziției și al titlului",
+    "Scrierea cu majusculă a substantivelor proprii (fără terminologie)",
+    "Scrierea corectă a cuvintelor care conțin grupurile de litere ce, ci, ge, gi, che, chi, ghe, ghi",
+    "Punctuația",
+    "Punctul",
+    "Semnul întrebării",
+    "Linia de dialog",
+    "Organizarea textului scris",
+    "Scrierea caligrafică pe liniatură tip I",
+    "Plasarea datei, a titlului, folosirea alineatelor",
+    "Scrierea funcțională",
+    "Copieri. Transcrieri (litere, silabe, cuvinte, propoziții, texte de maxim 30 de cuvinte). Dictări",
+    "Biletul",
+    "Invitația. Felicitarea",
+    "Scrisoarea. Jurnalul (text și desene)",
+    "Scrierea imaginativă (texte de 3-5 enunțuri), pornind de la experiențe trăite"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Elemente de construcție a comunicării",
+   "items": [
+    "Vocabular",
+    "Cuvântul– grup de sunete asociat cu un înțeles",
+    "Cuvinte cu sens asemănător",
+    "Cuvinte cu sens opus",
+    "Cuvinte care au aceeași formă și înțeles diferit",
+    "Fonetică",
+    "Sunetele limbii române. Articularea vocalelor și consoanelor (fără denumire)",
+    "Silaba",
+    "Cuvântul",
+    "Despărțirea cuvintelor în silabe intuitiv, fără cunoașterea regulilor",
+    "Propoziția/ enunțul (fără teoretizări)"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Comunicare orală (ascultare, vorbire, interacțiune)",
+   "items": [
+    "Acte de vorbire: a se prezenta și a prezenta pe cineva, a identifica un obiect/ o persoană/ un loc, a cere și a da informații, a formula o idee/ o părere/ o opinie/ o solicitare",
+    "Cuvântul. Propoziția/ Enunțul",
+    "Introducerea cuvintelor noi în vocabularul propriu",
+    "Intonarea propozițiilor exclamative",
+    "Dialogul",
+    "Inițierea, menținerea și încheierea unui dialog despre: școală, familie și locuință, prieteni, colegi, mediul înconjurător, igiena clasei și a locuinței, conduita în mijloacele de transport în comun, în sala de spectacol",
+    "Reguli de vorbire eficientă: elemente de politețe verbală asociate actelor de limbaj utilizate (salutul, prezentarea, formularea unei cereri, ascultarea și respectarea opiniei celuilalt)",
+    "Forme ale discursului oral",
+    "Povestirea unor întâmplări trăite sau observate",
+    "Repovestirea unor întâmplări citite",
+    "Descrierea unui obiect, fenomen sau a unei persoane",
+    "Reguli ale discursului oral",
+    "Pronunție clară și corectă",
+    "Acord de număr și gen, fără terminologie",
+    "Intonație adecvată"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Citire/ lectură",
+   "items": [
+    "Cartea",
+    "Cuprinsul unei cărți",
+    "Grupurile de litere ce, ci, ge, gi, che, chi, ghe, ghi",
+    "Alfabetul limbii române",
+    "Citirea cuvintelor, enunțurilor, textelor scurte",
+    "Propoziția/ enunțul (fără teoretizări)",
+    "Textul (de maxim 120 de cuvinte)",
+    "Titlu. Autor. Alineate",
+    "Așezarea textului în pagină",
+    "Textul literar",
+    "Textul narativ",
+    "Recunoașterea personajelor. Povestirea orală",
+    "Textul liric",
+    "Poezii despre universul copilăriei",
+    "Textul nonliterar/ informativ"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Scriere/ redactare",
+   "items": [
+    "Alfabetul limbii române",
+    "Literele mici și mari de mână",
+    "Grupurile de litere ce, ci, ge, gi, che, chi, ghe, ghi",
+    "Ortografia",
+    "Scrierea corectă a cuvintelor care conțin consoana m înainte de b și p",
+    "Scrierea corectă a cuvintelor care conțin diftongii oa, ea, ia, ie, ua, uă (fără terminologie),",
+    "Scrierea corectă a cuvintelor care conțin literele â sau î, x",
+    "Scrierea corectă a cuvintelor într-un/ într-o, dintr-un/ dintr-o, sau/ s-au, sa/ s-a",
+    "Punctuația",
+    "Semnul exclamării",
+    "Virgula (în vocativ și enumerare)",
+    "Două puncte",
+    "Organizarea textului scris",
+    "Scrierea pe liniatură tip II și dictando",
+    "Așezarea textului în pagina caietului: plasarea titlului, a autorului, folosirea alineatelor, respectarea spațiului dintre cuvinte",
+    "Scrierea funcțională",
+    "Copieri (texte de maxim 50 de cuvinte)",
+    "Transcrieri (texte de maxim 50 de cuvinte)",
+    "Dictări (texte de maxim 40 de cuvinte)",
+    "Biletul de mulțumire, de informare, de solicitare",
+    "Felicitarea",
+    "Afișul",
+    "Scrierea imaginativă (texte de 3-7 enunțuri), pe baza unui suport vizual (imagini, benzi desenate) sau a unui șir de întrebări",
+    "Cartea, ziarul sau revista clasei"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Elemente de construcție a comunicării",
+   "items": [
+    "Vocabular",
+    "Cuvântul",
+    "Cuvinte cu sens asemănător",
+    "Cuvinte cu sens opus",
+    "Cuvinte care au aceeași formă și înțeles diferit",
+    "Fonetică",
+    "Sunetele limbii române. Vocale și consoane",
+    "Despărțirea cuvintelor în silabe la capăt de rând",
+    "Propoziția/ enunțul (fără teoretizări)"
+   ]
+  }
+ ],
+ "notes": {
+  "contentsStructure": "Itemii sunt dați în ordinea din tabel. Subtitlurile scrise cu bold în document (ex. «Acte de vorbire», «Cuvântul. Propoziția/ Enunțul», «Dialogul», «Forme ale discursului oral», «Cartea», «Ortografia», «Punctuația», «Organizarea textului scris», «Scrierea funcțională», «Vocabular», «Fonetică») sunt incluse ca itemi, cum apar în tabel. Itemul de clasa a II-a «...(fără terminologie),» se termină cu virgulă în original.",
+  "competenceCodePrinting": "În document, codurile apar cu punct final («1.1.»), cu excepția clasei a II-a 1.2 și 2.2, tipărite «1.2» și «2.2».",
+  "sugestiiMetodologiceHeadings": [
+   "SUGESTII METODOLOGICE",
+   "Strategii didactice",
+   "Exemplu de abordare integrată la clasa pregătitoare (TEMA: Jucării)"
+  ],
+  "sugestiiMetodologiceRemark": "Sub «Strategii didactice», textul tratează, fără subtitluri separate: folosirea nonverbalului, învățarea în context și evaluarea («Evaluarea» apare cu bold la începutul paragrafului, nu ca titlu). Exemplul integrat are coloanele «Ce urmărim? – competențe specifice –» și «Cum procedăm?» și secțiunile Comunicare în limba română, Matematică și explorarea mediului, Arte vizuale și abilități practice, Muzică și mișcare.",
+  "documentStructure": [
+   "Notă de prezentare",
+   "Competențe generale",
+   "Competențe specifice și exemple de activități de învățare",
+   "Conținuturi",
+   "Sugestii metodologice"
+  ],
+  "learningActivities": "Exemplele de activități de învățare de sub fiecare competență specifică nu au fost extrase (nu erau cerute)."
+ }
+}
