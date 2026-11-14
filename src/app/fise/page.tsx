@@ -3,13 +3,14 @@ import Link from 'next/link';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { KIND_TITLES, SEO_SHEETS, type SeoKind } from '@/lib/seo/catalog';
-import { SITE_URL } from '@/lib/seo/site';
+import { pageMetadata } from '@/lib/seo/metadata';
 
-export const metadata: Metadata = {
-  title: 'Fișe de lucru gratuite pentru grădiniță și clasa pregătitoare · WorksheetWiz',
-  description: 'Fișe gratuite de printat: fiecare literă a alfabetului românesc (inclusiv Ă, Â, Î, Ș, Ț), cifrele 0–10, teme de grădiniță și jocuri „unește punctele”. PDF A4.',
-  alternates: { canonical: `${SITE_URL}/fise` },
-};
+export const metadata: Metadata = pageMetadata({
+  title: 'Fișe de lucru gratuite pentru grădiniță și clasa I',
+  absoluteTitle: true,
+  description: 'Fișe gratuite de printat: fiecare literă a alfabetului românesc (cu Ă, Â, Î, Ș, Ț), cifrele 0–10, teme de grădiniță și jocuri „unește punctele”.',
+  path: '/fise',
+});
 
 const KIND_TEXT: Record<SeoKind, string> = {
   litere: 'Fiecare literă, mare și mică, cu un cuvânt și o imagine.',
@@ -43,6 +44,7 @@ export default function SheetsIndexPage() {
                   <li key={s.slug}>
                     <Link
                       href={`/fise/${s.slug}`}
+                      prefetch={false}
                       aria-label={s.label}
                       className={`flex items-center justify-center h-full rounded-xl bg-white border-2 border-ink font-extrabold text-ink hover:bg-pencil hover:-translate-y-0.5 transition-transform ${['litere', 'mana', 'cifre'].includes(k) ? `aspect-square text-2xl font-display ${k === 'mana' ? 'italic' : ''}` : 'px-4 py-3 justify-start'}`}
                     >
