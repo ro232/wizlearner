@@ -44,7 +44,7 @@ describe('words and names', () => {
     expect(wordInCase('ştefan', 'uppercase')).toBe('ȘTEFAN');
     expect(wordInCase('ANA-MARIA popescu', 'paired')).toBe('Ana-Maria Popescu');
     expect(wordInCase('Țara', 'lowercase')).toBe('țara');
-    expect(wordInCase('OM DE ZĂPADĂ', 'paired', 'theme')).toBe('Om de zăpadă');
+    expect(wordInCase('OM DE ZĂPADĂ', 'paired', 'theme')).toBe('om de zăpadă');
     expect(wordInCase('toamna', 'paired', 'typed')).toBe('Toamna');
   });
 

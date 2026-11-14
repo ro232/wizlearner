@@ -1,6 +1,7 @@
 import type { DrawOp, PageOps } from '@/lib/glyphs/types';
 import type { Tier, WorksheetConfig } from '@/types';
 import { hasIcon, iconOps } from '@/lib/hints/icons';
+import { madeWith } from '@/lib/brand';
 import { ACCENT, INK, MUTED, PAPER, starPoints } from './rows';
 
 /**
@@ -151,22 +152,33 @@ function makeExercise(type: MathType, rand: () => number, range: MathRange): Exe
   }
 }
 
-/** The exercises of one page: no exercise twice. */
+/**
+ * The exercises of one page: no exercise twice. A small range has fewer different exercises
+ * than the page has room for ("Vecinii numărului" 0–5 has four): then the page is still filled,
+ * with every exercise coming back in turn, in a new order each round, the same number of times
+ * (give or take one) and never twice in a row.
+ */
 export function mathExercises(type: MathType, range: MathRange, seed: number, count: number): Exercise[] {
   const rand = rng(seedOf(`${type}:${range}:${seed}`));
   const out: Exercise[] = [];
   const seen = new Set<string>();
+  const key = (e: Exercise) => e.cells.join(' ');
   for (let tries = 0; out.length < count && tries < count * 40; tries++) {
     const e = makeExercise(type, rand, range);
-    const key = e.cells.join(' ');
-    if (seen.has(key)) continue;
-    seen.add(key);
+    if (seen.has(key(e))) continue;
+    seen.add(key(e));
     out.push(e);
   }
-  // small ranges have few different exercises: repeat some (never two alike in a row) to fill the page
-  for (let tries = 0; out.length < count && tries < count * 40; tries++) {
-    const e = makeExercise(type, rand, range);
-    if (e.cells.join(' ') !== out[out.length - 1]?.cells.join(' ')) out.push(e);
+  const pool = out.slice();
+  while (out.length < count && pool.length) {
+    const round = pool.slice();
+    for (let i = round.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [round[i], round[j]] = [round[j], round[i]];
+    }
+    // the round must not open with the exercise the last one closed with
+    if (round.length > 1 && key(round[0]) === key(out[out.length - 1])) [round[0], round[1]] = [round[1], round[0]];
+    out.push(...round.slice(0, count - out.length));
   }
   return out;
 }
@@ -188,6 +200,11 @@ const INSTRUCTIONS: Record<MathType, string> = {
   seq: 'Completează numerele care lipsesc din șir.',
   nbr: 'Scrie vecinii numărului: cel dinainte și cel de după.',
 };
+
+/** Title of a sheet and of its answers: picture sums never go above 10, whatever the range. */
+export function mathTitle(type: MathType, range: MathRange): string {
+  return `${MATH_LABELS[type].title} (0–${type === 'addpic' ? Math.min(range, 10) : range})`;
+}
 
 /** How many exercises fit on a page, and in how many columns. */
 function grid(type: MathType, range: MathRange): { count: number; cols: number } {
@@ -220,7 +237,7 @@ function rewardBox(ops: DrawOp[], stars: number): void {
 
 function footer(ops: DrawOp[], tier: Tier, pageNo: number, pages: number): void {
   if (pages > 1) ops.push({ t: 'text', x: W / 2, y: H - M + 2, text: `Pagina ${pageNo} din ${pages}`, size: 3, fill: MUTED, align: 'center' });
-  if (tier === 'free') ops.push({ t: 'text', x: W - M, y: H - M + 2, text: 'Creat cu WorksheetWiz.com', size: 2.6, fill: '#94a3b8', align: 'right' });
+  if (tier === 'free') ops.push({ t: 'text', x: W - M, y: H - M + 2, text: madeWith('ro'), size: 2.6, fill: '#94a3b8', align: 'right' });
 }
 
 /** One exercise as a line of cells (numbers, signs, boxes), left aligned at x, centred on cy. */
@@ -258,7 +275,7 @@ function picturesOps(n: number, emoji: string, x: number, cy: number, size: numb
 
 function exercisePage(config: WorksheetConfig, type: MathType, range: MathRange, exercises: Exercise[]): DrawOp[] {
   const ops: DrawOp[] = [];
-  const top = frame(ops, config, `${MATH_LABELS[type].title} (0–${type === 'addpic' ? Math.min(range, 10) : range})`, INSTRUCTIONS[type]);
+  const top = frame(ops, config, mathTitle(type, range), INSTRUCTIONS[type]);
   const { cols } = grid(type, range);
   const bottom = H - M - 24;
   const rows = Math.ceil(exercises.length / cols);
@@ -324,7 +341,7 @@ function answersPages(config: WorksheetConfig, range: MathRange, sets: { type: M
     const perLine = type === 'seq' || type === 'nbr' ? 4 : 8;
     const lines = Math.ceil(exercises.length / perLine);
     if (y + 7 + lines * 5.5 > bottom) y = start();
-    ops.push({ t: 'text', x: M, y: y + 2, text: `${MATH_LABELS[type].title} (0–${range})`, size: 4, fill: INK, weight: 'bold' });
+    ops.push({ t: 'text', x: M, y: y + 2, text: mathTitle(type, range), size: 4, fill: INK, weight: 'bold' });
     y += 7.5;
     const colW = (W - 2 * M) / perLine;
     exercises.forEach((e, i) => {

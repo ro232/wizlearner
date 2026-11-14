@@ -134,6 +134,31 @@ for (const emoji of emojis) {
   icons[emoji] = shapes;
 }
 
+// Pictures no emoji exists for, drawn here in the same flat style (36-unit box, M/L/C/Z only).
+// They are stored under a stand-in emoji, which is what the interface shows in its small chips.
+const rect = (x, y, w, h) => `M${x} ${y}L${x + w} ${y}L${x + w} ${y + h}L${x} ${y + h}Z`;
+const disc = (cx, cy, r) => {
+  const k = r2(r * 0.5523);
+  return `M${cx - r} ${cy}C${cx - r} ${r2(cy - k)} ${r2(cx - k)} ${cy - r} ${cx} ${cy - r}C${r2(cx + k)} ${cy - r} ${cx + r} ${r2(cy - k)} ${cx + r} ${cy}C${cx + r} ${r2(cy + k)} ${r2(cx + k)} ${cy + r} ${cx} ${cy + r}C${r2(cx - k)} ${cy + r} ${cx - r} ${r2(cy + k)} ${cx - r} ${cy}Z`;
+};
+const CUSTOM = {
+  // xilofon / xylophone: five coloured bars, long to short, on two rails, with two mallets
+  '🎹': [
+    { f: '#8A5A3C', d: 'M2 13L34 16.5L34 18.5L2 15Z' },
+    { f: '#8A5A3C', d: 'M2 25L34 21.5L34 23.5L2 27Z' },
+    { f: '#DD2E44', d: rect(3.5, 7, 4.6, 26) },
+    { f: '#F4900C', d: rect(9.7, 8.6, 4.6, 22.8) },
+    { f: '#FDCB58', d: rect(15.9, 10.2, 4.6, 19.6) },
+    { f: '#78B159', d: rect(22.1, 11.8, 4.6, 16.4) },
+    { f: '#55ACEE', d: rect(28.3, 13.4, 4.6, 13.2) },
+    { f: '#66757F', d: 'M10.6 1.2L11.6 0.6L17.4 6.4L16.4 7.4Z' },
+    { f: '#66757F', d: 'M27.2 0.6L28.2 1.2L23.4 7.6L22.4 6.6Z' },
+    { f: '#31373D', d: disc(17.4, 7.2, 1.9) },
+    { f: '#31373D', d: disc(22.4, 7.4, 1.9) },
+  ],
+};
+Object.assign(icons, CUSTOM);
+
 if (missing.length) {
   console.error(`No Twemoji picture for: ${missing.join(' ')}`);
   process.exit(1);

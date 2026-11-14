@@ -9,7 +9,7 @@ import { INK, ACCENT, PAPER, MUTED, itemOps, itemWidth, starPoints } from './row
  * "Caietul cu numele lui": a small personalised workbook for one child.
  *   1. a title page with the name
  *   2. one page per letter of the name (capital, small, then the name)
- *   3. the name three ways: capitals, first letter capital, small letters
+ *   3. the name three ways: capitals, first letter capital, the same written smaller
  *   4. "find the letter" for the first letter of the name
  *   5. a diploma
  */
@@ -69,7 +69,7 @@ function diplomaPage(name: string, script: Script): PageOps {
   ops.push({ t: 'text', x: W / 2, y: 85, text: 'DIPLOMĂ', size: 16, fill: INK, weight: 'bold', align: 'center' });
   ops.push({ t: 'text', x: W / 2, y: 105, text: 'Se acordă lui / ei', size: 5, fill: MUTED, align: 'center' });
   bigWord(ops, wordInCase(name, 'paired'), W / 2, 112, W - 70, script === 'cursive' ? 32 : 24, 'solid', script);
-  ops.push({ t: 'text', x: W / 2, y: 170, text: 'pentru că a învățat să-și scrie singur numele.', size: 5, fill: '#334155', align: 'center' });
+  ops.push({ t: 'text', x: W / 2, y: 170, text: 'pentru că a învățat să-și scrie numele fără ajutor.', size: 5, fill: '#334155', align: 'center' });
   ops.push({ t: 'text', x: 34, y: H - 50, text: 'Data: _______________', size: 4, fill: '#334155' });
   ops.push({ t: 'text', x: W - 34, y: H - 50, text: 'Semnătura: _______________', size: 4, fill: '#334155', align: 'right' });
   return { width: W, height: H, ops };
@@ -94,7 +94,7 @@ export function buildNameBookPages(rawName: string, script: Script = 'print'): P
 
   // the name three ways
   // Handwriting is always written with the first letter capital and the rest joined: three tracing styles instead.
-  const ways: { mode: WorksheetConfig['letterMode']; style: WorksheetConfig['fontStyle']; title: string }[] = cursive
+  const ways: { mode: WorksheetConfig['letterMode']; style: WorksheetConfig['fontStyle']; title: string; size?: WorksheetConfig['letterSize']; rows?: number }[] = cursive
     ? [
         { mode: 'paired', style: 'dashed', title: 'Numele meu, de mână' },
         { mode: 'paired', style: 'dotted', title: 'Numele meu, pe puncte' },
@@ -103,10 +103,12 @@ export function buildNameBookPages(rawName: string, script: Script = 'print'): P
     : [
         { mode: 'uppercase', style: 'dashed', title: 'Numele meu, cu litere mari' },
         { mode: 'paired', style: 'dotted', title: 'Numele meu, cu prima literă mare' },
-        { mode: 'lowercase', style: 'outline', title: 'Numele meu, cu litere mici' },
+        // A name always starts with a capital: the third page is the same name written smaller,
+        // on tighter lines, never the name in small letters only.
+        { mode: 'paired', style: 'outline', title: 'Numele meu, scris mai mic', size: 'small', rows: 9 },
       ];
   for (const w of ways) {
-    pages.push(...buildWorksheetPages(sheet(name, { letterMode: w.mode, fontStyle: w.style, customTitle: w.title, rowsPerPage: cursive ? 6 : 7, showLetterIcons: false }, script), 'full').slice(0, 1));
+    pages.push(...buildWorksheetPages(sheet(name, { letterMode: w.mode, fontStyle: w.style, customTitle: w.title, rowsPerPage: w.rows ?? (cursive ? 6 : 7), showLetterIcons: false, ...(w.size ? { letterSize: w.size } : {}) }, script), 'full').slice(0, 1));
   }
 
   // find the first letter of the name

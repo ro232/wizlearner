@@ -1,6 +1,6 @@
 import type { DrawOp, Glyph } from '@/lib/glyphs/types';
 import { iconOps } from '@/lib/hints/icons';
-import { renderGlyph, glyphBounds, type TraceVariant, type GlyphStyle } from '@/lib/glyphs/render';
+import { renderGlyph, glyphBounds, dashPeriod, type TraceVariant, type GlyphStyle } from '@/lib/glyphs/render';
 import { mixColor } from '@/lib/glyphs/geometry';
 import { patternGlyph, patternPeriods, type PatternId } from '@/lib/glyphs/patterns';
 import { SLANT } from '@/lib/glyphs/cursive';
@@ -115,10 +115,15 @@ export function rowHeightMm(glyphs: Glyph[], s: number, stroke = 10, cursive = f
 export function itemOps(glyphs: Glyph[], style: GlyphStyle): DrawOp[] {
   const ops: DrawOp[] = [];
   let x = 0;
+  // One dash size for the whole item (a pair or a word), set by its tightest letter.
+  const drawn = glyphs.filter((g) => g.strokes.length);
+  const st = style.variant === 'dashed' && drawn.length > 1 && style.dashPeriod === undefined
+    ? { ...style, dashPeriod: Math.min(...drawn.map((g) => dashPeriod(g, style))) }
+    : style;
   glyphs.forEach((g, i) => {
     const w = Math.max(g.bbox.maxX - g.bbox.minX, MIN_GLYPH_WIDTH);
     const shift = (w - (g.bbox.maxX - g.bbox.minX)) / 2 - g.bbox.minX; // centre narrow glyphs in their slot
-    ops.push({ t: 'group', tx: x + shift, ty: 0, scale: 1, ops: renderGlyph(g, style) });
+    ops.push({ t: 'group', tx: x + shift, ty: 0, scale: 1, ops: renderGlyph(g, st) });
     x += w + (i < glyphs.length - 1 ? INNER_GAP : 0);
   });
   return ops;
@@ -148,6 +153,20 @@ export function guideOps(geom: RowGeometry, s: number, color: string, cursive = 
     { t: 'line', x1: x, y1: baseline - 50 * s, x2: x + width, y2: baseline - 50 * s, stroke: color, strokeWidth: 0.35, dash: [1.8, 1.4] },
     { t: 'line', x1: x, y1: baseline, x2: x + width, y2: baseline, stroke: color, strokeWidth: 0.5 },
   ];
+}
+
+export const HINT_LABEL_SIZE = 3.4;
+/** How high the label's letters and diacritics reach above its baseline, as a share of the font size. */
+export const HINT_LABEL_ASCENT = 0.82;
+
+/** Where the hint picture and its word go, around the middle line `cy` of a row with scale `s`. */
+export function hintLayout(cy: number, s: number): { icon: number; iconCy: number; textY: number } {
+  const icon = Math.min(9, 48 * s);
+  const gap = 0.7; // clear paper between the picture and the top of the word
+  const below = HINT_LABEL_SIZE * 0.24; // descenders and the comma of ș/ț
+  const block = icon + gap + HINT_LABEL_SIZE * HINT_LABEL_ASCENT + below;
+  const top = cy - block / 2;
+  return { icon, iconCy: top + icon / 2, textY: top + icon + gap + HINT_LABEL_SIZE * HINT_LABEL_ASCENT };
 }
 
 function modelStyle(st: RowStyle): GlyphStyle {
@@ -216,8 +235,11 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
       const hx = st.leftHanded ? modelX - 3 - hintW / 2 : modelX + cellMm + 3 + hintW / 2;
       const cy = baseline - 50 * s;
       if (hint.word) {
-        ops.push(...iconOps(hint.emoji, hx, cy - 1, Math.min(9, 48 * s)));
-        ops.push({ t: 'text', x: hx, y: Math.min(baseline, cy + 6), text: hint.word, size: 3.4, fill: MUTED, align: 'center', weight: 'bold' });
+        // Picture above, word below, as one block centred on the middle line. The word starts
+        // far enough under the picture for its tallest signs (ă â î, l, ț) to stay uncovered.
+        const { icon, iconCy, textY } = hintLayout(cy, s);
+        ops.push(...iconOps(hint.emoji, hx, iconCy, icon));
+        ops.push({ t: 'text', x: hx, y: textY, text: hint.word, size: HINT_LABEL_SIZE, fill: MUTED, align: 'center', weight: 'bold' });
       } else {
         // Picture only (a themed word is its own label).
         ops.push(...iconOps(hint.emoji, hx, baseline - 55 * s, Math.min(12, 75 * s)));

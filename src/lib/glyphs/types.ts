@@ -7,7 +7,7 @@
  *   y = 100  baseline
  *   y = 135  descender bottom
  * Diacritics live above y = 0 (uppercase) or above y = 50 (lowercase);
- * the comma-below of Ș/Ț sits under the baseline (y ≈ 106–128).
+ * the comma-below of Ș/Ț hangs clear under the baseline (y ≈ 118–131), detached from the letter.
  * x grows to the right; every glyph starts at x = 0 and has an explicit width.
  */
 
@@ -37,6 +37,8 @@ export interface Stroke {
   arrowAt?: number | number[] | null;
   /** A diacritic or comma mark (the breve of Ă, the comma of Ș …). */
   mark?: boolean;
+  /** Pen width of this stroke as a share of the letter's pen (the comma of Ș/Ț is finer than the letter). */
+  pen?: number;
 }
 
 export interface GlyphDef {
@@ -48,6 +50,8 @@ export interface GlyphDef {
   arrows?: (number | number[] | null | undefined)[];
   /** How many of the last strokes are diacritic marks (drawn so they stay legible when traced). */
   marks?: number;
+  /** Pen width of the marks as a share of the letter's pen (default 1). */
+  markPen?: number;
 }
 
 export interface Glyph {

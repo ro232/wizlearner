@@ -1,6 +1,8 @@
 import type { WorksheetConfig, Tier } from '@/types';
 import type { DrawOp, Glyph, PageOps } from '@/lib/glyphs/types';
-import { getGlyph, hintFor, normalizeKey, type Alphabet } from '@/lib/glyphs/data';
+import { getGlyph, hintFor, normalizeKey, traceLetters, type Alphabet } from '@/lib/glyphs/data';
+import { madeWith } from '@/lib/brand';
+import { isProperNoun } from '@/lib/themes';
 import { cursiveGlyph, cursiveWord } from '@/lib/glyphs/cursive';
 import type { TraceVariant } from '@/lib/glyphs/render';
 import { isPatternId, type PatternId } from '@/lib/glyphs/patterns';
@@ -58,7 +60,6 @@ const LABELS: Record<Alphabet, Record<string, string>> = {
     of: 'din',
     reward: 'Bravo!',
     rewardSub: 'Colorează o stea pentru fiecare rând terminat.',
-    madeWith: 'Creat cu WorksheetWiz.com',
   },
   en: {
     title: 'Practice Sheet',
@@ -69,7 +70,6 @@ const LABELS: Record<Alphabet, Record<string, string>> = {
     of: 'of',
     reward: 'Great job!',
     rewardSub: 'Color a star for every finished row.',
-    madeWith: 'Made with WorksheetWiz.com',
   },
 };
 
@@ -92,17 +92,22 @@ export function wordInCase(word: string, mode: WorksheetConfig['letterMode'], ki
   const w = normalizeKey(word);
   if (mode === 'uppercase') return w.toUpperCase();
   if (mode === 'lowercase') return w.toLowerCase();
-  // Theme words: only the first letter ("Om de zăpadă"). Typed words: first letter, the rest as typed.
-  if (kind === 'theme') return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+  // Theme and hint words are common nouns: small letters ("om de zăpadă", "avion"), as in the primer.
+  // Only proper names among them keep their capitals ("România", "Moș Crăciun").
+  if (kind === 'theme' && !isProperNoun(w)) return w.toLowerCase();
+  // Typed words: first letter, the rest as typed.
   if (kind === 'typed') return w.charAt(0).toUpperCase() + w.slice(1);
   // Names: every part capitalised ("Ana-Maria Popescu").
   return w.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, sep: string, ch: string) => sep + ch.toUpperCase());
 }
 
-/** Glyphs for a word; characters we cannot draw are skipped, spaces keep their room. */
+/**
+ * Glyphs for a word; spaces keep their room. A letter we have no drawing for (á, ö, ł …) is
+ * traced as its base letter, so no letter of a name goes missing; other signs are skipped.
+ */
 export function glyphsForWord(text: string): Glyph[] {
   const out: Glyph[] = [];
-  for (const ch of text) {
+  for (const ch of traceLetters(text)) {
     if (ch === ' ') {
       if (out.length && out[out.length - 1] !== SPACE_GLYPH) out.push(SPACE_GLYPH);
       continue;
@@ -116,7 +121,7 @@ export function glyphsForWord(text: string): Glyph[] {
 
 /** A word is usable on a tier when every letter in it is. */
 export function isWordAllowed(word: string, tier: Tier): boolean {
-  return [...normalizeKey(word)].every((ch) => !/\p{L}/u.test(ch) || isItemAllowed(ch, 'letters', tier));
+  return [...traceLetters(word)].every((ch) => !/\p{L}/u.test(ch) || isItemAllowed(ch, 'letters', tier));
 }
 
 /** Older saved worksheets have no `alphabet`; they were made with English letters. */
@@ -383,7 +388,7 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
       ops.push({ t: 'text', x: W / 2, y: H - margin + 2, text: `${L.page} ${pageIndex + 1} ${L.of} ${pages.length}`, size: 3, fill: MUTED, align: 'center' });
     }
     if (tier === 'free') {
-      ops.push({ t: 'text', x: W - margin, y: H - margin + 2, text: L.madeWith, size: 2.6, fill: '#94a3b8', align: 'right' });
+      ops.push({ t: 'text', x: W - margin, y: H - margin + 2, text: madeWith(alphabet === 'en' ? 'en' : 'ro'), size: 2.6, fill: '#94a3b8', align: 'right' });
     }
 
     return { width: W, height: H, ops };
