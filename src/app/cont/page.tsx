@@ -30,8 +30,8 @@ interface FiscalInvoice {
 }
 
 const TIER = { free: 'Gratuit', starter: 'Starter', full: 'Complet' } as const;
-/** The contact address, once the operator has filled it in (until then legal.ts holds a bracketed placeholder). */
-const CONTACT_EMAIL = OPERATOR.email.includes('@') ? OPERATOR.email : null;
+/** The contact address, once the operator has filled it in (legal.ts returns null until then). */
+const CONTACT_EMAIL = OPERATOR.email?.includes('@') ? OPERATOR.email : null;
 
 export default function AccountPage() {
   const { user, profile, loading, signOut, redeemAccessCode } = useAuth();
