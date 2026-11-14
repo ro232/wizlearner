@@ -12,6 +12,10 @@ import { ProjectsPanel } from '@/components/account/projects-panel';
 import { HistoryPanel } from '@/components/account/history-panel';
 import { ChildrenPanel } from '@/components/account/children-panel';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
+import { PORTAL_BUTTON, subscriptionSummary } from '@/lib/billing/summary';
+import { OPERATOR } from '@/lib/legal';
+import { track } from '@/lib/analytics';
+import { isReload } from '@/components/billing/checkout-return';
 
 interface FiscalInvoice {
   stripe_invoice_id: string;
@@ -26,10 +30,8 @@ interface FiscalInvoice {
 }
 
 const TIER = { free: 'Gratuit', starter: 'Starter', full: 'Complet' } as const;
-const STATUS: Record<string, string> = {
-  active: 'activ', trialing: 'în perioada de probă', past_due: 'plata a eșuat, Stripe reîncearcă', canceled: 'anulat',
-  unpaid: 'neplătit', incomplete: 'neterminat', incomplete_expired: 'expirat',
-};
+/** The contact address, once the operator has filled it in (legal.ts returns null until then). */
+const CONTACT_EMAIL = OPERATOR.email?.includes('@') ? OPERATOR.email : null;
 
 export default function AccountPage() {
   const { user, profile, loading, signOut, redeemAccessCode } = useAuth();
@@ -37,6 +39,7 @@ export default function AccountPage() {
   const [code, setCode] = useState('');
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [portalBusy, setPortalBusy] = useState(false);
+  const [portalError, setPortalError] = useState(false);
   const [paidNotice, setPaidNotice] = useState(false);
   const [invoices, setInvoices] = useState<FiscalInvoice[]>([]);
 
@@ -55,7 +58,10 @@ export default function AccountPage() {
   }, [user, fetchWorksheets]);
 
   useEffect(() => {
-    setPaidNotice(new URLSearchParams(window.location.search).get('plata') === 'ok');
+    const paid = new URLSearchParams(window.location.search).get('plata') === 'ok';
+    setPaidNotice(paid);
+    // Back from Stripe Checkout after paying. Not counted again when the page is merely reloaded.
+    if (paid && !isReload()) track('checkout_return', { result: 'success' });
   }, []);
 
   if (loading) return <div className="min-h-screen bg-slate-50"><Navbar /></div>;
@@ -74,16 +80,19 @@ export default function AccountPage() {
   }
 
   const tier = profile?.tier ?? 'free';
-  const status = profile?.subscription_status ?? null;
-  const periodEnd = profile?.subscription_period_end ? new Date(profile.subscription_period_end).toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' }) : null;
+  const summary = subscriptionSummary(profile?.subscription_status, profile?.subscription_period_end, tier);
 
   const openPortal = async () => {
     setPortalBusy(true);
+    setPortalError(false);
     try {
       const res = await fetch('/api/stripe/portal', { method: 'POST' });
       const data = (await res.json()) as { url?: string; error?: string };
       if (data.url) window.location.href = data.url;
-      else setMsg({ ok: false, text: data.error ?? 'Nu am putut deschide pagina de abonament.' });
+      else setPortalError(true);
+    } catch {
+      // no answer, or an answer that is not JSON (a server error): never leave the button silent
+      setPortalError(true);
     } finally {
       setPortalBusy(false);
     }
@@ -117,18 +126,26 @@ export default function AccountPage() {
 
         <section className="rounded-2xl bg-white shadow p-6 space-y-4">
           <div className="flex items-center gap-2"><Crown className="w-5 h-5 text-orange-500" aria-hidden /><h2 className="text-lg font-bold text-slate-900">Varianta ta: {TIER[tier]}</h2></div>
-          {status ? (
+          {summary ? (
             <p className="text-slate-700">
-              Abonament {STATUS[status] ?? status}
-              {periodEnd && (status === 'canceled' ? `, acces până la ${periodEnd}` : `, se reînnoiește pe ${periodEnd}`)}.
+              {summary.text}
+              {summary.offerPlans && <> <Link href="/preturi" onClick={() => track('pricing_click', { source: 'account' })} className="font-semibold text-blue-700 underline">Vezi varianta completă</Link></>}
             </p>
           ) : (
-            tier === 'free' && <p className="text-slate-600">Ai varianta gratuită. <Link href="/preturi" className="font-semibold text-blue-700 underline">Vezi varianta completă</Link></p>
+            tier === 'free' && <p className="text-slate-600">Ai varianta gratuită. <Link href="/preturi" onClick={() => track('pricing_click', { source: 'account' })} className="font-semibold text-blue-700 underline">Vezi varianta completă</Link></p>
           )}
           {profile?.stripe_customer_id && (
             <Button variant="outline" onClick={openPortal} disabled={portalBusy} className="gap-1.5">
-              <CreditCard className="w-4 h-4" aria-hidden /> {portalBusy ? 'Se deschide…' : 'Card, facturi sau anulare'}
+              <CreditCard className="w-4 h-4" aria-hidden /> {portalBusy ? 'Se deschide…' : PORTAL_BUTTON}
             </Button>
+          )}
+          {portalError && (
+            <p role="alert" className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-800">
+              Pagina de abonament nu s-a putut deschide, iar abonamentul tău a rămas neschimbat. Încearcă din nou peste câteva minute.
+              {CONTACT_EMAIL && (
+                <> Dacă tot nu merge și vrei să anulezi abonamentul, să schimbi cardul sau să primești o factură, scrie-ne la <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold underline">{CONTACT_EMAIL}</a> de pe adresa contului și rezolvăm noi.</>
+              )}
+            </p>
           )}
           <form onSubmit={redeem} className="pt-4 border-t border-slate-100">
             <label htmlFor="code" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Cod de acces</label>

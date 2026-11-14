@@ -15,6 +15,7 @@ export function SubscribeButton({ plan, label, highlight }: { plan: string; labe
 
   const go = async () => {
     if (!user) {
+      track('checkout_login_needed', { plan });
       router.push('/auth/login?next=/preturi');
       return;
     }
@@ -25,7 +26,10 @@ export function SubscribeButton({ plan, label, highlight }: { plan: string; labe
       const res = await fetch('/api/stripe/checkout', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ plan }) });
       const data = (await res.json()) as { url?: string; error?: string };
       if (data.url) window.location.href = data.url;
-      else setError(data.error ?? 'Nu am putut porni plata.');
+      else {
+        track('checkout_refused', { plan, status: res.status });
+        setError(data.error ?? 'Nu am putut porni plata.');
+      }
     } catch {
       setError('Nu am putut porni plata. Verifică conexiunea.');
     } finally {
