@@ -4,7 +4,8 @@ import { Check } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { SubscribeButton } from '@/components/billing/subscribe-button';
-import { PLANS, billingConfigured } from '@/lib/billing/plans';
+import { CheckoutCancelTracker } from '@/components/billing/checkout-return';
+import { PLANS, billingConfigured, planPriceId, warnIfBillingHalfConfigured } from '@/lib/billing/plans';
 import { stripe } from '@/lib/stripe';
 
 export const metadata: Metadata = { title: 'Prețuri · WorksheetWiz' };
@@ -18,13 +19,21 @@ function formatPrice(amount: number | null, currency: string): string {
   return new Intl.NumberFormat('ro-RO', { style: 'currency', currency: currency.toUpperCase(), maximumFractionDigits: amount % 100 ? 2 : 0 }).format(amount / 100);
 }
 
+/**
+ * Prices are shown (and the subscribe buttons with them) only when payments can be completed end
+ * to end: Stripe key, a price, the webhook secret and the Supabase service role. Until then the
+ * page keeps saying "Plata online vine în curând"; what is missing is written to the server log only.
+ */
 async function loadPrices(): Promise<Record<string, string>> {
-  if (!billingConfigured()) return {};
+  if (!billingConfigured()) {
+    warnIfBillingHalfConfigured('/preturi');
+    return {};
+  }
   const out: Record<string, string> = {};
   await Promise.all(
-    PLANS.filter((p) => p.envPrice).map(async (p) => {
+    PLANS.filter((p) => planPriceId(p)).map(async (p) => {
       try {
-        const price = await stripe().prices.retrieve(p.envPrice!);
+        const price = await stripe().prices.retrieve(planPriceId(p)!);
         out[p.id] = formatPrice(price.unit_amount, price.currency);
       } catch {
         /* a missing price just hides that plan */
@@ -40,6 +49,7 @@ export default async function PricingPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
+      <CheckoutCancelTracker />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 text-center">Prețuri</h1>
         <p className="mt-3 text-center text-slate-600">Începi gratuit. Treci la varianta completă când ai nevoie de fișe pentru toată grupa.</p>
