@@ -2,77 +2,77 @@
 
 exports[`how every kind of sheet looks > caiet-alfabet-mana 1`] = `
 [
-  "58760e85eb66b7b1",
-  "e04077a3f2d0eb44",
-  "d6cd2648480d986a",
+  "6f2e7712866c50b8",
+  "226e68753db131ed",
+  "1864ef0d06d1f88a",
 ]
 `;
 
 exports[`how every kind of sheet looks > caiet-kdp 1`] = `
 [
   "6292f5c685d3c3a6",
-  "7bf70571c40c6655",
-  "1b070feda2e9308c",
-  "0d2b1d0931e774cb",
-  "462a27750d39f147",
-  "634b4e906ace3846",
-  "803b19e5ec7af965",
-  "ff0421a73dbfc12e",
-  "ffb28ad0f2b98643",
+  "5bcc86a618665a3f",
+  "359a9260be5c80e8",
+  "8714129829197e79",
+  "85fd5f68ecf35e7f",
+  "06420ed2ca854183",
+  "328ab72f8b3c729d",
+  "f0d77f364bc2879f",
+  "ddd351615a1a006e",
 ]
 `;
 
 exports[`how every kind of sheet looks > caiet-nume 1`] = `
 [
   "db6d7372a0307e2e",
-  "9fb6f979011abc2b",
-  "6c97601c92434208",
-  "6ceeb8752c810207",
-  "c928694e66c35fb6",
-  "ec8c52230177db0e",
+  "81602459a2d6aa05",
+  "1c56cbe5006a3940",
+  "9b309ce04e6d66ab",
+  "a564d5a102eea311",
+  "acaba7fb249d46ea",
   "69d83c6343eb1d34",
-  "d2e778cb86a125db",
-  "fe8f063563913575",
-  "4967c3aae22ae4a9",
+  "69994ccf31a63ea0",
+  "4ccc5d2072635bb5",
+  "f48443b83c371e5e",
 ]
 `;
 
 exports[`how every kind of sheet looks > cifre 1`] = `
 [
-  "820252960f6939a1",
+  "ae510ebb25f94ff1",
 ]
 `;
 
 exports[`how every kind of sheet looks > coperta-kdp-mana 1`] = `
 [
-  "649afd13af1ef269",
+  "163704e5738f5b87",
 ]
 `;
 
 exports[`how every kind of sheet looks > forme 1`] = `
 [
-  "980786f48e43770f",
+  "a94aabd666b62ef9",
 ]
 `;
 
 exports[`how every kind of sheet looks > grafice 1`] = `
 [
-  "68d5b815a43e3b25",
+  "2fee22e2e14fbe5f",
 ]
 `;
 
 exports[`how every kind of sheet looks > grupa 1`] = `
 [
-  "9936ab2d56775ccc",
-  "d3c4a0c52f5ac12b",
-  "0084153a787ce509",
-  "da1967a3da56efe7",
+  "d6c433032dd6fbfc",
+  "cf3ae2f1310eb178",
+  "3dd8b53d55b7e2f5",
+  "eaa2415c9732baf3",
 ]
 `;
 
 exports[`how every kind of sheet looks > jocuri 1`] = `
 [
-  "ab712d34476aa5f5",
+  "461d4f0276b651f6",
   "835ca4198db9f410",
   "28cbcb1ca7694b36",
 ]
@@ -80,37 +80,37 @@ exports[`how every kind of sheet looks > jocuri 1`] = `
 
 exports[`how every kind of sheet looks > litere-mana-advanced 1`] = `
 [
-  "69525b238e5c60bb",
+  "ef7b84853f3fbffc",
 ]
 `;
 
 exports[`how every kind of sheet looks > litere-mana-beginner 1`] = `
 [
-  "82ae082fe139125d",
+  "4ec08788222d3fb5",
 ]
 `;
 
 exports[`how every kind of sheet looks > litere-mana-intermediate 1`] = `
 [
-  "69525b238e5c60bb",
+  "ef7b84853f3fbffc",
 ]
 `;
 
 exports[`how every kind of sheet looks > litere-tipar-advanced 1`] = `
 [
-  "1bd42c58f6b55db6",
+  "0ef130027a640cd3",
 ]
 `;
 
 exports[`how every kind of sheet looks > litere-tipar-beginner 1`] = `
 [
-  "96940ed97077e91c",
+  "a9a1f69657f47757",
 ]
 `;
 
 exports[`how every kind of sheet looks > litere-tipar-intermediate 1`] = `
 [
-  "0e6e0477e56766aa",
+  "b9f1849c6a74dc1a",
 ]
 `;
 
@@ -123,8 +123,8 @@ exports[`how every kind of sheet looks > matematica-10 1`] = `
   "af9bc77a478c4c55",
   "5785ee0907d13258",
   "70e5fff5deb96134",
-  "d1a34a8c50589c0a",
-  "271e8bff94c5255a",
+  "e03fb03cec47bf4e",
+  "363c817c63aa5738",
 ]
 `;
 
@@ -138,6 +138,6 @@ exports[`how every kind of sheet looks > matematica-100 1`] = `
 
 exports[`how every kind of sheet looks > optiuni 1`] = `
 [
-  "9d44e3259b71b779",
+  "620ac4f00974c515",
 ]
 `;
