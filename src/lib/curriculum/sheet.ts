@@ -29,7 +29,7 @@ function presc(domain: 'D' | 'E', code: string): CompetenceRef {
   return { programme: 'et-presc', level: '3-6', domain, code };
 }
 
-type Rule = Partial<Record<SchoolLevel, CompetenceRef | null>>;
+type Rule = Partial<Record<SchoolLevel, CompetenceRef | CompetenceRef[] | null>>;
 
 /** Tracing letters, words and names. */
 function lettersRule(config: WorksheetConfig, level: SchoolLevel): CompetenceRef | null {
@@ -80,6 +80,21 @@ const RULES: Record<string, Rule> = {
   syl: { presc: presc('D', '3.2'), CP: school(CLR, 'CP', '1.3'), I: school(CLR, 'I', '1.3') },
   // writing the syllables is school work, not preschool
   split: { CP: school(CLR, 'CP', '1.3'), I: school(CLR, 'I', '1.3') },
+  // Sorting, grouping, orientation (sorting-pages.ts).
+  // E 2.4 „Efectuează operații de seriere, grupare, clasificare, măsurare a obiectelor”; MEM CP 5.1
+  // „Sortarea/clasificarea unor obiecte/ materiale etc., pe baza unui criteriu dat” (the group boxes give
+  // the criterion). Not I 5.1 („…pe baza a două criterii”): every sheet sorts by one criterion.
+  sort: { presc: presc('E', '2.4'), CP: school(MEM, 'CP', '5.1') },
+  // the odd one out is classifying (E 2.4), but the criterion is not given: not CP 5.1 „…criteriu dat”
+  odd: { presc: presc('E', '2.4') },
+  // counting each kind (E 2.1, CP 1.1 „Recunoașterea și scrierea numerelor în concentrul 0-31”) after
+  // grouping the pictures by kind (E 2.4, CP 5.1); counts of 2–8 are below clasa I / a II-a
+  group: { presc: [presc('E', '2.1'), presc('E', '2.4')], CP: [school(MEM, 'CP', '1.1'), school(MEM, 'CP', '5.1')] },
+  // MEM 2.1 CP „Orientarea și mișcarea în spațiu în raport cu repere/direcții precizate, folosind sintagme de
+  // tipul: în, pe, deasupra, dedesubt, lângă, în fața, în spatele, sus, jos, stânga, dreapta…”, I „…în raport
+  // cu repere/direcții date…”. Not II 2.1 (coordinates in a reference system), nor a preschool behaviour
+  // (A 2.2 „Se orientează în spațiu pe baza simțurilor” is about the senses, not a worksheet).
+  pos: { CP: school(MEM, 'CP', '2.1'), I: school(MEM, 'I', '2.1') },
 };
 
 /** The largest number each class works with, per the programme's contents. */
@@ -115,7 +130,7 @@ export function sheetCompetences(config: WorksheetConfig, level: SchoolLevel | u
       const cpOperations31 = level === 'CP' && config.mathRange === 31;
       if (level === 'CP' && CP_OPERATIONS.has(key) && (config.mathRange ?? 10) > 10 && !cpOperations31) continue;
       const r = RULES[key]?.[level];
-      if (r) refs.push(r);
+      if (r) refs.push(...(Array.isArray(r) ? r : [r]));
     }
   }
   const seen = new Set<string>();

@@ -226,6 +226,27 @@ exports[`how every kind of sheet looks > optiuni 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > orientare 1`] = `
+[
+  "b620db033944d2db",
+  "71e9fd359907c253",
+  "c6f0c4a281ce7fc0",
+]
+`;
+
+exports[`how every kind of sheet looks > sortare 1`] = `
+[
+  "4e7bb8e7bc9f8e6e",
+  "19fb921c10d18bf7",
+  "6a339b1c857f7da4",
+  "fd78f09469fa9c9a",
+  "e597a65b672c7479",
+  "e505d2102425ab9b",
+  "9288ece9c89c0390",
+  "4ac1eb2e995c9cb4",
+]
+`;
+
 exports[`how every kind of sheet looks > sunete-silabe 1`] = `
 [
   "45c215b4c3bef63c",

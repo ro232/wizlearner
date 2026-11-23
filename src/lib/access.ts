@@ -33,6 +33,8 @@ export function isItemAllowed(item: string, category: ContentCategory, tier: Tie
       // „Sunete și silabe”: the sounds A–E and set 1 of each exercise (made of A–E words)
       if (kind === 'sound') return isItemAllowed(arg, 'letters', tier);
       if (kind === 'first' || kind === 'syl' || kind === 'split') return arg === '1';
+      // sorting, grouping and spatial orientation: set 1 of each
+      if (kind === 'sort' || kind === 'odd' || kind === 'group' || kind === 'pos') return arg === '1';
       return item === 'count:5' || item === 'dots:star';
     }
     case 'math':

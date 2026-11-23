@@ -44,6 +44,11 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'primul-sunet', title: 'Primul sunet', text: 'Scrie sub imagine litera cu care începe cuvântul.', config: { category: 'games', selectedItems: ['first:1'] } },
   { id: 'cate-silabe', title: 'Câte silabe are cuvântul?', text: 'Colorează câte o bulină pentru fiecare silabă.', config: { category: 'games', selectedItems: ['syl:1'] } },
   { id: 'desparte-silabe', title: 'Desparte în silabe', text: 'Urmărește silabele, apoi scrie-le singur în căsuțe.', config: { category: 'games', selectedItems: ['split:1'] } },
+  // Sortare, grupare, orientare în spațiu
+  { id: 'sorteaza', title: 'Sortează', text: 'Unește fiecare imagine cu grupa ei: fructe sau legume.', config: { category: 'games', selectedItems: ['sort:1'] }, levels: ['presc', 'CP'] },
+  { id: 'intrusul', title: 'Ce nu se potrivește?', text: 'Taie imaginea care nu face parte din grupă.', config: { category: 'games', selectedItems: ['odd:1'] }, levels: ['presc'] },
+  { id: 'grupeaza-numara', title: 'Grupează și numără', text: 'Numără fiecare fel de fruct și scrie numărul în tabel.', config: { category: 'games', selectedItems: ['group:1'] }, levels: ['presc', 'CP'] },
+  { id: 'orientare', title: 'Unde se află?', text: 'Pe masă, sub masă, deasupra, în cutie, în stânga: încercuiește.', config: { category: 'games', selectedItems: ['pos:1'] }, levels: ['CP', 'I'] },
 ];
 
 /** The number range a class works in, for the math sheets it opens (programme contents). */

@@ -11,6 +11,7 @@ import { uppercaseLetters, lowercaseLetters, pairedLetters, hintFor } from '@/li
 import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
 import { COUNT_RANGES, DOT_SHAPES, DOT_SHAPE_LABELS } from '@/lib/worksheet/activities';
 import { PHONO_KIND_TITLES, phonologyItems } from '@/lib/worksheet/phonology-pages';
+import { SORTING_KIND_TITLES, sortingItems, sortingShortLabel } from '@/lib/worksheet/sorting-pages';
 import { Button } from '@/components/ui/button';
 import { MathPicker } from './math-picker';
 import { TraceStylePicker } from './trace-style-picker';
@@ -84,7 +85,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       case 'prewrite':
         return [...PATTERN_IDS];
       case 'games':
-        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems()];
+        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems()];
       default:
         return [];
     }
@@ -198,6 +199,11 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               { title: `Sunete și silabe: ${PHONO_KIND_TITLES.first.toLocaleLowerCase('ro')}`, text: 'Sub fiecare imagine, litera cu care începe cuvântul. Seturi diferite de imagini.', items: allItems.filter((i) => i.startsWith('first:')), cols: 'grid-cols-6', show: (i: string) => i.slice(6) },
               { title: `Sunete și silabe: ${PHONO_KIND_TITLES.syl.toLocaleLowerCase('ro')}`, text: 'Cuvinte de 1–4 silabe: o bulină colorată pentru fiecare silabă. Seturi diferite de cuvinte.', items: allItems.filter((i) => i.startsWith('syl:')), cols: 'grid-cols-6', show: (i: string) => i.slice(4) },
               { title: `Sunete și silabe: ${PHONO_KIND_TITLES.split.toLocaleLowerCase('ro')}`, text: 'Silabele de urmărit, apoi de scris în căsuțe (clasa pregătitoare, clasa I). Seturi diferite de cuvinte.', items: allItems.filter((i) => i.startsWith('split:')), cols: 'grid-cols-6', show: (i: string) => i.slice(6) },
+              // Sortare, grupare, orientare în spațiu (sorting-pages.ts)
+              { title: SORTING_KIND_TITLES.sort, text: 'Imagini de unit cu grupa lor: după fel, mărime sau formă.', items: allItems.filter((i) => i.startsWith('sort:')), cols: 'grid-cols-2 sm:grid-cols-3', show: sortingShortLabel },
+              { title: SORTING_KIND_TITLES.odd, text: 'Rânduri de câte patru imagini: copilul o taie pe cea din altă grupă. Seturile 4–6 sunt mai grele.', items: allItems.filter((i) => i.startsWith('odd:')), cols: 'grid-cols-6', show: sortingShortLabel },
+              { title: SORTING_KIND_TITLES.group, text: 'Imagini amestecate (fructe, legume, animale domestice sau sălbatice, transport, jucării): copilul numără fiecare fel și scrie numărul în tabel.', items: allItems.filter((i) => i.startsWith('group:')), cols: 'grid-cols-2 sm:grid-cols-3', show: sortingShortLabel },
+              { title: SORTING_KIND_TITLES.pos, text: 'Pe, sub, deasupra, în, stânga, dreapta: o scenă cu masa și cutia, o grilă de 3 × 3 cu întrebări, ori desene după indicații.', items: allItems.filter((i) => i.startsWith('pos:')), cols: 'grid-cols-2 sm:grid-cols-3', show: sortingShortLabel },
             ].map((group) => (
               <div key={group.title}>
                 <div className="font-extrabold text-ink">{group.title}</div>

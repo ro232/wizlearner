@@ -28,6 +28,9 @@ for (const m of activities.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D
 // Pictures of the „Sunete și silabe” words: every quoted emoji in that file.
 const phonology = readFileSync(join(root, 'src/lib/worksheet/phonology.ts'), 'utf8');
 for (const m of phonology.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)'/gu)) emojis.add(m[1]);
+// Pictures of the sorting and orientation sheets: every quoted emoji in that file.
+const sorting = readFileSync(join(root, 'src/lib/worksheet/sorting.ts'), 'utf8');
+for (const m of sorting.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)'/gu)) emojis.add(m[1]);
 
 function fileFor(emoji) {
   const cps = [...emoji].map((c) => c.codePointAt(0).toString(16));
