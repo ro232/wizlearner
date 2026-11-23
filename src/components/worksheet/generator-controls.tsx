@@ -368,7 +368,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                 {sheetCompetenceLabel(config, config.curriculumLevel) ?? 'Fișa aceasta nu se potrivește cu o competență din programa clasei alese, așa că nu tipărim niciun cod.'}
               </p>
             )}
-            {!config.curriculumLevel && <p className="mt-1.5 text-xs text-slate-500">Jos pe fișă apare codul competenței, ca pentru portofoliu și planificare.</p>}
+            {!config.curriculumLevel && <p className="mt-1.5 text-xs text-slate-500">Alegi clasa, iar codul competenței se tipărește jos, pe fiecare pagină: util pentru portofoliu și planificare.</p>}
           </div>
           <div>
             <SectionLabel>Mărimea literelor</SectionLabel>
