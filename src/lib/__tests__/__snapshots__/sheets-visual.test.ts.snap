@@ -141,3 +141,12 @@ exports[`how every kind of sheet looks > optiuni 1`] = `
   "620ac4f00974c515",
 ]
 `;
+
+exports[`how every kind of sheet looks > sunete-silabe 1`] = `
+[
+  "45c215b4c3bef63c",
+  "60c833ee48c81cf2",
+  "e8285a12ecb9e5f6",
+  "e1297fe9d5c7eb52",
+]
+`;
