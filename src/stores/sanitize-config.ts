@@ -18,9 +18,9 @@ import { SHAPES } from '@/lib/constants';
 const CATEGORIES: readonly ContentCategory[] = ['letters', 'numbers', 'shapes', 'prewrite', 'math', 'games'];
 // Kept here (not imported from the math and games builders) so the store stays light on pages
 // that only need the menu; a test checks they match MATH_TYPES and isActivityItem.
-const MATH_IDS: readonly string[] = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr'];
+const MATH_IDS: readonly string[] = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr', 'money'];
 const GAME_ITEM = /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/;
-const MATH_RANGES: readonly number[] = [5, 10, 20, 100];
+const MATH_RANGES: readonly number[] = [5, 10, 20, 31, 100];
 
 const MAX_ITEMS = 120;
 const MAX_WORDS = 60;
@@ -129,6 +129,7 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
   if (typeof r.mathRange === 'number' && MATH_RANGES.includes(r.mathRange)) config.mathRange = r.mathRange;
   if (typeof r.mathSeed === 'number' && Number.isFinite(r.mathSeed)) config.mathSeed = int(r.mathSeed, 0, 1_000_000_000, 1);
   if (typeof r.mathAnswers === 'boolean') config.mathAnswers = r.mathAnswers;
+  if (r.mathCarry === 'without' || r.mathCarry === 'with' || r.mathCarry === 'mixed') config.mathCarry = r.mathCarry;
   if (r.curriculumLevel === 'presc' || r.curriculumLevel === 'CP' || r.curriculumLevel === 'I' || r.curriculumLevel === 'II') config.curriculumLevel = r.curriculumLevel;
   if (wordPictures) config.wordPictures = wordPictures;
   return config;

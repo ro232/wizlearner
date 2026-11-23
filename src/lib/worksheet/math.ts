@@ -2,7 +2,9 @@ import type { DrawOp, PageOps } from '@/lib/glyphs/types';
 import type { Tier, WorksheetConfig } from '@/types';
 import { hasIcon, iconOps } from '@/lib/hints/icons';
 import { madeWith } from '@/lib/brand';
+import { textWidthMm } from '@/lib/book/text';
 import { ACCENT, INK, MUTED, PAPER, starPoints } from './rows';
+import { lei, moneyExercises, moneyPageOps } from './money';
 
 /**
  * Math sheets ("Matematică"), new every time on request: compare numbers, add, subtract,
@@ -12,13 +14,17 @@ import { ACCENT, INK, MUTED, PAPER, starPoints } from './rows';
  * grown-up. The exercises are random but seeded (type + range + seed), so the preview and
  * the PDF match; „Alte exerciții” just changes the seed.
  *
- * Ranges follow the Romanian curriculum: 0–5 / 0–10 for preschool and clasa pregătitoare,
- * 0–20 and 0–100 (tens and units, no carrying or borrowing) for clasa I.
+ * Ranges follow the programme „Matematică și explorarea mediului”: 0–5 / 0–10 for preschool and
+ * the start of clasa pregătitoare, 0–31 for clasa pregătitoare („Numerele naturale 0-31”), 0–20
+ * and 0–100 for clasa I. Additions and subtractions from 0–20 up can be „fără” or „cu trecere
+ * peste ordin” („Adunarea și scăderea în concentrul 0 – 31 / 0 – 100, fără și cu trecere peste
+ * ordin”), see MathCarry. In 0–31 one term is always 1–5 (CP 1.4: „…prin adăugarea /extragerea
+ * a 1-5 elemente dintr-o mulțime dată”).
  */
 
-export const MATH_TYPES = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr'] as const;
+export const MATH_TYPES = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr', 'money'] as const;
 export type MathType = (typeof MATH_TYPES)[number];
-export const MATH_RANGES = [5, 10, 20, 100] as const;
+export const MATH_RANGES = [5, 10, 20, 31, 100] as const;
 export type MathRange = (typeof MATH_RANGES)[number];
 
 export const MATH_LABELS: Record<MathType, { title: string; text: string; icon: string }> = {
@@ -30,7 +36,32 @@ export const MATH_LABELS: Record<MathType, { title: string; text: string; icon: 
   missing: { title: 'Numărul lipsă', text: '4 + ? = 9', icon: '❓' },
   seq: { title: 'Completează șirul', text: '3, 4, ?, 6', icon: '🔢' },
   nbr: { title: 'Vecinii numărului', text: '? 7 ?', icon: '🏠' },
+  money: { title: 'Bani', text: '1 leu, 5 lei, 10 lei', icon: '💵' },
 };
+
+/**
+ * „Fără / cu trecere peste ordin” for additions and subtractions, from 0–20 up. Unset, a sheet
+ * stays as it always was: 0–20 and 0–31 mixed, 0–100 without carrying.
+ *   without: the units never pass 10 (14 + 5, 27 − 4)
+ *   with:    every exercise carries or borrows, past the ten (8 + 5, 23 − 7); 6 + 4 and 20 − 3
+ *            are in neither, they only come in „mixed”
+ */
+export const MATH_CARRY = ['without', 'with', 'mixed'] as const;
+export type MathCarry = (typeof MATH_CARRY)[number];
+/** The types the carry option changes. */
+export const CARRY_TYPES: readonly MathType[] = ['add', 'sub', 'mix', 'missing'];
+
+export function hasCarryChoice(range: MathRange): boolean {
+  return range >= 20;
+}
+
+export function mathCarryOf(config: Pick<WorksheetConfig, 'mathRange' | 'mathCarry'>): MathCarry {
+  const range = mathRangeOf(config);
+  if (!hasCarryChoice(range)) return 'mixed';
+  const c = config.mathCarry;
+  if (c && (MATH_CARRY as readonly string[]).includes(c)) return c;
+  return range === 100 ? 'without' : 'mixed';
+}
 
 export function isMathType(item: string): item is MathType {
   return (MATH_TYPES as readonly string[]).includes(item);
@@ -76,8 +107,42 @@ export interface Exercise {
 
 const MINUS = '−';
 
-/** a + b within the range; for 0–100 no carrying (units stay under 10). */
-function sumPair(rand: () => number, range: MathRange): [number, number] {
+/** Whether a + b carries (the units make a ten or more), and a − b borrows. */
+export const carries = (a: number, b: number) => (a % 10) + (b % 10) >= 10;
+export const borrows = (a: number, b: number) => a % 10 < b % 10;
+
+const PICKS = 400;
+
+/** a + b within the range, with or without carrying. */
+function sumPair(rand: () => number, range: MathRange, carry: MathCarry = range === 100 ? 'without' : 'mixed'): [number, number] {
+  if (range === 31) {
+    // CP 1.4: add 1–5 elements to a set of up to 30
+    for (let i = 0; i < PICKS; i++) {
+      const b = int(rand, 1, 5);
+      const a = int(rand, 1, range - b);
+      const ok = carry === 'mixed' || (carry === 'with' ? (a % 10) + b > 10 : a >= 10 && !carries(a, b));
+      if (ok) return rand() < 0.25 ? [b, a] : [a, b];
+    }
+    return carry === 'with' ? [8, 5] : [21, 3];
+  }
+  if (carry === 'with') {
+    for (let i = 0; i < PICKS; i++) {
+      // 0–100: past 20, so the sheet is not 0–20 again
+      const total = int(rand, range === 100 ? 21 : 11, range);
+      const a = int(rand, 1, total - 1);
+      if ((a % 10) + ((total - a) % 10) > 10) return [a, total - a];
+    }
+    return [8, 5];
+  }
+  if (carry === 'without' && range !== 100) {
+    for (let i = 0; i < PICKS; i++) {
+      const total = int(rand, 10, range);
+      const a = int(rand, 1, total - 1);
+      if (!carries(a, total - a)) return [a, total - a];
+    }
+    return [12, 5];
+  }
+  if (range === 100 && carry === 'mixed') return sumPair(rand, range, rand() < 0.5 ? 'with' : 'without');
   if (range === 100) {
     const ta = int(rand, 1, 8), tb = int(rand, 0, 9 - ta);
     const ua = int(rand, 0, 9), ub = int(rand, 0, 9 - ua);
@@ -88,8 +153,35 @@ function sumPair(rand: () => number, range: MathRange): [number, number] {
   return [a, total - a];
 }
 
-/** a − b ≥ 0; for 0–100 no borrowing. */
-function diffPair(rand: () => number, range: MathRange): [number, number] {
+/** a − b ≥ 0, with or without borrowing. */
+function diffPair(rand: () => number, range: MathRange, carry: MathCarry = range === 100 ? 'without' : 'mixed'): [number, number] {
+  if (range === 31) {
+    // CP 1.4: take 1–5 elements away
+    for (let i = 0; i < PICKS; i++) {
+      const b = int(rand, 1, 5);
+      const a = int(rand, b, range);
+      const ok = carry === 'mixed' || (carry === 'with' ? a > 10 && a % 10 > 0 && borrows(a, b) : a >= 10 && !borrows(a, b));
+      if (ok) return [a, b];
+    }
+    return carry === 'with' ? [13, 5] : [27, 4];
+  }
+  if (carry === 'with') {
+    for (let i = 0; i < PICKS; i++) {
+      const a = int(rand, range === 100 ? 21 : 11, range);
+      const b = int(rand, 2, a - 1);
+      if (a % 10 > 0 && borrows(a, b)) return [a, b];
+    }
+    return [13, 5];
+  }
+  if (carry === 'without' && range !== 100) {
+    for (let i = 0; i < PICKS; i++) {
+      const a = int(rand, 10, range);
+      const b = int(rand, 1, a);
+      if (!borrows(a, b)) return [a, b];
+    }
+    return [17, 4];
+  }
+  if (range === 100 && carry === 'mixed') return diffPair(rand, range, rand() < 0.5 ? 'with' : 'without');
   if (range === 100) {
     const ta = int(rand, 2, 9), tb = int(rand, 0, ta - 1);
     const ua = int(rand, 0, 9), ub = int(rand, 0, ua);
@@ -99,7 +191,7 @@ function diffPair(rand: () => number, range: MathRange): [number, number] {
   return [a, int(rand, 1, a)];
 }
 
-function makeExercise(type: MathType, rand: () => number, range: MathRange): Exercise {
+function makeExercise(type: MathType, rand: () => number, range: MathRange, carry?: MathCarry): Exercise {
   switch (type) {
     case 'cmp': {
       const a = int(rand, 0, range);
@@ -108,15 +200,15 @@ function makeExercise(type: MathType, rand: () => number, range: MathRange): Exe
       return { cells: [String(a), null, String(b)], answer: a < b ? '<' : a > b ? '>' : '=' };
     }
     case 'add': {
-      const [a, b] = sumPair(rand, range);
+      const [a, b] = sumPair(rand, range, carry);
       return { cells: [String(a), '+', String(b), '=', null], answer: String(a + b) };
     }
     case 'sub': {
-      const [a, b] = diffPair(rand, range);
+      const [a, b] = diffPair(rand, range, carry);
       return { cells: [String(a), MINUS, String(b), '=', null], answer: String(a - b) };
     }
     case 'mix':
-      return makeExercise(rand() < 0.5 ? 'add' : 'sub', rand, range);
+      return makeExercise(rand() < 0.5 ? 'add' : 'sub', rand, range, carry);
     case 'addpic': {
       const max = Math.min(range, 10);
       const a = int(rand, 1, Math.max(1, Math.min(5, max - 1)));
@@ -125,12 +217,12 @@ function makeExercise(type: MathType, rand: () => number, range: MathRange): Exe
     }
     case 'missing': {
       if (rand() < 0.6) {
-        const [a, b] = sumPair(rand, range);
+        const [a, b] = sumPair(rand, range, carry);
         return rand() < 0.5
           ? { cells: [String(a), '+', null, '=', String(a + b)], answer: String(b) }
           : { cells: [null, '+', String(b), '=', String(a + b)], answer: String(a) };
       }
-      const [a, b] = diffPair(rand, range);
+      const [a, b] = diffPair(rand, range, carry);
       return { cells: [String(a), MINUS, null, '=', String(a - b)], answer: String(b) };
     }
     case 'seq': {
@@ -149,6 +241,9 @@ function makeExercise(type: MathType, rand: () => number, range: MathRange): Exe
       const n = int(rand, 1, range - 1);
       return { cells: [null, String(n), null], answer: `${n - 1}, ${n + 1}` };
     }
+    case 'money':
+      // drawn by money.ts (moneySheet); never asked for here
+      return { cells: [], answer: '' };
   }
 }
 
@@ -158,13 +253,17 @@ function makeExercise(type: MathType, rand: () => number, range: MathRange): Exe
  * with every exercise coming back in turn, in a new order each round, the same number of times
  * (give or take one) and never twice in a row.
  */
-export function mathExercises(type: MathType, range: MathRange, seed: number, count: number): Exercise[] {
-  const rand = rng(seedOf(`${type}:${range}:${seed}`));
+export function mathExercises(type: MathType, range: MathRange, seed: number, count: number, carry?: MathCarry): Exercise[] {
+  // an explicit carry choice that differs from what the range always did gets its own set
+  if (type === 'money') return []; // see money.ts
+  if (!hasCarryChoice(range)) carry = undefined;
+  const own = carry && CARRY_TYPES.includes(type) && hasCarryChoice(range) && carry !== (range === 100 ? 'without' : 'mixed');
+  const rand = rng(seedOf(`${type}:${range}:${seed}${own ? `:${carry}` : ''}`));
   const out: Exercise[] = [];
   const seen = new Set<string>();
   const key = (e: Exercise) => e.cells.join(' ');
   for (let tries = 0; out.length < count && tries < count * 40; tries++) {
-    const e = makeExercise(type, rand, range);
+    const e = makeExercise(type, rand, range, carry);
     if (seen.has(key(e))) continue;
     seen.add(key(e));
     out.push(e);
@@ -199,11 +298,19 @@ const INSTRUCTIONS: Record<MathType, string> = {
   missing: 'Ce număr lipsește? Scrie-l în căsuță.',
   seq: 'Completează numerele care lipsesc din șir.',
   nbr: 'Scrie vecinii numărului: cel dinainte și cel de după.',
+  money: 'Numără banii, compară, plătește și schimbă.',
 };
 
-/** Title of a sheet and of its answers: picture sums never go above 10, whatever the range. */
-export function mathTitle(type: MathType, range: MathRange): string {
-  return `${MATH_LABELS[type].title} (0–${type === 'addpic' ? Math.min(range, 10) : range})`;
+const CARRY_TEXT: Record<MathCarry, string> = { without: 'fără trecere peste ordin', with: 'cu trecere peste ordin', mixed: '' };
+
+/**
+ * Title of a sheet and of its answers: picture sums never go above 10, whatever the range;
+ * additions and subtractions say whether they carry („Adunări (0–100), fără trecere peste ordin”).
+ */
+export function mathTitle(type: MathType, range: MathRange, carry: MathCarry = 'mixed'): string {
+  if (type === 'money') return `Bani (până la ${lei(range)})`;
+  const base = `${MATH_LABELS[type].title} (0–${type === 'addpic' ? Math.min(range, 10) : range})`;
+  return CARRY_TYPES.includes(type) && CARRY_TEXT[carry] ? `${base}, ${CARRY_TEXT[carry]}` : base;
 }
 
 /** How many exercises fit on a page, and in how many columns. */
@@ -216,7 +323,10 @@ function grid(type: MathType, range: MathRange): { count: number; cols: number }
 }
 
 function frame(ops: DrawOp[], config: WorksheetConfig, title: string, instruction: string): number {
-  ops.push({ t: 'text', x: M, y: M + 6.5, text: title, size: 6.5, fill: INK, weight: 'bold' });
+  // a long title („Adunări și scăderi (0–100), fără trecere peste ordin”) gets smaller, clear of the brand
+  const room = W - 2 * M - 26;
+  const size = Math.max(4, Math.min(6.5, (6.5 * room) / Math.max(1, textWidthMm(title, 6.5) * 1.08)));
+  ops.push({ t: 'text', x: M, y: M + 6.5, text: title, size, fill: INK, weight: 'bold' });
   ops.push({ t: 'text', x: M, y: M + 14.5, text: `Nume: ${config.childName?.trim() || '______________'}     Data: ____________`, size: 3.6, fill: '#334155' });
   ops.push({ t: 'text', x: W - M, y: M + 6, text: 'WorksheetWiz', size: 3.2, fill: MUTED, weight: 'bold', align: 'right' });
   ops.push({ t: 'line', x1: M, y1: M + 18.5, x2: W - M, y2: M + 18.5, stroke: ACCENT, strokeWidth: 0.6 });
@@ -273,9 +383,9 @@ function picturesOps(n: number, emoji: string, x: number, cy: number, size: numb
   return ops;
 }
 
-function exercisePage(config: WorksheetConfig, type: MathType, range: MathRange, exercises: Exercise[]): DrawOp[] {
+function exercisePage(config: WorksheetConfig, type: MathType, range: MathRange, exercises: Exercise[], carry: MathCarry): DrawOp[] {
   const ops: DrawOp[] = [];
-  const top = frame(ops, config, mathTitle(type, range), INSTRUCTIONS[type]);
+  const top = frame(ops, config, mathTitle(type, range, carry), INSTRUCTIONS[type]);
   const { cols } = grid(type, range);
   const bottom = H - M - 24;
   const rows = Math.ceil(exercises.length / cols);
@@ -327,7 +437,7 @@ function countDots(n: number, x: number, y: number, size: number): DrawOp[] {
 }
 
 /** The answers, as compact as is still easy to read; a second page if they do not fit. */
-function answersPages(config: WorksheetConfig, range: MathRange, sets: { type: MathType; exercises: Exercise[] }[]): DrawOp[][] {
+function answersPages(config: WorksheetConfig, range: MathRange, sets: { type: MathType; exercises: Exercise[] }[], carry: MathCarry): DrawOp[][] {
   const pages: DrawOp[][] = [];
   let ops: DrawOp[] = [];
   const start = () => {
@@ -338,10 +448,10 @@ function answersPages(config: WorksheetConfig, range: MathRange, sets: { type: M
   let y = start();
   const bottom = H - M - 8;
   for (const { type, exercises } of sets) {
-    const perLine = type === 'seq' || type === 'nbr' ? 4 : 8;
+    const perLine = type === 'money' ? 2 : type === 'seq' || type === 'nbr' ? 4 : 8;
     const lines = Math.ceil(exercises.length / perLine);
     if (y + 7 + lines * 5.5 > bottom) y = start();
-    ops.push({ t: 'text', x: M, y: y + 2, text: mathTitle(type, range), size: 4, fill: INK, weight: 'bold' });
+    ops.push({ t: 'text', x: M, y: y + 2, text: mathTitle(type, range, carry), size: 4, fill: INK, weight: 'bold' });
     y += 7.5;
     const colW = (W - 2 * M) / perLine;
     exercises.forEach((e, i) => {
@@ -354,15 +464,28 @@ function answersPages(config: WorksheetConfig, range: MathRange, sets: { type: M
   return pages;
 }
 
+function moneyPage(config: WorksheetConfig, range: MathRange, exercises: ReturnType<typeof moneyExercises>): DrawOp[] {
+  const ops: DrawOp[] = [];
+  const top = frame(ops, config, mathTitle('money', range), INSTRUCTIONS.money);
+  ops.push(...moneyPageOps(exercises, M, W - M, top, H - M - 24));
+  rewardBox(ops, exercises.length);
+  return ops;
+}
+
 /** The chosen math sheets, one page per exercise type, and the answers page if asked for. */
 export function buildMathPages(config: WorksheetConfig, tier: Tier): PageOps[] {
   let range = mathRangeOf(config);
   if (tier === 'free' && range > FREE_MATH_RANGE) range = FREE_MATH_RANGE;
   const seed = config.mathSeed ?? 1;
   const types = config.selectedItems.filter(isMathType);
-  const sets = types.map((type) => ({ type, exercises: mathExercises(type, range, seed, grid(type, range).count) }));
-  const pages: DrawOp[][] = sets.map(({ type, exercises }) => exercisePage(config, type, range, exercises));
-  if (config.mathAnswers && sets.length) pages.push(...answersPages(config, range, sets));
+  const carry = mathCarryOf({ ...config, mathRange: range });
+  const money = types.includes('money') ? moneyExercises(range, rng(seedOf(`money:${range}:${seed}`))) : [];
+  const sets = types.map((type) => ({
+    type,
+    exercises: type === 'money' ? money.map((m) => ({ cells: [], answer: m.answer })) : mathExercises(type, range, seed, grid(type, range).count, carry),
+  }));
+  const pages: DrawOp[][] = sets.map(({ type, exercises }) => (type === 'money' ? moneyPage(config, range, money) : exercisePage(config, type, range, exercises, carry)));
+  if (config.mathAnswers && sets.length) pages.push(...answersPages(config, range, sets, carry));
   return pages.map((ops, i) => {
     footer(ops, tier, i + 1, pages.length);
     return { width: W, height: H, ops };

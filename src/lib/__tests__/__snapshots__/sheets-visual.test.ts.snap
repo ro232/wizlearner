@@ -1,5 +1,40 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`how every kind of sheet looks > bani-5 1`] = `
+[
+  "cb996012625a7e44",
+  "3089ebd9f48fcf71",
+]
+`;
+
+exports[`how every kind of sheet looks > bani-10 1`] = `
+[
+  "64a347ee1d8969da",
+  "5020f6354197bf37",
+]
+`;
+
+exports[`how every kind of sheet looks > bani-20 1`] = `
+[
+  "52e4f4882325548b",
+  "b8fa6f797a1a83b4",
+]
+`;
+
+exports[`how every kind of sheet looks > bani-31 1`] = `
+[
+  "98cba4dc6de80668",
+  "6ec3aedbfccfab58",
+]
+`;
+
+exports[`how every kind of sheet looks > bani-100 1`] = `
+[
+  "4fca9818092072f7",
+  "8de1edb66c1e22a1",
+]
+`;
+
 exports[`how every kind of sheet looks > caiet-alfabet-mana 1`] = `
 [
   "6f2e7712866c50b8",
@@ -128,11 +163,60 @@ exports[`how every kind of sheet looks > matematica-10 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > matematica-20-cu-trecere 1`] = `
+[
+  "f6d9a3470e65aa35",
+  "510a4227585fbf63",
+  "dc3a5e4bc8aa6887",
+  "5d7dcdd5d3c25274",
+  "0e0a243ffd697550",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-31 1`] = `
+[
+  "2be34605bc4270cc",
+  "434b2ec6782b98a2",
+  "b194bc37f02d4a30",
+  "1a4775758c73539f",
+  "9a18d71b9fe1b5ac",
+  "e3fdc12e15c13073",
+  "5c0ee19417e9665b",
+  "71fcbc5edf3dd5ad",
+  "85560c8318732c35",
+  "31755a6d6ad5a812",
+  "2bf3ad7e99fa7d28",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-31-fara-trecere 1`] = `
+[
+  "0c244ec7b54c7307",
+  "be26263bfe742473",
+]
+`;
+
 exports[`how every kind of sheet looks > matematica-100 1`] = `
 [
-  "f87dea203a911669",
-  "cd707ba8866fe9a3",
+  "dd3a9e6c6ba8deae",
+  "96f6cda172b9d4dd",
   "5e233aead9db929b",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-100-amestecat 1`] = `
+[
+  "ba0073b419c3b96d",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-100-cu-trecere 1`] = `
+[
+  "8bf55f15015b587b",
+  "a218954946a04c44",
+  "9f3e4353f1918a48",
+  "b778cbc61c494c0c",
+  "d6e91366dfea0201",
 ]
 `;
 
