@@ -55,6 +55,28 @@ describe('curriculum competence of a sheet', () => {
     );
   });
 
+  it('math 0–31 and money (Bani) follow the programme texts', () => {
+    const at = (over: Partial<WorksheetConfig>, level: SchoolLevel) => sheetCompetences(cfg({ category: 'math', ...over }), level).map((r) => `${r.level} ${r.code}`);
+    // 0–31 operations always add or take away 1–5: CP 1.4
+    expect(at({ selectedItems: ['add', 'sub', 'mix', 'missing', 'addpic'], mathRange: 31 }, 'CP')).toEqual(['CP 1.4']);
+    expect(at({ selectedItems: ['cmp', 'seq', 'nbr'], mathRange: 31 }, 'CP')).toEqual(['CP 1.2', 'CP 1.3']);
+    expect(at({ selectedItems: ['add'], mathRange: 31, mathCarry: 'with' }, 'CP')).toEqual(['CP 1.4']);
+    // 0–20 sums are not limited to 1–5: still no CP code for them
+    expect(at({ selectedItems: ['add'], mathRange: 20 }, 'CP')).toEqual([]);
+    expect(at({ selectedItems: ['add'], mathRange: 31 }, 'I')).toEqual(['I 1.4']);
+    expect(at({ selectedItems: ['add'], mathRange: 31 }, 'presc')).toEqual([]);
+    // money: CP 6.3 up to 31, I 6.3 up to 100; not preschool, not clasa a II-a (200/500 de lei, euro)
+    expect(at({ selectedItems: ['money'], mathRange: 10 }, 'CP')).toEqual(['CP 6.3']);
+    expect(at({ selectedItems: ['money'], mathRange: 31 }, 'CP')).toEqual(['CP 6.3']);
+    expect(at({ selectedItems: ['money'], mathRange: 100 }, 'CP')).toEqual([]);
+    expect(at({ selectedItems: ['money'], mathRange: 100 }, 'I')).toEqual(['I 6.3']);
+    expect(at({ selectedItems: ['money'], mathRange: 10 }, 'presc')).toEqual([]);
+    expect(at({ selectedItems: ['money'], mathRange: 100 }, 'II')).toEqual([]);
+    expect(sheetCompetenceLabel(cfg({ category: 'math', selectedItems: ['add', 'money'], mathRange: 31 }), 'CP')).toBe(
+      'Competențele specifice 1.4, 6.3 · Matematică și explorarea mediului, clasa pregătitoare',
+    );
+  });
+
   it('shapes, digits and games follow the programme texts', () => {
     // CP and clasa I name only pătrat, triunghi, dreptunghi, cerc
     expect(sheetCompetenceLabel(cfg({ category: 'shapes', selectedItems: ['circle', 'square'] }), 'CP')).toBe(
@@ -80,7 +102,7 @@ describe('curriculum competence of a sheet', () => {
       cfg({ category: 'shapes', selectedItems: ['circle', 'heart'] }),
       cfg({ category: 'prewrite', selectedItems: ['zigzag'] }),
       cfg({ category: 'games', selectedItems: ['find:A', 'count:5', 'dots:star'] }),
-      ...MATH_TYPES.flatMap((t) => [5, 10, 20, 100].map((r) => cfg({ category: 'math', selectedItems: [t], mathRange: r }))),
+      ...MATH_TYPES.flatMap((t) => [5, 10, 20, 31, 100].map((r) => cfg({ category: 'math', selectedItems: [t], mathRange: r }))),
     ];
     for (const c of configs) {
       for (const level of LEVELS as SchoolLevel[]) {

@@ -58,6 +58,12 @@ const RULES: Record<string, Rule> = {
   missing: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4'), II: school(MEM, 'II', '1.4') },
   seq: { presc: presc('E', '2.1'), CP: school(MEM, 'CP', '1.3'), I: school(MEM, 'I', '1.3'), II: school(MEM, 'II', '1.3') },
   nbr: { presc: presc('E', '2.1'), CP: school(MEM, 'CP', '1.3'), I: school(MEM, 'I', '1.3'), II: school(MEM, 'II', '1.3') },
+  // „Bani”: count, compare, pay, exchange notes of 1, 5, 10 (and 50) lei.
+  // CP 6.3 „Realizarea unor schimburi echivalente valoric folosind reprezentări neconvenționale în
+  // probleme-joc simple de tip venituri-cheltuieli, cu numere din concentrul 0-31” (contents: „Leul
+  // (bancnotele de 1 leu, 5 lei, 10 lei)”); I 6.3 the same „…cu numere din concentrul 0-100”.
+  // Clasa a II-a works with 200 and 500 de lei and euro, which the sheet does not draw: no code.
+  money: { CP: school(MEM, 'CP', '6.3'), I: school(MEM, 'I', '6.3') },
   // games
   // finding a letter is not phonetic (D 3.2): it is an element of writing (D 3.4)
   find: { presc: presc('D', '3.4') },
@@ -94,7 +100,10 @@ export function sheetCompetences(config: WorksheetConfig, level: SchoolLevel | u
     if (r) refs.push(r);
   } else {
     for (const key of ruleKeys(config)) {
-      if (level === 'CP' && CP_OPERATIONS.has(key) && (config.mathRange ?? 10) > 10) continue;
+      // …except 0–31, where one term is always 1–5 (math.ts): CP 1.4 „Efectuarea de adunări și
+      // scăderi în concentrul 0-31, prin adăugarea /extragerea a 1-5 elemente dintr-o mulțime dată”
+      const cpOperations31 = level === 'CP' && config.mathRange === 31;
+      if (level === 'CP' && CP_OPERATIONS.has(key) && (config.mathRange ?? 10) > 10 && !cpOperations31) continue;
       const r = RULES[key]?.[level];
       if (r) refs.push(r);
     }

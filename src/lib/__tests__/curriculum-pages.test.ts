@@ -35,6 +35,21 @@ describe('„Fișe pe programă” pages', () => {
     expect(presc.flatMap((g) => g.items).every((i) => /^[DE]\.\d\.\d$/.test(i.code))).toBe(true);
   });
 
+  it('lists „Banii” under 6.3 (CP, I) and „Adunări 0–31” under CP 1.4 only', () => {
+    const presetsAt = (slug: string, code: string) =>
+      classCoverage(CLASS_PAGES.find((c) => c.slug === slug)!)
+        .find((g) => g.title === 'Matematică și explorarea mediului')!
+        .items.find((i) => i.code === code)!
+        .presets.map((p) => p.id);
+    expect(presetsAt('clasa-pregatitoare', '6.3')).toEqual(['mate-bani']);
+    expect(presetsAt('clasa-1', '6.3')).toEqual(['mate-bani']);
+    expect(presetsAt('clasa-2', '6.3')).toEqual([]);
+    expect(presetsAt('clasa-pregatitoare', '1.4')).toContain('mate-adunari-31');
+    expect(presetsAt('clasa-1', '1.4')).not.toContain('mate-adunari-31');
+    expect(presetConfig(presetById('mate-adunari-31')!, 'CP').mathRange).toBe(31);
+    expect(presetConfig(presetById('mate-bani')!, 'I').mathRange).toBe(100);
+  });
+
   it('links open the generator with a known sheet and class', () => {
     const p = presetById('mate-adunari')!;
     expect(presetHref(p, 'I')).toBe('/generator?fisa=mate-adunari&clasa=I');
