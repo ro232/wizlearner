@@ -10,7 +10,7 @@ import { PaywallModal } from '@/components/worksheet/paywall-modal';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { THEMES, themeById } from '@/lib/themes';
 import { ALPHABETS } from '@/lib/glyphs/data';
-import { buildGroupPages, parseNameList, MAX_CHILDREN, MAX_LETTERS } from '@/lib/worksheet/group';
+import { buildGroupPages, childSheetConfig, parseNameList, MAX_CHILDREN, MAX_LETTERS } from '@/lib/worksheet/group';
 import { SCHOOL_YEAR, WEEKS_IN_YEAR, weekLabel, weekOfSchoolYear } from '@/lib/calendar';
 import { clearGroupDraft, loadGroupDraft, loadGroups, storeGroupDraft, storeGroups, type SavedGroup } from '@/lib/saved-groups';
 import { sanitizeGroupProject } from '@/components/projects/sanitize-project';
@@ -21,6 +21,7 @@ import { useDownload } from '@/hooks/use-download';
 import { downloadPagesPdf } from '@/lib/pdf/actions';
 import { logDownload, takeProject } from '@/lib/projects';
 import type { Difficulty, LetterMode, Script } from '@/types';
+import { SCHOOL_LEVELS, sheetCompetenceLabel, type SchoolLevel } from '@/lib/curriculum/sheet';
 
 /** On the free plan the group sheets can be tried with a few children. */
 const FREE_GROUP_LIMIT = 3;
@@ -49,6 +50,7 @@ export default function GroupPage() {
   const [script, setScript] = useState<Script>('print');
   const [difficulty, setDifficulty] = useState<Difficulty>('beginner');
   const [withFind, setWithFind] = useState(true);
+  const [curriculumLevel, setCurriculumLevel] = useState<SchoolLevel | undefined>(undefined);
   const { busy: busyWith, error, run } = useDownload();
   const busy = busyWith !== null;
   const [showPaywall, setShowPaywall] = useState(false);
@@ -83,6 +85,7 @@ export default function GroupPage() {
       setScript(draft.script);
       setDifficulty(draft.difficulty);
       setWithFind(draft.withFind);
+      setCurriculumLevel(draft.curriculumLevel);
     } else if (saved[0]) {
       openGroup(saved[0]);
     }
@@ -108,8 +111,8 @@ export default function GroupPage() {
   // …and is written back at every change. Nothing here is sent anywhere.
   useEffect(() => {
     if (!restored) return;
-    storeGroupDraft({ namesText, groupName, groupId, levels, week, writtenInWeek: weekOfSchoolYear(new Date()), themeId, letters, letterMode, script, difficulty, withFind });
-  }, [restored, namesText, groupName, groupId, levels, week, themeId, letters, letterMode, script, difficulty, withFind]);
+    storeGroupDraft({ namesText, groupName, groupId, levels, week, writtenInWeek: weekOfSchoolYear(new Date()), themeId, letters, letterMode, script, difficulty, withFind, ...(curriculumLevel ? { curriculumLevel } : {}) });
+  }, [restored, namesText, groupName, groupId, levels, week, themeId, letters, letterMode, script, difficulty, withFind, curriculumLevel]);
 
   const list = useMemo(() => parseNameList(namesText), [namesText]);
   const names = list.names;
@@ -119,9 +122,9 @@ export default function GroupPage() {
   const previewNames = names.length ? names.slice(0, limit) : ['Ana'];
   const previewKeys = names.length ? list.keys.slice(0, limit) : ['Ana'];
   const { pages } = useMemo(
-    () => buildGroupPages({ names: previewNames, keys: previewKeys, themeId, letters, letterMode, script, difficulty, levels, withFindPages: withFind }),
+    () => buildGroupPages({ names: previewNames, keys: previewKeys, themeId, letters, letterMode, script, difficulty, levels, withFindPages: withFind, curriculumLevel }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [previewKeys.join('\n'), themeId, letters, letterMode, script, difficulty, levels, withFind],
+    [previewKeys.join('\n'), themeId, letters, letterMode, script, difficulty, levels, withFind, curriculumLevel],
   );
 
   function applyWeek(w: number) {
@@ -386,6 +389,29 @@ export default function GroupPage() {
                   ))}
                 </div>
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="group-curriculum" className={`${label} mb-2`}>Competența din programă</label>
+              <select id="group-curriculum" value={curriculumLevel ?? ''}
+                onChange={(e) => {
+                  const level = (e.target.value || undefined) as SchoolLevel | undefined;
+                  setCurriculumLevel(level);
+                  // what each class writes: grădiniță capitals, CP capitals and small letters, from clasa I handwriting
+                  if (level === 'presc') { setScript('print'); setLetterMode('uppercase'); }
+                  else if (level === 'CP') { setScript('print'); setLetterMode('paired'); }
+                  else if (level === 'I' || level === 'II') setScript('cursive');
+                }}
+                className="w-full min-h-11 px-3 border-2 border-slate-300 rounded-xl bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Nu o tipări</option>
+                {SCHOOL_LEVELS.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
+              </select>
+              <p className="mt-1.5 text-xs text-slate-600" data-group-competence>
+                {curriculumLevel
+                  ? sheetCompetenceLabel(childSheetConfig('Ana', { themeId, letters, letterMode, script, difficulty }), curriculumLevel)
+                    ?? 'Fișele acestea nu se potrivesc cu o competență din programa clasei alese, așa că nu tipărim niciun cod.'
+                  : 'Alegi clasa grupei, iar codul competenței se tipărește jos, pe fiecare fișă. Felul de scris se potrivește singur clasei.'}
+              </p>
             </div>
 
             <label className="flex items-start gap-3 cursor-pointer rounded-xl border-2 border-slate-300 bg-paper p-3">

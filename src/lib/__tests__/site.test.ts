@@ -1,3 +1,4 @@
+import { CLASS_PAGES } from '@/lib/curriculum/presets';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { LOCAL_SITE_URL, SITE_URL, absoluteUrl, resolveSiteUrl, CONTENT_UPDATED } from '@/lib/seo/site';
@@ -32,7 +33,7 @@ describe('public address of the site', () => {
 
   it('sitemap and robots are built from it', () => {
     const urls = sitemap().map((e) => e.url);
-    expect(urls.length).toBe(10 + SEO_SHEETS.length);
+    expect(urls.length).toBe(10 + SEO_SHEETS.length + 1 + CLASS_PAGES.length); // + /programa and its class pages
     expect(new Set(urls).size).toBe(urls.length);
     for (const u of urls) {
       expect(u.startsWith(SITE_URL), u).toBe(true);
