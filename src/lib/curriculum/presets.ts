@@ -15,6 +15,8 @@ export interface SheetPreset {
   text: string;
   /** The generator settings it opens with (the class is added by the link). */
   config: Partial<WorksheetConfig>;
+  /** Only these classes list it (unset: every class whose codes it prints). */
+  levels?: SchoolLevel[];
 }
 
 /** The free items are used where possible, so anyone can try the sheet straight away. */
@@ -32,6 +34,8 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'mate-lipsa', title: 'Numărul care lipsește', text: 'Află termenul necunoscut.', config: { category: 'math', selectedItems: ['missing'] } },
   { id: 'mate-sir', title: 'Completează șirul', text: 'Numerele în ordine, cu golurile de completat.', config: { category: 'math', selectedItems: ['seq'] } },
   { id: 'mate-vecini', title: 'Vecinii numerelor', text: 'Numărul dinainte și cel de după.', config: { category: 'math', selectedItems: ['nbr'] } },
+  { id: 'mate-bani', title: 'Banii', text: 'Numără, compară și schimbă bancnote de 1 leu, 5 lei, 10 lei.', config: { category: 'math', selectedItems: ['money'] } },
+  { id: 'mate-adunari-31', title: 'Adunări 0–31', text: 'Adaugi 1–5 unități, fără și cu trecere peste ordin.', config: { category: 'math', selectedItems: ['add'], mathRange: 31 }, levels: ['CP'] },
   { id: 'gaseste-litera', title: 'Găsește litera', text: 'Colorează litera căutată printre celelalte.', config: { category: 'games', selectedItems: ['find:A'] } },
   { id: 'numara', title: 'Numără și scrie', text: 'Numără obiectele și scrie numărul.', config: { category: 'games', selectedItems: ['count:5'] } },
   { id: 'uneste-punctele', title: 'Unește punctele', text: 'Unește punctele în ordinea numerelor.', config: { category: 'games', selectedItems: ['dots:star'] } },
@@ -51,6 +55,7 @@ export function presetConfig(preset: SheetPreset, level: SchoolLevel): Worksheet
     ...DEFAULT_CONFIG,
     ...preset.config,
     ...(preset.config.category === 'math' ? { mathRange: MATH_RANGE[level] } : {}),
+    ...(preset.config.mathRange ? { mathRange: preset.config.mathRange } : {}),
     customWords: [],
     curriculumLevel: level,
   };
@@ -105,7 +110,7 @@ const sameRef = (a: CompetenceRef, b: SpecificCompetence, programme: ProgrammeId
  * (cognitive development, numbers and shapes): the others are not worksheet matters.
  */
 export function classCoverage(page: ClassPage): CoverageGroup[] {
-  const covered = SHEET_PRESETS.map((p) => ({ preset: p, refs: sheetCompetences(presetConfig(p, page.level), page.level) }));
+  const covered = SHEET_PRESETS.filter((p) => !p.levels || p.levels.includes(page.level)).map((p) => ({ preset: p, refs: sheetCompetences(presetConfig(p, page.level), page.level) }));
   const groups: CoverageGroup[] = [];
   for (const id of page.programmes) {
     const prog = PROGRAMMES[id];
