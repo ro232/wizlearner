@@ -24,6 +24,7 @@ export function Footer() {
           <Logo small />
           <nav aria-label="Pagini legale" className="flex flex-wrap justify-center gap-x-5 text-sm font-bold text-slate-600 [&>a]:py-2.5">
             <Link href="/fise" className="hover:text-pen">Fișe gratuite</Link>
+            <Link href="/programa" className="hover:text-pen">Fișe pe programă</Link>
             <Link href="/preturi" className="hover:text-pen">Prețuri</Link>
             <Link href="/confidentialitate" className="hover:text-pen">Confidențialitate</Link>
             <Link href="/termeni" className="hover:text-pen">Termeni</Link>

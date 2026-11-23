@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { SEO_SHEETS } from '@/lib/seo/catalog';
+import { CLASS_PAGES } from '@/lib/curriculum/presets';
 import { CONTENT_UPDATED, absoluteUrl } from '@/lib/seo/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -16,6 +17,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/preturi', 0.8),
     page('/book', 0.7),
     ...SEO_SHEETS.map((s) => page(`/fise/${s.slug}`, 0.7)),
+    page('/programa', 0.8),
+    ...CLASS_PAGES.map((c) => page(`/programa/${c.slug}`, 0.7)),
     page('/confidentialitate', 0.2, 'yearly'),
     page('/termeni', 0.2, 'yearly'),
   ];

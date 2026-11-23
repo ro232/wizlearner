@@ -369,6 +369,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               </p>
             )}
             {!config.curriculumLevel && <p className="mt-1.5 text-xs text-slate-500">Alegi clasa, iar codul competenței se tipărește jos, pe fiecare pagină: util pentru portofoliu și planificare.</p>}
+            <a href="/programa" className="mt-1 inline-block text-xs font-bold text-blue-700 underline">Toate competențele clasei, cu fișele lor</a>
           </div>
           <div>
             <SectionLabel>Mărimea literelor</SectionLabel>

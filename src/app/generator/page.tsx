@@ -23,6 +23,8 @@ import { useDownload } from '@/hooks/use-download';
 import { useWorksheets } from '@/hooks/use-worksheets';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/toast';
+import { presetById, presetConfig } from '@/lib/curriculum/presets';
+import { sanitizeConfig } from '@/stores/sanitize-config';
 
 export default function GeneratorPage() {
   const [showPaywall, setShowPaywall] = useState(false);
@@ -69,6 +71,24 @@ export default function GeneratorPage() {
     },
     [empty, runDownload, config, tier, pages],
   );
+
+  // Opened from „Fișe pe programă” (/generator?fisa=…&clasa=…): start from that sheet, for that
+  // class. Applied after the saved sheet is restored, so the restore does not overwrite it; the
+  // address is then cleaned so a reload keeps the teacher's own changes.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const preset = presetById(params.get('fisa') ?? '');
+    const level = params.get('clasa');
+    if (!preset || !(level === 'presc' || level === 'CP' || level === 'I' || level === 'II')) return;
+    const apply = () => {
+      const { childName } = useWorksheetStore.getState().config;
+      useWorksheetStore.setState({ nameSlot: null, config: sanitizeConfig({ ...presetConfig(preset, level), childName }) });
+      window.history.replaceState(null, '', '/generator');
+      track('curriculum_preset', { preset: preset.id, level: level.toLowerCase() });
+    };
+    if (useWorksheetStore.persist.hasHydrated()) apply();
+    else return useWorksheetStore.persist.onFinishHydration(apply);
+  }, []);
 
   // Ctrl/⌘+S downloads and Ctrl/⌘+P prints the sheet (not the web page around it).
   useEffect(() => {

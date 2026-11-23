@@ -1,3 +1,4 @@
+import type { SchoolLevel } from '@/lib/curriculum/sheet';
 import type { Difficulty, LetterMode, Script } from '@/types';
 
 /**
@@ -75,6 +76,8 @@ export interface GroupDraft {
   script: Script;
   difficulty: Difficulty;
   withFind: boolean;
+  /** The class whose curriculum competence is printed (grădiniță, CP, I, II), if chosen. */
+  curriculumLevel?: SchoolLevel;
 }
 
 /** A draft out of whatever the storage holds; null when there is none or it is unreadable. */
@@ -98,6 +101,9 @@ export function parseGroupDraft(raw: string | null): GroupDraft | null {
       script: r.script === 'cursive' ? 'cursive' : 'print',
       difficulty: isDifficulty(r.difficulty) ? r.difficulty : 'beginner',
       withFind: r.withFind !== false,
+      ...(r.curriculumLevel === 'presc' || r.curriculumLevel === 'CP' || r.curriculumLevel === 'I' || r.curriculumLevel === 'II'
+        ? { curriculumLevel: r.curriculumLevel }
+        : {}),
     };
   } catch {
     return null;

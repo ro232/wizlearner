@@ -1,4 +1,5 @@
 import type { PageOps } from '@/lib/glyphs/types';
+import type { SchoolLevel } from '@/lib/curriculum/sheet';
 import { DEFAULT_CONFIG, type Difficulty, type LetterMode, type Script, type WorksheetConfig } from '@/types';
 import { normalizeKey } from '@/lib/glyphs/data';
 import { themeById } from '@/lib/themes';
@@ -27,6 +28,8 @@ export interface GroupOptions {
   withFindPages?: boolean;
   /** Print letters (default) or joined handwriting, for the first grade. */
   script?: Script;
+  /** The class whose curriculum competence is printed on every sheet (none: no label). */
+  curriculumLevel?: SchoolLevel;
 }
 
 export interface NameList {
@@ -129,6 +132,7 @@ export function childSheetConfig(name: string, opts: Omit<GroupOptions, 'names'>
     repetitionsPerItem: 1,
     fillPage: false,
     showLetterIcons: true,
+    ...(opts.curriculumLevel ? { curriculumLevel: opts.curriculumLevel } : {}),
   };
 }
 
