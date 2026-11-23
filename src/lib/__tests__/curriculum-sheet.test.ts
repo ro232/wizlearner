@@ -18,8 +18,8 @@ describe('curriculum competence of a sheet', () => {
 
   it('print letters', () => {
     const c = cfg({ category: 'letters', selectedItems: ['A'] });
-    expect(sheetCompetenceLabel(c, 'presc')).toBe('Comportament D 3.4 · Educație timpurie, nivel preșcolar');
-    expect(sheetCompetenceLabel(c, 'CP')).toBe('Competența 4.1 · Comunicare în limba română, clasa pregătitoare');
+    expect(sheetCompetenceLabel(c, 'presc')).toBe('Comportament vizat D.3.4 · Curriculum pentru educație timpurie, nivel preșcolar');
+    expect(sheetCompetenceLabel(c, 'CP')).toBe('Competența specifică 4.1 · Comunicare în limba română, clasa pregătitoare');
     // print letters are not written in clasa I / a II-a: no loose code
     expect(sheetCompetenceLabel(c, 'I')).toBeNull();
     expect(sheetCompetenceLabel(c, 'II')).toBeNull();
@@ -27,26 +27,48 @@ describe('curriculum competence of a sheet', () => {
 
   it('handwriting', () => {
     const letters = cfg({ category: 'letters', script: 'cursive', selectedItems: ['a'] });
-    expect(sheetCompetenceLabel(letters, 'I')).toBe('Competența 4.1 · Comunicare în limba română, clasa I');
+    expect(sheetCompetenceLabel(letters, 'I')).toBe('Competența specifică 4.1 · Comunicare în limba română, clasa I');
     expect(sheetCompetenceLabel(letters, 'presc')).toBeNull();
-    expect(sheetCompetenceLabel(letters, 'II')).toBeNull(); // single letters are not „scrierea unor mesaje”
+    expect(sheetCompetenceLabel(letters, 'CP')).toBeNull(); // handwriting letters start in clasa I
+    expect(sheetCompetenceLabel(letters, 'II')).toBeNull(); // traced letters are not „scrierea unor mesaje”
     const words = cfg({ category: 'letters', script: 'cursive', selectedItems: [], customWords: ['mama'] });
-    expect(sheetCompetenceLabel(words, 'II')).toBe('Competența 4.1 · Comunicare în limba română, clasa a II-a');
+    expect(sheetCompetenceLabel(words, 'II')).toBeNull(); // nor is a traced word
   });
 
   it('math: codes per exercise, within the class number range', () => {
     const c = cfg({ category: 'math', selectedItems: ['cmp', 'add'], mathRange: 10 });
-    expect(sheetCompetenceLabel(c, 'CP')).toBe('Competențele 1.2, 1.4 · Matematică și explorarea mediului, clasa pregătitoare');
+    expect(sheetCompetenceLabel(c, 'CP')).toBe('Competențele specifice 1.2, 1.4 · Matematică și explorarea mediului, clasa pregătitoare');
+    // CP adds or takes away 1–5 elements: 0–20 operations get no code, comparing still does
+    expect(sheetCompetenceLabel(cfg({ category: 'math', selectedItems: ['cmp', 'add'], mathRange: 20 }), 'CP')).toBe(
+      'Competența specifică 1.2 · Matematică și explorarea mediului, clasa pregătitoare',
+    );
     // 0–100 is beyond clasa pregătitoare (0–31): no code
     expect(sheetCompetenceLabel(cfg({ category: 'math', selectedItems: ['add'], mathRange: 100 }), 'CP')).toBeNull();
     expect(sheetCompetenceLabel(cfg({ category: 'math', selectedItems: ['add'], mathRange: 100 }), 'I')).toBe(
-      'Competența 1.4 · Matematică și explorarea mediului, clasa I',
+      'Competența specifică 1.4 · Matematică și explorarea mediului, clasa I',
     );
-    // operations are not a preschool behaviour; comparing is (E 2.1)
+    // neither operations nor the signs <, >, = are preschool behaviours; sequences are (E 2.1)
     expect(sheetCompetenceLabel(cfg({ category: 'math', selectedItems: ['add'], mathRange: 10 }), 'presc')).toBeNull();
-    expect(sheetCompetenceLabel(cfg({ category: 'math', selectedItems: ['cmp'], mathRange: 5 }), 'presc')).toBe(
-      'Comportament E 2.1 · Educație timpurie, nivel preșcolar',
+    expect(sheetCompetenceLabel(cfg({ category: 'math', selectedItems: ['cmp'], mathRange: 5 }), 'presc')).toBeNull();
+    expect(sheetCompetenceLabel(cfg({ category: 'math', selectedItems: ['seq'], mathRange: 10 }), 'presc')).toBe(
+      'Comportament vizat E.2.1 · Curriculum pentru educație timpurie, nivel preșcolar',
     );
+  });
+
+  it('shapes, digits and games follow the programme texts', () => {
+    // CP and clasa I name only pătrat, triunghi, dreptunghi, cerc
+    expect(sheetCompetenceLabel(cfg({ category: 'shapes', selectedItems: ['circle', 'square'] }), 'CP')).toBe(
+      'Competența specifică 2.2 · Matematică și explorarea mediului, clasa pregătitoare',
+    );
+    expect(sheetCompetenceLabel(cfg({ category: 'shapes', selectedItems: ['circle', 'star'] }), 'CP')).toBeNull();
+    expect(sheetCompetenceLabel(cfg({ category: 'shapes', selectedItems: ['star'] }), 'presc')).toBe(
+      'Comportament vizat E.2.2 · Curriculum pentru educație timpurie, nivel preșcolar',
+    );
+    expect(sheetCompetenceLabel(cfg({ category: 'numbers', selectedItems: ['1'] }), 'II')).toBeNull();
+    expect(sheetCompetenceLabel(cfg({ category: 'games', selectedItems: ['find:A'] }), 'presc')).toBe(
+      'Comportament vizat D.3.4 · Curriculum pentru educație timpurie, nivel preșcolar',
+    );
+    expect(sheetCompetenceLabel(cfg({ category: 'games', selectedItems: ['dots:star'] }), 'presc')).toBeNull();
   });
 
   it('every code any sheet can print exists in the programme data', () => {
@@ -55,6 +77,7 @@ describe('curriculum competence of a sheet', () => {
       cfg({ category: 'letters', script: 'cursive', selectedItems: ['a'], customWords: ['mama'] }),
       cfg({ category: 'numbers', selectedItems: ['1'] }),
       cfg({ category: 'shapes', selectedItems: ['circle'] }),
+      cfg({ category: 'shapes', selectedItems: ['circle', 'heart'] }),
       cfg({ category: 'prewrite', selectedItems: ['zigzag'] }),
       cfg({ category: 'games', selectedItems: ['find:A', 'count:5', 'dots:star'] }),
       ...MATH_TYPES.flatMap((t) => [5, 10, 20, 100].map((r) => cfg({ category: 'math', selectedItems: [t], mathRange: r }))),
@@ -73,7 +96,7 @@ describe('curriculum competence of a sheet', () => {
     const pages = buildWorksheetPages(c, 'full');
     expect(pages.length).toBeGreaterThan(1);
     for (const p of pages) {
-      const label = p.ops.find((o) => o.t === 'text' && o.text.startsWith('Competența 4.1'));
+      const label = p.ops.find((o) => o.t === 'text' && o.text.startsWith('Competența specifică 4.1'));
       expect(label).toBeDefined();
       if (label && label.t === 'text') {
         expect(label.x).toBe(12);

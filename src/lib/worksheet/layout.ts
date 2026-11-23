@@ -192,7 +192,7 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
   if (!label) return pages;
   return pages.map((page) => {
     // bottom left, in the footer band, small and grey; shrunk to stay clear of the page number in the middle
-    const room = page.width / 2 - 12 - 14;
+    const room = page.width / 2 - 12 - 24;
     const size = Math.max(1.9, Math.min(2.6, 2.6 * (room / Math.max(1, textWidthMm(label, 2.6) * 1.05))));
     return { ...page, ops: [...page.ops, { t: 'text', x: 12, y: page.height - 12 + 2, text: label, size, fill: MUTED, align: 'left' } as DrawOp] };
   });
