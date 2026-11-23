@@ -55,12 +55,14 @@ export interface WorksheetConfig {
   itemWords?: boolean;
   /** How close together the dashes or dots of the traced copies are. */
   traceDensity?: 'sparse' | 'normal' | 'dense';
-  /** Math sheets: numbers up to 5, 10, 20 or 100. */
+  /** Math sheets: numbers up to 5, 10, 20, 31 or 100. */
   mathRange?: number;
   /** Math sheets: which random set of exercises (changed by „Alte exerciții”). */
   mathSeed?: number;
   /** Math sheets: add a page with the answers. */
   mathAnswers?: boolean;
+  /** Math sheets from 0–20 up: additions and subtractions „fără” / „cu trecere peste ordin”, or both (unset: as the range always did). */
+  mathCarry?: 'without' | 'with' | 'mixed';
   /** Print the curriculum competence of the sheet for this class (grădiniță, CP, I, II); unset = no label. */
   curriculumLevel?: 'presc' | 'CP' | 'I' | 'II';
   /** Pictures next to traced words (theme words): word as typed → emoji. */
