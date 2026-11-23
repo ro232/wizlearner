@@ -139,7 +139,16 @@ export async function generateWorksheetPDF(config: WorksheetConfig, tier: Tier):
  */
 export async function printWorksheetPDF(config: WorksheetConfig, tier: Tier): Promise<void> {
   const fonts = await loadEmbeddedFonts();
-  const doc = createWorksheetPdf(config, tier, fonts);
+  printPdf(createWorksheetPdf(config, tier, fonts));
+}
+
+/** Print a list of pages (same way as one sheet). */
+export async function printPagesPdf(pages: PageOps[]): Promise<void> {
+  const fonts = await loadEmbeddedFonts();
+  printPdf(createPagesPdf(pages, fonts));
+}
+
+function printPdf(doc: jsPDF): void {
   const url = URL.createObjectURL(doc.output('blob'));
   const frame = document.createElement('iframe');
   frame.style.position = 'fixed';

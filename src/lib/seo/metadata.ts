@@ -55,6 +55,11 @@ export const ROUTE_META = {
     title: 'Fișa cu numele copilului de trasat',
     description: 'Scrii numele copilului și primești pe loc fișa de trasat, cu diacritice corecte, de tipar sau de mână. PDF A4 gata de printat, fără cont.',
   },
+  '/advent': {
+    title: 'Calendar de Advent cu fișe de lucru, cu numele copilului',
+    absoluteTitle: true,
+    description: 'O fișă pe zi, de la 1 la 24 decembrie, plus coperta cu numele copilului. Pentru grădiniță, clasa pregătitoare și clasa I. PDF gratuit, fără cont.',
+  },
   '/grupa': {
     title: 'Fișe cu numele fiecărui copil din grupă',
     description: 'Lipești lista grupei și primești câte o fișă cu numele fiecărui copil, literele săptămânii și cuvintele temei. Numele rămân în browserul tău.',
