@@ -29,6 +29,7 @@ sheet('cifre', { category: 'numbers', selectedItems: ['0', '3', '7', '12'] });
 sheet('forme', { category: 'shapes', selectedItems: ['circle', 'triangle', 'star', 'heart'] });
 sheet('grafice', { category: 'prewrite', selectedItems: ['zigzag', 'waves', 'loops', 'castle'] });
 sheet('jocuri', { category: 'games', selectedItems: ['find:Ș', 'count:10', 'dots:star'] });
+sheet('sunete-silabe', { category: 'games', selectedItems: ['sound:A', 'first:1', 'syl:1', 'split:1'], curriculumLevel: 'CP' });
 sheet('matematica-10', { category: 'math', selectedItems: MATH_TYPES.filter((t) => t !== 'money'), mathRange: 10, mathAnswers: true });
 sheet('matematica-100', { category: 'math', selectedItems: ['add', 'sub', 'seq'], mathRange: 100 });
 sheet('matematica-31', { category: 'math', selectedItems: [...MATH_TYPES], mathRange: 31, mathAnswers: true });

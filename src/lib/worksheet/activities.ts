@@ -6,6 +6,7 @@ import { iconOps, hasIcon } from '@/lib/hints/icons';
 import { glyphBounds } from '@/lib/glyphs/render';
 import { madeWith } from '@/lib/brand';
 import { INK, ACCENT, PAPER, MUTED, itemOps, itemWidth, starPoints } from './rows';
+import { buildPhonologyPage, isPhonologyItem, phonologyLabel } from './phonology-pages';
 
 /**
  * Full-page activities ("Jocuri"): find the letter, count and write, connect the dots.
@@ -22,10 +23,11 @@ export const DOT_SHAPE_LABELS: Record<DotShape, string> = { star: 'stea', heart:
 export const COUNT_RANGES = ['count:5', 'count:10'] as const;
 
 export function isActivityItem(item: string): boolean {
-  return /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/.test(item);
+  return /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/.test(item) || isPhonologyItem(item);
 }
 
 export function activityLabel(item: string): string {
+  if (isPhonologyItem(item)) return phonologyLabel(item);
   const [kind, arg] = item.split(':');
   if (kind === 'find') return `Găsește ${arg}`;
   if (kind === 'count') return `Numără 1–${arg}`;
@@ -276,6 +278,12 @@ export function buildActivityPages(config: WorksheetConfig, tier: Tier, allowed:
   const pages: PageOps[] = [];
   for (const item of config.selectedItems) {
     if (!isActivityItem(item) || !allowed(item)) continue;
+    // „Sunete și silabe” (phonology-pages.ts)
+    const phono = buildPhonologyPage(config, item, tier);
+    if (phono) {
+      pages.push(phono);
+      continue;
+    }
     const [kind, arg] = item.split(':');
     if (kind === 'find' && getGlyph(normalizeKey(arg))) pages.push(findPage(config, normalizeKey(arg), tier));
     else if (kind === 'count') pages.push(countPage(config, Number(arg), tier));

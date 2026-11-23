@@ -70,6 +70,16 @@ const RULES: Record<string, Rule> = {
   count: { presc: presc('E', '2.1'), CP: school(MEM, 'CP', '1.1') },
   // the dot pictures go past 10 dots: beyond preschool counting
   dots: { CP: school(MEM, 'CP', '1.3') },
+  // „Sunete și silabe” (phonology-pages.ts): the child names the picture and listens to it.
+  // D 3.2 „Discriminează/diferențiează fonetic cuvinte, silabe, sunete și asociază sunete cu litere”;
+  // CLR CP 1.3 „Identificarea sunetului inițial și/ sau final dintr-un cuvânt, a silabelor și a cuvintelor
+  // din propoziții rostite clar și rar”; CLR I 1.3 „Identificarea unor sunete, silabe, cuvinte în enunțuri
+  // rostite cu claritate”. Not CP 4.1: tracing a syllable is not „trasarea elementelor grafice” as such.
+  sound: { presc: presc('D', '3.2'), CP: school(CLR, 'CP', '1.3'), I: school(CLR, 'I', '1.3') },
+  first: { presc: presc('D', '3.2'), CP: school(CLR, 'CP', '1.3'), I: school(CLR, 'I', '1.3') },
+  syl: { presc: presc('D', '3.2'), CP: school(CLR, 'CP', '1.3'), I: school(CLR, 'I', '1.3') },
+  // writing the syllables is school work, not preschool
+  split: { CP: school(CLR, 'CP', '1.3'), I: school(CLR, 'I', '1.3') },
 };
 
 /** The largest number each class works with, per the programme's contents. */

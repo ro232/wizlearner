@@ -39,6 +39,11 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'gaseste-litera', title: 'Găsește litera', text: 'Colorează litera căutată printre celelalte.', config: { category: 'games', selectedItems: ['find:A'] } },
   { id: 'numara', title: 'Numără și scrie', text: 'Numără obiectele și scrie numărul.', config: { category: 'games', selectedItems: ['count:5'] } },
   { id: 'uneste-punctele', title: 'Unește punctele', text: 'Unește punctele în ordinea numerelor.', config: { category: 'games', selectedItems: ['dots:star'] } },
+  // „Sunete și silabe”
+  { id: 'sunetul-initial', title: 'Sunetul de la început', text: 'Încercuiește imaginile care încep cu sunetul dat.', config: { category: 'games', selectedItems: ['sound:A'] } },
+  { id: 'primul-sunet', title: 'Primul sunet', text: 'Scrie sub imagine litera cu care începe cuvântul.', config: { category: 'games', selectedItems: ['first:1'] } },
+  { id: 'cate-silabe', title: 'Câte silabe are cuvântul?', text: 'Colorează câte o bulină pentru fiecare silabă.', config: { category: 'games', selectedItems: ['syl:1'] } },
+  { id: 'desparte-silabe', title: 'Desparte în silabe', text: 'Urmărește silabele, apoi scrie-le singur în căsuțe.', config: { category: 'games', selectedItems: ['split:1'] } },
 ];
 
 /** The number range a class works in, for the math sheets it opens (programme contents). */

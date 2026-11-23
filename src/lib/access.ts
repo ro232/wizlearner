@@ -30,6 +30,9 @@ export function isItemAllowed(item: string, category: ContentCategory, tier: Tie
       // Free: find a free letter, count to 5, connect the dots of the star.
       const [kind, arg = ''] = item.split(':');
       if (kind === 'find') return isItemAllowed(arg, 'letters', tier);
+      // „Sunete și silabe”: the sounds A–E and set 1 of each exercise (made of A–E words)
+      if (kind === 'sound') return isItemAllowed(arg, 'letters', tier);
+      if (kind === 'first' || kind === 'syl' || kind === 'split') return arg === '1';
       return item === 'count:5' || item === 'dots:star';
     }
     case 'math':
