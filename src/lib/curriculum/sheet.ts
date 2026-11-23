@@ -64,6 +64,14 @@ const RULES: Record<string, Rule> = {
   // (bancnotele de 1 leu, 5 lei, 10 lei)”); I 6.3 the same „…cu numere din concentrul 0-100”.
   // Clasa a II-a works with 200 and 500 de lei and euro, which the sheet does not draw: no code.
   money: { CP: school(MEM, 'CP', '6.3'), I: school(MEM, 'I', '6.3') },
+  // „Probleme cu imagini” (problems.ts): one operation, two from 0–100 up (a ± b ± c).
+  // CP 5.2 „Rezolvarea de probleme în care intervin operații de adunare sau scădere cu 1-5 unități în
+  // concentrul 0-31, cu ajutorul obiectelor” (up to 0–31 the second number is always 1–5; 0–20 and
+  // 0–100 are not, see CP_OPERATIONS); I 5.2 „Rezolvarea de probleme simple în care intervin operații
+  // de adunare sau scădere în concentrul 0-100, cu sprijin în obiecte, imagini sau reprezentări
+  // schematice”; II 5.2 „Rezolvarea de probleme de tipul a±b=x; a±b±c=x în concentrul 0-1000; …”.
+  // Preschool: no behaviour of domain E is about solving word problems (E.2.5 is sorting data): no code.
+  problems: { CP: school(MEM, 'CP', '5.2'), I: school(MEM, 'I', '5.2'), II: school(MEM, 'II', '5.2') },
   // games
   // finding a letter is not phonetic (D 3.2): it is an element of writing (D 3.4)
   find: { presc: presc('D', '3.4') },
@@ -113,7 +121,7 @@ function ruleKeys(config: WorksheetConfig): string[] {
 /** The four plane shapes the programme names for CP and clasa I. */
 const BASIC_SHAPES = new Set(['circle', 'square', 'triangle', 'rectangle']);
 /** CP additions and subtractions add or take away 1–5 elements: only the 0–10 sheets fit. */
-const CP_OPERATIONS = new Set(['add', 'sub', 'mix', 'addpic', 'missing']);
+const CP_OPERATIONS = new Set(['add', 'sub', 'mix', 'addpic', 'missing', 'problems']);
 
 export function sheetCompetences(config: WorksheetConfig, level: SchoolLevel | undefined | null): CompetenceRef[] {
   if (!level) return [];

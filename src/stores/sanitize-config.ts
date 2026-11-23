@@ -18,7 +18,7 @@ import { SHAPES } from '@/lib/constants';
 const CATEGORIES: readonly ContentCategory[] = ['letters', 'numbers', 'shapes', 'prewrite', 'math', 'games'];
 // Kept here (not imported from the math and games builders) so the store stays light on pages
 // that only need the menu; a test checks they match MATH_TYPES and isActivityItem.
-const MATH_IDS: readonly string[] = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr', 'money'];
+const MATH_IDS: readonly string[] = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr', 'money', 'problems'];
 const GAME_ITEM = /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/;
 // „Sunete și silabe” (phonology-pages.ts: isPhonologyItem)
 const PHONO_ITEM = /^(sound:(A|B|C|D|F|L|M|P|R|S|T|U|V)|(first|syl|split):[1-6])$/;

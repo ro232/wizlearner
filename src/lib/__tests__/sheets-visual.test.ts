@@ -32,14 +32,15 @@ sheet('jocuri', { category: 'games', selectedItems: ['find:Ș', 'count:10', 'dot
 sheet('sunete-silabe', { category: 'games', selectedItems: ['sound:A', 'first:1', 'syl:1', 'split:1'], curriculumLevel: 'CP' });
 sheet('sortare', { category: 'games', selectedItems: ['sort:1', 'sort:3', 'sort:4', 'sort:5', 'odd:1', 'odd:4', 'group:1', 'group:4'], curriculumLevel: 'presc' });
 sheet('orientare', { category: 'games', selectedItems: ['pos:1', 'pos:3', 'pos:5'], curriculumLevel: 'CP' });
-sheet('matematica-10', { category: 'math', selectedItems: MATH_TYPES.filter((t) => t !== 'money'), mathRange: 10, mathAnswers: true });
+sheet('matematica-10', { category: 'math', selectedItems: MATH_TYPES.filter((t) => t !== 'money' && t !== 'problems'), mathRange: 10, mathAnswers: true });
 sheet('matematica-100', { category: 'math', selectedItems: ['add', 'sub', 'seq'], mathRange: 100 });
-sheet('matematica-31', { category: 'math', selectedItems: [...MATH_TYPES], mathRange: 31, mathAnswers: true });
+sheet('matematica-31', { category: 'math', selectedItems: MATH_TYPES.filter((t) => t !== 'problems'), mathRange: 31, mathAnswers: true });
 sheet('matematica-20-cu-trecere', { category: 'math', selectedItems: ['add', 'sub', 'mix', 'missing'], mathRange: 20, mathCarry: 'with', mathAnswers: true });
 sheet('matematica-31-fara-trecere', { category: 'math', selectedItems: ['add', 'sub'], mathRange: 31, mathCarry: 'without' });
 sheet('matematica-100-cu-trecere', { category: 'math', selectedItems: ['add', 'sub', 'mix', 'missing'], mathRange: 100, mathCarry: 'with', mathAnswers: true });
 sheet('matematica-100-amestecat', { category: 'math', selectedItems: ['mix'], mathRange: 100, mathCarry: 'mixed' });
 for (const r of [5, 10, 20, 31, 100]) sheet(`bani-${r}`, { category: 'math', selectedItems: ['money'], mathRange: r, mathAnswers: true });
+for (const r of [5, 10, 20, 31, 100]) sheet(`probleme-${r}`, { category: 'math', selectedItems: ['problems'], mathRange: r, mathAnswers: r === 10 || r === 100, curriculumLevel: r === 20 || r === 100 ? 'I' : r === 5 ? 'presc' : 'CP' });
 sheet('caiet-alfabet-mana', { letterMode: 'paired', script: 'cursive', selectedItems: ['Aa', 'Bb', 'Șș'], pagePerItem: true, itemWords: true, fillPage: false });
 sheet('optiuni', { letterMode: 'paired', selectedItems: ['Aa'], leftHandedMode: true, orientation: 'landscape', backgroundPattern: 'dictando', guideColor: 'blue', traceDensity: 'dense', customTitle: 'Fișă de lucru pentru grupa mare – săptămâna 12' });
 SAMPLES['grupa'] = () => buildGroupPages({ names: ['Ana', 'Ștefan'], themeId: THEMES[0].id, letters: ['M'], letterMode: 'uppercase', difficulty: 'beginner', withFindPages: true }).pages;
