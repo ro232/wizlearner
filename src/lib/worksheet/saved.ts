@@ -78,7 +78,7 @@ const KIND: Partial<Record<WorksheetConfig['category'], string>> = {
  */
 export function defaultSheetName(config: WorksheetConfig): string {
   const safe = configForSaving(config);
-  const kind = KIND[safe.category] ?? 'Fișă';
+  const kind = safe.evaluation && (safe.category === 'math' || safe.category === 'games') ? 'Evaluare' : KIND[safe.category] ?? 'Fișă';
   const words = safe.category === 'letters' ? safe.customWords : [];
   // what the person chose, in words: "Adunări", not the internal "add"
   const label = (i: string) =>

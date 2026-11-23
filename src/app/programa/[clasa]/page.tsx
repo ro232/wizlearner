@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { pageMetadata } from '@/lib/seo/metadata';
-import { CLASS_PAGES, classCoverage, classPage, presetHref } from '@/lib/curriculum/presets';
+import { CLASS_PAGES, classCoverage, classEvaluations, classPage, presetHref } from '@/lib/curriculum/presets';
 
 export const dynamicParams = false;
 
@@ -29,6 +29,7 @@ export default function ClassCurriculumPage({ params }: { params: { clasa: strin
   const c = classPage(params.clasa);
   if (!c) notFound();
   const groups = classCoverage(c);
+  const evaluations = classEvaluations(c);
   const items = groups.flatMap((g) => g.items);
   const withSheets = items.filter((i) => i.presets.length).length;
   const word = c.level === 'presc' ? 'comportament' : 'competență';
@@ -51,6 +52,33 @@ export default function ClassCurriculumPage({ params }: { params: { clasa: strin
             <p className="mt-3 text-sm font-bold text-ink">Avem fișe pentru {withSheets} din {items.length}.</p>
           </div>
         </section>
+
+        {evaluations.length > 0 && (
+          <section className="py-10 border-b-2 border-ink/10" aria-labelledby="evaluari">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6">
+              <h2 id="evaluari" className="text-2xl sm:text-3xl font-extrabold text-ink">Evaluări</h2>
+              <p className="mt-2 text-slate-700 max-w-2xl">
+                Câteva exerciții din fiecare temă, pe 2–3 pagini, cu antet de evaluare și autoevaluare. La final, pagina cu
+                răspunsuri{c.level === 'presc' ? ' și o fișă de observare (fără calificative).' : ' și un tabel orientativ de calificative.'}
+              </p>
+              <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+                {evaluations.map(({ preset: p, codes }) => (
+                  <li key={p.id} className="rounded-xl border-2 border-ink bg-white p-4 flex flex-col gap-3">
+                    <div>
+                      <p className="font-extrabold text-ink">{p.title}</p>
+                      <p className="mt-1 text-sm text-slate-700">{p.text}</p>
+                      {codes.length > 0 && <p className="mt-1 text-xs text-slate-500">{c.level === 'presc' ? 'Comportamente' : 'Competențe'}: {codes.join(', ')}</p>}
+                    </div>
+                    <Link href={presetHref(p, c.level)} prefetch={false}
+                      className="self-start inline-flex items-center gap-1 min-h-10 rounded-lg border-2 border-ink bg-paper px-3 text-sm font-bold text-ink hover:bg-pencil">
+                      Deschide evaluarea <ArrowRight className="w-3.5 h-3.5" aria-hidden />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
 
         {groups.map((g) => (
           <section key={g.title} className="py-10 border-b-2 border-ink/10">
