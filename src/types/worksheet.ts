@@ -61,6 +61,8 @@ export interface WorksheetConfig {
   mathSeed?: number;
   /** Math sheets: add a page with the answers. */
   mathAnswers?: boolean;
+  /** Print the curriculum competence of the sheet for this class (grădiniță, CP, I, II); unset = no label. */
+  curriculumLevel?: 'presc' | 'CP' | 'I' | 'II';
   /** Pictures next to traced words (theme words): word as typed → emoji. */
   wordPictures?: Record<string, string>;
 

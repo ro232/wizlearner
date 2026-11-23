@@ -47,6 +47,7 @@ interface WorksheetState {
   setChildName: (name: string) => void;
   setCustomTitle: (title: string) => void;
   setSchoolName: (name: string) => void;
+  setCurriculumLevel: (level: WorksheetConfig['curriculumLevel'] | null) => void;
   resetConfig: () => void;
   setTier: (tier: Tier) => void;
   setLanguage: (lang: 'en' | 'ro') => void;
@@ -177,6 +178,13 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   toggleFullPage: () => set((state) => ({ config: { ...state.config, fullPageMode: !state.config.fullPageMode } })),
   toggleLeftHanded: () => set((state) => ({ config: { ...state.config, leftHandedMode: !state.config.leftHandedMode } })),
   toggleFillPage: () => set((state) => ({ config: { ...state.config, fillPage: state.config.fillPage === false } })),
+  setCurriculumLevel: (level) =>
+    set((state) => {
+      const config = { ...state.config };
+      if (level) config.curriculumLevel = level;
+      else delete config.curriculumLevel;
+      return { config };
+    }),
   // The name in the header. When it is also a traced row („Trasează-l”), the row follows every
   // edit: correcting "Stefanut" to "Ștefănuț" replaces the row instead of leaving the old one behind.
   setChildName: (childName) => set((state) => {

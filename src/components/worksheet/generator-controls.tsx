@@ -1,5 +1,6 @@
 'use client';
 
+import { SCHOOL_LEVELS, sheetCompetenceLabel } from '@/lib/curriculum/sheet';
 import { ForeignLettersNote } from '@/components/worksheet/foreign-letters-note';
 import React, { useState } from 'react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
@@ -64,7 +65,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
     addCustomWord, removeCustomWord, setDifficulty, setScript, setLetterSize, setVisibility,
     setBackgroundPattern, setGuideColor, setRowsPerPage, setRepetitionsPerItem, toggleGuideLines,
     toggleArrows, toggleStartDots, toggleEmoji, toggleReward, toggleFullPage, toggleLeftHanded,
-    toggleFillPage, setChildName, resetConfig,
+    toggleFillPage, setChildName, resetConfig, setCurriculumLevel,
   } = useWorksheetStore();
 
   const [wordInput, setWordInput] = useState('');
@@ -353,6 +354,22 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
           <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" aria-hidden />
         </summary>
         <div className="px-4 pb-4 space-y-5">
+          <div>
+            <SectionLabel>Competența din programă</SectionLabel>
+            <label htmlFor="curriculum-level" className="sr-only">Clasa pentru care se tipărește competența</label>
+            <select id="curriculum-level" value={config.curriculumLevel ?? ''}
+              onChange={(e) => setCurriculumLevel((e.target.value || null) as typeof config.curriculumLevel | null)}
+              className="w-full min-h-11 px-3 border border-slate-300 rounded-xl bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Nu o tipări</option>
+              {SCHOOL_LEVELS.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
+            </select>
+            {config.curriculumLevel && (
+              <p className="mt-1.5 text-xs text-slate-600" data-competence-label>
+                {sheetCompetenceLabel(config, config.curriculumLevel) ?? 'Fișa aceasta nu se potrivește cu o competență din programa clasei alese, așa că nu tipărim niciun cod.'}
+              </p>
+            )}
+            {!config.curriculumLevel && <p className="mt-1.5 text-xs text-slate-500">Alegi clasa, iar codul competenței se tipărește jos, pe fiecare pagină: util pentru portofoliu și planificare.</p>}
+          </div>
           <div>
             <SectionLabel>Mărimea literelor</SectionLabel>
             <div className="grid grid-cols-3 gap-2">
