@@ -1,4 +1,5 @@
 import type { WorksheetConfig, Tier } from '@/types';
+import { sheetCompetenceLabel } from '@/lib/curriculum/sheet';
 import type { DrawOp, Glyph, PageOps } from '@/lib/glyphs/types';
 import { getGlyph, hintFor, normalizeKey, traceLetters, type Alphabet } from '@/lib/glyphs/data';
 import { madeWith } from '@/lib/brand';
@@ -184,7 +185,20 @@ export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[
   return rows;
 }
 
+/** Every page of the sheet, with the curriculum competence printed at the bottom when a class is chosen. */
 export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOps[] {
+  const pages = buildPagesWithoutCompetence(config, tier);
+  const label = sheetCompetenceLabel(config, config.curriculumLevel);
+  if (!label) return pages;
+  return pages.map((page) => {
+    // bottom left, in the footer band, small and grey; shrunk to stay clear of the page number in the middle
+    const room = page.width / 2 - 12 - 14;
+    const size = Math.max(1.9, Math.min(2.6, 2.6 * (room / Math.max(1, textWidthMm(label, 2.6) * 1.05))));
+    return { ...page, ops: [...page.ops, { t: 'text', x: 12, y: page.height - 12 + 2, text: label, size, fill: MUTED, align: 'left' } as DrawOp] };
+  });
+}
+
+function buildPagesWithoutCompetence(config: WorksheetConfig, tier: Tier): PageOps[] {
   if (config.category === 'math') {
     const pages = buildMathPages(config, tier);
     if (pages.length) return pages;
