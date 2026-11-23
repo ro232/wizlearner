@@ -21,6 +21,7 @@ interface WorksheetState {
   setTraceDensity: (density: 'sparse' | 'normal' | 'dense') => void;
   newMathSet: () => void;
   toggleMathAnswers: () => void;
+  toggleEvaluation: () => void;
   setAlphabet: (alphabet: Alphabet) => void;
   setLetterMode: (mode: LetterMode) => void;
   toggleItem: (item: string) => void;
@@ -88,14 +89,18 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   language: 'en',
   nameSlot: null,
 
-  setCategory: (category) => set((state) => ({
-    config: { ...state.config, category, selectedItems: [] }
-  })),
+  setCategory: (category) => set((state) => {
+    // an evaluation is a way of printing math or game items: another category starts as an ordinary sheet
+    const config = { ...state.config, category, selectedItems: [] };
+    delete config.evaluation;
+    return { config };
+  }),
   setMathRange: (mathRange) => set((state) => ({ config: { ...state.config, mathRange } })),
   setMathCarry: (mathCarry) => set((state) => ({ config: { ...state.config, mathCarry } })),
   setTraceDensity: (traceDensity) => set((state) => ({ config: { ...state.config, traceDensity } })),
   newMathSet: () => set((state) => ({ config: { ...state.config, mathSeed: (state.config.mathSeed ?? 1) + 1 } })),
   toggleMathAnswers: () => set((state) => ({ config: { ...state.config, mathAnswers: !state.config.mathAnswers } })),
+  toggleEvaluation: () => set((state) => ({ config: { ...state.config, evaluation: !state.config.evaluation } })),
   setAlphabet: (alphabet) => set((state) => {
     // Keep only the letters that exist in the newly chosen alphabet.
     const allowed = new Set(ALPHABETS[alphabet]);

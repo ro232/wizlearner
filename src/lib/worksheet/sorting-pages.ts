@@ -139,7 +139,7 @@ function exampleTag(ops: DrawOp[], x: number, y: number, align: 'left' | 'right'
 export type ShapeKind = 'circle' | 'square' | 'triangle';
 const SHAPE_COLOURS = ['#DD2E44', '#3B88C3', '#FDCB58', '#78B159'];
 
-function shapeOps(kind: ShapeKind, cx: number, cy: number, size: number, fill: string | undefined, stroke = INK, strokeWidth = 0.6): DrawOp {
+export function shapeOps(kind: ShapeKind, cx: number, cy: number, size: number, fill: string | undefined, stroke = INK, strokeWidth = 0.6): DrawOp {
   const r = size / 2;
   if (kind === 'circle') return { t: 'circle', cx, cy, r, fill, stroke, strokeWidth };
   if (kind === 'square') return { t: 'rect', x: cx - r * 0.9, y: cy - r * 0.9, w: r * 1.8, h: r * 1.8, fill, stroke, strokeWidth };

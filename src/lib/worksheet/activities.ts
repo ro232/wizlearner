@@ -110,12 +110,34 @@ const OTHERS = 'ABCDEFGHIJKLMNOPRSTUVZ'.split('');
 /** Height of the band between the instruction and the grid that holds the model letter (mm). */
 export const FIND_MODEL_BAND = 38;
 
+/**
+ * The 42 letters of a „Găsește litera” grid, in reading order: 12 times the letter, the rest
+ * mostly look-alikes. The page draws them and the answers page counts the letter in them.
+ */
+export function findGrid(target: string, lower: boolean): string[] {
+  const t = lower ? target.toLowerCase() : target;
+  const rand = rng(seedOf(`find:${t}`));
+  const cells = 6 * 7;
+  const targets = 12;
+  const pool = lower
+    ? LOWER_LOOKALIKES[t] ?? (LOOKALIKES[target] ?? []).map((x) => x.toLowerCase())
+    : LOOKALIKES[target] ?? [];
+  const others = OTHERS.filter((x) => x !== target).map((x) => (lower ? x.toLowerCase() : x));
+  const letters: string[] = [];
+  for (let i = 0; i < cells - targets; i++) {
+    // two thirds look-alikes (the point of the exercise), the rest any other letter
+    const fromPool = pool.length && rand() < 0.66;
+    letters.push(fromPool ? pool[Math.floor(rand() * pool.length)] : others[Math.floor(rand() * others.length)]);
+  }
+  for (let i = 0; i < targets; i++) letters.push(t);
+  return shuffle(letters, rand);
+}
+
 function findPage(config: WorksheetConfig, target: string, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
   const lower = config.letterMode === 'lowercase';
   const t = lower ? target.toLowerCase() : target;
   const top = frame(ops, config, `Găsește litera ${t}`, `Colorează toate literele ${t}. Câte ai găsit?`);
-  const rand = rng(seedOf(`find:${t}`));
 
   // the model, solid, with its numbered start dots: in its own band above the grid, sized so that
   // accents (Ă Â Î), the comma of Ș/Ț and tails (g j p q y) never reach the instruction or the grid
@@ -133,20 +155,7 @@ function findPage(config: WorksheetConfig, target: string, tier: Tier): PageOps 
 
   const cols = 6;
   const rows = 7;
-  const cells = cols * rows;
-  const targets = 12;
-  const pool = lower
-    ? LOWER_LOOKALIKES[t] ?? (LOOKALIKES[target] ?? []).map((x) => x.toLowerCase())
-    : LOOKALIKES[target] ?? [];
-  const others = OTHERS.filter((x) => x !== target).map((x) => (lower ? x.toLowerCase() : x));
-  const letters: string[] = [];
-  for (let i = 0; i < cells - targets; i++) {
-    // two thirds look-alikes (the point of the exercise), the rest any other letter
-    const fromPool = pool.length && rand() < 0.66;
-    letters.push(fromPool ? pool[Math.floor(rand() * pool.length)] : others[Math.floor(rand() * others.length)]);
-  }
-  for (let i = 0; i < targets; i++) letters.push(t);
-  const grid = shuffle(letters, rand);
+  const grid = findGrid(target, lower);
 
   const gx = M;
   const cw = (W - 2 * M) / cols;
@@ -184,12 +193,18 @@ function findPage(config: WorksheetConfig, target: string, tier: Tier): PageOps 
 
 const COUNT_PICTURES = ['🍎', '🍐', '🎈', '🐱', '🐻', '🦋', '🐟', '🚗', '🌷', '🍓', '🐝', '⭐', '🥕', '🐶', '🦆', '☀️'];
 
-function countPage(config: WorksheetConfig, max: number, tier: Tier): PageOps {
-  const ops: DrawOp[] = [];
-  const top = frame(ops, config, `Numără și scrie (1–${max})`, 'Numără imaginile și scrie numărul în căsuță.');
+/** The five rows of „Numără și scrie”, top to bottom: how many pictures, and the pictures (row r: pictures[r]). */
+export function countSet(max: number): { pictures: string[]; numbers: number[] } {
   const rand = rng(seedOf(`count:${max}`));
   const pictures = shuffle(COUNT_PICTURES.filter(hasIcon), rand);
   const numbers = shuffle(Array.from({ length: max }, (_, i) => i + 1), rand).slice(0, 5);
+  return { pictures, numbers };
+}
+
+function countPage(config: WorksheetConfig, max: number, tier: Tier): PageOps {
+  const ops: DrawOp[] = [];
+  const top = frame(ops, config, `Numără și scrie (1–${max})`, 'Numără imaginile și scrie numărul în căsuță.');
+  const { pictures, numbers } = countSet(max);
 
   const rowsTop = top + 4;
   const rowH = (H - M - 22 - rowsTop) / numbers.length;

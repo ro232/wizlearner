@@ -17,6 +17,10 @@ export interface SheetPreset {
   config: Partial<WorksheetConfig>;
   /** Only these classes list it (unset: every class whose codes it prints). */
   levels?: SchoolLevel[];
+  /** Settings that differ by class (merged over `config`). */
+  byLevel?: Partial<Record<SchoolLevel, Partial<WorksheetConfig>>>;
+  /** An „Evaluare” (config.evaluation): listed apart on the class page, not under each competence. */
+  evaluation?: boolean;
 }
 
 /** The free items are used where possible, so anyone can try the sheet straight away. */
@@ -50,6 +54,23 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'intrusul', title: 'Ce nu se potrivește?', text: 'Taie imaginea care nu face parte din grupă.', config: { category: 'games', selectedItems: ['odd:1'] }, levels: ['presc'] },
   { id: 'grupeaza-numara', title: 'Grupează și numără', text: 'Numără fiecare fel de fruct și scrie numărul în tabel.', config: { category: 'games', selectedItems: ['group:1'] }, levels: ['presc', 'CP'] },
   { id: 'orientare', title: 'Unde se află?', text: 'Pe masă, sub masă, deasupra, în cutie, în stânga: încercuiește.', config: { category: 'games', selectedItems: ['pos:1'] }, levels: ['CP', 'I'] },
+  // Evaluări: the items of the class's programme as a short test, with the answers page (evaluation.ts)
+  {
+    id: 'evaluare-mate', title: 'Evaluare la matematică', text: 'Comparare, adunări și scăderi, probleme cu imagini, bani; cu răspunsuri și calificative orientative.',
+    config: { category: 'math', selectedItems: ['cmp', 'mix', 'problems', 'money'], evaluation: true }, levels: ['CP', 'I', 'II'], evaluation: true,
+    // clasa a II-a works with other notes (200, 500 de lei, euro) than the sheet draws: the missing number instead
+    byLevel: { II: { selectedItems: ['cmp', 'mix', 'missing', 'problems'], mathCarry: 'mixed' } },
+  },
+  {
+    id: 'evaluare-clr', title: 'Evaluare: sunete și silabe', text: 'Sunetul de la început, primul sunet, câte silabe, despărțirea în silabe; cu răspunsuri și calificative orientative.',
+    config: { category: 'games', selectedItems: ['sound:C', 'first:1', 'syl:1', 'split:1'], evaluation: true }, levels: ['CP', 'I'], evaluation: true,
+    // clasa pregătitoare reads the capitals first; clasa I the small letters too
+    byLevel: { I: { letterMode: 'lowercase' } },
+  },
+  {
+    id: 'evaluare-gradinita', title: 'Evaluare la grădiniță', text: 'Sortează, numără, ce nu se potrivește, sunetul de la început; cu răspunsuri și fișă de observare.',
+    config: { category: 'games', selectedItems: ['sort:1', 'count:5', 'odd:1', 'sound:A'], evaluation: true }, levels: ['presc'], evaluation: true,
+  },
 ];
 
 /** The number range a class works in, for the math sheets it opens (programme contents). */
@@ -62,6 +83,7 @@ export function presetConfig(preset: SheetPreset, level: SchoolLevel): Worksheet
     ...preset.config,
     ...(preset.config.category === 'math' ? { mathRange: MATH_RANGE[level] } : {}),
     ...(preset.config.mathRange ? { mathRange: preset.config.mathRange } : {}),
+    ...preset.byLevel?.[level],
     customWords: [],
     curriculumLevel: level,
   };
@@ -116,7 +138,7 @@ const sameRef = (a: CompetenceRef, b: SpecificCompetence, programme: ProgrammeId
  * (cognitive development, numbers and shapes): the others are not worksheet matters.
  */
 export function classCoverage(page: ClassPage): CoverageGroup[] {
-  const covered = SHEET_PRESETS.filter((p) => !p.levels || p.levels.includes(page.level)).map((p) => ({ preset: p, refs: sheetCompetences(presetConfig(p, page.level), page.level) }));
+  const covered = SHEET_PRESETS.filter((p) => !p.evaluation && (!p.levels || p.levels.includes(page.level))).map((p) => ({ preset: p, refs: sheetCompetences(presetConfig(p, page.level), page.level) }));
   const groups: CoverageGroup[] = [];
   for (const id of page.programmes) {
     const prog = PROGRAMMES[id];
@@ -139,6 +161,14 @@ export function classCoverage(page: ClassPage): CoverageGroup[] {
     }
   }
   return groups;
+}
+
+/** The evaluations of a class, with the codes they print (as teachers write them: „1.2”, „D.3.2”). */
+export function classEvaluations(page: ClassPage): { preset: SheetPreset; codes: string[] }[] {
+  return SHEET_PRESETS.filter((p) => p.evaluation && p.levels?.includes(page.level)).map((preset) => ({
+    preset,
+    codes: sheetCompetences(presetConfig(preset, page.level), page.level).map((r) => (r.programme === 'et-presc' ? `${r.domain}.${r.code}` : r.code)),
+  }));
 }
 
 /** „DEZVOLTAREA COGNITIVĂ ȘI…” → „Dezvoltarea cognitivă și…” (the document prints domains in capitals). */

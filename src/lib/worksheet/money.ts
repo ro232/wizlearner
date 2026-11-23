@@ -208,7 +208,7 @@ const PROMPTS: Record<MoneyExercise['kind'], string> = {
 };
 
 /** The rows of a money page between `top` and `bottom`. */
-export function moneyPageOps(exercises: MoneyExercise[], left: number, right: number, top: number, bottom: number): DrawOp[] {
+export function moneyPageOps(exercises: MoneyExercise[], left: number, right: number, top: number, bottom: number, label: (i: number) => string = (i) => `${i + 1}.`): DrawOp[] {
   const ops: DrawOp[] = [];
   const rowH = (bottom - top) / exercises.length;
   const width = right - left;
@@ -216,7 +216,7 @@ export function moneyPageOps(exercises: MoneyExercise[], left: number, right: nu
     const y = top + i * rowH;
     ops.push({ t: 'rect', x: left, y: y + 1.2, w: width, h: rowH - 2.4, rx: 4, fill: '#FBF7EE', stroke: '#E6DECD', strokeWidth: 0.4 });
     const prompt = e.kind === 'pay' ? `Colorează bancnotele cu care plătești exact ${lei(e.target)}.` : PROMPTS[e.kind];
-    ops.push({ t: 'text', x: left + 4, y: y + 6.6, text: `${i + 1}.`, size: 3.6, fill: MUTED, weight: 'bold' });
+    ops.push({ t: 'text', x: left + 4, y: y + 6.6, text: label(i), size: 3.6, fill: MUTED, weight: 'bold' });
     ops.push({ t: 'text', x: left + 10, y: y + 6.6, text: prompt, size: 3.8, fill: INK, weight: 'bold' });
     const cy = y + 8 + (rowH - 10) / 2;
     const x0 = left + 6;

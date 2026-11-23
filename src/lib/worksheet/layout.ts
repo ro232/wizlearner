@@ -10,6 +10,9 @@ import { isPatternId, type PatternId } from '@/lib/glyphs/patterns';
 import { isItemAllowed } from '@/lib/access';
 import { buildActivityPages } from './activities';
 import { buildMathPages, isMathType } from './math';
+import { buildEvaluationPages } from './evaluation';
+import { gameAnswerPages } from './game-keys';
+import type { SheetPage } from './answer-key';
 import { textWidthMm } from '@/lib/book/text';
 import {
   INK,
@@ -185,26 +188,45 @@ export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[
   return rows;
 }
 
-/** Every page of the sheet, with the curriculum competence printed at the bottom when a class is chosen. */
+/**
+ * Every page of the sheet, with the curriculum competence printed at the bottom when a class is chosen:
+ * not on the answers page, and on an evaluation page the competences of the items on that page.
+ */
 export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOps[] {
-  const pages = buildPagesWithoutCompetence(config, tier);
-  const label = sheetCompetenceLabel(config, config.curriculumLevel);
-  if (!label) return pages;
-  return pages.map((page) => {
+  const pages: SheetPage[] = buildPagesWithoutCompetence(config, tier);
+  const sheetLabel = sheetCompetenceLabel(config, config.curriculumLevel);
+  return pages.map(({ answerKey, competenceItems, ...page }) => {
+    const label = answerKey ? null : competenceItems ? sheetCompetenceLabel({ ...config, selectedItems: competenceItems }, config.curriculumLevel) : sheetLabel;
+    if (!label) return page;
     // bottom left, in the footer band, small and grey; shrunk to stay clear of the page number in the middle
     const room = page.width / 2 - 12 - 24;
-    const size = Math.max(1.9, Math.min(2.6, 2.6 * (room / Math.max(1, textWidthMm(label, 2.6) * 1.05))));
+    const fit = (text: string) => Math.max(1.9, Math.min(2.6, 2.6 * (room / Math.max(1, textWidthMm(text, 2.6) * 1.05))));
+    const size = fit(label);
+    const numbered = page.ops.some((o) => o.t === 'text' && o.align === 'center' && /^Pagina \d+ din \d+$/.test(o.text));
+    if (numbered && textWidthMm(label, size) * 1.05 > room && label.includes(' · ')) {
+      // too long even at its smallest (several codes): codes on one line, programme and class under it
+      const [codes, where] = label.split(' · ');
+      const lines = [codes, where].map((text, k) => ({ t: 'text', x: 12, y: page.height - 12 + 0.6 + k * 2.6, text, size: Math.min(fit(codes), fit(where)), fill: MUTED, align: 'left' }) as DrawOp);
+      return { ...page, ops: [...page.ops, ...lines] };
+    }
     return { ...page, ops: [...page.ops, { t: 'text', x: 12, y: page.height - 12 + 2, text: label, size, fill: MUTED, align: 'left' } as DrawOp] };
   });
 }
 
-function buildPagesWithoutCompetence(config: WorksheetConfig, tier: Tier): PageOps[] {
+function buildPagesWithoutCompetence(config: WorksheetConfig, tier: Tier): SheetPage[] {
+  // „Evaluare”: the chosen items as a short test, with its answers (evaluation.ts)
+  if (config.evaluation && (config.category === 'math' || config.category === 'games')) {
+    const pages = buildEvaluationPages(config, tier);
+    if (pages.length) return pages;
+  }
   if (config.category === 'math') {
     const pages = buildMathPages(config, tier);
     if (pages.length) return pages;
   }
   if (config.category === 'games') {
-    const pages = buildActivityPages(config, tier, (item) => isItemAllowed(item, 'games', tier));
+    const pages: SheetPage[] = buildActivityPages(config, tier, (item) => isItemAllowed(item, 'games', tier));
+    // „Pagină cu răspunsuri”: the answers of the games that have some (game-keys.ts)
+    if (pages.length && config.mathAnswers) for (const ops of gameAnswerPages(config, tier)) pages.push({ width: 210, height: 297, ops, answerKey: true });
     if (pages.length) return pages;
   }
   const size = PAGE_SIZES_MM[config.pageSize] ?? PAGE_SIZES_MM.a4;

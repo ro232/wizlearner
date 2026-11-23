@@ -14,6 +14,7 @@ import { PHONO_KIND_TITLES, phonologyItems } from '@/lib/worksheet/phonology-pag
 import { SORTING_KIND_TITLES, sortingItems, sortingShortLabel } from '@/lib/worksheet/sorting-pages';
 import { Button } from '@/components/ui/button';
 import { MathPicker } from './math-picker';
+import { AnswerOptions } from './answer-options';
 import { TraceStylePicker } from './trace-style-picker';
 import { Lock, RotateCcw, Plus, X, ChevronDown, UserRound } from 'lucide-react';
 import { isCursive } from '@/lib/worksheet/layout';
@@ -268,6 +269,11 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
             Golește
           </Button>
         </div>
+        {(config.category === 'math' || config.category === 'games') && (
+          <div className="mt-3">
+            <AnswerOptions />
+          </div>
+        )}
       </div>
 
       {/* 3. Child's name and words */}
@@ -421,7 +427,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               ['Puncte de start numerotate', config.showStartDots !== false, toggleStartDots],
               ['Liniatură', config.showGuideLines, toggleGuideLines],
               ['Umple pagina cu repetiții', config.fillPage !== false, toggleFillPage],
-              ['Stelele de recompensă', config.showRewardSection, toggleReward],
+              [config.evaluation ? 'Rândul de autoevaluare' : 'Stelele de recompensă', config.showRewardSection, toggleReward],
               ['Fără antet (doar rânduri)', config.fullPageMode, toggleFullPage],
               ['Pentru stângaci', config.leftHandedMode, toggleLeftHanded],
             ] as [string, boolean, () => void][]).map(([label, checked, onChange]) => (

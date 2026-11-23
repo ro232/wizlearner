@@ -1,11 +1,12 @@
-import type { DrawOp, PageOps } from '@/lib/glyphs/types';
+import type { DrawOp } from '@/lib/glyphs/types';
 import type { Tier, WorksheetConfig } from '@/types';
 import { hasIcon, iconOps } from '@/lib/hints/icons';
 import { madeWith } from '@/lib/brand';
 import { textWidthMm } from '@/lib/book/text';
 import { ACCENT, INK, MUTED, PAPER, starPoints } from './rows';
 import { lei, moneyExercises, moneyPageOps } from './money';
-import { problemsInstruction, problemsPageOps, wordProblems, type WordProblem } from './problems';
+import { counted, problemsInstruction, problemsPageOps, wordProblems, type WordProblem } from './problems';
+import { answerKeyPages, type KeySection, type SheetPage } from './answer-key';
 
 /**
  * Math sheets ("Matematică"), new every time on request: compare numbers, add, subtract,
@@ -79,13 +80,13 @@ export function mathRangeOf(config: Pick<WorksheetConfig, 'mathRange'>): MathRan
 
 // ───────────────────────── seeded randomness ─────────────────────────
 
-function seedOf(text: string): number {
+export function seedOf(text: string): number {
   let h = 2166136261;
   for (const ch of text) h = Math.imul(h ^ ch.codePointAt(0)!, 16777619);
   return h >>> 0;
 }
 
-function rng(seed: number): () => number {
+export function rng(seed: number): () => number {
   let a = seed;
   return () => {
     a = (a + 0x6d2b79f5) | 0;
@@ -290,9 +291,9 @@ export function mathExercises(type: MathType, range: MathRange, seed: number, co
 const W = 210;
 const H = 297;
 const M = 12;
-const PICTURES = ['🍎', '🍓', '🐟', '⭐', '🌷', '🐝', '🎈', '🦋', '🐱', '🥕'];
+export const PICTURES = ['🍎', '🍓', '🐟', '⭐', '🌷', '🐝', '🎈', '🦋', '🐱', '🥕'];
 
-const INSTRUCTIONS: Record<MathType, string> = {
+export const INSTRUCTIONS: Record<MathType, string> = {
   cmp: 'Scrie în căsuță semnul potrivit: <, > sau =.',
   add: 'Calculează și scrie rezultatul în căsuță.',
   sub: 'Calculează și scrie rezultatul în căsuță.',
@@ -318,7 +319,7 @@ export function mathTitle(type: MathType, range: MathRange, carry: MathCarry = '
 }
 
 /** How many exercises fit on a page, and in how many columns. */
-function grid(type: MathType, range: MathRange): { count: number; cols: number } {
+export function grid(type: MathType, range: MathRange): { count: number; cols: number } {
   if (type === 'addpic') return { count: 6, cols: 1 };
   if (type === 'seq') return { count: 10, cols: 1 };
   if (type === 'nbr') return { count: 16, cols: 2 };
@@ -355,7 +356,7 @@ function footer(ops: DrawOp[], tier: Tier, pageNo: number, pages: number): void 
 }
 
 /** One exercise as a line of cells (numbers, signs, boxes), left aligned at x, centred on cy. */
-function exerciseOps(e: Exercise, x: number, cy: number, size: number, maxW: number): DrawOp[] {
+export function exerciseOps(e: Exercise, x: number, cy: number, size: number, maxW: number): DrawOp[] {
   const ops: DrawOp[] = [];
   const box = size * 1.55;
   const gap = size * 0.35;
@@ -376,7 +377,7 @@ function exerciseOps(e: Exercise, x: number, cy: number, size: number, maxW: num
   return ops;
 }
 
-function picturesOps(n: number, emoji: string, x: number, cy: number, size: number): DrawOp[] {
+export function picturesOps(n: number, emoji: string, x: number, cy: number, size: number): DrawOp[] {
   const ops: DrawOp[] = [];
   const perRow = 3;
   const rows = Math.ceil(n / perRow);
@@ -440,32 +441,20 @@ function countDots(n: number, x: number, y: number, size: number): DrawOp[] {
   return ops;
 }
 
-/** The answers, as compact as is still easy to read; a second page if they do not fit. */
-function answersPages(config: WorksheetConfig, range: MathRange, sets: { type: MathType; exercises: Exercise[] }[], carry: MathCarry): DrawOp[][] {
-  const pages: DrawOp[][] = [];
-  let ops: DrawOp[] = [];
-  const start = () => {
-    ops = [];
-    pages.push(ops);
-    return frame(ops, config, 'Răspunsuri', 'Pentru părinte sau educatoare: rezultatele fișelor de mai sus.');
-  };
-  let y = start();
-  const bottom = H - M - 8;
-  for (const { type, exercises } of sets) {
-    const perLine = type === 'problems' ? 1 : type === 'money' ? 2 : type === 'seq' || type === 'nbr' ? 4 : 8;
-    const lines = Math.ceil(exercises.length / perLine);
-    if (y + 7 + lines * 5.5 > bottom) y = start();
-    ops.push({ t: 'text', x: M, y: y + 2, text: mathTitle(type, range, carry), size: 4, fill: INK, weight: 'bold' });
-    y += 7.5;
-    const colW = (W - 2 * M) / perLine;
-    exercises.forEach((e, i) => {
-      const c = i % perLine;
-      if (c === 0 && i > 0) y += 5.5;
-      ops.push({ t: 'text', x: M + c * colW, y, text: `${i + 1}. ${e.answer}`, size: 3.4, fill: '#334155' });
-    });
-    y += 9;
-  }
-  return pages;
+/** How many answers fit on one line of the answers page. */
+function answersPerLine(type: MathType): number {
+  return type === 'problems' ? 1 : type === 'money' ? 2 : type === 'seq' || type === 'nbr' ? 4 : 8;
+}
+
+/** A problem's answer for the grown-up: „4 + 3 = 7 — Răspuns: 7 mașini” (up to 0–5 there is no „Răspuns” line). */
+export function problemAnswer(p: WordProblem, range: MathRange): string {
+  const ops = p.steps.map((s) => `${s.a} ${s.op} ${s.b} = ${s.r}`).join('; ');
+  return range <= 5 ? `${ops} (${counted(p.result, p.noun)})` : `${ops} — Răspuns: ${counted(p.result, p.noun)}`;
+}
+
+/** The answers of the math sheets, as sections of the answers page (see answer-key.ts). */
+function answerSections(range: MathRange, sets: { type: MathType; exercises: Exercise[] }[], carry: MathCarry): KeySection[] {
+  return sets.map(({ type, exercises }) => ({ title: mathTitle(type, range, carry), entries: exercises.map((e) => e.answer), perLine: answersPerLine(type), numbered: true }));
 }
 
 function moneyPage(config: WorksheetConfig, range: MathRange, exercises: ReturnType<typeof moneyExercises>): DrawOp[] {
@@ -485,7 +474,7 @@ function problemsPage(config: WorksheetConfig, range: MathRange, problems: WordP
 }
 
 /** The chosen math sheets, one page per exercise type, and the answers page if asked for. */
-export function buildMathPages(config: WorksheetConfig, tier: Tier): PageOps[] {
+export function buildMathPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
   let range = mathRangeOf(config);
   if (tier === 'free' && range > FREE_MATH_RANGE) range = FREE_MATH_RANGE;
   const seed = config.mathSeed ?? 1;
@@ -497,15 +486,16 @@ export function buildMathPages(config: WorksheetConfig, tier: Tier): PageOps[] {
     type,
     exercises:
       type === 'money' ? money.map((m) => ({ cells: [], answer: m.answer }))
-      : type === 'problems' ? problems.map((p) => ({ cells: [], answer: p.answer }))
+      : type === 'problems' ? problems.map((p) => ({ cells: [], answer: problemAnswer(p, range) }))
       : mathExercises(type, range, seed, grid(type, range).count, carry),
   }));
   const pages: DrawOp[][] = sets.map(({ type, exercises }) =>
     type === 'money' ? moneyPage(config, range, money) : type === 'problems' ? problemsPage(config, range, problems) : exercisePage(config, type, range, exercises, carry),
   );
-  if (config.mathAnswers && sets.length) pages.push(...answersPages(config, range, sets, carry));
-  return pages.map((ops, i) => {
+  const sheets = pages.length;
+  if (config.mathAnswers && sets.length) pages.push(...answerKeyPages(config, answerSections(range, sets, carry)));
+  return pages.map((ops, i): SheetPage => {
     footer(ops, tier, i + 1, pages.length);
-    return { width: W, height: H, ops };
+    return { width: W, height: H, ops, ...(i >= sheets ? { answerKey: true } : {}) };
   });
 }

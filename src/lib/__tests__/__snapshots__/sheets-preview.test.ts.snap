@@ -84,6 +84,54 @@ exports[`how every kind of sheet looks > coperta-kdp-mana 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > evaluare-clr-CP 1`] = `
+[
+  "48a8695c4a26e95e",
+  "becd7ccf766cd68e",
+  "8e6e135d02827cc7",
+]
+`;
+
+exports[`how every kind of sheet looks > evaluare-clr-I 1`] = `
+[
+  "de1e4c333e95d4ae",
+  "148c3785c6ce1f02",
+  "467ec3b45a1b56d5",
+]
+`;
+
+exports[`how every kind of sheet looks > evaluare-gradinita-presc 1`] = `
+[
+  "9501e6f8629a51ac",
+  "d42e8c2306b88c43",
+  "4626f0343a7e6edd",
+]
+`;
+
+exports[`how every kind of sheet looks > evaluare-mate-CP 1`] = `
+[
+  "2c1df659bd0f8587",
+  "13e1c02cd3022663",
+  "ba8646eeabf63ede",
+]
+`;
+
+exports[`how every kind of sheet looks > evaluare-mate-I 1`] = `
+[
+  "5fcc0ab39387765b",
+  "644fbe3de7c31002",
+  "e2c550bec5a16cc3",
+]
+`;
+
+exports[`how every kind of sheet looks > evaluare-mate-II 1`] = `
+[
+  "2e1dd96c0ed41bd1",
+  "b18c7d780e3bba79",
+  "9f17b2cee4b9877d",
+]
+`;
+
 exports[`how every kind of sheet looks > forme 1`] = `
 [
   "a94aabd666b62ef9",
@@ -110,6 +158,25 @@ exports[`how every kind of sheet looks > jocuri 1`] = `
   "6bf54d557089d734",
   "835ca4198db9f410",
   "28cbcb1ca7694b36",
+]
+`;
+
+exports[`how every kind of sheet looks > jocuri-raspunsuri 1`] = `
+[
+  "cb9c2760ee742684",
+  "beedd08a2ac868ed",
+  "b9799984e7487329",
+  "e64bca1d9a47d166",
+  "a153a7fb3d69e6a2",
+  "50d7307cb864b7c9",
+  "d1dd4a648e990459",
+  "42e2bfddaffc920c",
+  "0a41d9372dfe7112",
+  "c3d0b75760dcdbb8",
+  "5f54bf60641daabc",
+  "d99d8ac723ae75fe",
+  "a510a5c8120fccad",
+  "3be38cbe5b4cbae1",
 ]
 `;
 
@@ -220,6 +287,23 @@ exports[`how every kind of sheet looks > matematica-100-cu-trecere 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > matematica-raspunsuri-clasa 1`] = `
+[
+  "637e3894be65bf6b",
+  "2655c9a252ef5a30",
+  "6ea138eb98795ef9",
+  "9b88cc1351e514d5",
+  "994732dfc468e2ca",
+  "3c1346b488f09b5b",
+  "4ab1a90de920c9bc",
+  "f161305e4ee67593",
+  "6905b21ed5888200",
+  "3e7032a06ebaae1f",
+  "7876941164755311",
+  "fda3c616b4048b6f",
+]
+`;
+
 exports[`how every kind of sheet looks > optiuni 1`] = `
 [
   "620ac4f00974c515",
@@ -242,8 +326,8 @@ exports[`how every kind of sheet looks > probleme-5 1`] = `
 
 exports[`how every kind of sheet looks > probleme-10 1`] = `
 [
-  "a5cf24ccd234b17f",
-  "89a49df2ece97b36",
+  "6cb0002788bd9d5a",
+  "01abf645144d0368",
 ]
 `;
 
@@ -261,8 +345,8 @@ exports[`how every kind of sheet looks > probleme-31 1`] = `
 
 exports[`how every kind of sheet looks > probleme-100 1`] = `
 [
-  "93434858395dd7ea",
-  "418cf0fcbb2f7cdc",
+  "7431fe3b80932588",
+  "87c5571369fd2838",
 ]
 `;
 

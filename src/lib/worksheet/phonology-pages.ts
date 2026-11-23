@@ -161,10 +161,10 @@ function footer(ops: DrawOp[], tier: Tier): void {
   if (tier === 'free') ops.push({ t: 'text', x: W - M, y: H - M + 2, text: madeWith('ro'), size: 2.6, fill: '#94a3b8', align: 'right' });
 }
 
-const caseOf = (config: WorksheetConfig, text: string) => (config.letterMode === 'uppercase' ? text.toLocaleUpperCase('ro') : text.toLocaleLowerCase('ro'));
+export const caseOf = (config: WorksheetConfig, text: string) => (config.letterMode === 'uppercase' ? text.toLocaleUpperCase('ro') : text.toLocaleLowerCase('ro'));
 
 /** Glyphs of a text, placed with its left edge at x and its cap line at `capY` (s = mm per glyph unit). */
-function glyphText(text: string, x: number, capY: number, s: number, style: Partial<Parameters<typeof itemOps>[1]> = {}): DrawOp {
+export function glyphText(text: string, x: number, capY: number, s: number, style: Partial<Parameters<typeof itemOps>[1]> = {}): DrawOp {
   const glyphs = [...text].map((c) => getGlyph(c)).filter((g) => !!g);
   return {
     t: 'group',
@@ -175,12 +175,12 @@ function glyphText(text: string, x: number, capY: number, s: number, style: Part
   };
 }
 
-function glyphTextWidth(text: string, s: number): number {
+export function glyphTextWidth(text: string, s: number): number {
   return itemWidth([...text].map((c) => getGlyph(c)).filter((g) => !!g)) * s;
 }
 
 /** Vertical ink extent of a text in glyph units (accents above 0, tails and commas below 100). */
-function inkExtent(text: string): { top: number; bottom: number } {
+export function inkExtent(text: string): { top: number; bottom: number } {
   const b = [...text].map((c) => getGlyph(c)).filter((g) => !!g).map((g) => glyphBounds(g, 10));
   return { top: Math.min(0, ...b.map((x) => x.minY)), bottom: Math.max(100, ...b.map((x) => x.maxY)) };
 }

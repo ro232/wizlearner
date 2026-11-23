@@ -135,6 +135,7 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
   if (typeof r.mathRange === 'number' && MATH_RANGES.includes(r.mathRange)) config.mathRange = r.mathRange;
   if (typeof r.mathSeed === 'number' && Number.isFinite(r.mathSeed)) config.mathSeed = int(r.mathSeed, 0, 1_000_000_000, 1);
   if (typeof r.mathAnswers === 'boolean') config.mathAnswers = r.mathAnswers;
+  if (typeof r.evaluation === 'boolean' && (category === 'math' || category === 'games')) config.evaluation = r.evaluation;
   if (r.mathCarry === 'without' || r.mathCarry === 'with' || r.mathCarry === 'mixed') config.mathCarry = r.mathCarry;
   if (r.curriculumLevel === 'presc' || r.curriculumLevel === 'CP' || r.curriculumLevel === 'I' || r.curriculumLevel === 'II') config.curriculumLevel = r.curriculumLevel;
   if (wordPictures) config.wordPictures = wordPictures;

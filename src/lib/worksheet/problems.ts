@@ -570,7 +570,7 @@ const PAD_BOTTOM = 2.8;
  * (text lines, pictures, answer area), and what is left is shared out evenly. If they do not
  * fit (long texts), the text gets a little smaller.
  */
-export function problemsPageOps(problems: WordProblem[], range: number, left: number, right: number, top: number, bottom: number): DrawOp[] {
+export function problemsPageOps(problems: WordProblem[], range: number, left: number, right: number, top: number, bottom: number, label: (i: number) => string = (i) => `${i + 1}.`): DrawOp[] {
   const ops: DrawOp[] = [];
   const width = right - left;
   const textX = left + 11;
@@ -602,7 +602,7 @@ export function problemsPageOps(problems: WordProblem[], range: number, left: nu
     const { lines, body, need } = layout[i];
     const h = need + extra;
     ops.push({ t: 'rect', x: left, y: y + 1.2, w: width, h: h - 2.4, rx: 4, fill: '#FBF7EE', stroke: '#E6DECD', strokeWidth: 0.4 });
-    ops.push({ t: 'text', x: left + 4, y: y + PAD_TOP, text: `${i + 1}.`, size: 3.8, fill: MUTED, weight: 'bold' });
+    ops.push({ t: 'text', x: left + 4, y: y + PAD_TOP, text: label(i), size: 3.8, fill: MUTED, weight: 'bold' });
     lines.forEach((line, k) => ops.push({ t: 'text', x: textX, y: y + PAD_TOP + k * lh, text: line, size, fill: INK }));
     const bodyTop = y + PAD_TOP + (lines.length - 1) * lh + PAD_MID;
     const bodyH = body + extra;
@@ -612,4 +612,16 @@ export function problemsPageOps(problems: WordProblem[], range: number, left: nu
     y += h;
   });
   return ops;
+}
+
+/** The height the problems need at the largest text size (what problemsPageOps draws them in when it has the room). */
+export function problemsHeight(problems: WordProblem[], range: number, left: number, right: number): number {
+  const textW = right - 4 - (left + 11);
+  const picW = right - 4 - solutionWidth(range) - 5 - (left + 5);
+  const size = TEXT_SIZES[0];
+  return problems.reduce((sum, p) => {
+    const lines = wrapText(p.text, textW, size);
+    const body = Math.max(solutionHeight(p, range), pictureHeight(p, picW));
+    return sum + PAD_TOP + (lines.length - 1) * size * 1.42 + PAD_MID + body + PAD_BOTTOM;
+  }, 0);
 }

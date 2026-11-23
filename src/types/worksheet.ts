@@ -59,8 +59,13 @@ export interface WorksheetConfig {
   mathRange?: number;
   /** Math sheets: which random set of exercises (changed by „Alte exerciții”). */
   mathSeed?: number;
-  /** Math sheets: add a page with the answers. */
+  /**
+   * „Pagină cu răspunsuri la final”: a page with the answers, for the math sheets and the games that
+   * have answers (the name stays from when only math had it, so saved sheets keep the setting).
+   */
   mathAnswers?: boolean;
+  /** Math and games: print the chosen items as a short „Evaluare”, always with its answers page. */
+  evaluation?: boolean;
   /** Math sheets from 0–20 up: additions and subtractions „fără” / „cu trecere peste ordin”, or both (unset: as the range always did). */
   mathCarry?: 'without' | 'with' | 'mixed';
   /** Print the curriculum competence of the sheet for this class (grădiniță, CP, I, II); unset = no label. */

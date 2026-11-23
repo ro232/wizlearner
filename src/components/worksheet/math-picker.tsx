@@ -6,11 +6,11 @@ import { CARRY_TYPES, FREE_MATH_RANGE, MATH_CARRY, MATH_LABELS, MATH_RANGES, MAT
 
 const CARRY_LABELS: Record<MathCarry, string> = { without: 'Fără', with: 'Cu', mixed: 'Amestecat' };
 
-/** Math sheets: which exercises (one page each), up to which number, carrying or not, a new set, the answers. */
+/** Math sheets: which exercises (one page each), up to which number, carrying or not, a new set (the answers page: AnswerOptions). */
 export function MathPicker({ onShowPaywall }: { onShowPaywall: () => void }) {
   const config = useWorksheetStore((s) => s.config);
   const tier = useWorksheetStore((s) => s.tier);
-  const { toggleItem, setMathRange, setMathCarry, newMathSet, toggleMathAnswers } = useWorksheetStore();
+  const { toggleItem, setMathRange, setMathCarry, newMathSet } = useWorksheetStore();
   const range = mathRangeOf(config);
   const carry = mathCarryOf(config);
   const carryLocked = tier === 'free';
@@ -86,10 +86,6 @@ export function MathPicker({ onShowPaywall }: { onShowPaywall: () => void }) {
         <button type="button" onClick={newMathSet} className="inline-flex items-center gap-1.5 h-11 px-4 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper">
           <Shuffle className="w-4 h-4" aria-hidden /> Alte exerciții
         </button>
-        <label className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer">
-          <input type="checkbox" checked={!!config.mathAnswers} onChange={toggleMathAnswers} className="w-5 h-5 accent-blue-600" />
-          Pagină cu răspunsuri
-        </label>
       </div>
     </div>
   );

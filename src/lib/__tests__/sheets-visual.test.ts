@@ -9,6 +9,7 @@ import { buildCoverPage } from '@/lib/book/cover';
 import { pageToSvg } from '@/lib/glyphs/backends/svg';
 import { MATH_TYPES } from '@/lib/worksheet/math';
 import { THEMES } from '@/lib/themes';
+import { SHEET_PRESETS, presetConfig } from '@/lib/curriculum/presets';
 import type { PageOps } from '@/lib/glyphs/types';
 
 /**
@@ -41,6 +42,11 @@ sheet('matematica-100-cu-trecere', { category: 'math', selectedItems: ['add', 's
 sheet('matematica-100-amestecat', { category: 'math', selectedItems: ['mix'], mathRange: 100, mathCarry: 'mixed' });
 for (const r of [5, 10, 20, 31, 100]) sheet(`bani-${r}`, { category: 'math', selectedItems: ['money'], mathRange: r, mathAnswers: true });
 for (const r of [5, 10, 20, 31, 100]) sheet(`probleme-${r}`, { category: 'math', selectedItems: ['problems'], mathRange: r, mathAnswers: r === 10 || r === 100, curriculumLevel: r === 20 || r === 100 ? 'I' : r === 5 ? 'presc' : 'CP' });
+// „Pagină cu răspunsuri”: the games, and math with a class (no curriculum line on the answers)
+sheet('jocuri-raspunsuri', { category: 'games', selectedItems: ['find:Ș', 'count:10', 'sound:A', 'first:1', 'syl:1', 'split:1', 'sort:1', 'sort:5', 'odd:4', 'group:1', 'pos:1', 'pos:3'], mathAnswers: true, curriculumLevel: 'CP' });
+sheet('matematica-raspunsuri-clasa', { category: 'math', selectedItems: [...MATH_TYPES], mathRange: 10, mathAnswers: true, curriculumLevel: 'CP' });
+// „Evaluare”: every class that has one
+for (const p of SHEET_PRESETS.filter((x) => x.evaluation)) for (const level of p.levels ?? []) SAMPLES[`${p.id}-${level}`] = () => buildWorksheetPages(presetConfig(p, level), 'full');
 sheet('caiet-alfabet-mana', { letterMode: 'paired', script: 'cursive', selectedItems: ['Aa', 'Bb', 'Șș'], pagePerItem: true, itemWords: true, fillPage: false });
 sheet('optiuni', { letterMode: 'paired', selectedItems: ['Aa'], leftHandedMode: true, orientation: 'landscape', backgroundPattern: 'dictando', guideColor: 'blue', traceDensity: 'dense', customTitle: 'Fișă de lucru pentru grupa mare – săptămâna 12' });
 SAMPLES['grupa'] = () => buildGroupPages({ names: ['Ana', 'Ștefan'], themeId: THEMES[0].id, letters: ['M'], letterMode: 'uppercase', difficulty: 'beginner', withFindPages: true }).pages;
