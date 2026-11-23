@@ -20,6 +20,8 @@ const CATEGORIES: readonly ContentCategory[] = ['letters', 'numbers', 'shapes', 
 // that only need the menu; a test checks they match MATH_TYPES and isActivityItem.
 const MATH_IDS: readonly string[] = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr'];
 const GAME_ITEM = /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/;
+// „Sunete și silabe” (phonology-pages.ts: isPhonologyItem)
+const PHONO_ITEM = /^(sound:(A|B|C|D|F|L|M|P|R|S|T|U|V)|(first|syl|split):[1-6])$/;
 const MATH_RANGES: readonly number[] = [5, 10, 20, 100];
 
 const MAX_ITEMS = 120;
@@ -50,6 +52,7 @@ export function itemFitsCategory(item: unknown, category: ContentCategory): item
     case 'math':
       return MATH_IDS.includes(item);
     case 'games':
+      if (PHONO_ITEM.test(item)) return true;
       return GAME_ITEM.test(item);
     default:
       return false;

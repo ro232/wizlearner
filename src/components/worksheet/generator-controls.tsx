@@ -10,6 +10,7 @@ import { isWordAllowed } from '@/lib/worksheet/layout';
 import { uppercaseLetters, lowercaseLetters, pairedLetters, hintFor } from '@/lib/glyphs/data';
 import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
 import { COUNT_RANGES, DOT_SHAPES, DOT_SHAPE_LABELS } from '@/lib/worksheet/activities';
+import { PHONO_KIND_TITLES, phonologyItems } from '@/lib/worksheet/phonology-pages';
 import { Button } from '@/components/ui/button';
 import { MathPicker } from './math-picker';
 import { TraceStylePicker } from './trace-style-picker';
@@ -83,7 +84,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       case 'prewrite':
         return [...PATTERN_IDS];
       case 'games':
-        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`)];
+        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems()];
       default:
         return [];
     }
@@ -192,6 +193,11 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               { title: 'Găsește litera', text: 'O grilă de litere: copilul o colorează pe cea cerută.', items: allItems.filter((i) => i.startsWith('find:')), cols: 'grid-cols-8 sm:grid-cols-11', show: (i: string) => i.slice(5) },
               { title: 'Numără și scrie', text: 'Imagini de numărat și căsuța pentru număr.', items: [...COUNT_RANGES] as string[], cols: 'grid-cols-2', show: (i: string) => `1–${i.slice(6)}` },
               { title: 'Unește punctele', text: 'Puncte numerotate care se transformă într-un desen.', items: DOT_SHAPES.map((d) => `dots:${d}`), cols: 'grid-cols-3 sm:grid-cols-6', show: (i: string) => DOT_SHAPE_LABELS[i.slice(5) as keyof typeof DOT_SHAPE_LABELS] },
+              // „Sunete și silabe” (phonology-pages.ts)
+              { title: `Sunete și silabe: ${PHONO_KIND_TITLES.sound.toLocaleLowerCase('ro')}`, text: 'Imagini de încercuit: cele care încep cu sunetul ales.', items: allItems.filter((i) => i.startsWith('sound:')), cols: 'grid-cols-7', show: (i: string) => i.slice(6) },
+              { title: `Sunete și silabe: ${PHONO_KIND_TITLES.first.toLocaleLowerCase('ro')}`, text: 'Sub fiecare imagine, litera cu care începe cuvântul. Seturi diferite de imagini.', items: allItems.filter((i) => i.startsWith('first:')), cols: 'grid-cols-6', show: (i: string) => i.slice(6) },
+              { title: `Sunete și silabe: ${PHONO_KIND_TITLES.syl.toLocaleLowerCase('ro')}`, text: 'Cuvinte de 1–4 silabe: o bulină colorată pentru fiecare silabă. Seturi diferite de cuvinte.', items: allItems.filter((i) => i.startsWith('syl:')), cols: 'grid-cols-6', show: (i: string) => i.slice(4) },
+              { title: `Sunete și silabe: ${PHONO_KIND_TITLES.split.toLocaleLowerCase('ro')}`, text: 'Silabele de urmărit, apoi de scris în căsuțe (clasa pregătitoare, clasa I). Seturi diferite de cuvinte.', items: allItems.filter((i) => i.startsWith('split:')), cols: 'grid-cols-6', show: (i: string) => i.slice(6) },
             ].map((group) => (
               <div key={group.title}>
                 <div className="font-extrabold text-ink">{group.title}</div>
