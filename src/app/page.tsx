@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/footer';
 import { WorksheetPreview } from '@/components/worksheet/worksheet-preview';
 import { GuidedStart } from '@/components/home/guided-start';
 import { SheetGallery } from '@/components/home/sheet-gallery';
+import { AdventBanner } from '@/components/home/advent-banner';
 import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
 import { routeMetadata } from '@/lib/seo/metadata';
 
@@ -162,6 +163,8 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        {/* SEZONIER: Calendarul de Advent, se ascunde singur din 26.12.2026; de scos după Crăciun */}
+        <AdventBanner />
         <FirstSheet />
         <Gallery />
         <ForWhom />
