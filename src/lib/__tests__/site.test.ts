@@ -33,7 +33,7 @@ describe('public address of the site', () => {
 
   it('sitemap and robots are built from it', () => {
     const urls = sitemap().map((e) => e.url);
-    expect(urls.length).toBe(10 + SEO_SHEETS.length + 1 + CLASS_PAGES.length); // + /programa and its class pages
+    expect(urls.length).toBe(11 + SEO_SHEETS.length + 1 + CLASS_PAGES.length); // + /programa and its class pages
     expect(new Set(urls).size).toBe(urls.length);
     for (const u of urls) {
       expect(u.startsWith(SITE_URL), u).toBe(true);
