@@ -11,6 +11,7 @@ const book = () => import('./generate-book');
 
 export const generateWorksheetPDF = async (config: WorksheetConfig, tier: Tier) => (await sheet()).generateWorksheetPDF(config, tier);
 export const printWorksheetPDF = async (config: WorksheetConfig, tier: Tier) => (await sheet()).printWorksheetPDF(config, tier);
+export const printPagesPdf = async (pages: PageOps[]) => (await sheet()).printPagesPdf(pages);
 export const downloadPagesPdf = async (pages: PageOps[], filename: string) => (await sheet()).downloadPagesPdf(pages, filename);
 export const downloadBookInterior = async (config: BookConfig) => (await book()).downloadBookInterior(config);
 export const downloadBookCover = async (config: BookConfig, pageCount: number) => (await book()).downloadBookCover(config, pageCount);
