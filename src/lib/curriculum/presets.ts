@@ -35,6 +35,7 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'mate-sir', title: 'Completează șirul', text: 'Numerele în ordine, cu golurile de completat.', config: { category: 'math', selectedItems: ['seq'] } },
   { id: 'mate-vecini', title: 'Vecinii numerelor', text: 'Numărul dinainte și cel de după.', config: { category: 'math', selectedItems: ['nbr'] } },
   { id: 'mate-bani', title: 'Banii', text: 'Numără, compară și schimbă bancnote de 1 leu, 5 lei, 10 lei.', config: { category: 'math', selectedItems: ['money'] } },
+  { id: 'mate-probleme', title: 'Probleme cu imagini', text: 'Probleme scurte de adunare și scădere, cu obiectele desenate.', config: { category: 'math', selectedItems: ['problems'] } },
   { id: 'mate-adunari-31', title: 'Adunări 0–31', text: 'Adaugi 1–5 unități, fără și cu trecere peste ordin.', config: { category: 'math', selectedItems: ['add'], mathRange: 31 }, levels: ['CP'] },
   { id: 'gaseste-litera', title: 'Găsește litera', text: 'Colorează litera căutată printre celelalte.', config: { category: 'games', selectedItems: ['find:A'] } },
   { id: 'numara', title: 'Numără și scrie', text: 'Numără obiectele și scrie numărul.', config: { category: 'games', selectedItems: ['count:5'] } },

@@ -5,10 +5,11 @@ import { madeWith } from '@/lib/brand';
 import { textWidthMm } from '@/lib/book/text';
 import { ACCENT, INK, MUTED, PAPER, starPoints } from './rows';
 import { lei, moneyExercises, moneyPageOps } from './money';
+import { problemsInstruction, problemsPageOps, wordProblems, type WordProblem } from './problems';
 
 /**
  * Math sheets ("Matematică"), new every time on request: compare numbers, add, subtract,
- * add with pictures, missing number, number sequences, neighbours.
+ * add with pictures, missing number, number sequences, neighbours, money, word problems.
  *
  * Each chosen exercise type is one page; an optional last page has the answers for the
  * grown-up. The exercises are random but seeded (type + range + seed), so the preview and
@@ -22,7 +23,7 @@ import { lei, moneyExercises, moneyPageOps } from './money';
  * a 1-5 elemente dintr-o mulțime dată”).
  */
 
-export const MATH_TYPES = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr', 'money'] as const;
+export const MATH_TYPES = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr', 'money', 'problems'] as const;
 export type MathType = (typeof MATH_TYPES)[number];
 export const MATH_RANGES = [5, 10, 20, 31, 100] as const;
 export type MathRange = (typeof MATH_RANGES)[number];
@@ -37,6 +38,7 @@ export const MATH_LABELS: Record<MathType, { title: string; text: string; icon: 
   seq: { title: 'Completează șirul', text: '3, 4, ?, 6', icon: '🔢' },
   nbr: { title: 'Vecinii numărului', text: '? 7 ?', icon: '🏠' },
   money: { title: 'Bani', text: '1 leu, 5 lei, 10 lei', icon: '💵' },
+  problems: { title: 'Probleme cu imagini', text: 'citește și rezolvă', icon: '🧺' },
 };
 
 /**
@@ -242,7 +244,8 @@ function makeExercise(type: MathType, rand: () => number, range: MathRange, carr
       return { cells: [null, String(n), null], answer: `${n - 1}, ${n + 1}` };
     }
     case 'money':
-      // drawn by money.ts (moneySheet); never asked for here
+    case 'problems':
+      // drawn by money.ts and problems.ts; never asked for here
       return { cells: [], answer: '' };
   }
 }
@@ -255,7 +258,7 @@ function makeExercise(type: MathType, rand: () => number, range: MathRange, carr
  */
 export function mathExercises(type: MathType, range: MathRange, seed: number, count: number, carry?: MathCarry): Exercise[] {
   // an explicit carry choice that differs from what the range always did gets its own set
-  if (type === 'money') return []; // see money.ts
+  if (type === 'money' || type === 'problems') return []; // see money.ts, problems.ts
   if (!hasCarryChoice(range)) carry = undefined;
   const own = carry && CARRY_TYPES.includes(type) && hasCarryChoice(range) && carry !== (range === 100 ? 'without' : 'mixed');
   const rand = rng(seedOf(`${type}:${range}:${seed}${own ? `:${carry}` : ''}`));
@@ -299,6 +302,7 @@ const INSTRUCTIONS: Record<MathType, string> = {
   seq: 'Completează numerele care lipsesc din șir.',
   nbr: 'Scrie vecinii numărului: cel dinainte și cel de după.',
   money: 'Numără banii, compară, plătește și schimbă.',
+  problems: 'Citește problema. Scrie numerele, semnul în cerc și răspunsul.', // see problemsInstruction
 };
 
 const CARRY_TEXT: Record<MathCarry, string> = { without: 'fără trecere peste ordin', with: 'cu trecere peste ordin', mixed: '' };
@@ -448,7 +452,7 @@ function answersPages(config: WorksheetConfig, range: MathRange, sets: { type: M
   let y = start();
   const bottom = H - M - 8;
   for (const { type, exercises } of sets) {
-    const perLine = type === 'money' ? 2 : type === 'seq' || type === 'nbr' ? 4 : 8;
+    const perLine = type === 'problems' ? 1 : type === 'money' ? 2 : type === 'seq' || type === 'nbr' ? 4 : 8;
     const lines = Math.ceil(exercises.length / perLine);
     if (y + 7 + lines * 5.5 > bottom) y = start();
     ops.push({ t: 'text', x: M, y: y + 2, text: mathTitle(type, range, carry), size: 4, fill: INK, weight: 'bold' });
@@ -472,6 +476,14 @@ function moneyPage(config: WorksheetConfig, range: MathRange, exercises: ReturnT
   return ops;
 }
 
+function problemsPage(config: WorksheetConfig, range: MathRange, problems: WordProblem[]): DrawOp[] {
+  const ops: DrawOp[] = [];
+  const top = frame(ops, config, mathTitle('problems', range), problemsInstruction(range));
+  ops.push(...problemsPageOps(problems, range, M, W - M, top, H - M - 24));
+  rewardBox(ops, problems.length);
+  return ops;
+}
+
 /** The chosen math sheets, one page per exercise type, and the answers page if asked for. */
 export function buildMathPages(config: WorksheetConfig, tier: Tier): PageOps[] {
   let range = mathRangeOf(config);
@@ -480,11 +492,17 @@ export function buildMathPages(config: WorksheetConfig, tier: Tier): PageOps[] {
   const types = config.selectedItems.filter(isMathType);
   const carry = mathCarryOf({ ...config, mathRange: range });
   const money = types.includes('money') ? moneyExercises(range, rng(seedOf(`money:${range}:${seed}`))) : [];
+  const problems = types.includes('problems') ? wordProblems(range, rng(seedOf(`problems:${range}:${seed}`))) : [];
   const sets = types.map((type) => ({
     type,
-    exercises: type === 'money' ? money.map((m) => ({ cells: [], answer: m.answer })) : mathExercises(type, range, seed, grid(type, range).count, carry),
+    exercises:
+      type === 'money' ? money.map((m) => ({ cells: [], answer: m.answer }))
+      : type === 'problems' ? problems.map((p) => ({ cells: [], answer: p.answer }))
+      : mathExercises(type, range, seed, grid(type, range).count, carry),
   }));
-  const pages: DrawOp[][] = sets.map(({ type, exercises }) => (type === 'money' ? moneyPage(config, range, money) : exercisePage(config, type, range, exercises, carry)));
+  const pages: DrawOp[][] = sets.map(({ type, exercises }) =>
+    type === 'money' ? moneyPage(config, range, money) : type === 'problems' ? problemsPage(config, range, problems) : exercisePage(config, type, range, exercises, carry),
+  );
   if (config.mathAnswers && sets.length) pages.push(...answersPages(config, range, sets, carry));
   return pages.map((ops, i) => {
     footer(ops, tier, i + 1, pages.length);

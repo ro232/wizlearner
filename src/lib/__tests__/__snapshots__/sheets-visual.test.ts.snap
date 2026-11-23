@@ -226,6 +226,38 @@ exports[`how every kind of sheet looks > optiuni 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > probleme-5 1`] = `
+[
+  "62c7725319a48d40",
+]
+`;
+
+exports[`how every kind of sheet looks > probleme-10 1`] = `
+[
+  "a5cf24ccd234b17f",
+  "89a49df2ece97b36",
+]
+`;
+
+exports[`how every kind of sheet looks > probleme-20 1`] = `
+[
+  "8fe594b2061f2195",
+]
+`;
+
+exports[`how every kind of sheet looks > probleme-31 1`] = `
+[
+  "b8dc2dea76c86709",
+]
+`;
+
+exports[`how every kind of sheet looks > probleme-100 1`] = `
+[
+  "93434858395dd7ea",
+  "418cf0fcbb2f7cdc",
+]
+`;
+
 exports[`how every kind of sheet looks > sunete-silabe 1`] = `
 [
   "45c215b4c3bef63c",
