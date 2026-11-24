@@ -51,9 +51,9 @@ test('a menu group works with the keyboard alone', async ({ page }) => {
   await button.focus();
   await page.keyboard.press('ArrowDown');
   await expect(button).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.getByRole('link', { name: /^Pentru grupă/ })).toBeFocused();
+  await expect(page.locator('[data-nav-item]').filter({ hasText: /^Pentru grupă/ })).toBeFocused();
   await page.keyboard.press('ArrowDown');
-  await expect(page.getByRole('link', { name: /^Planificare/ })).toBeFocused();
+  await expect(page.locator('[data-nav-item]').filter({ hasText: /^Planificare/ })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/planificare$/);
   await expect(page.getByRole('button', { name: 'Pentru clasă' })).toHaveAttribute('aria-expanded', 'false');
