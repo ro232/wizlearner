@@ -189,7 +189,7 @@ describe('„Fișe de lucru” landing pages', () => {
       for (const r of same) expect(r.cls).toBe(p.cls);
       for (const s of p.fise) expect(SEO_SHEETS).toContain(s);
     }
-    expect(sameTopicPages(landingPage('clasa-1', 'adunari')!).map((p) => p.path)).toEqual(['/fise-de-lucru/clasa-pregatitoare/adunari', '/fise-de-lucru/clasa-2/adunari']);
+    expect(sameTopicPages(landingPage('clasa-1', 'adunari')!).map((p) => p.path)).toEqual(['/fise-de-lucru/clasa-pregatitoare/adunari', '/fise-de-lucru/clasa-2/adunari', '/fise-de-lucru/clasa-3/adunari', '/fise-de-lucru/clasa-4/adunari']);
     // grădiniță's „Cunoașterea mediului” and the school's „Explorarea mediului” link each other
     expect(sameTopicPages(landingPage('gradinita', 'cunoasterea-mediului')!).map((p) => p.cls.slug)).toEqual(['clasa-pregatitoare', 'clasa-1', 'clasa-2']);
     // letters link the free single-letter sheets instead of repeating them

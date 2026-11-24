@@ -12,6 +12,8 @@ import { exploreKeySection } from './explore-pages';
 import { subjectKeyExtras, subjectKeySection } from './subjects-pages';
 import { clrKeySection } from './clr-pages';
 import { memKeySection } from './mem-pages';
+import { m34KeySection } from './m34-pages';
+import { r34KeySection } from './r34-pages';
 
 /**
  * The answers of the game pages („Jocuri”) for the answers page: read from the same functions
@@ -83,7 +85,7 @@ export function gameKeySection(config: WorksheetConfig, item: string): KeySectio
     // the fun preschool sheets and „Explorarea mediului”: nothing for „Urmărește linia”
     default:
       // and the sheets that fill the gaps of the programme: nothing for the messages the child writes (note:1–3)
-      return funKeySection(item) ?? exploreKeySection(item) ?? clrKeySection(item) ?? memKeySection(item) ?? subjectKeySection(item);
+      return funKeySection(item) ?? exploreKeySection(item) ?? clrKeySection(item) ?? memKeySection(item) ?? subjectKeySection(item) ?? m34KeySection(item) ?? r34KeySection(item);
   }
 }
 

@@ -9,22 +9,33 @@
 import type { WorksheetConfig } from '@/types';
 import { findCompetence, type CompetenceRef, type Level, type ProgrammeId } from './index';
 import { readingSetLevel } from '@/lib/worksheet/reading';
+import { isM34Item, m34SetLevel } from '@/lib/worksheet/m34';
+import { isR34Item, r34SetLevel } from '@/lib/worksheet/r34';
 
 /** The class picked in the generator. "presc" = grădiniță. */
-export type SchoolLevel = 'presc' | 'CP' | 'I' | 'II';
+export type SchoolLevel = 'presc' | 'CP' | 'I' | 'II' | 'III' | 'IV';
 
 export const SCHOOL_LEVELS: { id: SchoolLevel; label: string }[] = [
   { id: 'presc', label: 'Grădiniță' },
   { id: 'CP', label: 'Clasa pregătitoare' },
   { id: 'I', label: 'Clasa I' },
   { id: 'II', label: 'Clasa a II-a' },
+  { id: 'III', label: 'Clasa a III-a' },
+  { id: 'IV', label: 'Clasa a IV-a' },
 ];
+
+/** Whether a value is one of the classes above (for settings that come from outside: storage, links, tokens). */
+export function isSchoolLevel(v: unknown): v is SchoolLevel {
+  return v === 'presc' || v === 'CP' || v === 'I' || v === 'II' || v === 'III' || v === 'IV';
+}
 
 const CLR = 'clr-p-ii' as const;
 const MEM = 'mem-p-ii' as const;
 const AVAP = 'avap-p-ii' as const;
 const DP = 'dp-p-ii' as const;
 const LM = 'lm-p-ii' as const;
+const LLR = 'llr-iii-iv' as const;
+const MATE = 'mate-iii-iv' as const;
 
 function school(programme: ProgrammeId, level: Exclude<SchoolLevel, 'presc'>, code: string): CompetenceRef {
   return { programme, level, code };
@@ -54,14 +65,20 @@ const RULES: Record<string, Rule> = {
   prewrite: { presc: presc('D', '3.4'), CP: school(CLR, 'CP', '4.1') },
   // math exercises
   // the signs <, >, = belong to school (MEM I 1.6), not to preschool
-  cmp: { CP: school(MEM, 'CP', '1.2'), I: school(MEM, 'I', '1.2'), II: school(MEM, 'II', '1.2') },
-  add: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4'), II: school(MEM, 'II', '1.4') },
-  sub: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4'), II: school(MEM, 'II', '1.4') },
-  mix: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4'), II: school(MEM, 'II', '1.4') },
+  // Clasa a III-a / a IV-a (Matematică, mate-iii-iv), in 0–10 000 / 0–1 000 000 (NUMBER_LIMIT):
+  // III 2.2 „Compararea numerelor naturale în concentrul 0 – 10 000, respectiv a fracțiilor…”, IV 2.2 „Compararea numerelor
+  // naturale în concentrul 0 – 1000 000, respectiv a fracțiilor…”; III 2.4 „Efectuarea de adunări și scăderi de numere
+  // naturale în concentrul 0 - 10 000 sau cu fracții cu același numitor”, IV 2.4 „… în concentrul 0 - 1 000 000 sau cu numere
+  // fracționare” (the missing number too: contents „număr necunoscut: aflare prin diverse metode”); III 2.3 / IV 2.3
+  // „Ordonarea numerelor naturale în concentrul 0 – 10 000 / 0 – 1 000 000…” for the sequences and the neighbours.
+  cmp: { CP: school(MEM, 'CP', '1.2'), I: school(MEM, 'I', '1.2'), II: school(MEM, 'II', '1.2'), III: school(MATE, 'III', '2.2'), IV: school(MATE, 'IV', '2.2') },
+  add: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4'), II: school(MEM, 'II', '1.4'), III: school(MATE, 'III', '2.4'), IV: school(MATE, 'IV', '2.4') },
+  sub: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4'), II: school(MEM, 'II', '1.4'), III: school(MATE, 'III', '2.4'), IV: school(MATE, 'IV', '2.4') },
+  mix: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4'), II: school(MEM, 'II', '1.4'), III: school(MATE, 'III', '2.4'), IV: school(MATE, 'IV', '2.4') },
   addpic: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4') },
-  missing: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4'), II: school(MEM, 'II', '1.4') },
-  seq: { presc: presc('E', '2.1'), CP: school(MEM, 'CP', '1.3'), I: school(MEM, 'I', '1.3'), II: school(MEM, 'II', '1.3') },
-  nbr: { presc: presc('E', '2.1'), CP: school(MEM, 'CP', '1.3'), I: school(MEM, 'I', '1.3'), II: school(MEM, 'II', '1.3') },
+  missing: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4'), II: school(MEM, 'II', '1.4'), III: school(MATE, 'III', '2.4'), IV: school(MATE, 'IV', '2.4') },
+  seq: { presc: presc('E', '2.1'), CP: school(MEM, 'CP', '1.3'), I: school(MEM, 'I', '1.3'), II: school(MEM, 'II', '1.3'), III: school(MATE, 'III', '2.3'), IV: school(MATE, 'IV', '2.3') },
+  nbr: { presc: presc('E', '2.1'), CP: school(MEM, 'CP', '1.3'), I: school(MEM, 'I', '1.3'), II: school(MEM, 'II', '1.3'), III: school(MATE, 'III', '2.3'), IV: school(MATE, 'IV', '2.3') },
   // „Bani”: count, compare, pay, exchange notes of 1, 5, 10 (and 50; 100, 200, 500 in 0–1000) lei.
   // CP 6.3 „Realizarea unor schimburi echivalente valoric folosind reprezentări neconvenționale în
   // probleme-joc simple de tip venituri-cheltuieli, cu numere din concentrul 0-31” (contents: „Leul
@@ -153,16 +170,23 @@ const RULES: Record<string, Rule> = {
   groups: { CP: school(MEM, 'CP', '1.5'), I: school(MEM, 'I', '1.5'), II: school(MEM, 'II', '1.5') },
   // the tables: II 1.5 (contents: „Înmulțirea în concentrul 0-100”, „Împărțirea cu rest 0 în concentrul 0-100”);
   // multiplication is not in CP or clasa I
-  mul: { II: school(MEM, 'II', '1.5') },
-  div: { II: school(MEM, 'II', '1.5') },
-  mulmiss: { II: school(MEM, 'II', '1.5') },
+  // clasa a III-a: III 2.5 „Efectuarea de înmulțiri de numere în concentrul 0 - 10 000 și de împărțiri folosind tabla
+  // înmulțirii, respectiv tabla împărțirii” (contents „înmulțirea a două numere de o cifră (tabla înmulțirii)”, „împărțirea
+  // numerelor de două cifre la un număr de o cifră cu rest 0 (tabla împărțirii dedusă din tabla înmulțirii)”). Not IV 2.5:
+  // its contents are factors of up to three digits and division by one or two digits, not the tables (m34 sets inm:3–4).
+  mul: { II: school(MEM, 'II', '1.5'), III: school(MATE, 'III', '2.5') },
+  div: { II: school(MEM, 'II', '1.5'), III: school(MATE, 'III', '2.5') },
+  mulmiss: { II: school(MEM, 'II', '1.5'), III: school(MATE, 'III', '2.5') },
   // the clock, under the time contents of 6.2: I „Utilizarea unor unități de măsură pentru determinarea și
   // compararea duratelor unor activități cotidiene” (contents „Ora (ora fixă, jumătatea de oră)”: only those
   // steps, see CLOCK_I); II „Utilizarea unor unități de măsură pentru determinarea, compararea și ordonarea
   // duratelor unor evenimente variate” („Ora (1 oră = 60 de minute; 5 minute; jumătatea de oră, sfertul de
   // oră)”, „Instrumente de măsură: ceasul”). No clock in the CP contents.
-  clock: { I: school(MEM, 'I', '6.2'), II: school(MEM, 'II', '6.2') },
-  clockdraw: { I: school(MEM, 'I', '6.2'), II: school(MEM, 'II', '6.2') },
+  // clasa a III-a: III 4.1 „Utilizarea unor instrumente și unități de măsură standardizate, în situații concrete” (contents
+  // „unități de măsură: ora (citirea ceasului), ziua, săptămâna, anul”, „instrument de măsură: ceasul”). Not IV: its time
+  // contents are intervals and transformations (m34 sets mas:3–4).
+  clock: { I: school(MEM, 'I', '6.2'), II: school(MEM, 'II', '6.2'), III: school(MATE, 'III', '4.1') },
+  clockdraw: { I: school(MEM, 'I', '6.2'), II: school(MEM, 'II', '6.2'), III: school(MATE, 'III', '4.1') },
   // the week: CP 6.2 „Utilizarea unor unități de măsură pentru determinarea/ estimarea duratelor unor
   // evenimente familiare” (contents „Ziua, săptămâna, luna: denumire, ordonare”), I 6.2, II 6.2 (as above;
   // II contents „Ziua (ieri, alaltăieri, mâine, poimâine), săptămâna, luna, anul (calendarul)”)
@@ -324,14 +348,20 @@ const RULES: Record<string, Rule> = {
   // hundreds, tens and units, the numbers in digits and in words: II 1.1 „Scrierea, citirea și formarea numerelor
   // până la 1000” (contents: „…recunoaștere, formare, citire, scriere, (cu cifre și litere)…”)
   place: { II: school(MEM, 'II', '1.1') },
+  // (the grid A–E × 1–5 also fits III 3.1 „Localizarea unor obiecte în spațiu și în reprezentări, în situații familiare”,
+  // contents „coordonate într-o reprezentare grafică sub formă de rețea”, and IV 3.1 „Localizarea unor obiecte în spațiu și
+  // a unor simboluri în diverse reprezentări”, contents „coordonate într-o reprezentare grafică sub formă de rețea”)
   // the grid A–E × 1–5: II 2.1 „Localizarea unor obiecte prin stabilirea unor coordonate în raport cu un sistem de
   // referință dat, folosind sintagmele învățate”
-  coord: { II: school(MEM, 'II', '2.1') },
+  coord: { II: school(MEM, 'II', '2.1'), III: school(MATE, 'III', '3.1'), IV: school(MATE, 'IV', '3.1') },
   // sides, vertices, the axis of symmetry; the faces and vertices of the solids: II 2.2 „Evidențierea unor
   // caracteristici simple specifice formelor geometrice plane și corpurilor geometrice identificate în diferite
   // contexte” (contents: „Pătrat, dreptunghi, triunghi, cerc, semicerc: axa de simetrie”, „Cub, cuboid, cilindru,
   // sferă, con…”). Not I 2.2: the cone is not in the clasa I contents.
-  sides: { II: school(MEM, 'II', '2.2') },
+  // sides, vertices and axes of symmetry of the square, rectangle, triangle, circle: also III 3.2 „Explorarea caracteristicilor
+  // simple ale figurilor și corpurilor geometrice în contexte familiare” (contents „poligoane: pătrat, dreptunghi, triunghi”,
+  // „cerc”, „Axa de simetrie”). Not „solid”: its „cuboid” is named „paralelipiped” in the III contents.
+  sides: { II: school(MEM, 'II', '2.2'), III: school(MATE, 'III', '3.2') },
   solid: { II: school(MEM, 'II', '2.2') },
   // patterns and regularities: I 3.1 „Rezolvarea de probleme prin observarea unor regularități din mediul
   // apropiat”; II 3.1 „Rezolvarea de probleme în cadrul unor investigații, prin observarea și generalizarea unor
@@ -362,6 +392,120 @@ const RULES: Record<string, Rule> = {
   more: { presc: presc('E', '1.2') },
 };
 
+/**
+ * ── Clasa a III-a și a IV-a: the Matematică sheets (m34.ts) and the Limba și literatura română sheets (r34.ts). Each set is
+ * written for one class (m34SetLevel, r34SetLevel) and prints the codes of that class only; the key is the kind, and the
+ * class picks the codes. Quoted: the programme text of each code (mate-iii-iv, llr-iii-iv).
+ */
+const SETS_34: Record<string, { programme: ProgrammeId; III?: string[]; IV?: string[] }> = {
+  // „Numerele naturale”: with digits and words, place value, compare, order. 2.1 „Recunoașterea numerelor naturale din
+  // concentrul 0- 10 000…” / „…0- 1 000 000…”; 2.2 „Compararea numerelor naturale…”; 2.3 „Ordonarea numerelor naturale…”
+  nr: { programme: MATE, III: ['2.1', '2.2', '2.3'], IV: ['2.1', '2.2', '2.3'] },
+  // the Roman numerals (contents „formarea, citirea, scrierea numerelor cu cifrele romane I, V, X”, IV „…I, V, X, L, C, D, M”):
+  // reading and writing numbers, 2.1 „Recunoașterea numerelor naturale…”
+  rom: { programme: MATE, III: ['2.1'], IV: ['2.1'] },
+  // rounding (contents „formare, citire, scriere comparare, ordonare, rotunjire”): the nearer round number is found by
+  // comparing, 2.2 „Compararea numerelor naturale…” (no specific competence names rounding: the closest one)
+  rot: { programme: MATE, III: ['2.2'], IV: ['2.2'] },
+  // the order of operations with brackets: additions and subtractions (2.4) with multiplications and divisions (2.5):
+  // III 2.4 „Efectuarea de adunări și scăderi de numere naturale în concentrul 0 - 10 000…”, III 2.5 „Efectuarea de înmulțiri
+  // de numere în concentrul 0 - 10 000 și de împărțiri folosind tabla înmulțirii…”; IV 2.4 / 2.5 the same in 0 – 1 000 000
+  ops: { programme: MATE, III: ['2.4', '2.5'], IV: ['2.4', '2.5'] },
+  // III 2.5 (above); IV 2.5 „Efectuarea de înmulțiri de numere în concentrul 0 - 1 000 000 când factorii au cel mult trei cifre
+  // și de împărțiri la numere de o cifră sau două cifre”
+  inm: { programme: MATE, III: ['2.5'], IV: ['2.5'] },
+  // problems, solved and composed: 5.1 „Utilizarea terminologiei specifice și a unor simboluri matematice în rezolvarea
+  // și/sau compunerea de probleme cu raționamente simple” (IV „…cu raționamente diverse”); 5.3 „Rezolvarea de probleme cu
+  // operațiile aritmetice studiate, în concentrul 0 - 10 000” (IV „…0 - 1 000 000”)
+  prob: { programme: MATE, III: ['5.1', '5.3'], IV: ['5.1', '5.3'] },
+  // perimeter, lines, angles, polygons (contents „Perimetrul”, „unghi”, „poligoane”; IV also „Aria unei suprafețe…”, „unghiuri
+  // drepte, ascuțite, obtuze”, „drepte perpendiculare, paralele”): III 3.2 „Explorarea caracteristicilor simple ale figurilor
+  // și corpurilor geometrice în contexte familiare”, IV 3.2 „Explorarea caracteristicilor, relațiilor și a proprietăților
+  // figurilor și corpurilor geometrice identificate în diferite contexte”
+  per: { programme: MATE, III: ['3.2'], IV: ['3.2'] },
+  geo: { programme: MATE, III: ['3.2'], IV: ['3.2'] },
+  // tables and charts: III 5.2 „Înregistrarea în tabele a unor date observate din cotidian”; IV 5.2 „Organizarea datelor în
+  // tabele și reprezentarea lor grafică”
+  date: { programme: MATE, III: ['5.2'], IV: ['5.2'] },
+  // patterns: III 1.1 „Observarea unor modele / regularități din cotidian, pentru crearea de raționamente proprii” (the rule
+  // written, the mistake found), 1.2 „Aplicarea unei reguli pentru continuarea unor modele repetitive”; IV 1.1 „Explicarea unor
+  // modele / regularități…”, 1.2 „Generarea unor modele repetitive / regularități” (a sequence made after a rule, one invented)
+  sir: { programme: MATE, III: ['1.1', '1.2'], IV: ['1.1', '1.2'] },
+  // ── Limba și literatura română
+  // „Ascultă și răspunde” (the teacher reads, the pupils answer): III 1.1 „Extragerea unor informații de detaliu dintr-un text
+  // informativ sau literar accesibil”, 1.2 „Deducerea sensului unui cuvânt prin raportare la mesajul audiat în contexte de
+  // comunicare familiare”; IV 1.1 „Realizarea de deducții simple pe baza audierii unui text literar sau informativ
+  // accesibil”, 1.2 „Deducerea sensului unui cuvânt prin raportare la mesajul audiat în contexte de comunicare previzibile”
+  aud: { programme: LLR, III: ['1.1', '1.2'], IV: ['1.1', '1.2'] },
+  // parts of speech, from a short text read (contents „intuirea claselor morfologice – substantiv, adjectiv calificativ,
+  // pronume personal, verb”, „intuirea numărului, a genului”, „…a persoanei, a timpului”, „…subiectpredicat”): III 3.5
+  // „Sesizarea unor regularități ale limbii pe baza textului citit”; clasa a IV-a corrects agreement mistakes in sentences
+  // read: IV 3.5 „Sesizarea abaterilor din textele citite în vederea corectării acestora”
+  parti: { programme: LLR, III: ['3.5'], IV: ['3.5'] },
+  // spelling and punctuation applied in writing: III 4.1 „Aplicarea regulilor de despărțire în silabe la capăt de rând, de
+  // ortografie și de punctuație în redactarea de text”; IV: finding and correcting the mistakes, IV 4.1 „Recunoașterea și
+  // remedierea greșelilor de ortografie și de punctuație în redactarea de text”
+  orto: { programme: LLR, III: ['4.1'], IV: ['4.1'] },
+  punct: { programme: LLR, III: ['4.1'], IV: ['4.1'] },
+  dict: { programme: LLR, III: ['4.1'], IV: ['4.1'] },
+  // functional texts: III 4.2 „Redactarea unor texte funcționale simple care conțin limbaj vizual și verbal” (the invitation
+  // and the poster, with their drawing); IV 4.2 „Redactarea unor texte funcționale scurte pe suport de hârtie sau digital”
+  func: { programme: LLR, III: ['4.2'], IV: ['4.2'] },
+  // the reading card / log: III 3.6 „Aprecierea valorii cărților”; IV 3.6 „Manifestarea interesului pentru lectura literară
+  // și de informare”
+  carte: { programme: LLR, III: ['3.6'], IV: ['3.6'] },
+  // synonyms, antonyms, homonyms: no specific competence names them (contents: „conținuturile nu se tratează în sine”): no code
+  voc: { programme: LLR },
+  // ── the sets whose codes differ within a class: „lect” (the informative text of clasa a III-a has no characters to judge)
+  // and „comp” (a story or a description), „fr” (what each set of fractions does)
+  // III 3.1 „Extragerea unor informații de detaliu din texte informative sau literare”, 3.2 „Formularea unui răspuns emoțional
+  // față de textul literar citit”, 3.3 „Formularea unei păreri despre o povestire/personajele acesteia”, 3.4 „Evaluarea
+  // conținutului unui text pentru a evidenția cuvinte-cheie și alte aspecte importante ale acestuia” (the title, the key words)
+  'lect:1': { programme: LLR, III: ['3.1', '3.2', '3.3', '3.4'] },
+  'lect:2': { programme: LLR, III: ['3.1', '3.2', '3.3', '3.4'] },
+  'lect:3': { programme: LLR, III: ['3.1', '3.4'] },
+  // IV 3.1 „Formularea de concluzii simple pe baza lecturii textelor informative sau literare”, 3.2 „Asocierea elementelor
+  // descoperite în textul citit cu experiențe proprii”, 3.3 „Extragerea dintr-un text a unor elemente semnificative pentru a
+  // susține o opinie referitoare la mesajul citit”, 3.4 „Evaluarea elementelor textuale care conduc la înțelegerea de
+  // profunzime în cadrul lecturii” (the meaning of an expression in the text)
+  'lect:4': { programme: LLR, IV: ['3.1', '3.2', '3.3', '3.4'] },
+  'lect:5': { programme: LLR, IV: ['3.1', '3.2', '3.3', '3.4'] },
+  'lect:6': { programme: LLR, IV: ['3.1', '3.2', '3.3', '3.4'] },
+  // III 4.4 „Povestirea pe scurt a unei întâmplări imaginate/ trăite”; III 4.3 „Realizarea unei scurte descrieri ale unor
+  // elemente din mediul apropiat pornind de la întrebări de sprijin”; IV 4.3 „Redactarea unei descrieri tip portret pe baza
+  // unui plan simplu”; IV 4.4 „Povestirea pe scurt a unei secvențe dintr-o poveste/ dintr-un film/ desen animat / a unei
+  // activități/ a unei întâmplări imaginate/trăite”
+  'comp:1': { programme: LLR, III: ['4.4'] },
+  'comp:2': { programme: LLR, III: ['4.3'] },
+  'comp:3': { programme: LLR, IV: ['4.3'] },
+  'comp:4': { programme: LLR, IV: ['4.4'] },
+  // fractions: III 2.1 „Recunoașterea … fracțiilor subunitare sau echiunitare, cu numitori mai mici sau egali cu 10” (shaded
+  // parts, the terms); III 2.2 „Compararea … fracțiilor subunitare sau echiunitare care au același numitor…”, 2.3
+  // „Ordonarea…”, 2.4 „…sau cu fracții cu același numitor”; IV 2.1 „Recunoașterea … fracțiilor cu numitori mai mici sau
+  // egali cu 10, respectiv egali cu 100”, 2.2 „…fracțiilor care au același numărător sau același numitor…”, 2.4 „…sau cu numere
+  // fracționare”; set 4: hundredths and 25 %, 50 %, 75 % (2.1), compared (2.2)
+  'fr:1': { programme: MATE, III: ['2.1'] },
+  'fr:2': { programme: MATE, III: ['2.2', '2.3', '2.4'] },
+  'fr:3': { programme: MATE, IV: ['2.1', '2.2', '2.4'] },
+  'fr:4': { programme: MATE, IV: ['2.1', '2.2'] },
+  // units: III 4.1 „Utilizarea unor instrumente și unități de măsură standardizate, în situații concrete”, 4.2 „Operarea cu
+  // unități de măsură standardizate, fără transformări”; IV 4.2 „Operarea cu unități de măsură standardizate, folosind
+  // transformări”, 4.1 „…în situații concrete, inclusiv pentru validarea unor transformări” (intervals of time on the clock)
+  'mas:1': { programme: MATE, III: ['4.1', '4.2'] },
+  'mas:2': { programme: MATE, III: ['4.1', '4.2'] },
+  'mas:3': { programme: MATE, IV: ['4.2'] },
+  'mas:4': { programme: MATE, IV: ['4.1', '4.2'] },
+};
+
+/** The codes of a clasa a III-a / a IV-a sheet in a class: none outside the class its set is written for. */
+function sets34(item: string, level: SchoolLevel): CompetenceRef[] {
+  const setLevel = isM34Item(item) ? m34SetLevel(item) : isR34Item(item) ? r34SetLevel(item) : null;
+  if (!setLevel || setLevel !== level) return [];
+  const rule = SETS_34[item] ?? SETS_34[item.split(':')[0]];
+  if (!rule) return [];
+  return (rule[setLevel] ?? []).map((code) => school(rule.programme, setLevel, code));
+}
+
 /** Topics whose sheet does not depend on the number range (only „groups” does): the range never takes their code away. */
 const RANGE_FREE = new Set(['mul', 'div', 'mulmiss', 'clock', 'clockdraw', 'week', 'months', 'calmonth', 'length', 'mass', 'ruler', 'units', 'frac', 'figures']);
 /** Clasa I: „Ora (ora fixă, jumătatea de oră)”: clocks with quarters or minutes are clasa a II-a. */
@@ -369,8 +513,11 @@ const CLOCK_I = new Set(['hour', 'half']);
 /** „Grupe egale” writes the multiplication only in 0–1000 (multiply.ts groupsWithProduct): II 1.5 only there. */
 const GROUPS_II = 1000;
 
-/** The largest number each class works with, per the programme's contents. */
-const NUMBER_LIMIT: Record<SchoolLevel, number> = { presc: 10, CP: 31, I: 100, II: 1000 };
+/**
+ * The largest number each class works with, per the programme's contents: clasa a III-a „Numerele naturale
+ * cuprinse între 0 - 10 000”, clasa a IV-a „Numerele naturale cuprinse între 0 - 1 000 000” (mate-iii-iv).
+ */
+export const NUMBER_LIMIT: Record<SchoolLevel, number> = { presc: 10, CP: 31, I: 100, II: 1000, III: 10000, IV: 1000000 };
 
 function ruleKeys(config: WorksheetConfig): string[] {
   if (config.category === 'math') return config.selectedItems;
@@ -407,6 +554,7 @@ export function sheetCompetences(config: WorksheetConfig, level: SchoolLevel | u
     const r = lettersRule(config, level);
     if (r) refs.push(r);
   } else {
+    for (const item of config.category === 'games' ? config.selectedItems : []) refs.push(...sets34(item, level));
     for (const key of ruleKeys(config)) {
       // …except 0–31, where one term is always 1–5 (math.ts): CP 1.4 „Efectuarea de adunări și
       // scăderi în concentrul 0-31, prin adăugarea /extragerea a 1-5 elemente dintr-o mulțime dată”

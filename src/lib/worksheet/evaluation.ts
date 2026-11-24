@@ -9,7 +9,7 @@ import { sheetCompetences, type SchoolLevel } from '@/lib/curriculum/sheet';
 import type { ProgrammeId } from '@/lib/curriculum';
 import { ACCENT, INK, MUTED, PAPER } from './rows';
 import {
-  FREE_MATH_RANGE, INSTRUCTIONS, grid, MATH_LABELS, PICTURES, exerciseOps, isMathType, mathCarryOf, mathExercises, mathRangeOf, picturesOps,
+  FREE_MATH_RANGE, INSTRUCTIONS, bigBoxChars, grid, isBigRange, MATH_LABELS, PICTURES, exerciseOps, isMathType, mathCarryOf, mathExercises, mathRangeOf, picturesOps, typeRange,
   problemAnswer, rng, seedOf, topicOptions, type Exercise, type MathRange, type MathType,
 } from './math';
 import { isMulType } from './multiply';
@@ -24,6 +24,10 @@ import { CATEGORY_NAMES } from './sorting';
 import { answerKeyPages, type KeyExtra, type KeySection, type SheetPage } from './answer-key';
 import { hasIcon } from '@/lib/hints/icons';
 import { readingEvalBlock, readingPictureWords } from './reading-pages';
+import { m34EvalBlock } from './m34-pages';
+import { isM34Item } from './m34';
+import { r34EvalBlocks } from './r34-pages';
+import { isR34Item } from './r34';
 
 /**
  * „Evaluare”: a short test of the chosen exercise types, on two or three pages, then the answers.
@@ -86,20 +90,27 @@ export function isEvaluationItem(item: string): boolean {
   // of the other math topics: multiplication, division and reading the clock
   if (isMathType(item)) return !EVAL_LESS_MATH.has(item);
   if (/^read:(match|gap|fill|order|text):[1-6]$/.test(item)) return true; // „Citire și scriere” (reading-pages.ts)
+  // clasa a III-a și a IV-a: the kinds with a short form (m34-pages.ts, r34-pages.ts)
+  if (isM34Item(item)) return m34EvalBlock(item, X1 - X0) !== null;
+  if (isR34Item(item)) return r34EvalBlocks(item, X1 - X0).length > 0;
   return /^(count:(5|10)|sound:[A-Z]|(first|syl|split|sort|odd):[1-6])$/.test(item);
 }
 
 // ───────────────────────── header, self-check, footer ─────────────────────────
 
-const SUBJECTS: Partial<Record<ProgrammeId, string>> = { 'clr-p-ii': 'Comunicare în limba română', 'mem-p-ii': 'Matematică și explorarea mediului' };
-const CLASS_NAMES: Record<Exclude<SchoolLevel, 'presc'>, string> = { CP: 'clasa pregătitoare', I: 'clasa I', II: 'clasa a II-a' };
+const SUBJECTS: Partial<Record<ProgrammeId, string>> = {
+  'clr-p-ii': 'Comunicare în limba română', 'mem-p-ii': 'Matematică și explorarea mediului', 'llr-iii-iv': 'Limba și literatura română', 'mate-iii-iv': 'Matematică',
+};
+const CLASS_NAMES: Record<Exclude<SchoolLevel, 'presc'>, string> = { CP: 'clasa pregătitoare', I: 'clasa I', II: 'clasa a II-a', III: 'clasa a III-a', IV: 'clasa a IV-a' };
 const PHONO = /^(sound|first|syl|split|read):/;
 
 /** „Evaluare — Matematică și explorarea mediului, clasa I”; „Evaluare — nivel preșcolar”. */
 export function evaluationTitle(config: WorksheetConfig): string {
   const level = config.curriculumLevel;
   if (level === 'presc') return 'Evaluare — nivel preșcolar';
-  const programme = (level ? sheetCompetences(config, level)[0]?.programme : undefined) ?? (config.category === 'games' && config.selectedItems.some((i) => PHONO.test(i)) ? 'clr-p-ii' : 'mem-p-ii');
+  const upper = level === 'III' || level === 'IV' || config.selectedItems.some((i) => isM34Item(i) || isR34Item(i));
+  const fallback = upper ? (config.selectedItems.some(isR34Item) ? 'llr-iii-iv' : 'mate-iii-iv') : config.category === 'games' && config.selectedItems.some((i) => PHONO.test(i)) ? 'clr-p-ii' : 'mem-p-ii';
+  const programme = (level ? sheetCompetences(config, level)[0]?.programme : undefined) ?? fallback;
   const subject = SUBJECTS[programme] ?? SUBJECTS['mem-p-ii']!;
   return level ? `Evaluare — ${subject}, ${CLASS_NAMES[level]}` : `Evaluare — ${subject}`;
 }
@@ -182,11 +193,14 @@ export function solved(e: Exercise): string {
   const parts = e.answer.split(', ');
   let k = 0;
   const cells = e.cells.map((c) => c ?? parts[k++] ?? e.answer);
-  return cells.every((c) => /^\d+$/.test(c)) ? cells.join(', ') : cells.join(' ');
+  // a sequence (only numbers, „12 345” with its spaces from 10 000 up) is listed with commas
+  return cells.every((c) => /^\d+$/.test(c) || /^\d{1,3}( \d{3})+$/.test(c)) ? cells.join(', ') : cells.join(' ');
 }
 
 function gridBlock(type: MathType, exercises: Exercise[], range: MathRange): EvalBlock {
-  const cols = type === 'seq' || type === 'addpic' ? 1 : 2;
+  // 0–1 000 000: one exercise a line, so the six-digit numbers stay big enough to read
+  const big = isBigRange(range) && !isMulType(type);
+  const cols = type === 'seq' || type === 'addpic' || (range === 1000000 && big && type !== 'nbr') ? 1 : 2;
   const rows = Math.ceil(exercises.length / cols);
   const rowH = type === 'addpic' ? 22 : 15.5;
   return {
@@ -196,7 +210,7 @@ function gridBlock(type: MathType, exercises: Exercise[], range: MathRange): Eva
     height: rows * rowH,
     grow: rows * (type === 'addpic' ? 6 : 4),
     answers: exercises.map((e, i) => `${letter(i)} ${solved(e)}`),
-    perLine: type === 'seq' ? 2 : type === 'nbr' || type === 'addpic' ? 3 : 4,
+    perLine: big ? (type === 'seq' || type === 'nbr' ? 1 : type === 'cmp' ? 3 : 2) : type === 'seq' ? 2 : type === 'nbr' || type === 'addpic' ? 3 : 4,
     score: exercises.length,
     draw(ops, a) {
       const rh = a.h / rows;
@@ -219,14 +233,14 @@ function gridBlock(type: MathType, exercises: Exercise[], range: MathRange): Eva
         });
         return;
       }
-      const size = type === 'seq' ? 8.5 : range >= 100 ? 8 : 8.5;
+      const size = big ? 7.5 : type === 'seq' ? 8.5 : range >= 100 ? 8 : 8.5;
       exercises.forEach((e, i) => {
         const col = Math.floor(i / rows);
         const row = i % rows;
         const x = a.x + col * colW + 4;
         const cy = a.y + row * rh + rh / 2;
         ops.push({ t: 'text', x, y: cy + 1.4, text: letter(i), size: 3.6, fill: MUTED, weight: 'bold' });
-        ops.push(...exerciseOps(e, x + 8, cy, size, colW - 16, range === 1000));
+        ops.push(...exerciseOps(e, x + 8, cy, size, colW - 16, range === 1000, big ? bigBoxChars(e) : 0));
       });
     },
   };
@@ -300,16 +314,18 @@ function mathBlocks(config: WorksheetConfig, tier: Tier): EvalBlock[] {
       return gridBlock(type, opts.table ? page.slice(10, 16) : page.slice(0, 6), range);
     }
     if (type === 'problems') {
-      // the first problem of the page's set, and the next one of another kind
-      const all = wordProblems(range, rng(seedOf(`problems:${range}:${seed}`)));
+      // the first problem of the page's set, and the next one of another kind (at most 0–1000: typeRange)
+      const small = typeRange(type, range);
+      const all = wordProblems(small, rng(seedOf(`problems:${small}:${seed}`)));
       const second = all.find((p, i) => i > 0 && p.kind !== all[0].kind) ?? all[1];
-      return problemsBlock([all[0], second], range);
+      return problemsBlock([all[0], second], small);
     }
     if (type === 'money') {
       // one of each: count, compare, exchange (as many as the range has), from the page's set
-      const all = moneyExercises(range, rng(seedOf(`money:${range}:${seed}`)));
+      const small = typeRange(type, range);
+      const all = moneyExercises(small, rng(seedOf(`money:${small}:${seed}`)));
       const pick = (['count', 'compare', 'exchange'] as const).map((k) => all.find((e) => e.kind === k)).filter((e): e is MoneyExercise => !!e && (e.kind !== 'exchange' || e.pairs.length > 0));
-      return moneyBlock(pick, range);
+      return moneyBlock(pick, small);
     }
     // the first exercises of the ordinary page, with every sign among them (cmp: <, >, =; mix: +, −)
     const page = mathExercises(type, range, seed, grid(type, range).count, carry);
@@ -620,7 +636,11 @@ function gameBlocks(config: WorksheetConfig, tier: Tier): EvalBlock[] {
     const n = Number(arg);
     const later = new Set(items.slice(at + 1).flatMap(pictureWords));
     const pick = <T extends { word: string }>(xs: T[], k: number) => fresh(xs, k, (w) => w.word, used, later);
-    if (kind === 'count') blocks.push(countBlock(item, n));
+    if (isM34Item(item)) {
+      const b = m34EvalBlock(item, X1 - X0);
+      if (b) blocks.push(b);
+    } else if (isR34Item(item)) blocks.push(...r34EvalBlocks(item, X1 - X0));
+    else if (kind === 'count') blocks.push(countBlock(item, n));
     else if (kind === 'sound') {
       // three pictures that start with the sound and three that do not, in the order of the ordinary page
       const { words } = soundSet(arg);
@@ -788,7 +808,7 @@ export function buildEvaluationPages(config: WorksheetConfig, tier: Tier): Sheet
   const blocks = config.category === 'math' ? mathBlocks(config, tier) : config.category === 'games' ? gameBlocks(config, tier) : [];
   if (!blocks.length) return [];
   const presc = config.curriculumLevel === 'presc';
-  const school = config.curriculumLevel === 'CP' || config.curriculumLevel === 'I' || config.curriculumLevel === 'II';
+  const school = config.curriculumLevel === 'CP' || config.curriculumLevel === 'I' || config.curriculumLevel === 'II' || config.curriculumLevel === 'III' || config.curriculumLevel === 'IV';
   const withSelf = config.showRewardSection !== false;
   const title = evaluationTitle(config);
   const layout = paginate(blocks, withSelf ? SELF_H : 0);

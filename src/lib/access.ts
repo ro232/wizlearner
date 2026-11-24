@@ -7,6 +7,8 @@ import { isExploreItem } from '@/lib/worksheet/explore';
 import { isSubjectItem } from '@/lib/worksheet/subjects';
 import { isClrItem, isFreeClrItem } from '@/lib/worksheet/clr';
 import { isFreeMemItem, isMemItem } from '@/lib/worksheet/mem';
+import { isFreeM34Item, isM34Item } from '@/lib/worksheet/m34';
+import { isFreeR34Item, isR34Item } from '@/lib/worksheet/r34';
 
 /**
  * One place that decides whether an item is usable on a tier. The item picker,
@@ -51,6 +53,9 @@ export function isItemAllowed(item: string, category: ContentCategory, tier: Tie
       // the sheets that fill the gaps of the programme: set 1 of each kind, the first set of each class (clr.ts, mem.ts)
       if (isClrItem(item)) return isFreeClrItem(item);
       if (isMemItem(item)) return isFreeMemItem(item);
+      // clasa a III-a și a IV-a (m34.ts): the first set of each class of each kind
+      if (isM34Item(item)) return isFreeM34Item(item);
+      if (isR34Item(item)) return isFreeR34Item(item);
       // „Citire și scriere” ("read:<kind>:<set>"): the first set of each class (CP 1, I 1, II 1) of each kind
       if (kind === 'read') {
         const levels = READING_LEVELS[arg as ReadKind];

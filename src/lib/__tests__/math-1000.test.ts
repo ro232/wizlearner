@@ -170,9 +170,10 @@ describe('0–1000 pages', () => {
 
   it('saved settings: 1000 is kept, the old ranges unchanged, anything else dropped', () => {
     for (const r of MATH_RANGES) expect(sanitizeConfig(cfg({ mathRange: r })).mathRange).toBe(r);
-    expect(MATH_RANGES).toEqual([5, 10, 20, 31, 100, 1000]);
+    // clasa a III-a and a IV-a added 0–10 000 and 0–1 000 000
+    expect(MATH_RANGES).toEqual([5, 10, 20, 31, 100, 1000, 10000, 1000000]);
     expect(sanitizeConfig(cfg({ mathRange: 1000, mathCarry: 'with' }))).toMatchObject({ mathRange: 1000, mathCarry: 'with' });
-    for (const r of [0, 50, 999, 1001, 10000]) expect(sanitizeConfig({ ...cfg({}), mathRange: r }).mathRange, String(r)).toBeUndefined();
+    for (const r of [0, 50, 999, 1001, 100000]) expect(sanitizeConfig({ ...cfg({}), mathRange: r }).mathRange, String(r)).toBeUndefined();
   });
 });
 

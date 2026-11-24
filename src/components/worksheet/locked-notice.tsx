@@ -8,7 +8,7 @@ import { isWordAllowed } from '@/lib/worksheet/layout';
 import { normalizeKey } from '@/lib/glyphs/data';
 import { activityLabel, isActivityItem } from '@/lib/worksheet/activities';
 import { PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
-import { FREE_MATH_RANGE } from '@/lib/worksheet/math';
+import { FREE_MATH_RANGE, fmtNum } from '@/lib/worksheet/math';
 
 /**
  * Chosen items the free plan does not print (a sheet opened from a free page, e.g. „Litera M”,
@@ -31,7 +31,7 @@ export function LockedNotice() {
   const items = config.selectedItems.filter((i) => !isItemAllowed(i, config.category, tier));
   const words = config.category === 'letters' ? config.customWords.filter((w) => !isWordAllowed(w, tier) && normalizeKey(w).trim() !== name) : [];
   const bigNumbers = config.category === 'math' && (config.mathRange ?? 10) > FREE_MATH_RANGE;
-  if (bigNumbers) items.push(`numere până la ${config.mathRange}`);
+  if (bigNumbers) items.push(`numere până la ${fmtNum(config.mathRange ?? 10)}`);
   if (!items.length && !words.length) return null;
   const label = (i: string) => (isPatternId(i) ? PATTERN_LABELS.ro[i] : isActivityItem(i) ? activityLabel(i) : i);
   const list = [...items.map(label), ...words].slice(0, 6).join(', ');

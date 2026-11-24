@@ -35,7 +35,9 @@ export default function ClassCurriculumPage({ params }: { params: { clasa: strin
   const { covered: withSheets, total } = coverageCount(groups.filter((g) => g.headline).flatMap((g) => g.items));
   const apart = groups.filter((g) => !g.headline);
   const word = c.level === 'presc' ? 'comportament' : 'competență';
-  const order = c.level === 'presc' ? 'Curriculumul pentru educație timpurie, OMEN nr. 4694/2019' : 'programele aprobate prin OMEN nr. 3418/2013';
+  const order = c.level === 'presc' ? 'Curriculumul pentru educație timpurie, OMEN nr. 4694/2019' : c.level === 'III' || c.level === 'IV' ? 'programele aprobate prin OMEN nr. 5003/2014' : 'programele aprobate prin OMEN nr. 3418/2013';
+  // the planner covers CP, I and II (src/lib/planning/subjects.ts PLAN_LEVELS)
+  const planned = c.level === 'CP' || c.level === 'I' || c.level === 'II';
 
   return (
     <div className="min-h-screen bg-paper">
@@ -61,7 +63,7 @@ export default function ClassCurriculumPage({ params }: { params: { clasa: strin
                 pentru câte competențe avem fișe.
               </p>
             )}
-            {c.level !== 'presc' && (
+            {planned && (
               <p className="mt-2 text-sm text-slate-700">
                 Ai nevoie și de planificarea calendaristică?{' '}
                 <Link href={`/planificare?clasa=${c.level}`} className="font-bold underline">Fă-o pe 2026–2027, cu aceste competențe</Link>.

@@ -329,6 +329,22 @@ exports[`how every kind of sheet looks > evaluare-gradinita-presc 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > evaluare-mate-34-III 1`] = `
+[
+  "458ad74f614befa4",
+  "2c29b4f3eaf39e7d",
+  "67964467b9832a14",
+]
+`;
+
+exports[`how every kind of sheet looks > evaluare-mate-34-IV 1`] = `
+[
+  "f1ceffc9ceaaf9a6",
+  "8e1793c3b33665f0",
+  "0cdfb747df2ae30d",
+]
+`;
+
 exports[`how every kind of sheet looks > evaluare-mate-CP 1`] = `
 [
   "2c1df659bd0f8587",
@@ -350,6 +366,22 @@ exports[`how every kind of sheet looks > evaluare-mate-II 1`] = `
   "a5ba9a656e8fb738",
   "392369500af269a9",
   "30862684c45c3673",
+]
+`;
+
+exports[`how every kind of sheet looks > evaluare-romana-34-III 1`] = `
+[
+  "f4d704d49bdc4ee1",
+  "9e6dc4c2f9d8322b",
+  "37dd12220c05c59e",
+]
+`;
+
+exports[`how every kind of sheet looks > evaluare-romana-34-IV 1`] = `
+[
+  "82725d6e69a9f2d2",
+  "39e1d466f2c482c4",
+  "353ac818b343911f",
 ]
 `;
 
@@ -523,6 +555,87 @@ exports[`how every kind of sheet looks > litere-tipar-intermediate 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > mate-3-fractii-geometrie 1`] = `
+[
+  "1397571e3d95d943",
+  "ae423038ec09ec55",
+  "260d8d5e0059ca34",
+  "44af34fcf63e872c",
+  "43d03a1e761caaf6",
+  "f8df40a263877937",
+  "05de5848ec1fb22b",
+  "6ac649804c102610",
+  "50438e4cfac321d2",
+  "7d6afb592f8c4d19",
+]
+`;
+
+exports[`how every kind of sheet looks > mate-3-numere 1`] = `
+[
+  "a2aa47c3c2d5013c",
+  "4eaf0e2b414bb316",
+  "f97224c1e0f56bcc",
+  "b7f019c09a8a45ba",
+  "b2b87067146368e2",
+  "11c56167812f3b91",
+  "e28400103e39e865",
+  "b4b29084f12f8327",
+]
+`;
+
+exports[`how every kind of sheet looks > mate-3-operatii 1`] = `
+[
+  "1e88a0e3c2a68411",
+  "82eb6e2e1538fe9b",
+  "30e1a9a420ac4660",
+  "9cb70107e961281d",
+  "2486b9914e3c19df",
+  "56d5ec4ca1e32361",
+  "eaca839edd1d9401",
+]
+`;
+
+exports[`how every kind of sheet looks > mate-4-fractii-geometrie 1`] = `
+[
+  "d7f8c68ea4fe58d1",
+  "5fc4e114316d4e6b",
+  "c297682c74588304",
+  "27c5113ac1ad1ab6",
+  "ee0e14a90f72b984",
+  "07e2539b36c1c3f1",
+  "c87d4feb71024ff2",
+  "1f21fd2094af347f",
+  "1a09ea30f2099835",
+  "bc44d4ddb82e6dc5",
+]
+`;
+
+exports[`how every kind of sheet looks > mate-4-numere 1`] = `
+[
+  "f8286e028bfaeb02",
+  "44b1676d9e73f8f2",
+  "42340db1ec7fa4db",
+  "93edb204613d7294",
+  "5d9c21ee2b7a2daa",
+  "b5dd658139d4d8b4",
+  "36baa2cb043bdbc4",
+  "349b80e4c747c6cf",
+]
+`;
+
+exports[`how every kind of sheet looks > mate-4-operatii 1`] = `
+[
+  "3b2c53974c1d9878",
+  "5a374564ca64c5d0",
+  "c1d250bcc723bd97",
+  "04736901a7ef363b",
+  "205c72e76d0ba7dc",
+  "f7725b0d86b7c21a",
+  "08bb33d77f2bcdc8",
+  "24fcf7115c5c6f32",
+]
+`;
+
 exports[`how every kind of sheet looks > mate-experimente 1`] = `
 [
   "5f6425b6c31778e0",
@@ -664,6 +777,29 @@ exports[`how every kind of sheet looks > matematica-1000-cu-trecere 1`] = `
   "8824f566f90869ec",
   "08b2c18d7ec9b6fe",
   "01fdd4bb7d0119b8",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-10000 1`] = `
+[
+  "708890eaa96a74f8",
+  "f411af738c44b9d1",
+  "b66b569cb70e6eb7",
+  "d75e48e0902a553f",
+  "87a9e09fba63a58d",
+  "cb33fdc942b0f283",
+  "3e30b36ab429a0fb",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-1000000 1`] = `
+[
+  "4be39d17570b09ba",
+  "0bf05ceca03bd7b5",
+  "c803a84c05f26084",
+  "6c9da8e324c4c30e",
+  "b3d134906e831d36",
+  "cd6348b0d1050235",
 ]
 `;
 
@@ -845,6 +981,86 @@ exports[`how every kind of sheet looks > probleme-100 1`] = `
 exports[`how every kind of sheet looks > probleme-1000 1`] = `
 [
   "436f14d576eadcbd",
+]
+`;
+
+exports[`how every kind of sheet looks > romana-3-lectura 1`] = `
+[
+  "ed99740bba6d01a9",
+  "3ec57fa2ab5eac7f",
+  "ec0f608f3bf7c5ec",
+  "7d0800930269ca44",
+  "8ae797ea40207546",
+  "a72874591620eee1",
+  "2d0d3d84eeb8a437",
+  "b3a7f34c08b3c34d",
+  "c7d91844b8020c9c",
+  "f9efd1ece0b6cc03",
+]
+`;
+
+exports[`how every kind of sheet looks > romana-3-limba 1`] = `
+[
+  "76f1f952a0e4100e",
+  "dda70c3fb08a6a18",
+  "3b24686650d6a69f",
+  "5540cb1cd66891a4",
+  "56591b77e1a76152",
+  "3ae76d13700a6048",
+  "7a4f474e6aecaa3f",
+  "243b85650fb27df6",
+  "67f4a2c8d98a7ad3",
+  "5efae4e95a4bd4a4",
+]
+`;
+
+exports[`how every kind of sheet looks > romana-3-scriere 1`] = `
+[
+  "873e969094deb07a",
+  "659cda55f8524517",
+  "507dc711e50a5062",
+  "c2d3f3df8e0c21ce",
+  "2ddde14778479067",
+]
+`;
+
+exports[`how every kind of sheet looks > romana-4-lectura 1`] = `
+[
+  "e105d77ae1ea2342",
+  "c5cf7525142d781d",
+  "0aefe0596b4a9ea2",
+  "e72ae51e61c8a424",
+  "75f89e9377e6c416",
+  "113ad807a7628a6e",
+  "c2667316ccac502e",
+  "0f7fb3a3b2dffebd",
+  "bb5cb39ffa989e07",
+  "d57e2f911a7965a9",
+]
+`;
+
+exports[`how every kind of sheet looks > romana-4-limba 1`] = `
+[
+  "078cbab1c93e1ea5",
+  "0505f97e7eb133d8",
+  "47bb7a02bffc9368",
+  "3fca894c6bbf9b68",
+  "ceee9ec58271314d",
+  "6bbaceafc334d381",
+  "9ee26638b752ea8e",
+  "cd7eb76f7890d025",
+  "21b180fef04fe186",
+  "34816a125593efad",
+]
+`;
+
+exports[`how every kind of sheet looks > romana-4-scriere 1`] = `
+[
+  "e8b5a4b5b521f240",
+  "5d9407218efdf6e0",
+  "5332de9b5cafdeac",
+  "7a2570c65074baed",
+  "687609a2dbc319aa",
 ]
 `;
 

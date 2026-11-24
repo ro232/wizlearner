@@ -25,7 +25,7 @@ function Hero() {
       <div className={`${wrap} py-12 sm:py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-10 items-center`}>
         <div className="space-y-6">
           <h1 className="text-[40px] sm:text-[56px] lg:text-[58px] xl:text-[64px] font-extrabold leading-[1.03] text-ink">
-            Fișe pe programă, de la grădiniță la <span className="whitespace-nowrap">clasa a II-a</span>
+            Fișe pe programă, de la grădiniță la <span className="whitespace-nowrap">clasa a IV-a</span>
           </h1>
           <p className="text-lg sm:text-xl leading-relaxed text-slate-700 max-w-xl">
             Alegi clasa și competența, deschizi fișa și o descarci ca PDF <span className="whitespace-nowrap">într-un</span> minut. Jos, pe fiecare pagină, se tipărește codul

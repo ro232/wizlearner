@@ -405,7 +405,7 @@ export default function GroupPage() {
                   // what each class writes: grădiniță capitals, CP capitals and small letters, from clasa I handwriting
                   if (level === 'presc') { setScript('print'); setLetterMode('uppercase'); }
                   else if (level === 'CP') { setScript('print'); setLetterMode('paired'); }
-                  else if (level === 'I' || level === 'II') setScript('cursive');
+                  else if (level === 'I' || level === 'II' || level === 'III' || level === 'IV') setScript('cursive');
                 }}
                 className="w-full min-h-11 px-3 border-2 border-slate-300 rounded-xl bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Nu o tipări</option>

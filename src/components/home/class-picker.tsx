@@ -10,17 +10,19 @@ export const CLASS_TOPICS: Record<string, string[]> = {
   'clasa-pregatitoare': ['litere-de-tipar', 'despartirea-in-silabe', 'adunari', 'bani'],
   'clasa-1': ['litere-de-mana', 'citire', 'ceasul', 'probleme'],
   'clasa-2': ['tabla-inmultirii', 'impartiri', 'citire', 'calendarul'],
+  'clasa-3': ['ortograme', 'compunere', 'cifre-romane', 'fractii'],
+  'clasa-4': ['partile-de-vorbire', 'texte-functionale', 'ordinea-operatiilor', 'perimetrul'],
 };
 
 /** Shorter names for the small chips, where the topic's own label is long. */
 const CHIP_LABEL: Record<string, string> = { anotimpurile: 'Anotimpuri', calendarul: 'Calendarul', 'despartirea-in-silabe': 'Silabe' };
 
 /** The big mark in the corner of each card, as the class is written on a school notebook. */
-const MARK: Record<string, string> = { gradinita: '3–6', 'clasa-pregatitoare': 'P', 'clasa-1': 'I', 'clasa-2': 'II' };
+const MARK: Record<string, string> = { gradinita: '3–6', 'clasa-pregatitoare': 'P', 'clasa-1': 'I', 'clasa-2': 'II', 'clasa-3': 'III', 'clasa-4': 'IV' };
 
 export function ClassPicker() {
   return (
-    <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {CLASS_PAGES.map((c) => {
         // limba română and matematică (presets.ts HEADLINE_PROGRAMMES): the other subjects are counted on the class page
         const { covered, total } = coverageCount(headlineItems(c));
@@ -34,7 +36,7 @@ export function ClassPicker() {
             <h3 className="pr-12 text-[22px] leading-tight font-extrabold text-ink">
               <Link href={`/programa/${c.slug}`} className="hover:underline decoration-pen decoration-2 underline-offset-4">{c.title}</Link>
             </h3>
-            <p className="mt-1 text-sm text-slate-600">{presc ? 'Curriculum pentru educație timpurie' : 'Limba română, matematică și mediu'}</p>
+            <p className="mt-1 text-sm text-slate-600">{presc ? 'Curriculum pentru educație timpurie' : c.level === 'III' || c.level === 'IV' ? 'Limba și literatura română, matematică' : 'Limba română, matematică și mediu'}</p>
 
             <ul className="mt-4 flex flex-wrap gap-1.5" aria-label={`Teme ${c.at}`}>
               {topics.map((p) => (

@@ -38,7 +38,11 @@ const SUBJECT_ITEM = /^((sym|model|en):[1-3]|(cut|lines|feel):[12]|(me|hyg|habit
 // the sheets that fill the gaps of the programme (clr.ts: isClrItem, mem.ts: isMemItem)
 const CLR_ITEM = /^(story:[1-4]|(sign|note|msg):[1-3]|written:[12])$/;
 const MEM_ITEM = /^(terms:[1-6]|(place|coord):[1-3]|regular:[1-4]|(sort2|plan|cause|pict):[12]|(sides|solid|around|more):1)$/;
-const MATH_RANGES: readonly number[] = [5, 10, 20, 31, 100, 1000];
+// clasa a III-a și a IV-a: Matematică (m34.ts: isM34Item)
+const M34_ITEM = /^((nr|rom|rot|ops|inm|prob|fr|mas):[1-4]|(per|geo|date|sir):[12])$/;
+// … and Limba și literatura română (r34.ts: isR34Item)
+const R34_ITEM = /^(lect:[1-6]|(parti|orto|comp|func):[1-4]|(aud|punct|voc|dict|carte):[12])$/;
+const MATH_RANGES: readonly number[] = [5, 10, 20, 31, 100, 1000, 10000, 1000000];
 
 const MAX_ITEMS = 120;
 const MAX_WORDS = 60;
@@ -74,6 +78,7 @@ export function itemFitsCategory(item: unknown, category: ContentCategory): item
       if (FUN_ITEM.test(item) || EXPLORE_ITEM.test(item)) return true;
       if (SUBJECT_ITEM.test(item)) return true;
       if (CLR_ITEM.test(item) || MEM_ITEM.test(item)) return true;
+      if (M34_ITEM.test(item) || R34_ITEM.test(item)) return true;
       return GAME_ITEM.test(item);
     default:
       return false;
@@ -157,7 +162,7 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
   if (r.mathCarry === 'without' || r.mathCarry === 'with' || r.mathCarry === 'mixed') config.mathCarry = r.mathCarry;
   if (typeof r.mathTable === 'number' && [0, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(r.mathTable)) config.mathTable = r.mathTable;
   if (r.mathClock === 'hour' || r.mathClock === 'half' || r.mathClock === 'quarter' || r.mathClock === 'five') config.mathClock = r.mathClock;
-  if (r.curriculumLevel === 'presc' || r.curriculumLevel === 'CP' || r.curriculumLevel === 'I' || r.curriculumLevel === 'II') config.curriculumLevel = r.curriculumLevel;
+  if (r.curriculumLevel === 'presc' || r.curriculumLevel === 'CP' || r.curriculumLevel === 'I' || r.curriculumLevel === 'II' || r.curriculumLevel === 'III' || r.curriculumLevel === 'IV') config.curriculumLevel = r.curriculumLevel;
   if (wordPictures) config.wordPictures = wordPictures;
   return config;
 }

@@ -79,6 +79,22 @@ sheet('matematica-ceas-minute', { category: 'math', selectedItems: ['clock', 'cl
 sheet('matematica-calendar', { category: 'math', selectedItems: ['week', 'months', 'calmonth'], mathRange: 1000, mathAnswers: true, curriculumLevel: 'II' });
 sheet('matematica-masurari', { category: 'math', selectedItems: ['length', 'mass', 'ruler', 'units'], mathRange: 1000, mathAnswers: true, curriculumLevel: 'II' });
 sheet('matematica-fractii-figuri', { category: 'math', selectedItems: ['frac', 'figures'], mathRange: 1000, mathAnswers: true });
+// clasa a III-a și a IV-a: 0–10 000 and 0–1 000 000, and the Matematică sheets (m34.ts), with their answers
+sheet('matematica-10000', { category: 'math', selectedItems: ['cmp', 'add', 'sub', 'missing', 'seq', 'nbr'], mathRange: 10000, mathAnswers: true, curriculumLevel: 'III' });
+sheet('matematica-1000000', { category: 'math', selectedItems: ['cmp', 'mix', 'missing', 'seq', 'nbr'], mathRange: 1000000, mathCarry: 'with', mathAnswers: true, curriculumLevel: 'IV' });
+sheet('mate-3-numere', { category: 'games', selectedItems: ['nr:1', 'nr:2', 'rom:1', 'rom:2', 'rot:1', 'rot:2'], curriculumLevel: 'III', mathAnswers: true });
+sheet('mate-3-operatii', { category: 'games', selectedItems: ['ops:1', 'ops:2', 'inm:1', 'inm:2', 'prob:1', 'prob:2'], curriculumLevel: 'III', mathAnswers: true });
+sheet('mate-3-fractii-geometrie', { category: 'games', selectedItems: ['fr:1', 'fr:2', 'per:1', 'geo:1', 'mas:1', 'mas:2', 'date:1', 'sir:1'], curriculumLevel: 'III', mathAnswers: true });
+sheet('mate-4-numere', { category: 'games', selectedItems: ['nr:3', 'nr:4', 'rom:3', 'rom:4', 'rot:3', 'rot:4'], curriculumLevel: 'IV', mathAnswers: true });
+sheet('mate-4-operatii', { category: 'games', selectedItems: ['ops:3', 'ops:4', 'inm:3', 'inm:4', 'prob:3', 'prob:4'], curriculumLevel: 'IV', mathAnswers: true });
+sheet('mate-4-fractii-geometrie', { category: 'games', selectedItems: ['fr:3', 'fr:4', 'per:2', 'geo:2', 'mas:3', 'mas:4', 'date:2', 'sir:2'], curriculumLevel: 'IV', mathAnswers: true });
+// Limba și literatura română, clasa a III-a și a IV-a (r34.ts), with their answers
+sheet('romana-3-lectura', { category: 'games', selectedItems: ['lect:1', 'lect:2', 'lect:3', 'aud:1'], curriculumLevel: 'III', mathAnswers: true });
+sheet('romana-3-limba', { category: 'games', selectedItems: ['parti:1', 'parti:2', 'orto:1', 'orto:2', 'punct:1', 'voc:1', 'dict:1'], curriculumLevel: 'III', mathAnswers: true });
+sheet('romana-3-scriere', { category: 'games', selectedItems: ['comp:1', 'comp:2', 'func:1', 'func:2', 'carte:1'], curriculumLevel: 'III', childName: 'Ioana' });
+sheet('romana-4-lectura', { category: 'games', selectedItems: ['lect:4', 'lect:5', 'lect:6', 'aud:2'], curriculumLevel: 'IV', mathAnswers: true });
+sheet('romana-4-limba', { category: 'games', selectedItems: ['parti:3', 'parti:4', 'orto:3', 'orto:4', 'punct:2', 'voc:2', 'dict:2'], curriculumLevel: 'IV', mathAnswers: true });
+sheet('romana-4-scriere', { category: 'games', selectedItems: ['comp:3', 'comp:4', 'func:3', 'func:4', 'carte:2'], curriculumLevel: 'IV' });
 // „Pagină cu răspunsuri”: the games, and math with a class (no curriculum line on the answers)
 sheet('jocuri-raspunsuri', { category: 'games', selectedItems: ['find:Ș', 'count:10', 'sound:A', 'first:1', 'syl:1', 'split:1', 'sort:1', 'sort:5', 'odd:4', 'group:1', 'pos:1', 'pos:3'], mathAnswers: true, curriculumLevel: 'CP' });
 sheet('matematica-raspunsuri-clasa', { category: 'math', selectedItems: [...MATH_TYPES], mathRange: 10, mathAnswers: true, curriculumLevel: 'CP' });

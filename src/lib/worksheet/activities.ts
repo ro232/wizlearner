@@ -20,6 +20,10 @@ import { buildClrPage, clrLabel } from './clr-pages';
 import { isClrItem } from './clr';
 import { buildMemPage, memLabel } from './mem-pages';
 import { isMemItem } from './mem';
+import { buildM34Page, m34Label } from './m34-pages';
+import { isM34Item } from './m34';
+import { buildR34Pages, r34Label } from './r34-pages';
+import { isR34Item } from './r34';
 
 /**
  * Full-page activities ("Jocuri"): find the letter, count and write, connect the dots.
@@ -36,7 +40,7 @@ export const DOT_SHAPE_LABELS: Record<DotShape, string> = { star: 'stea', heart:
 export const COUNT_RANGES = ['count:5', 'count:10'] as const;
 
 export function isActivityItem(item: string): boolean {
-  return /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/.test(item) || isPhonologyItem(item) || isSortingItem(item) || isReadingItem(item) || isFunItem(item) || isExploreItem(item) || isClrItem(item) || isMemItem(item) || isSubjectItem(item);
+  return /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/.test(item) || isPhonologyItem(item) || isSortingItem(item) || isReadingItem(item) || isFunItem(item) || isExploreItem(item) || isClrItem(item) || isMemItem(item) || isSubjectItem(item) || isM34Item(item) || isR34Item(item);
 }
 
 export function activityLabel(item: string): string {
@@ -48,6 +52,8 @@ export function activityLabel(item: string): string {
   if (isSubjectItem(item)) return subjectLabel(item);
   if (isClrItem(item)) return clrLabel(item);
   if (isMemItem(item)) return memLabel(item);
+  if (isM34Item(item)) return m34Label(item);
+  if (isR34Item(item)) return r34Label(item);
   const [kind, arg] = item.split(':');
   if (kind === 'find') return `Găsește ${arg}`;
   if (kind === 'count') return `Numără 1–${arg}`;
@@ -331,9 +337,15 @@ export function buildActivityPages(config: WorksheetConfig, tier: Tier, allowed:
       pages.push(reading);
       continue;
     }
+    // Limba și literatura română, clasa a III-a și a IV-a (r34-pages.ts): one or two pages per item
+    const r34 = buildR34Pages(config, item, tier);
+    if (r34) {
+      pages.push(...r34);
+      continue;
+    }
     // the fun preschool sheets (fun-pages.ts), „Explorarea mediului” (explore-pages.ts), and the sheets that
     // fill the gaps of the programme: „Comunicare” (clr-pages.ts), „Matematică și explorare” (mem-pages.ts)
-    const fun = buildFunPage(config, item, tier) ?? buildExplorePage(config, item, tier) ?? buildClrPage(config, item, tier) ?? buildMemPage(config, item, tier) ?? buildSubjectPage(config, item, tier);
+    const fun = buildFunPage(config, item, tier) ?? buildExplorePage(config, item, tier) ?? buildClrPage(config, item, tier) ?? buildMemPage(config, item, tier) ?? buildSubjectPage(config, item, tier) ?? buildM34Page(config, item, tier);
     if (fun) {
       pages.push(fun);
       continue;

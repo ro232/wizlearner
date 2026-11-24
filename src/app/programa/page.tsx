@@ -7,7 +7,7 @@ import { pageMetadata } from '@/lib/seo/metadata';
 import { CLASS_PAGES, coverageCount, headlineItems } from '@/lib/curriculum/presets';
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Fișe pe programă: grădiniță, clasa pregătitoare, I, a II-a',
+  title: 'Fișe pe programă: de la grădiniță la clasa a IV-a',
   absoluteTitle: true,
   description: 'Competențele din programa școlară, cu fișele de lucru potrivite pentru fiecare. Codul competenței se tipărește pe fișă, pentru portofoliu și planificare.',
   path: '/programa',
@@ -37,7 +37,7 @@ export default function CurriculumIndexPage() {
                   <Link href={`/programa/${c.slug}`} className="group flex h-full flex-col rounded-2xl border-2 border-ink bg-white p-6 shadow-[4px_4px_0_#1F2A44] hover:-translate-y-0.5 transition-transform">
                     <span className="text-2xl font-extrabold text-ink">{c.title}</span>
                     <span className="mt-1 text-slate-700">
-                      {c.level === 'presc' ? 'Curriculum pentru educație timpurie' : 'Limba română · Matematică și explorarea mediului · Arte vizuale · Dezvoltare personală · Limba modernă'}
+                      {c.level === 'presc' ? 'Curriculum pentru educație timpurie' : c.level === 'III' || c.level === 'IV' ? 'Limba și literatura română · Matematică' : 'Limba română · Matematică și explorarea mediului · Arte vizuale · Dezvoltare personală · Limba modernă'}
                     </span>
                     <span className="mt-3 text-sm text-slate-600">
                       Fișe pentru {withSheets} din {total} {c.level === 'presc' ? 'comportamente' : 'competențe de limba română și matematică'}
@@ -60,7 +60,8 @@ export default function CurriculumIndexPage() {
           </p>
           <p className="max-w-6xl mx-auto px-4 sm:px-6 mt-4 text-sm text-slate-600">
             Textele competențelor sunt preluate cuvânt cu cuvânt din programele în vigoare în anul școlar 2026–2027: Curriculumul pentru
-            educație timpurie (OMEN nr. 4694/2019) și programele pentru clasa pregătitoare, clasa I și clasa a II-a (OMEN nr. 3418/2013).
+            educație timpurie (OMEN nr. 4694/2019), programele pentru clasa pregătitoare, clasa I și clasa a II-a (OMEN nr. 3418/2013) și
+            programele de Limba și literatura română și de Matematică pentru clasele a III-a și a IV-a (OMEN nr. 5003/2014).
           </p>
         </section>
       </main>

@@ -57,9 +57,11 @@ export const LEVEL_LABEL: Record<SchoolLevel, string> = {
   CP: 'Clasa pregătitoare',
   I: 'Clasa I',
   II: 'Clasa a II-a',
+  III: 'Clasa a III-a',
+  IV: 'Clasa a IV-a',
 };
 
-export const isSchoolLevel = (v: unknown): v is SchoolLevel => v === 'presc' || v === 'CP' || v === 'I' || v === 'II';
+export const isSchoolLevel = (v: unknown): v is SchoolLevel => v === 'presc' || v === 'CP' || v === 'I' || v === 'II' || v === 'III' || v === 'IV';
 
 // An address in a title would turn the parents' page into a way to pass links around.
 const URL_LIKE = /(?:[a-z][a-z0-9+.-]*:\/\/|www\.)\S*|\b[\p{L}\p{N}-]+(?:\.[\p{L}\p{N}-]+)*\.[a-z]{2,}(?:\/\S*)?|\S+@\S+/giu;

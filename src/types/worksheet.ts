@@ -73,7 +73,7 @@ export interface WorksheetConfig {
   /** Clock sheets: ore fixe, also half hours (unset), also quarters, every 5 minutes. */
   mathClock?: 'hour' | 'half' | 'quarter' | 'five';
   /** Print the curriculum competence of the sheet for this class (grădiniță, CP, I, II); unset = no label. */
-  curriculumLevel?: 'presc' | 'CP' | 'I' | 'II';
+  curriculumLevel?: 'presc' | 'CP' | 'I' | 'II' | 'III' | 'IV';
   /** Pictures next to traced words (theme words): word as typed → emoji. */
   wordPictures?: Record<string, string>;
 

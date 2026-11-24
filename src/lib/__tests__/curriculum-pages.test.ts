@@ -35,7 +35,7 @@ describe('„Fișe pe programă” pages', () => {
   });
 
   it('the headline counts limba română and matematică; the other subjects show their own count and say why', () => {
-    expect(HEADLINE_PROGRAMMES).toEqual(['et-presc', 'clr-p-ii', 'mem-p-ii']);
+    expect(HEADLINE_PROGRAMMES).toEqual(['et-presc', 'clr-p-ii', 'mem-p-ii', 'llr-iii-iv', 'mate-iii-iv']);
     for (const c of CLASS_PAGES) {
       const groups = classCoverage(c);
       for (const g of groups) {
