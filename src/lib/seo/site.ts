@@ -49,4 +49,4 @@ export function absoluteUrl(path = ''): string {
 }
 
 /** Date of the last content change, for the sitemap (not the build time, which changes on every deploy). */
-export const CONTENT_UPDATED = '2026-11-23';
+export const CONTENT_UPDATED = '2026-11-24';

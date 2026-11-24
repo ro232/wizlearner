@@ -50,7 +50,11 @@ export default function CurriculumIndexPage() {
               );
             })}
           </ul>
-          <p className="max-w-6xl mx-auto px-4 sm:px-6 mt-8 text-sm text-slate-600">
+          <p className="max-w-6xl mx-auto px-4 sm:px-6 mt-8 text-slate-700">
+            Pentru clasa pregătitoare, clasa I și a II-a poți face și{' '}
+            <Link href="/planificare" className="font-bold underline">planificarea calendaristică pe 2026–2027</Link>, cu fișele potrivite fiecărei unități.
+          </p>
+          <p className="max-w-6xl mx-auto px-4 sm:px-6 mt-4 text-sm text-slate-600">
             Textele competențelor sunt preluate cuvânt cu cuvânt din programele în vigoare în anul școlar 2026–2027: Curriculumul pentru
             educație timpurie (OMEN nr. 4694/2019) și programele pentru clasa pregătitoare, clasa I și clasa a II-a (OMEN nr. 3418/2013).
           </p>
