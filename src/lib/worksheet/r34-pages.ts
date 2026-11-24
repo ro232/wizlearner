@@ -185,7 +185,11 @@ const EVAL_PICK: Partial<Record<R34Kind, { page: number; block: number; take?: n
   orto: { page: 0, block: 0, take: 6 }, parti: { page: 0, block: 1 }, punct: { page: 0, block: 0, take: 4 }, voc: { page: 0, block: 1, take: 3 },
 };
 
-export function r34EvalBlocks(item: string, w: number): R34EvalBlock[] {
+/**
+ * The evaluation items of an item, `w` mm wide, each at most `maxH` mm tall (the room of one evaluation page): a block taller
+ * than a page could not be moved to the next one and would run into the footer.
+ */
+export function r34EvalBlocks(item: string, w: number, maxH = Infinity): R34EvalBlock[] {
   if (!isR34Item(item)) return [];
   const [kind] = r34Parts(item);
   const pages = r34Pages(item);
@@ -213,8 +217,16 @@ export function r34EvalBlocks(item: string, w: number): R34EvalBlock[] {
   };
   if (kind === 'lect') {
     // the text, its detail questions and the true / false sentences: one item
-    const [text, details, tf] = pages[0].blocks;
-    return [one([text, details, tf], 'Citește textul, apoi răspunde la întrebări.')];
+    // (a long text: fewer true / false sentences, then fewer questions, until the item fits on one page)
+    const [text, details, tf] = pages[0].blocks as [Block, Extract<Block, { t: 'mc' }>, Extract<Block, { t: 'tf' }>];
+    const prompt = 'Citește textul, apoi răspunde la întrebări.';
+    for (let d = details.items.length; d >= 1; d--)
+      for (let f = tf.items.length; f >= 0; f--) {
+        const parts: Block[] = [text, { ...details, items: details.items.slice(0, d) }, ...(f ? [{ ...tf, items: tf.items.slice(0, f) }] : [])];
+        const block = one(parts, prompt);
+        if (block.height <= maxH) return [block];
+      }
+    return [one([text, details], prompt)];
   }
   const pick = EVAL_PICK[kind];
   if (!pick) return [];

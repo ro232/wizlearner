@@ -58,6 +58,8 @@ const BOTTOM = H - M - 7;
 const HEADING_H = 9;
 const GAP = 5;
 const SELF_H = 23;
+/** The tallest body an item can have: one page from TOP to BOTTOM with its heading (the self-check row can move on). */
+const MAX_BODY = BOTTOM - TOP - HEADING_H;
 const CELL_STROKE = '#E6DECD';
 const SOFT = '#FBF7EE';
 
@@ -92,7 +94,7 @@ export function isEvaluationItem(item: string): boolean {
   if (/^read:(match|gap|fill|order|text):[1-6]$/.test(item)) return true; // „Citire și scriere” (reading-pages.ts)
   // clasa a III-a și a IV-a: the kinds with a short form (m34-pages.ts, r34-pages.ts)
   if (isM34Item(item)) return m34EvalBlock(item, X1 - X0) !== null;
-  if (isR34Item(item)) return r34EvalBlocks(item, X1 - X0).length > 0;
+  if (isR34Item(item)) return r34EvalBlocks(item, X1 - X0, MAX_BODY).length > 0;
   return /^(count:(5|10)|sound:[A-Z]|(first|syl|split|sort|odd):[1-6])$/.test(item);
 }
 
@@ -639,7 +641,7 @@ function gameBlocks(config: WorksheetConfig, tier: Tier): EvalBlock[] {
     if (isM34Item(item)) {
       const b = m34EvalBlock(item, X1 - X0);
       if (b) blocks.push(b);
-    } else if (isR34Item(item)) blocks.push(...r34EvalBlocks(item, X1 - X0));
+    } else if (isR34Item(item)) blocks.push(...r34EvalBlocks(item, X1 - X0, MAX_BODY));
     else if (kind === 'count') blocks.push(countBlock(item, n));
     else if (kind === 'sound') {
       // three pictures that start with the sound and three that do not, in the order of the ordinary page

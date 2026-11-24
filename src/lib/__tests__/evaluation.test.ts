@@ -16,7 +16,8 @@ import { CLASS_PAGES, SHEET_PRESETS, classCoverage, classEvaluations, presetById
 import { itemFitsCategory, sanitizeConfig } from '@/stores/sanitize-config';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import type { PageOps } from '@/lib/glyphs/types';
-import { opsOutside } from './bounds';
+import { opBox, opsOutside } from './bounds';
+import { flattenOps } from '@/lib/glyphs/geometry';
 import { drawnExercises, icons, readingOrder, solveDrawn, textOverlaps, texts } from './drawn';
 
 const H = 297;
@@ -132,6 +133,23 @@ describe('an evaluation sheet', () => {
         }
       });
     }
+
+  it('nothing enters the footer band: every item ends above it, on every page, whatever the seed', () => {
+    // the items end at H − 12 − 7 mm; under that only the page number, the curriculum line and the brand line
+    const FOOTER = H - 12 - 7;
+    const footerText = (o: ReturnType<typeof flattenOps>[number]) => o.t === 'text' && o.y >= H - 12 - 0.5;
+    for (const preset of EVALUATIONS)
+      for (const level of preset.levels!)
+        for (const seed of [1, 2, 3, 7, 42])
+          for (const tier of ['full', 'free'] as const) {
+            const pages = buildWorksheetPages({ ...presetConfig(preset, level), mathSeed: seed }, tier);
+            pages.forEach((p, i) => {
+              const inBand = flattenOps(p.ops).filter((o) => !footerText(o)).map((o) => ({ o, b: opBox(o) })).filter(({ b }) => b && b.maxY > FOOTER + 0.3);
+              expect(inBand.map(({ o, b }) => `${o.t}${o.t === 'text' ? ` "${o.text}"` : ''} ${b!.maxY.toFixed(1)}`), `${preset.id} ${level} seed ${seed} ${tier} page ${i + 1}`).toEqual([]);
+              for (const o of flattenOps(p.ops).filter(footerText)) expect(opBox(o)!.minY, `${preset.id} ${level} page ${i + 1}`).toBeGreaterThan(FOOTER + 2);
+            });
+          }
+  });
 
   it('no picture twice in one evaluation', () => {
     for (const preset of EVALUATIONS.filter((p) => p.config.category === 'games'))
