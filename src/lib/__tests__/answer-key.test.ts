@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
-import { MATH_TYPES, hasCarryChoice, mathTitle, problemAnswer, rng, seedOf, type MathRange, type MathType } from '@/lib/worksheet/math';
+import { MATH_TYPES, defaultCarry, hasCarryChoice, mathTitle, problemAnswer, rng, seedOf, type MathRange, type MathType } from '@/lib/worksheet/math';
 import { moneyExercises } from '@/lib/worksheet/money';
 import { wordProblems } from '@/lib/worksheet/problems';
 import { countSet, findGrid } from '@/lib/worksheet/activities';
@@ -40,13 +40,13 @@ describe('answers page: math, every type, many sets', () => {
   it('each answer is the one the drawn exercise asks for', () => {
     let checked = 0;
     for (const type of GRID)
-      for (const range of [5, 10, 20, 31, 100] as MathRange[])
+      for (const range of [5, 10, 20, 31, 100, 1000] as MathRange[])
         for (const carry of hasCarryChoice(range) ? (['without', 'with', 'mixed'] as const) : ([undefined] as const))
           for (let seed = 1; seed <= 12; seed++) {
             const pages = buildWorksheetPages(math({ selectedItems: [type], mathRange: range, mathCarry: carry, mathSeed: seed }), 'full');
             expect(pages).toHaveLength(2);
             const drawn = drawnExercises(pages[0], /^\d+\.$/, { top: 40, bottom: H - 30 }, type === 'seq' ? 186 : 93);
-            const key = keySections([pages[1]]).get(mathTitle(type, range, carry ?? (range === 100 ? 'without' : 'mixed')))!;
+            const key = keySections([pages[1]]).get(mathTitle(type, range, carry ?? defaultCarry(range)))!;
             expect(key, `${type} ${range} ${carry}`).toBeDefined();
             expect(drawn.length, `${type} ${range} ${carry} ${seed}`).toBe(key.length);
             drawn.forEach((d, i) => {
@@ -72,7 +72,7 @@ describe('answers page: math, every type, many sets', () => {
   });
 
   it('problems and money: the answers of the very set on the page', () => {
-    for (const range of [5, 10, 20, 31, 100] as MathRange[])
+    for (const range of [5, 10, 20, 31, 100, 1000] as MathRange[])
       for (let seed = 1; seed <= 20; seed++) {
         const pages = buildWorksheetPages(math({ selectedItems: ['problems', 'money'], mathRange: range, mathSeed: seed }), 'full');
         const problems = wordProblems(range, rng(seedOf(`problems:${range}:${seed}`)));

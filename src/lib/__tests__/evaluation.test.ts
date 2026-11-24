@@ -61,6 +61,8 @@ describe('the evaluation presets', () => {
     expect(presetConfig(mate, 'CP')).toMatchObject({ category: 'math', evaluation: true, mathRange: 10, selectedItems: ['cmp', 'mix', 'problems', 'money'], curriculumLevel: 'CP' });
     expect(presetConfig(mate, 'I')).toMatchObject({ mathRange: 100, selectedItems: ['cmp', 'mix', 'problems', 'money'] });
     expect(presetConfig(mate, 'II').selectedItems).not.toContain('money');
+    // clasa a II-a: 0–1000, „fără trecere peste ordin” as the programme's contents say
+    expect(presetConfig(mate, 'II')).toMatchObject({ mathRange: 1000, mathCarry: 'without', selectedItems: ['cmp', 'mix', 'missing', 'problems'] });
     expect(presetConfig(presetById('evaluare-clr')!, 'CP').selectedItems.every((i) => /^(sound|first|syl|split):/.test(i))).toBe(true);
   });
 
@@ -144,7 +146,7 @@ describe('the answers of an evaluation are those of the exercises drawn', () => 
   it('math: every item, every class range, many sets', () => {
     let checked = 0;
     const types = MATH_TYPES.filter((t) => t !== 'problems' && t !== 'money' && t !== 'addpic');
-    for (const range of [5, 10, 20, 31, 100] as MathRange[])
+    for (const range of [5, 10, 20, 31, 100, 1000] as MathRange[])
       for (let seed = 1; seed <= 25; seed++) {
         const config: WorksheetConfig = { ...DEFAULT_CONFIG, category: 'math', evaluation: true, selectedItems: [...MATH_TYPES], mathRange: range, mathSeed: seed, curriculumLevel: 'I' };
         const pages = buildWorksheetPages(config, 'full');

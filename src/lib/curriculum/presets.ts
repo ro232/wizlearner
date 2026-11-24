@@ -38,7 +38,7 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'mate-lipsa', title: 'Numărul care lipsește', text: 'Află termenul necunoscut.', config: { category: 'math', selectedItems: ['missing'] } },
   { id: 'mate-sir', title: 'Completează șirul', text: 'Numerele în ordine, cu golurile de completat.', config: { category: 'math', selectedItems: ['seq'] } },
   { id: 'mate-vecini', title: 'Vecinii numerelor', text: 'Numărul dinainte și cel de după.', config: { category: 'math', selectedItems: ['nbr'] } },
-  { id: 'mate-bani', title: 'Banii', text: 'Numără, compară și schimbă bancnote de 1 leu, 5 lei, 10 lei.', config: { category: 'math', selectedItems: ['money'] } },
+  { id: 'mate-bani', title: 'Banii', text: 'Numără, compară și schimbă bancnote de 1 leu, 5 lei, 10 lei; la clasa a II-a și de 100, 200, 500 de lei.', config: { category: 'math', selectedItems: ['money'] } },
   { id: 'mate-probleme', title: 'Probleme cu imagini', text: 'Probleme scurte de adunare și scădere, cu obiectele desenate.', config: { category: 'math', selectedItems: ['problems'] } },
   { id: 'mate-adunari-31', title: 'Adunări 0–31', text: 'Adaugi 1–5 unități, fără și cu trecere peste ordin.', config: { category: 'math', selectedItems: ['add'], mathRange: 31 }, levels: ['CP'] },
   { id: 'gaseste-litera', title: 'Găsește litera', text: 'Colorează litera căutată printre celelalte.', config: { category: 'games', selectedItems: ['find:A'] } },
@@ -58,8 +58,9 @@ export const SHEET_PRESETS: SheetPreset[] = [
   {
     id: 'evaluare-mate', title: 'Evaluare la matematică', text: 'Comparare, adunări și scăderi, probleme cu imagini, bani; cu răspunsuri și calificative orientative.',
     config: { category: 'math', selectedItems: ['cmp', 'mix', 'problems', 'money'], evaluation: true }, levels: ['CP', 'I', 'II'], evaluation: true,
-    // clasa a II-a works with other notes (200, 500 de lei, euro) than the sheet draws: the missing number instead
-    byLevel: { II: { selectedItems: ['cmp', 'mix', 'missing', 'problems'], mathCarry: 'mixed' } },
+    // clasa a II-a: 0–1000, „Adunarea și scăderea în concentrul 0 – 1000, fără trecere peste ordin”; the
+    // missing number instead of money (an evaluation of four items, as in the other classes)
+    byLevel: { II: { selectedItems: ['cmp', 'mix', 'missing', 'problems'], mathCarry: 'without' } },
   },
   {
     id: 'evaluare-clr', title: 'Evaluare: sunete și silabe', text: 'Sunetul de la început, primul sunet, câte silabe, despărțirea în silabe; cu răspunsuri și calificative orientative.',
@@ -74,7 +75,7 @@ export const SHEET_PRESETS: SheetPreset[] = [
 ];
 
 /** The number range a class works in, for the math sheets it opens (programme contents). */
-const MATH_RANGE: Record<SchoolLevel, number> = { presc: 10, CP: 10, I: 100, II: 100 };
+const MATH_RANGE: Record<SchoolLevel, number> = { presc: 10, CP: 10, I: 100, II: 1000 };
 
 /** The full generator settings of a preset for a class. */
 export function presetConfig(preset: SheetPreset, level: SchoolLevel): WorksheetConfig {
