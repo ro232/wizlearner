@@ -103,6 +103,33 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'ce-iei-cu-tine', title: 'Ce iei cu tine?', text: 'Dacă plouă, iei umbrela: unește vremea cu ce îți trebuie.', config: { category: 'games', selectedItems: ['wear:1'] }, levels: ['presc', 'CP'] },
   { id: 'apa-solida-lichida', title: 'Apa: solidă sau lichidă?', text: 'Gheață, zăpadă, ploaie, valuri: încercuiește cum este apa.', config: { category: 'games', selectedItems: ['water:1'] }, levels: ['I'] },
   { id: 'ce-se-intampla-cu-apa', title: 'Ce se întâmplă cu apa?', text: 'Se topește, îngheață, fierbe sau se evaporă: citește și încercuiește.', config: { category: 'games', selectedItems: ['melt:1'] }, levels: ['I'] },
+  // The sheets that fill the gaps of the programme (clr-pages.ts, mem-pages.ts): the free set of each class
+  { id: 'povestea-in-imagini', title: 'Povestea în imagini', text: 'Patru imagini de pus în ordine, titlul potrivit de încercuit, sfârșitul de desenat.', config: { category: 'games', selectedItems: ['story:1'] }, levels: ['CP'] },
+  {
+    id: 'semne-simboluri', title: 'Semne și simboluri', text: 'Trecerea de pietoni, spitalul, ieșirea, reciclarea: unește semnul cu ce înseamnă; la clasa a II-a, ce faci când îl vezi.',
+    config: { category: 'games', selectedItems: ['sign:1'] }, byLevel: { I: { selectedItems: ['sign:2'] }, II: { selectedItems: ['sign:3'] } }, levels: ['CP', 'I', 'II'],
+  },
+  { id: 'scriu-un-mesaj', title: 'Felicitarea, biletul, invitația', text: 'Un mesaj de completat cu litere de tipar: numele prietenului, locul, semnătura.', config: { category: 'games', selectedItems: ['note:1'] }, levels: ['CP'] },
+  { id: 'citeste-mesajul', title: 'Citește mesajul', text: 'O invitație, un afiș, un bilet și patru întrebări despre fiecare.', config: { category: 'games', selectedItems: ['msg:1'] }, levels: ['II'] },
+  { id: 'unde-este-scris', title: 'Unde este ceva scris?', text: 'Douăsprezece cartonașe: încercuiește-le pe cele cu litere, nu pe cele cu desene sau forme.', config: { category: 'games', selectedItems: ['written:1'] }, levels: ['presc'] },
+  {
+    id: 'termenii-operatiilor', title: 'Termenii operațiilor', text: 'Suma, diferența, totalul și semnele +, −, =; la clasa I termenii, < și >; la clasa a II-a descăzutul, scăzătorul, produsul, câtul.',
+    config: { category: 'games', selectedItems: ['terms:1'] }, byLevel: { I: { selectedItems: ['terms:3'] }, II: { selectedItems: ['terms:5'] } }, levels: ['CP', 'I', 'II'],
+  },
+  { id: 'formeaza-numarul', title: 'Formează numărul', text: 'Sute, zeci, unități desenate; numere până la 1000 scrise cu cifre și cu litere.', config: { category: 'games', selectedItems: ['place:1'] }, levels: ['II'] },
+  { id: 'coordonate', title: 'Coordonate', text: 'Un tabel cu coloanele A–E și rândurile 1–5: ce se află în B3, unde este pisica, desenează în D2.', config: { category: 'games', selectedItems: ['coord:1'] }, levels: ['II'] },
+  { id: 'laturi-varfuri', title: 'Laturi, vârfuri, axa de simetrie', text: 'Câte laturi și câte vârfuri are figura; este linia o axă de simetrie?', config: { category: 'games', selectedItems: ['sides:1'] }, levels: ['II'] },
+  { id: 'corpuri-geometrice', title: 'Corpuri geometrice', text: 'Cub, cuboid, cilindru, sferă, con: numele, obiectele cu aceeași formă, fețe și vârfuri.', config: { category: 'games', selectedItems: ['solid:1'] }, levels: ['II'] },
+  {
+    id: 'modele-regularitati', title: 'Modele și regularități', text: 'Ce urmează în șir, numere după o regulă, o problemă; la clasa a II-a regula scrisă și figuri care cresc.',
+    config: { category: 'games', selectedItems: ['regular:1'] }, byLevel: { II: { selectedItems: ['regular:3'] } }, levels: ['I', 'II'],
+  },
+  { id: 'sortare-doua-criterii', title: 'Sortează după două criterii', text: 'Un tabel cu forma și mărimea: scrie numărul fiecărei imagini în căsuța ei.', config: { category: 'games', selectedItems: ['sort2:1'] }, levels: ['I', 'II'] },
+  { id: 'plan-de-lucru', title: 'Plan de lucru', text: 'Pașii unui experiment de pus în ordine; adevărat sau fals, cu „și”, „sau”, „nu”.', config: { category: 'games', selectedItems: ['plan:1'] }, levels: ['II'] },
+  { id: 'ce-se-intampla-daca', title: 'Ce se întâmplă dacă…?', text: 'Unește „dacă…” cu „atunci…” și scrie urmarea: magnetul, becul, gheața.', config: { category: 'games', selectedItems: ['cause:1'] }, levels: ['II'] },
+  { id: 'forme-in-jurul-nostru', title: 'Forme în jurul nostru', text: 'Ceasul, ușa, felia de pizza, fereastra: încercuiește cercul, pătratul, triunghiul sau dreptunghiul.', config: { category: 'games', selectedItems: ['around:1'] }, levels: ['presc', 'CP', 'I'] },
+  { id: 'pictograma', title: 'Pictograma', text: 'Numără fructele din imagine, colorează câte o căsuță pentru fiecare; din care sunt cele mai multe?', config: { category: 'games', selectedItems: ['pict:1'] }, levels: ['presc'] },
+  { id: 'mai-repede-mai-cald', title: 'Mai repede, mai cald…', text: 'Cine merge mai repede, ce este mai cald, ce a fost mai întâi: încercuiește.', config: { category: 'games', selectedItems: ['more:1'] }, levels: ['presc'] },
   // Evaluări: the items of the class's programme as a short test, with the answers page (evaluation.ts)
   {
     id: 'evaluare-mate', title: 'Evaluare la matematică', text: 'Comparare, adunări și scăderi, probleme cu imagini, bani (la clasa a II-a: înmulțiri și ceasul); cu răspunsuri și calificative orientative.',

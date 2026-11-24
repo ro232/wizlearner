@@ -35,6 +35,9 @@ const FUN_ITEM = /^(color|colsum|maze|diff|trace|shadow):[1-6]$/;
 const EXPLORE_ITEM = /^((plant|body|senses|habitat|move|weather|wear|water|melt):1|(home|baby):[12]|season:[1-5])$/;
 // Arte vizuale, Dezvoltare personală, limba engleză (subjects.ts: isSubjectItem)
 const SUBJECT_ITEM = /^((sym|model|en):[1-3]|(cut|lines|feel):[12]|(me|hyg|habit|job|jobuse|rules):1)$/;
+// the sheets that fill the gaps of the programme (clr.ts: isClrItem, mem.ts: isMemItem)
+const CLR_ITEM = /^(story:[1-4]|(sign|note|msg):[1-3]|written:[12])$/;
+const MEM_ITEM = /^(terms:[1-6]|(place|coord):[1-3]|regular:[1-4]|(sort2|plan|cause|pict):[12]|(sides|solid|around|more):1)$/;
 const MATH_RANGES: readonly number[] = [5, 10, 20, 31, 100, 1000];
 
 const MAX_ITEMS = 120;
@@ -70,6 +73,7 @@ export function itemFitsCategory(item: unknown, category: ContentCategory): item
       if (READING_ITEM.test(item)) return true;
       if (FUN_ITEM.test(item) || EXPLORE_ITEM.test(item)) return true;
       if (SUBJECT_ITEM.test(item)) return true;
+      if (CLR_ITEM.test(item) || MEM_ITEM.test(item)) return true;
       return GAME_ITEM.test(item);
     default:
       return false;

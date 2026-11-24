@@ -10,6 +10,8 @@ import { answerKeyPages, type KeySection } from './answer-key';
 import { funKeyExtras, funKeySection } from './fun-pages';
 import { exploreKeySection } from './explore-pages';
 import { subjectKeyExtras, subjectKeySection } from './subjects-pages';
+import { clrKeySection } from './clr-pages';
+import { memKeySection } from './mem-pages';
 
 /**
  * The answers of the game pages („Jocuri”) for the answers page: read from the same functions
@@ -80,7 +82,8 @@ export function gameKeySection(config: WorksheetConfig, item: string): KeySectio
       return readingKeySection(config, item);
     // the fun preschool sheets and „Explorarea mediului”: nothing for „Urmărește linia”
     default:
-      return funKeySection(item) ?? exploreKeySection(item) ?? subjectKeySection(item);
+      // and the sheets that fill the gaps of the programme: nothing for the messages the child writes (note:1–3)
+      return funKeySection(item) ?? exploreKeySection(item) ?? clrKeySection(item) ?? memKeySection(item) ?? subjectKeySection(item);
   }
 }
 

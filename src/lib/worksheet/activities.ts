@@ -16,6 +16,10 @@ import { buildExplorePage, exploreLabel } from './explore-pages';
 import { isExploreItem } from './explore';
 import { buildSubjectPage, subjectLabel } from './subjects-pages';
 import { isSubjectItem } from './subjects';
+import { buildClrPage, clrLabel } from './clr-pages';
+import { isClrItem } from './clr';
+import { buildMemPage, memLabel } from './mem-pages';
+import { isMemItem } from './mem';
 
 /**
  * Full-page activities ("Jocuri"): find the letter, count and write, connect the dots.
@@ -32,7 +36,7 @@ export const DOT_SHAPE_LABELS: Record<DotShape, string> = { star: 'stea', heart:
 export const COUNT_RANGES = ['count:5', 'count:10'] as const;
 
 export function isActivityItem(item: string): boolean {
-  return /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/.test(item) || isPhonologyItem(item) || isSortingItem(item) || isReadingItem(item) || isFunItem(item) || isExploreItem(item) || isSubjectItem(item);
+  return /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/.test(item) || isPhonologyItem(item) || isSortingItem(item) || isReadingItem(item) || isFunItem(item) || isExploreItem(item) || isClrItem(item) || isMemItem(item) || isSubjectItem(item);
 }
 
 export function activityLabel(item: string): string {
@@ -42,6 +46,8 @@ export function activityLabel(item: string): string {
   if (isFunItem(item)) return funLabel(item);
   if (isExploreItem(item)) return exploreLabel(item);
   if (isSubjectItem(item)) return subjectLabel(item);
+  if (isClrItem(item)) return clrLabel(item);
+  if (isMemItem(item)) return memLabel(item);
   const [kind, arg] = item.split(':');
   if (kind === 'find') return `Găsește ${arg}`;
   if (kind === 'count') return `Numără 1–${arg}`;
@@ -325,9 +331,9 @@ export function buildActivityPages(config: WorksheetConfig, tier: Tier, allowed:
       pages.push(reading);
       continue;
     }
-    // the fun preschool sheets (fun-pages.ts) and „Explorarea mediului” (explore-pages.ts)
-    // … and Arte vizuale, Dezvoltare personală, limba engleză (subjects-pages.ts)
-    const fun = buildFunPage(config, item, tier) ?? buildExplorePage(config, item, tier) ?? buildSubjectPage(config, item, tier);
+    // the fun preschool sheets (fun-pages.ts), „Explorarea mediului” (explore-pages.ts), and the sheets that
+    // fill the gaps of the programme: „Comunicare” (clr-pages.ts), „Matematică și explorare” (mem-pages.ts)
+    const fun = buildFunPage(config, item, tier) ?? buildExplorePage(config, item, tier) ?? buildClrPage(config, item, tier) ?? buildMemPage(config, item, tier) ?? buildSubjectPage(config, item, tier);
     if (fun) {
       pages.push(fun);
       continue;

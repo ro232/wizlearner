@@ -258,7 +258,8 @@ describe('the competences', () => {
     expect(listed('clasa-pregatitoare', '4.2')).toEqual(['ce-iei-cu-tine']);
     expect(listed('clasa-1', '4.1')).toEqual(['apa-solida-lichida']);
     expect(listed('clasa-1', '4.2')).toEqual(['ce-se-intampla-cu-apa']);
-    expect(listed('clasa-2', '5.1')).toEqual(['mediile-de-viata']);
+    // and „Sortează după două criterii” (goluri.test.ts)
+    expect(listed('clasa-2', '5.1')).toEqual(['mediile-de-viata', 'sortare-doua-criterii']);
     for (const preset of SHEET_PRESETS.filter((p) => p.config.selectedItems?.some(isExploreItem))) {
       for (const level of preset.levels!) {
         const cfg = presetConfig(preset, level);
@@ -268,8 +269,9 @@ describe('the competences', () => {
     }
   });
 
-  it('the grădiniță page now has sheets for 9 of its 23 behaviours', () => {
+  it('the grădiniță page now has sheets for 13 of its 23 behaviours', () => {
     const items = classCoverage(CLASS_PAGES.find((c) => c.slug === 'gradinita')!).flatMap((g) => g.items);
-    expect([items.filter((i) => i.presets.length).length, items.length]).toEqual([9, 23]);
+    // with D.3.3, E.1.2, E.2.3, E.2.5 (goluri.test.ts)
+    expect([items.filter((i) => i.presets.length).length, items.length]).toEqual([13, 23]);
   });
 });

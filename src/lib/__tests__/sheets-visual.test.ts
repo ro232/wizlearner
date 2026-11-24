@@ -49,6 +49,15 @@ sheet('explorare-scoala', { category: 'games', selectedItems: ['senses:1', 'habi
 sheet('arte-vizuale', { category: 'games', selectedItems: ['sym:1', 'sym:3', 'model:3', 'cut:1', 'cut:2', 'lines:1', 'lines:2'], curriculumLevel: 'CP', mathAnswers: true });
 sheet('dezvoltare-personala', { category: 'games', selectedItems: ['feel:1', 'feel:2', 'me:1', 'hyg:1', 'habit:1', 'job:1', 'jobuse:1', 'rules:1'], curriculumLevel: 'I', childName: 'Ioana', mathAnswers: true });
 sheet('limba-engleza', { category: 'games', selectedItems: ['en:1', 'en:2', 'en:3'], curriculumLevel: 'II', mathAnswers: true });
+// the sheets that fill the gaps of the programme (clr-pages.ts, mem-pages.ts), with their answers
+sheet('comunicare-cp', { category: 'games', selectedItems: ['story:1', 'story:2', 'sign:1', 'note:1', 'note:2'], curriculumLevel: 'CP', mathAnswers: true });
+sheet('comunicare-2', { category: 'games', selectedItems: ['sign:2', 'sign:3', 'msg:1', 'msg:2', 'msg:3'], curriculumLevel: 'II', mathAnswers: true });
+sheet('comunicare-presc', { category: 'games', selectedItems: ['written:1', 'written:2'], curriculumLevel: 'presc', mathAnswers: true });
+sheet('mate-termeni', { category: 'games', selectedItems: ['terms:1', 'terms:3', 'terms:5'], curriculumLevel: 'I', mathAnswers: true });
+sheet('mate-numere-figuri-2', { category: 'games', selectedItems: ['place:1', 'coord:1', 'sides:1', 'solid:1'], curriculumLevel: 'II', mathAnswers: true });
+sheet('mate-regularitati-sortare', { category: 'games', selectedItems: ['regular:1', 'regular:3', 'regular:4', 'sort2:1', 'sort2:2'], curriculumLevel: 'II', mathAnswers: true });
+sheet('mate-experimente', { category: 'games', selectedItems: ['plan:1', 'plan:2', 'cause:1', 'cause:2'], curriculumLevel: 'II', mathAnswers: true });
+sheet('mate-presc', { category: 'games', selectedItems: ['around:1', 'pict:1', 'pict:2', 'more:1'], curriculumLevel: 'presc', mathAnswers: true });
 sheet('matematica-10', { category: 'math', selectedItems: MATH_TYPES.filter((t) => t !== 'money' && t !== 'problems'), mathRange: 10, mathAnswers: true });
 sheet('matematica-100', { category: 'math', selectedItems: ['add', 'sub', 'seq'], mathRange: 100 });
 sheet('matematica-31', { category: 'math', selectedItems: MATH_TYPES.filter((t) => t !== 'problems'), mathRange: 31, mathAnswers: true });
