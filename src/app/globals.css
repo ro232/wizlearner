@@ -190,3 +190,11 @@
   size-adjust: 101.39%;
 }
 :root { --font-nunito: 'Nunito', 'Nunito Fallback'; }
+
+/* Under lg the generator has a fixed download bar at the bottom: keep anything scrolled or focused into
+   view (keyboard, „find”, scrollIntoView) above it instead of underneath it. */
+@media (max-width: 1023.98px) {
+  html:has([data-sticky-actions]) {
+    scroll-padding-bottom: 6.5rem;
+  }
+}

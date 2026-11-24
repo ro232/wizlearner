@@ -50,6 +50,12 @@ export default function ClassCurriculumPage({ params }: { params: { clasa: strin
               copilului și o descarci; codul se tipărește jos, pe fiecare pagină.
             </p>
             <p className="mt-3 text-sm font-bold text-ink">Avem fișe pentru {withSheets} din {items.length}.</p>
+            {c.level !== 'presc' && (
+              <p className="mt-2 text-sm text-slate-700">
+                Ai nevoie și de planificarea calendaristică?{' '}
+                <Link href={`/planificare?clasa=${c.level}`} className="font-bold underline">Fă-o pe 2026–2027, cu aceste competențe</Link>.
+              </p>
+            )}
           </div>
         </section>
 

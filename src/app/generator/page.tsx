@@ -242,7 +242,7 @@ export default function GeneratorPage() {
       </main>
 
       {/* Phones: actions always within reach */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-paper/95 backdrop-blur border-t-2 border-ink p-3">
+      <div data-sticky-actions className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-paper/95 backdrop-blur border-t-2 border-ink p-3">
         {!empty && !previewInView && (
           <button
             type="button"
