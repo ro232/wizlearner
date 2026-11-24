@@ -4,8 +4,9 @@ import { buildWorksheetPages, hasContent } from '@/lib/worksheet/layout';
 import { MATH_RANGES, NUMBER_MATH_TYPES as MATH_TYPES, mathExercises } from '@/lib/worksheet/math';
 import { opsOutside } from './bounds';
 
+// from 10 000 up the numbers are written in groups of three digits („12 345”)
 const calc = (cells: (string | null)[], fill: string) => {
-  const c = cells.map((x) => (x === null ? fill : x));
+  const c = cells.map((x) => (x === null ? fill : x)).map((x) => x.replace(/ /g, ''));
   return c;
 };
 
@@ -15,7 +16,7 @@ describe('math sheets', () => {
       for (const type of MATH_TYPES)
         for (const seed of [1, 2, 3]) {
           for (const e of mathExercises(type, range, seed, 20)) {
-            const nums = e.cells.filter((c): c is string => c !== null && /^\d+$/.test(c)).map(Number);
+            const nums = e.cells.filter((c): c is string => c !== null && /^[\d ]+$/.test(c)).map((c) => Number(c.replace(/ /g, '')));
             for (const n of nums) expect(n, `${type} ${range}`).toBeLessThanOrEqual(range);
             for (const n of nums) expect(n).toBeGreaterThanOrEqual(0);
             if (['add', 'sub', 'mix', 'addpic', 'missing'].includes(type)) {
@@ -28,7 +29,7 @@ describe('math sheets', () => {
               if (range === 100 && op !== '+') expect(Number(a) % 10).toBeGreaterThanOrEqual(Number(b) % 10);
             }
             if (type === 'cmp') {
-              const [a, , b] = e.cells.map(Number);
+              const [a, , b] = e.cells.map((c) => Number(c?.replace(/ /g, '')));
               expect(e.answer).toBe(a < b ? '<' : a > b ? '>' : '=');
             }
           }

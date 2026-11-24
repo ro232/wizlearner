@@ -24,15 +24,16 @@ import { TOPICS, type Area, type Ctx, type Faq, type Topic } from './landing-top
 export const LANDING_ROOT = '/fise-de-lucru';
 
 /** How the class is written after the search phrase: „Fișe adunări clasa I”, „Fișe grafisme grădiniță”. */
-export const CLASS_NAME: Record<SchoolLevel, string> = { presc: 'grădiniță', CP: 'clasa pregătitoare', I: 'clasa I', II: 'clasa a II-a' };
+export const CLASS_NAME: Record<SchoolLevel, string> = { presc: 'grădiniță', CP: 'clasa pregătitoare', I: 'clasa I', II: 'clasa a II-a', III: 'clasa a III-a', IV: 'clasa a IV-a' };
 /** „pentru clasa I”, „pentru grădiniță” */
-const FOR: Record<SchoolLevel, string> = { presc: 'pentru grădiniță', CP: 'pentru clasa pregătitoare', I: 'pentru clasa I', II: 'pentru clasa a II-a' };
+const FOR: Record<SchoolLevel, string> = { presc: 'pentru grădiniță', CP: 'pentru clasa pregătitoare', I: 'pentru clasa I', II: 'pentru clasa a II-a', III: 'pentru clasa a III-a', IV: 'pentru clasa a IV-a' };
 
 /** The number range the class's math sheets open with (presets.ts MATH_RANGE). */
-const CLASS_RANGE: Record<SchoolLevel, number> = { presc: 10, CP: 10, I: 100, II: 1000 };
+const CLASS_RANGE: Record<SchoolLevel, number> = { presc: 10, CP: 10, I: 100, II: 1000, III: 10000, IV: 1000000 };
 
 export function areaTitle(area: Area, level: SchoolLevel): string {
   if (level === 'presc') return { clr: 'Limbaj, citit și scris', mem: 'Matematică și cunoașterea lumii', joc: 'Jocuri pe hârtie', eval: 'Evaluare' }[area];
+  if (level === 'III' || level === 'IV') return { clr: 'Limba și literatura română', mem: 'Matematică', joc: 'Jocuri pe hârtie', eval: 'Evaluări' }[area];
   return { clr: 'Comunicare în limba română', mem: 'Matematică și explorarea mediului', joc: 'Jocuri pe hârtie', eval: 'Evaluări' }[area];
 }
 export const AREA_ORDER: Area[] = ['clr', 'mem', 'joc', 'eval'];
@@ -125,6 +126,8 @@ const SUBJECT: Record<string, string> = {
   'et-presc': 'Curriculum pentru educație timpurie',
   'clr-p-ii': 'Comunicare în limba română',
   'mem-p-ii': 'Matematică și explorarea mediului',
+  'llr-iii-iv': 'Limba și literatura română',
+  'mate-iii-iv': 'Matematică',
 };
 
 function refCode(r: CompetenceRef): string {
@@ -162,10 +165,17 @@ function listRo(items: string[]): string {
 function sharedFaq(page: Omit<LandingPage, 'faq'>, own: Faq[]): Faq[] {
   const out = [...own];
   if (page.topic.codeless) {
-    out.push({
-      q: 'De ce nu are fișa un cod din curriculum?',
-      a: 'Pentru că niciun comportament din Curriculumul pentru educație timpurie nu descrie exact acest joc. Preferăm să nu tipărim pe fișă un cod aproximativ; dacă vrei, îl treci tu în planificare, după activitatea în care o folosești.',
-    });
+    out.push(
+      page.level === 'presc'
+        ? {
+          q: 'De ce nu are fișa un cod din curriculum?',
+          a: 'Pentru că niciun comportament din Curriculumul pentru educație timpurie nu descrie exact acest joc. Preferăm să nu tipărim pe fișă un cod aproximativ; dacă vrei, îl treci tu în planificare, după activitatea în care o folosești.',
+        }
+        : {
+          q: 'De ce nu are fișa un cod din programă?',
+          a: 'Pentru că nicio competență specifică din programă nu numește acest exercițiu, iar programa spune că „conținuturile nu se tratează în sine”. Preferăm să nu tipărim pe fișă un cod aproximativ; dacă vrei, îl treci tu în planificare, după lecția în care o folosești.',
+        },
+    );
   }
   if (page.sheetLabel) {
     out.push({
@@ -290,6 +300,8 @@ const CLASS_EXAMPLES: Record<SchoolLevel, string> = {
   CP: 'litere, silabe, adunări, bani, explorarea mediului',
   I: 'citire, litere de mână, adunări, ceasul, probleme',
   II: 'citire, tabla înmulțirii, împărțiri, ceasul, calendarul',
+  III: 'texte cu întrebări, ortograme, compuneri, fracții',
+  IV: 'lectură, părți de vorbire, scrisoarea, perimetrul',
 };
 
 export const LANDING_CLASSES: LandingClass[] = CLASS_PAGES.map((cls) => {
@@ -311,8 +323,8 @@ export function landingClass(clasa: string): LandingClass | undefined {
 
 export const LANDING_INDEX = {
   path: LANDING_ROOT,
-  title: 'Fișe de lucru pe clase: grădiniță, CP, clasa I și a II-a',
-  description: `${countOf(LANDING_PAGES.length, 'fișă', 'fișe')} de lucru pe teme, pentru grădiniță, clasa pregătitoare, clasa I și a II-a, cu competența din programă tipărită pe fișă. PDF de printat.`,
+  title: 'Fișe de lucru pe clase: de la grădiniță la clasa a IV-a',
+  description: `${countOf(LANDING_PAGES.length, 'fișă', 'fișe')} de lucru pe teme, de la grădiniță la clasa a IV-a, cu competența din programă tipărită pe fișă. PDF de printat.`,
 };
 
 // ───────────────────────── structured data ─────────────────────────

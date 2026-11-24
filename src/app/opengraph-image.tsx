@@ -10,7 +10,7 @@ import { opToSvg } from '@/lib/glyphs/backends/svg';
  * The picture shown when a link to the site is shared (WhatsApp, Facebook…): logo, one line of
  * text and a strip of a real sheet, drawn by the same engine as the PDFs. Built once, at build time.
  */
-export const alt = 'WorksheetWiz – fișe de lucru pe programă, de la grădiniță la clasa a II-a';
+export const alt = 'WorksheetWiz – fișe de lucru pe programă, de la grădiniță la clasa a IV-a';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -58,7 +58,7 @@ export default async function OpengraphImage() {
             </div>
           </div>
           <div style={{ display: 'flex', marginTop: 34, fontFamily: 'Fraunces', fontSize: 58, lineHeight: 1.08, letterSpacing: -1.5 }}>
-            Fișe pe programă, de la grădiniță la clasa a II-a
+            Fișe pe programă, de la grădiniță la clasa a IV-a
           </div>
           <div style={{ display: 'flex', marginTop: 26, fontSize: 28, color: '#3F3B35' }}>Codul competenței pe fișă. PDF gata de printat.</div>
           <div style={{ display: 'flex', marginTop: 30, alignSelf: 'flex-start', fontSize: 21, color: PEN, borderBottom: `4px solid ${PEN}`, paddingBottom: 4, letterSpacing: 1.5, whiteSpace: 'nowrap' }}>

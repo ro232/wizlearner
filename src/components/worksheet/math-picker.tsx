@@ -2,7 +2,7 @@
 
 import { Lock, Shuffle } from 'lucide-react';
 import { useWorksheetStore } from '@/stores/worksheet-store';
-import { CARRY_TYPES, FREE_MATH_RANGE, MATH_CARRY, MATH_LABELS, MATH_RANGES, PAID_MATH_TYPES, hasCarryChoice, mathCarryOf, mathRangeOf, type MathCarry, type MathType } from '@/lib/worksheet/math';
+import { CARRY_TYPES, FREE_MATH_RANGE, MATH_CARRY, MATH_LABELS, MATH_RANGES, PAID_MATH_TYPES, fmtNum, hasCarryChoice, isBigRange, mathCarryOf, mathRangeOf, type MathCarry, type MathType } from '@/lib/worksheet/math';
 import { FREE_MATH_TABLE, MATH_TABLES, MUL_TYPES, mathTableOf } from '@/lib/worksheet/multiply';
 import { CLOCK_STEPS, CLOCK_STEP_LABELS, FREE_CLOCK_STEPS, clockStepOf } from '@/lib/worksheet/clock';
 
@@ -40,14 +40,14 @@ export function MathPicker({ onShowPaywall }: { onShowPaywall: () => void }) {
     <div className="space-y-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
       <div>
         <div className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Numere până la</div>
-        <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-3 xl:grid-cols-6 gap-1.5">
+        <div className="grid grid-cols-4 gap-1.5">
           {MATH_RANGES.map((r) => {
             const locked = tier === 'free' && r > FREE_MATH_RANGE;
             return (
               <button key={r} type="button" aria-pressed={range === r} onClick={() => (locked ? onShowPaywall() : setMathRange(r))}
-                aria-label={`Numere până la ${r}${locked ? ' (varianta completă)' : ''}`}
-                className={`relative h-11 ${pill(range === r)} ${locked ? 'opacity-60' : ''}`}>
-                {r}
+                aria-label={`Numere până la ${fmtNum(r)}${locked ? ' (varianta completă)' : ''}`}
+                className={`relative h-11 whitespace-nowrap ${r >= 1000000 ? 'text-xs' : r >= 10000 ? 'text-sm' : ''} ${pill(range === r)} ${locked ? 'opacity-60' : ''}`}>
+                {fmtNum(r)}
                 {locked && <Lock className="absolute top-0.5 right-0.5 w-3 h-3 text-amber-600" aria-hidden />}
               </button>
             );
@@ -62,7 +62,11 @@ export function MathPicker({ onShowPaywall }: { onShowPaywall: () => void }) {
                 ? 'Clasa pregătitoare: numerele 0–31; adunări și scăderi cu 1–5 unități.'
                 : range === 100
                   ? 'Clasa I: zeci și unități.'
-                  : 'Clasa a II-a: sute, zeci și unități.'}
+                  : range === 1000
+                    ? 'Clasa a II-a: sute, zeci și unități.'
+                    : range === 10000
+                      ? 'Clasa a III-a: mii, sute, zeci și unități. Pentru comparare, adunări, scăderi, numărul lipsă, șiruri și vecini.'
+                      : 'Clasa a IV-a: numere de șase cifre, până la un milion. Pentru comparare, adunări, scăderi, numărul lipsă, șiruri și vecini.'}
         </p>
       </div>
 
@@ -81,7 +85,9 @@ export function MathPicker({ onShowPaywall }: { onShowPaywall: () => void }) {
           </div>
           <p className="mt-1 text-xs text-slate-600">
             {operations ? 'Pentru adunări, scăderi și numărul lipsă' : 'Alege adunări sau scăderi: opțiunea se aplică doar lor'}
-            {range === 1000
+            {isBigRange(range)
+              ? carry === 'with' ? ' (4387\u00a0+\u00a02549, 7003\u00a0−\u00a02568).' : carry === 'without' ? ' (4325\u00a0+\u00a03621, 8765\u00a0−\u00a03421).' : '.'
+              : range === 1000
               ? carry === 'with' ? ' (275\u00a0+\u00a0148, 503\u00a0−\u00a0127).' : carry === 'without' ? ' (324\u00a0+\u00a0152, 768\u00a0−\u00a0435).' : '.'
               : carry === 'with' ? ' (8\u00a0+\u00a05, 23\u00a0−\u00a07).' : carry === 'without' ? ' (14\u00a0+\u00a05, 27\u00a0−\u00a04).' : '.'}
           </p>

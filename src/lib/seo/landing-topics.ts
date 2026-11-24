@@ -4,6 +4,7 @@ import { grid } from '@/lib/worksheet/math';
 import { lei, notesFor } from '@/lib/worksheet/money';
 import { SOUND_LETTERS } from '@/lib/worksheet/phonology-pages';
 import { isItemAllowed } from '@/lib/access';
+import { TOPICS_34 } from './landing-topics-34';
 
 /**
  * The topics of the „Fișe de lucru” landing pages (/fise-de-lucru/[clasa]/[subiect]): one page per
@@ -92,18 +93,24 @@ export const TOPICS: Topic[] = [
         CP: 'Adunări cu 1–5 unități, de la obiecte desenate la exerciții scrise până la 31.',
         I: 'Adunări până la 100, mental și în scris, fără și cu trecere peste ordin.',
         II: 'Adunări cu numere de trei cifre, în concentrul 0–1000, fără trecere peste ordin.',
+        III: 'Adunări cu numere de patru cifre, până la 10 000, fără și cu trecere peste ordin.',
+        IV: 'Adunări cu numere de până la șase cifre, în concentrul 0–1 000 000.',
       }),
       body: [
         by(c, {
           CP: 'Programa clasei pregătitoare cere adunări în concentrul 0–31, prin adăugarea a 1–5 elemente la o mulțime dată. De aceea fișele încep cu numere până la 10 și cu obiecte desenate, pe care copilul le numără înainte să scrie suma, apoi trec la exerciții scrise până la 31.',
           I: 'La clasa I, copilul adună până la 100, mental și în scris, sprijinindu-se des pe numărare. Începe cu exerciții fără trecere peste ordin (34 + 5, 40 + 30) și ajunge la cele cu trecere (38 + 7), în care unitățile formează o nouă zece.',
           II: 'La clasa a II-a, adunările trec la numere de trei cifre. În concentrul 0–1000, programa cere adunări fără trecere peste ordin (324 + 152), făcute mental și în scris, cu numărare sau grupare ori de câte ori e nevoie.',
+          III: 'La clasa a III-a, adunările se fac în concentrul 0–10 000, fără și cu trecere peste ordin, iar copilul folosește și proprietățile adunării ca să calculeze mai ușor. Pe fișă, primul termen are mereu patru cifre (4 387 + 2 549), așa că nu repetă exercițiile de anul trecut.',
+          IV: 'La clasa a IV-a, numerele au până la șase cifre. Fiecare adunare stă pe un rând al ei, cu numerele scrise în grupe de câte trei cifre (456 789 + 234 567) și cu o căsuță destul de lată pentru rezultat, ca elevul să aibă loc să scrie fără să înghesuie cifrele.',
         }),
         `Pe pagină sunt ${exercises(grid('add', c.range as 10).count)}, pe două coloane, cu loc pentru rezultat. Titlul spune concentrul și felul exercițiilor, antetul are rând pentru nume și dată, iar jos se tipărește competența din programă.`,
         by(c, {
           CP: 'Pentru început ai și „Adunări cu imagini”, unde copilul numără fructele sau stelele desenate, și „Calculează și colorează”, în care rezultatul spune culoarea fiecărei părți a desenului.',
           I: 'Copiilor care au încă nevoie de sprijin le dai „Adunări cu imagini” sau „Grupe egale”, care leagă adunarea de obiecte numărate; celor siguri pe ei, „Numărul care lipsește”.',
           II: '„Numărul care lipsește” (□ + 25 = 60) e pasul următor, când adunarea e sigură: copilul trebuie să gândească invers, ca la scădere.',
+          III: '„Numărul care lipsește” exersează aflarea numărului necunoscut, pe care programa clasei a III-a o cere prin metoda mersului invers sau a balanței.',
+          IV: 'Pentru calculul în coloană, elevul poate copia exercițiile în caiet; fișa e gândită pentru calcul mental sau pe ciornă, cu rezultatul scris în căsuță.',
         }),
         'Învățătorii o dau ca exercițiu de fixare după lecție, ca temă sau la lucrul pe grupe. Butonul „Alte exerciții” face o fișă nouă cu aceleași reguli, așa că fiecare zi a săptămânii poate avea foaia ei.',
       ],
@@ -111,6 +118,8 @@ export const TOPICS: Topic[] = [
         CP: 'Fișe de adunări pentru clasa pregătitoare: 1–5 unități, cu obiecte desenate, apoi exerciții scrise până la 31. PDF de printat, cu competența din programă.',
         I: 'Fișe de adunări pentru clasa I, până la 100: fără și cu trecere peste ordin, cu imagini sau numărul care lipsește. PDF de printat, cu competența pe fișă.',
         II: 'Fișe de adunări pentru clasa a II-a: numere de trei cifre, până la 1000, fără trecere peste ordin, ca în programă. PDF de printat, cu pagină de răspunsuri.',
+        III: 'Fișe de adunări pentru clasa a III-a: numere de patru cifre, până la 10 000, fără și cu trecere peste ordin. PDF de printat, cu răspunsuri.',
+        IV: 'Fișe de adunări pentru clasa a IV-a: numere de până la șase cifre, scrise lizibil, câte un exercițiu pe rând. PDF de printat, cu răspunsuri.',
       }),
       faq: [
         {
@@ -119,6 +128,7 @@ export const TOPICS: Topic[] = [
             CP: 'La numerele până la 10 nu e cazul. Pentru concentrul 0–31 folosești varianta „Adunări 0–31”: în generator alegi fără trecere, cu trecere peste ordin sau amândouă amestecate (alegerea face parte din varianta completă).',
             I: 'Da. De la concentrul 0–20 în sus, generatorul îți dă de ales: fără trecere, cu trecere peste ordin sau amândouă amestecate. Fișa pentru clasa I pornește fără trecere peste ordin.',
             II: 'Generatorul le are pe toate trei, dar codul 1.4 al clasei a II-a se tipărește doar pe fișele fără trecere peste ordin din concentrul 0–1000, pentru că așa le descrie programa.',
+            default: 'Da. Pentru concentrul clasei, fișa pornește cu amândouă amestecate, cum spune programa („fără trecere și cu trecere peste ordin”); din generator alegi doar fără sau doar cu trecere.',
           }),
         },
       ],
@@ -135,12 +145,16 @@ export const TOPICS: Topic[] = [
         CP: 'Scăderi cu 1–5 unități, cu numere până la 10 și fără rezultat negativ.',
         I: 'Scăderi până la 100, fără și cu trecere peste ordin.',
         II: 'Scăderi cu numere de trei cifre, în concentrul 0–1000, fără trecere peste ordin.',
+        III: 'Scăderi cu numere de patru cifre, până la 10 000, fără și cu trecere peste ordin.',
+        IV: 'Scăderi cu numere mari, până la 1 000 000, câte una pe rând.',
       }),
       body: [
         by(c, {
           CP: 'La clasa pregătitoare, a scădea înseamnă să iei 1–5 elemente dintr-o mulțime și să vezi câte rămân. Fișa pornește cu numere până la 10, iar rezultatul nu e niciodată negativ, așa că fiecare exercițiu se poate face cu degetele sau cu jetoane pe bancă.',
           I: 'La clasa I, copilul scade până la 100, mental și în scris. Întâi vin scăderile fără trecere peste ordin (47 − 5, 80 − 30), apoi cele în care trebuie să „împrumute” o zece (52 − 7), care cer cel mai mult exercițiu.',
           II: 'La clasa a II-a, scăderile se fac cu numere de trei cifre. În concentrul 0–1000 programa cere scăderi fără trecere peste ordin (586 − 243), iar copilul folosește și numele termenilor: descăzut, scăzător, diferență.',
+          III: 'La clasa a III-a, scăderile ajung la numere de patru cifre, iar trecerea peste ordin poate apărea la mai multe coloane deodată, ca la 7 003 − 2 568, unde zerourile îl obligă pe copil să „împrumute” de la mii.',
+          IV: 'La clasa a IV-a, descăzutul are până la șase cifre. Fișa așază fiecare scădere pe un rând, cu numerele grupate câte trei cifre, ca elevul să vadă clar ordinele: unități, zeci, sute, mii, zeci de mii, sute de mii.',
         }),
         `Pe pagină sunt ${exercises(grid('sub', c.range as 10).count)}, pe două coloane, cu spațiu pentru rezultat; antetul are nume și dată, iar subsolul codul competenței. „Numărul care lipsește” (9 − □ = 6) e varianta pentru copiii care scad deja sigur.`,
         'Merge bine imediat după adunări: aceleași numere, operația inversă. Dacă vrei o fișă diferită pentru fiecare bancă, apeși „Alte exerciții”; dacă vrei ca cei mici să se verifice singuri, le dai la final pagina cu răspunsuri.',
@@ -149,6 +163,8 @@ export const TOPICS: Topic[] = [
         CP: 'Fișe de scăderi pentru clasa pregătitoare: 1–5 unități, numere până la 10, fără rezultat negativ. PDF de printat, cu competența din programă pe fișă.',
         I: 'Fișe de scăderi pentru clasa I, până la 100: fără și cu trecere peste ordin, plus numărul care lipsește. PDF de printat, cu pagină de răspunsuri.',
         II: 'Fișe de scăderi pentru clasa a II-a: numere de trei cifre, până la 1000, fără trecere peste ordin. PDF de printat, cu competența din programă pe fișă.',
+        III: 'Fișe de scăderi pentru clasa a III-a: numere de patru cifre, până la 10 000, cu și fără trecere peste ordin. PDF de printat, cu competența 2.4.',
+        IV: 'Fișe de scăderi pentru clasa a IV-a: numere de până la șase cifre, scrise în grupe de câte trei. PDF de printat, cu competența 2.4 și răspunsuri.',
       }),
       faq: [
         {
@@ -157,6 +173,7 @@ export const TOPICS: Topic[] = [
             CP: 'Pe fișele cu numere până la 10 nu apare.',
             I: 'La clasa I e partea cea mai grea a anului; în generator alegi fără, cu trecere sau amândouă amestecate.',
             II: 'Pe fișa clasei a II-a, în concentrul 0–1000, nu apare, cum cere programa; o poți alege din generator pentru recapitularea numerelor până la 100.',
+            default: 'La numerele mari se poate „împrumuta” de la mai multe ordine deodată (7 003 − 2 568); fișa clasei le amestecă pe cele fără și cu trecere peste ordin.',
           })}`,
         },
       ],
@@ -173,12 +190,16 @@ export const TOPICS: Topic[] = [
         CP: 'Mai mare, mai mic sau egal: semnele <, > și = cu numere până la 10.',
         I: 'Compararea numerelor până la 100, cu semnele <, > și =.',
         II: 'Compararea numerelor de trei cifre, până la 1000, cu semnele <, > și =.',
+        III: 'Compararea numerelor de patru cifre, până la 10 000, cu semnele <, > și =.',
+        IV: 'Compararea numerelor de până la șase cifre, cu semnele <, > și =.',
       }),
       body: [
         by(c, {
           CP: 'Copilul compară două numere și pune între ele semnul potrivit. Programa clasei pregătitoare cere compararea în concentrul 0–31; fișa pornește cu numere până la 10, unde copilul își poate imagina încă ușor cantitățile.',
           I: 'La clasa I, copilul compară numere de două cifre: întâi zecile, apoi, dacă zecile sunt egale, unitățile. Perechile apropiate, ca 46 și 64, arată repede dacă a înțeles ce înseamnă locul fiecărei cifre.',
           II: 'La clasa a II-a se compară numere până la 1000: întâi sutele, apoi zecile, apoi unitățile. E un exercițiu scurt, bun la începutul orei, înainte de adunări și scăderi.',
+          III: 'La clasa a III-a, numerele de comparat au patru cifre și deseori încep la fel (4 387 și 4 378), așa că elevul trebuie să ajungă până la zeci sau unități ca să decidă. Unele perechi sunt egale, ca semnul „=” să fie folosit și el.',
+          IV: 'La clasa a IV-a se compară numere de până la șase cifre: întâi numărul de cifre, apoi ordinele de la stânga la dreapta. Multe perechi au aceleași prime trei cifre (814 133 și 814 295), exact situația în care se greșește.',
         }),
         `Fișa are ${countOf(grid('cmp', c.range as 10).count, 'pereche', 'perechi')} de numere, pe două coloane, cu loc pentru semn între ele, și instrucțiunea scrisă sus: „Pune semnul potrivit: <, > sau =”.`,
         'Un sprijin folosit des la clasă: semnul e o „gură” deschisă spre numărul mai mare. Fișa se potrivește la recapitulare, ca probă de cinci minute, sau ca temă după lecția despre șirul numerelor.',
@@ -187,6 +208,8 @@ export const TOPICS: Topic[] = [
         CP: 'Fișe de comparare a numerelor pentru clasa pregătitoare: semnele <, > și = cu numere până la 10. PDF de printat, cu competența 1.2 tipărită pe fișă.',
         I: 'Fișe de comparare a numerelor pentru clasa I: perechi de numere până la 100 și semnele <, >, =. PDF de printat, cu pagină de răspunsuri.',
         II: 'Fișe de comparare a numerelor pentru clasa a II-a: numere de trei cifre, până la 1000, cu semnele <, >, =. PDF de printat, cu răspunsuri.',
+        III: 'Fișe de comparare a numerelor pentru clasa a III-a: numere de patru cifre, până la 10 000, cu semnele <, >, =. PDF de printat, cu competența 2.2.',
+        IV: 'Fișe de comparare a numerelor pentru clasa a IV-a: numere de până la șase cifre, cu aceleași cifre la început. PDF de printat, cu răspunsuri.',
       }),
       faq: [
         {
@@ -248,6 +271,8 @@ export const TOPICS: Topic[] = [
         CP: 'Numerele în ordine: șiruri cu goluri, vecinii numerelor și „Unește punctele”.',
         I: 'Șirul numerelor până la 100: numărul dinainte, cel de după și golurile din șir.',
         II: 'Numerele în ordine până la 1000: șiruri cu goluri și vecinii numerelor.',
+        III: 'Numerele în ordine până la 10 000: șiruri cu goluri, pași mari și vecinii numerelor.',
+        IV: 'Numerele în ordine până la 1 000 000: șiruri cu goluri și vecinii numerelor rotunde.',
       }),
       body: [
         by(c, {
@@ -255,6 +280,8 @@ export const TOPICS: Topic[] = [
           CP: 'Programa clasei pregătitoare cere ordonarea numerelor până la 31, folosind poziționarea pe axa numerelor. Șirurile cu goluri și vecinii numerelor exersează exact asta, iar „Unește punctele” transformă numărarea în ordine într-un desen.',
           I: 'La clasa I, copilul ordonează numerele până la 100, le așază pe axă și face estimări. Șirurile cu goluri îl pun să numere înainte și înapoi, iar vecinii îl ajută la trecerea peste zeci (39, 40, 41), unde se greșește des.',
           II: 'La clasa a II-a, ordonarea se face până la 1000. Copilul completează șiruri și scrie vecinii unor numere de trei cifre, cu atenție la trecerea peste zeci și sute (199, 200, 201).',
+          III: 'La clasa a III-a, șirurile merg din 1 în 1, din 10 în 10, din 100 în 100 sau din 1 000 în 1 000, cu numere până la 10 000. Trecerea peste mii (3 998, 3 999, 4 000) apare des, pentru că acolo greșesc cei mai mulți.',
+          IV: 'La clasa a IV-a, șirurile au numere de șase cifre și pași de 1, 100, 1 000 sau 10 000; vecinii unor numere rotunde, ca 450 000, cer trecerea peste mai multe ordine deodată (449 999 și 450 001).',
         }),
         `„Completează șirul” are ${countOf(grid('seq', c.range as 10).count, 'șir', 'șiruri')} cu goluri, iar „Vecinii numerelor” are ${countOf(grid('nbr', c.range as 10).count, 'număr', 'numere')}, fiecare cu numărul dinainte și cel de după de completat.${c.has('uneste-punctele') ? ' „Unește punctele” are un desen ascuns, care apare când copilul trage liniile în ordinea numerelor.' : ''}`,
         'Sunt fișe scurte, bune la începutul orei sau pentru copiii care termină mai repede. La recapitulare schimbi concentrul din generator și folosești aceeași fișă pe numere mai mari.',
@@ -264,6 +291,8 @@ export const TOPICS: Topic[] = [
         CP: 'Fișe cu șirul numerelor pentru clasa pregătitoare: șiruri cu goluri, vecinii numerelor și „Unește punctele”. PDF de printat, cu competența 1.3.',
         I: 'Fișe cu șirul numerelor pentru clasa I: numere până la 100 în ordine, goluri de completat și vecini. PDF de printat, cu competența 1.3 pe fișă.',
         II: 'Fișe cu șirul numerelor pentru clasa a II-a: numere până la 1000, șiruri cu goluri și vecinii numerelor. PDF de printat, cu competența 1.3.',
+        III: 'Fișe cu șirul numerelor pentru clasa a III-a: șiruri până la 10 000, din 1, 10, 100 sau 1000 în 1000, și vecini. PDF de printat, cu competența 2.3.',
+        IV: 'Fișe cu șirul numerelor pentru clasa a IV-a: numere de șase cifre în ordine, șiruri cu goluri și vecini. PDF de printat, cu competența 2.3.',
       }),
       faq: [
         {
@@ -320,26 +349,36 @@ export const TOPICS: Topic[] = [
     phrase: 'Fișe probleme',
     label: 'Probleme',
     area: 'mem',
-    presets: [p('mate-probleme')],
+    presets: [p('mate-probleme'), p('probleme-34')],
     copy: (c) => ({
       lead: by(c, {
         CP: 'Probleme scurte de adunare și scădere cu 1–5 unități, cu obiectele desenate.',
         I: 'Probleme de adunare și scădere până la 100, cu o operație și cu două operații.',
         II: 'Probleme de tipul a ± b = x și a ± b ± c = x, cu numere până la 1000.',
+        III: 'Probleme cu două operații: „cu … mai mult”, „de … ori mai mult”, și o problemă de compus.',
+        IV: 'Probleme rezolvate prin metoda grafică, mersul invers și metoda comparației, cu numere mari.',
       }),
       body: [
         by(c, {
           CP: 'La clasa pregătitoare, problemele se rezolvă cu ajutorul obiectelor: „În coș sunt 4 mere. Mai punem 2. Câte mere sunt acum?”. Obiectele sunt desenate lângă text, ca cel mic să le poată număra, iar numărul adăugat sau luat e mereu între 1 și 5.',
           I: 'La clasa I, copilul rezolvă probleme simple de adunare sau scădere până la 100, cu sprijin în imagini. Pe fișă, ultima problemă cere două operații, pasul pe care programa îl pregătește pentru clasa a II-a.',
           II: 'La clasa a II-a, problemele au numere până la 1000 și pot cere două operații (a ± b ± c = x). Copilul citește enunțul, scrie rezolvarea în căsuțe și formulează răspunsul pe rândul de la final.',
+          III: 'La clasa a III-a, problemele cer două operații, iar enunțul ascunde operația în cuvinte: „cu 48 mai mulți” înseamnă adunare, „de 4 ori mai multe” înseamnă înmulțire. Programa adaugă metoda reprezentării grafice și compunerea de probleme, așa că ultima cerință îl pune pe elev să inventeze el o problemă după un exercițiu dat.',
+          IV: 'La clasa a IV-a, programa numește metodele: reprezentarea grafică (suma și diferența a două numere), mersul invers („m-am gândit la un număr…”) și metoda comparației (3 caiete și 2 pixuri, 3 caiete și 5 pixuri). Fiecare fișă are câte o problemă pentru fiecare metodă.',
         }),
-        'Fiecare problemă are una-două propoziții și întrebarea, fără nume de copii, ca să se potrivească oricărei clase. Sub ea sunt căsuțele „Rezolvare:” și rândul „Răspuns: ____”; când obiectele sunt puține, sunt desenate pe rând, altfel apare câte o imagine pentru fiecare număr.',
+        by(c, {
+          default: 'Fiecare problemă are una-două propoziții și întrebarea, fără nume de copii, ca să se potrivească oricărei clase. Sub ea sunt căsuțele „Rezolvare:” și rândul „Răspuns: ____”; când obiectele sunt puține, sunt desenate pe rând, altfel apare câte o imagine pentru fiecare număr.',
+          III: 'Sub fiecare problemă e un câmp de pătrățele, ca în caietul de matematică, pentru rezolvare și răspuns. Pe pagina cu răspunsuri e scrisă rezolvarea pas cu pas, cu planul („câți peri sunt?”, apoi „câți pomi sunt?”), nu doar rezultatul.',
+          IV: 'Pătrățelele de sub probleme lasă loc pentru desenul cu segmente și pentru calcul. Rezolvările de pe pagina cu răspunsuri numesc metoda și arată fiecare pas, ca să poată fi discutate la tablă.',
+        }),
         'Fișa e potrivită după ce problemele au fost lucrate oral și cu obiecte. Învățătorii o folosesc și ca temă: părintele citește enunțul cu voce tare, iar copilul scrie rezolvarea singur.',
       ],
       description: by(c, {
         CP: 'Fișe cu probleme pentru clasa pregătitoare: adunări și scăderi cu 1–5 unități, cu obiectele desenate. PDF de printat, cu competența 5.2 pe fișă.',
         I: 'Fișe cu probleme pentru clasa I: adunare și scădere până la 100, cu imagini, rezolvare și răspuns. PDF de printat, cu pagină de răspunsuri.',
         II: 'Fișe cu probleme pentru clasa a II-a: a ± b = x și a ± b ± c = x, până la 1000, cu rezolvare și răspuns. PDF de printat, cu competența 5.2.',
+        III: 'Fișe cu probleme pentru clasa a III-a: două operații, „cu … mai mult”, „de … ori mai mult”, o problemă de compus. PDF cu rezolvările.',
+        IV: 'Fișe cu probleme pentru clasa a IV-a: metoda grafică, mersul invers, metoda comparației, numere mari. PDF de printat, cu rezolvările pas cu pas.',
       }),
       faq: [
         {
@@ -359,18 +398,21 @@ export const TOPICS: Topic[] = [
       lead: by(c, {
         I: 'Citește ora pe ceas și desenează acele: ora fixă și jumătatea de oră.',
         II: 'Ceasul până la minut: ore fixe, jumătăți, sferturi și din 5 în 5 minute.',
+        III: 'Citirea ceasului din 5 în 5 minute și desenarea acelor, ca recapitulare și pentru măsurarea timpului.',
       }),
       body: [
         by(c, {
           I: 'Programa clasei I pune ceasul la „ora fixă” și „jumătatea de oră”. Copilul învață că acul mic arată ora, iar acul mare, când stă la 6, arată jumătatea: „ora 3 și jumătate”.',
           II: 'La clasa a II-a, programa adaugă sfertul de oră și minutele: 1 oră are 60 de minute, iar acul mare se citește din 5 în 5. Copilul spune „4 fără un sfert” sau „3 și 20 de minute” și scrie ora în cifre.',
+          III: 'Programa clasei a III-a are ceasul printre instrumentele de măsură, cu „ora (citirea ceasului), ziua, săptămâna, anul”. Elevii care încă ezită la minute își consolidează citirea, iar ceilalți folosesc ceasul ca să măsoare cât durează o activitate.',
         }),
-        `Fișa „Cât este ceasul?” are șase ceasuri, cu cifrele de la 1 la 12, acul orelor scurt și gros și acul minutelor lung și subțire; copilul scrie ora sub fiecare. „Desenează acele ceasului” e invers: ora e scrisă, iar acele le desenează el.${c.level === 'II' ? ' Fișa clasei a II-a pornește din 5 în 5 minute; în generator poți coborî la sferturi, la jumătăți sau la ore fixe.' : ''}`,
+        `Fișa „Cât este ceasul?” are șase ceasuri, cu cifrele de la 1 la 12, acul orelor scurt și gros și acul minutelor lung și subțire; copilul scrie ora sub fiecare. „Desenează acele ceasului” e invers: ora e scrisă, iar acele le desenează el.${c.level === 'II' || c.level === 'III' ? ` Fișa clasei ${c.level === 'II' ? 'a II-a' : 'a III-a'} pornește din 5 în 5 minute; în generator poți coborî la sferturi, la jumătăți sau la ore fixe.` : ''}`,
         'Ceasul se învață mai ușor cu un ceas adevărat sau din carton pe bancă. Fișa vine după, ca să fixeze: întâi citirea orei, apoi desenarea acelor, care cere mai multă atenție.',
       ],
       description: by(c, {
         I: 'Fișe cu ceasul pentru clasa I: citește ora și desenează acele, la ore fixe și jumătăți, ca în programă. PDF de printat, cu competența 6.2 pe fișă.',
         II: 'Fișe cu ceasul pentru clasa a II-a: ore fixe, jumătăți, sferturi și minute din 5 în 5, de citit și de desenat. PDF de printat, cu competența 6.2.',
+        III: 'Fișe cu ceasul pentru clasa a III-a: citește ora din 5 în 5 minute și desenează acele, ca instrument de măsură. PDF de printat, cu competența 4.1.',
       }),
       faq: [
         {
@@ -387,15 +429,25 @@ export const TOPICS: Topic[] = [
     area: 'mem',
     presets: [p('mate-inmultiri'), p('mate-factor-lipsa'), p('mate-grupe', 'II')],
     copy: (c) => ({
-      lead: by(c, { II: 'Tabla înmulțirii cu 2–10, o tablă aleasă sau toate amestecate, produse până la 100.' }),
+      lead: by(c, {
+        II: 'Tabla înmulțirii cu 2–10, o tablă aleasă sau toate amestecate, produse până la 100.',
+        III: 'Tabla înmulțirii recapitulată: o tablă aleasă sau toate amestecate, plus factorul care lipsește.',
+      }),
       body: [
-        'La clasa a II-a, înmulțirea se învață ca adunare repetată: 3 · 4 înseamnă 4 + 4 + 4. Programa cere înmulțiri în concentrul 0–100, de aceea pe fișă sunt doar produse din tablele 2–10, cu factori de la 1 la 10.',
+        by(c, {
+          II: 'La clasa a II-a, înmulțirea se învață ca adunare repetată: 3 · 4 înseamnă 4 + 4 + 4. Programa cere înmulțiri în concentrul 0–100, de aceea pe fișă sunt doar produse din tablele 2–10, cu factori de la 1 la 10.',
+          III: 'La clasa a III-a, tabla înmulțirii trebuie să fie sigură, pentru că pe ea se sprijină înmulțirea cu numere mari și împărțirea. Programa clasei o numește direct („înmulțirea a două numere de o cifră (tabla înmulțirii)”), iar fișele o exersează în ordine și amestecat.',
+        }),
         `Pe fișa „Înmulțiri” sunt ${exercises(20)}. Când alegi o singură tablă (de exemplu tabla cu 3), prima coloană o ia în ordine, de la 3 · 1 la 3 · 10, iar a doua are aceleași înmulțiri amestecate, ca să nu fie învățate doar pe de rost, în șir.`,
-        '„Grupe egale” e calea de intrare: grupele desenate se numără, apoi se scrie adunarea și înmulțirea (3 grupe a câte 4: 4 + 4 + 4 = 12, 3 · 4 = 12). „Numărul lipsă” (3 · □ = 12) vine la final, când tabla e știută și copilul o poate folosi invers.',
+        by(c, {
+          II: '„Grupe egale” e calea de intrare: grupele desenate se numără, apoi se scrie adunarea și înmulțirea (3 grupe a câte 4: 4 + 4 + 4 = 12, 3 · 4 = 12). „Numărul lipsă” (3 · □ = 12) vine la final, când tabla e știută și copilul o poate folosi invers.',
+          III: '„Numărul lipsă” (3 · □ = 12) leagă tabla de împărțire și de aflarea numărului necunoscut, iar fișa „Înmulțirea în coloană” duce mai departe, la înmulțiri cu 10, 100 și cu numere de două cifre.',
+        }),
         'Un ritm folosit des: o tablă pe săptămână, cu fișa în ordine luni și cea amestecată vineri. Pagina cu răspunsuri îl lasă pe copil să se verifice singur acasă.',
       ],
       description: by(c, {
         II: 'Fișe cu tabla înmulțirii pentru clasa a II-a: tablele 2–10 în ordine sau amestecate, grupe egale și numărul lipsă. PDF de printat, cu răspunsuri.',
+        III: 'Fișe cu tabla înmulțirii pentru clasa a III-a: tablele 2–10 în ordine sau amestecate și factorul care lipsește. PDF de printat, cu competența 2.5.',
       }),
       faq: [
         {
@@ -410,21 +462,35 @@ export const TOPICS: Topic[] = [
     phrase: 'Fișe împărțiri',
     label: 'Împărțiri',
     area: 'mem',
-    presets: [p('mate-impartiri'), p('mate-factor-lipsa')],
+    presets: [p('mate-impartiri'), p('mate-factor-lipsa'), p('impartire-34')],
     copy: (c) => ({
-      lead: by(c, { II: 'Împărțiri exacte din tabla împărțirii, cu numere până la 100.' }),
+      lead: by(c, {
+        II: 'Împărțiri exacte din tabla împărțirii, cu numere până la 100.',
+        III: 'Tabla împărțirii și împărțiri de numere de două cifre la o cifră, cu rest 0.',
+        IV: 'Împărțiri la un număr de o cifră sau de două cifre, cu rest și fără rest, cu proba.',
+      }),
       body: [
-        'La clasa a II-a, împărțirea se învață ca scădere repetată și ca operația inversă înmulțirii: 12 : 3 = 4, pentru că 3 · 4 = 12. Programa cere împărțiri cu rest 0 în concentrul 0–100, așa că fiecare exercițiu de pe fișă se împarte exact.',
+        by(c, {
+          II: 'La clasa a II-a, împărțirea se învață ca scădere repetată și ca operația inversă înmulțirii: 12 : 3 = 4, pentru că 3 · 4 = 12. Programa cere împărțiri cu rest 0 în concentrul 0–100, așa că fiecare exercițiu de pe fișă se împarte exact.',
+          III: 'La clasa a III-a, împărțirea rămâne în concentrul 0–100: tabla împărțirii, dedusă din tabla înmulțirii, și împărțiri ca 84 : 4, în care numărul se poate descompune (80 : 4 + 4 : 4). Toate exercițiile au rest 0, iar o cerință pune elevul să verifice prin înmulțire.',
+          IV: 'La clasa a IV-a, programa cere împărțirea numerelor mai mici de un milion la un număr de cel mult două cifre, cu rest zero sau diferit de zero, și împărțirea cu 10, 100, 1 000. Fișa are câte două împărțiri la o cifră și la două cifre, de lucrat pe pătrățele, cu proba: cât · împărțitor + rest = deîmpărțit.',
+        }),
         `Pe fișa „Împărțiri” sunt ${exercises(20)}, toate din tablele 2–10. Dacă alegi o singură tablă, prima coloană o ia în ordine (3 : 3, 6 : 3 … 30 : 3), iar a doua amestecă aceleași împărțiri.`,
         '„Numărul lipsă la înmulțire și împărțire” (□ : 4 = 5, 12 : □ = 4) leagă cele două operații și e bun pentru recapitulare. Fișa vine după ce copilul a împărțit obiecte reale în grupe egale și știe tabla înmulțirii pe care o folosește.',
       ],
       description: by(c, {
         II: 'Fișe cu împărțiri pentru clasa a II-a: împărțiri exacte din tablele 2–10, numere până la 100, și numărul lipsă. PDF de printat, cu competența 1.5.',
+        III: 'Fișe cu împărțiri pentru clasa a III-a: tabla împărțirii, numere de două cifre la o cifră, verificarea prin înmulțire. PDF de printat, cu răspunsuri.',
+        IV: 'Fișe cu împărțiri pentru clasa a IV-a: la o cifră și la două cifre, cu rest, pe pătrățele, cu proba. PDF de printat, cu competența 2.5 și răspunsuri.',
       }),
       faq: [
         {
           q: 'Pe fișă apar împărțiri cu rest?',
-          a: 'Nu. Programa clasei a II-a cere împărțirea cu rest 0, așa că toate exercițiile se împart exact. Împărțirea cu rest vine în clasele următoare.',
+          a: by(c, {
+            II: 'Nu. Programa clasei a II-a cere împărțirea cu rest 0, așa că toate exercițiile se împart exact. Împărțirea cu rest vine în clasele următoare.',
+            III: 'Nu. La clasa a III-a, programa cere tot împărțiri cu rest 0, în concentrul 0–100. Împărțirea cu rest este conținut al clasei a IV-a.',
+            IV: 'Da. La clasa a IV-a, programa cere împărțiri cu rest zero sau diferit de zero; pe fișă, restul se scrie lângă cât, iar pe pagina cu răspunsuri sunt câtul și restul fiecărei împărțiri.',
+          }),
         },
       ],
     }),
@@ -468,13 +534,15 @@ export const TOPICS: Topic[] = [
     phrase: 'Fișe măsurări',
     label: 'Măsurări',
     area: 'mem',
-    presets: [p('mate-lungimi'), p('mate-balanta'), p('mate-rigla'), p('mate-unitati')],
+    presets: [p('mate-lungimi'), p('mate-balanta'), p('mate-rigla'), p('mate-unitati'), p('unitati-masura-34'), p('timp-bani-34')],
     copy: (c) => ({
       lead: by(c, {
         presc: 'Lung și scurt, greu și ușor: măsurăm cu cuburi și comparăm pe balanță.',
         CP: 'Lungimi măsurate cu cuburi sau agrafe: cel mai lung, cel mai scurt.',
         I: 'Lungimi în unități neconvenționale și în centimetri, cu rigla.',
         II: 'Lungimi, mase și capacități: cuburi, balanța, rigla și unitățile de măsură.',
+        III: 'Metrul, kilogramul și litrul cu multiplii și submultiplii, timpul, leul și euro, fără transformări.',
+        IV: 'Transformări de lungime, masă și capacitate (inclusiv tona și chintalul), intervale de timp și bani.',
       }),
       body: [
         by(c, {
@@ -482,6 +550,8 @@ export const TOPICS: Topic[] = [
           CP: 'La clasa pregătitoare, lungimile se măsoară cu unități neconvenționale: cuburi, agrafe, palme. Copilul numără câte unități are fiecare obiect desenat, apoi spune care e cel mai lung și care e cel mai scurt.',
           I: 'La clasa I, copilul măsoară întâi cu cuburi sau agrafe, apoi cunoaște centimetrul și rigla. Pe fișa cu rigla citește lungimi în centimetri și desenează linii de o lungime dată, cu rigla lui.',
           II: 'La clasa a II-a, programa cere măsurarea lungimilor, a maselor și a capacităților și cunoașterea unităților: metrul, centimetrul, litrul, mililitrul, kilogramul, gramul. Fișele merg de la balanță și cuburi la unitățile de măsură și instrumentele lor.',
+          III: 'La clasa a III-a, unitățile de măsură se folosesc fără transformări: elevul alege unitatea potrivită (8 m pentru clasă, 15 cm pentru creion), calculează 35 cm + 48 cm și potrivește instrumentul cu ce măsoară. A doua fișă are ziua, săptămâna, anul, leul și banul, euro și eurocentul.',
+          IV: 'La clasa a IV-a, programa cere operarea cu unități de măsură folosind transformări: 3 km = 3 000 m, 2 t = 2 000 kg, 4 hl = 400 l. Fișele au transformări simple și compuse (3 m 45 cm = 345 cm), comparări și o problemă, apoi intervale de timp și bani.',
         }),
         'Desenele sunt făcute să nu lase loc de dubii: obiectele încep exact unde încep unitățile și se termină la marginea unei unități, iar două obiecte de pe aceeași fișă nu au niciodată aceeași lungime.',
         'Măsurarea se face întâi cu obiecte reale, pe bancă sau pe covor. Fișa vine după, ca să verifice dacă copilul numără corect unitățile și dacă poate compara rezultatele.',
@@ -491,6 +561,8 @@ export const TOPICS: Topic[] = [
         CP: 'Fișe de măsurare pentru clasa pregătitoare: lungimi măsurate cu cuburi sau agrafe, cel mai lung și cel mai scurt. PDF de printat, cu competența 6.1.',
         I: 'Fișe de măsurare pentru clasa I: lungimi cu cuburi sau agrafe și în centimetri, cu rigla. PDF de printat, cu competențele din programă pe fișă.',
         II: 'Fișe de măsurare pentru clasa a II-a: lungimi, mase, capacități, rigla și unitățile de măsură (m, cm, l, ml, kg, g). PDF de printat, cu răspunsuri.',
+        III: 'Fișe cu unități de măsură pentru clasa a III-a: lungime, masă, capacitate, timp, lei și euro, fără transformări. PDF de printat, cu răspunsuri.',
+        IV: 'Fișe cu unități de măsură pentru clasa a IV-a: transformări de lungime, masă, capacitate, intervale de timp și bani. PDF de printat, cu răspunsuri.',
       }),
       faq: [
         {
@@ -1147,18 +1219,22 @@ export const TOPICS: Topic[] = [
     phrase: 'Evaluare matematică',
     label: 'Evaluare la matematică',
     area: 'eval',
-    presets: [p('evaluare-mate')],
+    presets: [p('evaluare-mate'), p('evaluare-mate-34')],
     copy: (c) => ({
       lead: by(c, {
         CP: 'Comparare, adunări și scăderi, probleme cu imagini și bani, pe 2–3 pagini, cu răspunsuri.',
         I: 'Numere până la 100: comparare, adunări și scăderi, probleme și bani, cu răspunsuri.',
         II: 'Numere până la 1000, tabla înmulțirii, ceasul și probleme, cu răspunsuri.',
+        III: 'Numere până la 10 000, cifre romane, rotunjire, ordinea operațiilor, fracții și o problemă.',
+        IV: 'Numere până la un milion, cifre romane, rotunjire, paranteze, înmulțire, fracții și o problemă.',
       }),
       body: [
         by(c, {
           CP: 'Evaluarea adună câteva exerciții din fiecare temă a clasei pregătitoare: compararea numerelor, adunări și scăderi, o problemă cu obiecte desenate și banii. Numerele sunt până la 10, ca evaluarea să verifice înțelegerea, nu viteza de calcul.',
           I: 'Evaluarea pentru clasa I are compararea numerelor până la 100, adunări și scăderi, probleme simple și bani. E potrivită la finalul unei unități sau ca evaluare sumativă de modul.',
           II: 'Evaluarea pentru clasa a II-a are compararea numerelor până la 1000, adunări și scăderi fără trecere peste ordin, numărul care lipsește, tabla înmulțirii, ceasul cu sferturi și minute și o problemă.',
+          III: 'Evaluarea pentru clasa a III-a are șapte itemi, luați din fișele clasei: numere scrise cu litere de trecut în cifre, cifre romane, rotunjire la sute, exerciții cu paranteze, înmulțiri cu 10 și 100, fracții scrise cu litere și o problemă cu două operații, cu loc de rezolvare pe pătrățele.',
+          IV: 'Evaluarea pentru clasa a IV-a verifică numerele până la un milion, cifrele romane L, C, D, M, rotunjirea la mii, ordinea operațiilor cu paranteze, înmulțirea cu 10, 100, 1 000, fracțiile și o problemă rezolvată prin metoda grafică.',
         }),
         'Fiecare temă devine un item numerotat („1. Compară numerele.”), cu câteva exerciții. Antetul spune disciplina și clasa, ultima pagină poate avea un rând de autoevaluare, iar pagina de răspunsuri se tipărește mereu, cu un tabel orientativ de calificative (FB, B, S, I) după numărul de răspunsuri corecte.',
         'Tabelul de calificative e orientativ: îl adaptezi descriptorilor de performanță ai clasei tale. Cu „Alte exerciții” faci o a doua variantă, cu aceleași cerințe, pentru colegul de bancă.',
@@ -1167,6 +1243,8 @@ export const TOPICS: Topic[] = [
         CP: 'Evaluare la matematică pentru clasa pregătitoare: comparare, adunări, scăderi, probleme și bani, cu răspunsuri și calificative orientative. PDF de printat.',
         I: 'Evaluare la matematică pentru clasa I: numere până la 100, adunări, scăderi, probleme și bani, cu răspunsuri și calificative orientative. PDF de printat.',
         II: 'Evaluare la matematică pentru clasa a II-a: numere până la 1000, tabla înmulțirii, ceasul, probleme, cu răspunsuri și calificative. PDF de printat.',
+        III: 'Evaluare la matematică pentru clasa a III-a: numere până la 10 000, cifre romane, rotunjire, paranteze, fracții, o problemă; cu calificative. PDF.',
+        IV: 'Evaluare la matematică pentru clasa a IV-a: numere până la un milion, paranteze, înmulțire, fracții, o problemă; răspunsuri și calificative. PDF.',
       }),
       faq: [
         {
@@ -1265,4 +1343,6 @@ export const TOPICS: Topic[] = [
       ],
     }),
   },
+  // clasa a III-a și a IV-a: the topics of Limba și literatura română and Matematică that exist only there
+  ...TOPICS_34,
 ];

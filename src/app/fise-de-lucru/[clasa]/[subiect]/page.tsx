@@ -45,7 +45,7 @@ export default function LandingTopicPage({ params }: { params: { clasa: string; 
               <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight text-ink">
                 {/* „clasa I” / „clasa a II-a” never break before the numeral */}
                 {p.h1.slice(0, -CLASS_NAME[p.level].length)}
-                <span className={p.level === 'I' || p.level === 'II' ? 'whitespace-nowrap' : undefined}>{CLASS_NAME[p.level]}</span>
+                <span className={p.level === 'I' || p.level === 'II' || p.level === 'III' || p.level === 'IV' ? 'whitespace-nowrap' : undefined}>{CLASS_NAME[p.level]}</span>
               </h1>
               <p className="text-lg sm:text-xl leading-relaxed text-slate-700 max-w-xl">{p.lead}</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-1">

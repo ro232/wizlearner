@@ -18,6 +18,8 @@ import { exploreItems, exploreShortLabel } from '@/lib/worksheet/explore-pages';
 import { SUBJECT_KIND_TITLES, subjectItems, subjectShortLabel } from '@/lib/worksheet/subjects-pages';
 import { CLR_KIND_TITLES, clrItems, clrShortLabel } from '@/lib/worksheet/clr-pages';
 import { MEM_KIND_TITLES, memItems, memShortLabel } from '@/lib/worksheet/mem-pages';
+import { M34_KIND_TITLES, m34Items, m34ShortLabel } from '@/lib/worksheet/m34-pages';
+import { R34_KIND_TITLES, r34Items, r34ShortLabel } from '@/lib/worksheet/r34-pages';
 import { readingSetLevel } from '@/lib/worksheet/reading';
 import { Button } from '@/components/ui/button';
 import { MathPicker } from './math-picker';
@@ -27,6 +29,9 @@ import { Lock, RotateCcw, Plus, X, ChevronDown, UserRound } from 'lucide-react';
 import { isCursive } from '@/lib/worksheet/layout';
 import { cleanWord } from '@/stores/sanitize-config';
 import { alese } from './plural';
+
+/** The groups of „Jocuri” written for clasa a III-a and a IV-a (r34-pages.ts, m34-pages.ts). */
+const UPPER_GROUP = /^(Limba română|Matematică): /;
 
 interface GeneratorControlsProps {
   onShowPaywall: () => void;
@@ -93,13 +98,14 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       case 'prewrite':
         return [...PATTERN_IDS];
       case 'games':
-        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems(), ...readingItems(), ...funItems(), ...exploreItems(), ...clrItems(), ...memItems(), ...subjectItems()];
+        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems(), ...readingItems(), ...funItems(), ...exploreItems(), ...clrItems(), ...memItems(), ...subjectItems(), ...r34Items(), ...m34Items()];
       default:
         return [];
     }
   })();
 
   const isFree = (item: string) => isItemAllowed(item, config.category, tier);
+  const upper = config.curriculumLevel === 'III' || config.curriculumLevel === 'IV';
   const usable = allItems.filter(isFree);
 
   const handleItemClick = (item: string) => {
@@ -276,7 +282,38 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                 ['pict', 'Numără, colorează câte o căsuță pentru fiecare, apoi spune din care sunt mai multe (grădiniță).'],
                 ['more', 'Mai repede, mai cald, mai sus, mai întâi: încercuiește imaginea (grădiniță).'],
               ] as const).map(([kind, text]) => ({ title: `Matematică și explorare: ${MEM_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: memShortLabel })),
-            ].map((group) => (
+              // Limba și literatura română, clasa a III-a și a IV-a (r34-pages.ts)
+              ...([
+                ['lect', 'Un text scris pentru fișă (poveste sau text informativ) și întrebări pe două pagini: detalii, adevărat/fals, ordinea, părerea ta.'],
+                ['aud', 'Învățătorul citește povestea de pe pagina lui; elevii răspund pe fișă: detalii, sensul unui cuvânt, adevărat/fals.'],
+                ['parti', 'Substantiv, adjectiv, pronume personal, verb, dintr-un text scurt; numărul, timpul, subiectul și predicatul.'],
+                ['orto', 's-a/sa, s-au/sau, i-a/ia, i-au/iau, l-a/la, v-a/va, ce-a/cea, ce-i/cei, s-ar/sar, n-ai/nai, ne-am/neam.'],
+                ['punct', 'Punctul, semnul întrebării, al exclamării, virgula, două puncte și linia de dialog.'],
+                ['voc', 'Cuvinte cu înțeles asemănător, opus și cuvinte cu mai multe înțelesuri (fără cod din programă).'],
+                ['comp', 'Planul compunerii și rândurile caietului: întâmplare, descriere, portret, poveste cu început dat.'],
+                ['func', 'Invitația, afișul, scrisoarea, anunțul și biletul, de completat pe formular.'],
+                ['dict', 'Propoziții cu goluri pentru cuvintele dictate și rânduri pentru propozițiile întregi.'],
+                ['carte', 'Fișa cărții citite și jurnalul de lectură.'],
+              ] as const).map(([kind, text]) => ({ title: `Limba română: ${R34_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: r34ShortLabel })),
+              // Matematică, clasa a III-a și a IV-a (m34-pages.ts)
+              ...([
+                ['nr', 'Numere până la 10 000 și până la 1 000 000: cu cifre și litere, compară, ordonează.'],
+                ['rom', 'I, V, X (clasa a III-a); L, C, D, M (clasa a IV-a).'],
+                ['rot', 'La zeci, sute, mii; la clasa a IV-a și la zeci și sute de mii.'],
+                ['ops', 'Ordinea efectuării operațiilor, paranteze rotunde și pătrate.'],
+                ['inm', 'Înmulțirea și împărțirea în coloană, pe pătrățele; împărțirea cu rest.'],
+                ['prob', 'Probleme cu două operații, metoda grafică, mersul invers, comparația; o problemă de compus.'],
+                ['fr', 'Fracții: părți colorate, comparare, adunare și scădere, sutimi și procente.'],
+                ['per', 'Perimetrul pătratului, dreptunghiului, triunghiului; aria pe pătrățele de 1 cm.'],
+                ['geo', 'Dreaptă, semidreaptă, segment; unghiuri drepte, ascuțite, obtuze; paralele și perpendiculare.'],
+                ['mas', 'Unități de măsură: alegere, calcule, transformări; timpul și banii (lei, euro).'],
+                ['date', 'Tabelul și graficul cu bare de desenat; grafice cu bare și liniare de citit.'],
+                ['sir', 'Șiruri după o regulă: continuă, găsește regula, inventează una.'],
+              ] as const).map(([kind, text]) => ({ title: `Matematică: ${M34_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: m34ShortLabel })),
+            ]
+              // clasa a III-a / a IV-a chosen: their sheets first, the long list of the younger classes after them
+              .sort((a, b) => (upper ? Number(UPPER_GROUP.test(b.title)) - Number(UPPER_GROUP.test(a.title)) : 0))
+              .map((group) => (
               <div key={group.title}>
                 <div className="font-extrabold text-ink">{group.title}</div>
                 <div className="text-xs text-slate-600 mb-2">{group.text} O pagină pentru fiecare.</div>

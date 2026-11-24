@@ -101,7 +101,7 @@ export function parseGroupDraft(raw: string | null): GroupDraft | null {
       script: r.script === 'cursive' ? 'cursive' : 'print',
       difficulty: isDifficulty(r.difficulty) ? r.difficulty : 'beginner',
       withFind: r.withFind !== false,
-      ...(r.curriculumLevel === 'presc' || r.curriculumLevel === 'CP' || r.curriculumLevel === 'I' || r.curriculumLevel === 'II'
+      ...(r.curriculumLevel === 'presc' || r.curriculumLevel === 'CP' || r.curriculumLevel === 'I' || r.curriculumLevel === 'II' || r.curriculumLevel === 'III' || r.curriculumLevel === 'IV'
         ? { curriculumLevel: r.curriculumLevel }
         : {}),
     };

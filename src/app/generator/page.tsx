@@ -24,6 +24,7 @@ import { useWorksheets } from '@/hooks/use-worksheets';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/toast';
 import { presetById, presetConfig } from '@/lib/curriculum/presets';
+import { isSchoolLevel } from '@/lib/curriculum/sheet';
 import { sanitizeConfig } from '@/stores/sanitize-config';
 import { HomeworkButton, type HomeworkRequest } from '@/components/homework/homework-dialog';
 import { nameRowIndex } from '@/lib/homework/pages';
@@ -81,7 +82,7 @@ export default function GeneratorPage() {
     const params = new URLSearchParams(window.location.search);
     const preset = presetById(params.get('fisa') ?? '');
     const level = params.get('clasa');
-    if (!preset || !(level === 'presc' || level === 'CP' || level === 'I' || level === 'II')) return;
+    if (!preset || !isSchoolLevel(level)) return;
     const apply = () => {
       const { childName } = useWorksheetStore.getState().config;
       useWorksheetStore.setState({ nameSlot: null, config: sanitizeConfig({ ...presetConfig(preset, level), childName }) });

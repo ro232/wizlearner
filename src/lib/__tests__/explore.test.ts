@@ -224,7 +224,7 @@ describe('the competences', () => {
   const codes = (item: string, level: SchoolLevel) => sheetCompetences(games([item]), level).map((r) => (r.domain ? `${r.domain}.${r.code}` : r.code));
 
   it('each kind prints the codes of its class only', () => {
-    const table: Record<string, Record<SchoolLevel, string[]>> = {
+    const table: Record<string, Partial<Record<SchoolLevel, string[]>>> = {
       'plant:1': { presc: ['E.3.2'], CP: ['4.1'], I: [], II: [] },
       'body:1': { presc: ['E.3.2'], CP: ['4.1'], I: [], II: [] },
       'senses:1': { presc: ['E.3.2'], CP: ['4.1'], I: [], II: [] },

@@ -64,16 +64,16 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'citire-text', title: 'Citește și răspunde', text: 'Un text scurt și trei întrebări despre el.', config: { category: 'games', selectedItems: ['read:text:1'] }, byLevel: { II: { selectedItems: ['read:text:4'] } }, levels: ['I', 'II'] },
   // Înmulțire și împărțire, ceasul, calendarul, măsurări, figuri (multiply.ts … figures.ts)
   { id: 'mate-grupe', title: 'Grupe egale', text: '3 grupe a câte 4: 4 + 4 + 4; la clasa a II-a și 3 · 4.', config: { category: 'math', selectedItems: ['groups'] }, levels: ['CP', 'I', 'II'] },
-  { id: 'mate-inmultiri', title: 'Înmulțiri', text: 'Tabla înmulțirii: una aleasă (2–10) sau toate amestecate.', config: { category: 'math', selectedItems: ['mul'] }, levels: ['II'] },
-  { id: 'mate-impartiri', title: 'Împărțiri', text: 'Împărțiri exacte din tabla împărțirii, numere până la 100.', config: { category: 'math', selectedItems: ['div'] }, levels: ['II'] },
-  { id: 'mate-factor-lipsa', title: 'Numărul lipsă la înmulțire și împărțire', text: '3 · □ = 12, □ : 4 = 5.', config: { category: 'math', selectedItems: ['mulmiss'] }, levels: ['II'] },
+  { id: 'mate-inmultiri', title: 'Înmulțiri', text: 'Tabla înmulțirii: una aleasă (2–10) sau toate amestecate.', config: { category: 'math', selectedItems: ['mul'] }, levels: ['II', 'III'] },
+  { id: 'mate-impartiri', title: 'Împărțiri', text: 'Împărțiri exacte din tabla împărțirii, numere până la 100.', config: { category: 'math', selectedItems: ['div'] }, levels: ['II', 'III'] },
+  { id: 'mate-factor-lipsa', title: 'Numărul lipsă la înmulțire și împărțire', text: '3 · □ = 12, □ : 4 = 5.', config: { category: 'math', selectedItems: ['mulmiss'] }, levels: ['II', 'III'] },
   {
     id: 'mate-ceas', title: 'Cât este ceasul?', text: 'Citește ora pe ceas și scrie-o: ora fixă și jumătatea; la clasa a II-a și sferturi, minute.',
-    config: { category: 'math', selectedItems: ['clock'] }, levels: ['I', 'II'], byLevel: { I: { mathClock: 'half' }, II: { mathClock: 'five' } },
+    config: { category: 'math', selectedItems: ['clock'] }, levels: ['I', 'II', 'III'], byLevel: { I: { mathClock: 'half' }, II: { mathClock: 'five' }, III: { mathClock: 'five' } },
   },
   {
     id: 'mate-ceas-acele', title: 'Desenează acele ceasului', text: 'Ora scrisă sub ceas, acele de desenat.',
-    config: { category: 'math', selectedItems: ['clockdraw'] }, levels: ['I', 'II'], byLevel: { I: { mathClock: 'half' }, II: { mathClock: 'five' } },
+    config: { category: 'math', selectedItems: ['clockdraw'] }, levels: ['I', 'II', 'III'], byLevel: { I: { mathClock: 'half' }, II: { mathClock: 'five' }, III: { mathClock: 'five' } },
   },
   { id: 'mate-saptamana', title: 'Zilele săptămânii', text: 'Zilele în ordine, ziua de după și cea dinainte, ieri și mâine.', config: { category: 'math', selectedItems: ['week'] }, levels: ['CP', 'I', 'II'] },
   { id: 'mate-luni', title: 'Lunile anului și anotimpurile', text: 'Lunile și anotimpurile în ordine, anotimpul fiecărei luni.', config: { category: 'math', selectedItems: ['months'] }, levels: ['I', 'II'] },
@@ -117,12 +117,12 @@ export const SHEET_PRESETS: SheetPreset[] = [
     config: { category: 'games', selectedItems: ['terms:1'] }, byLevel: { I: { selectedItems: ['terms:3'] }, II: { selectedItems: ['terms:5'] } }, levels: ['CP', 'I', 'II'],
   },
   { id: 'formeaza-numarul', title: 'Formează numărul', text: 'Sute, zeci, unități desenate; numere până la 1000 scrise cu cifre și cu litere.', config: { category: 'games', selectedItems: ['place:1'] }, levels: ['II'] },
-  { id: 'coordonate', title: 'Coordonate', text: 'Un tabel cu coloanele A–E și rândurile 1–5: ce se află în B3, unde este pisica, desenează în D2.', config: { category: 'games', selectedItems: ['coord:1'] }, levels: ['II'] },
-  { id: 'laturi-varfuri', title: 'Laturi, vârfuri, axa de simetrie', text: 'Câte laturi și câte vârfuri are figura; este linia o axă de simetrie?', config: { category: 'games', selectedItems: ['sides:1'] }, levels: ['II'] },
+  { id: 'coordonate', title: 'Coordonate', text: 'Un tabel cu coloanele A–E și rândurile 1–5: ce se află în B3, unde este pisica, desenează în D2.', config: { category: 'games', selectedItems: ['coord:1'] }, levels: ['II', 'III', 'IV'] },
+  { id: 'laturi-varfuri', title: 'Laturi, vârfuri, axa de simetrie', text: 'Câte laturi și câte vârfuri are figura; este linia o axă de simetrie?', config: { category: 'games', selectedItems: ['sides:1'] }, levels: ['II', 'III'] },
   { id: 'corpuri-geometrice', title: 'Corpuri geometrice', text: 'Cub, cuboid, cilindru, sferă, con: numele, obiectele cu aceeași formă, fețe și vârfuri.', config: { category: 'games', selectedItems: ['solid:1'] }, levels: ['II'] },
   {
     id: 'modele-regularitati', title: 'Modele și regularități', text: 'Ce urmează în șir, numere după o regulă, o problemă; la clasa a II-a regula scrisă și figuri care cresc.',
-    config: { category: 'games', selectedItems: ['regular:1'] }, byLevel: { II: { selectedItems: ['regular:3'] } }, levels: ['I', 'II'],
+    config: { category: 'games', selectedItems: ['regular:1'] }, byLevel: { II: { selectedItems: ['regular:3'] }, III: { selectedItems: ['sir:1'] }, IV: { selectedItems: ['sir:2'] } }, levels: ['I', 'II', 'III', 'IV'],
   },
   { id: 'sortare-doua-criterii', title: 'Sortează după două criterii', text: 'Un tabel cu forma și mărimea: scrie numărul fiecărei imagini în căsuța ei.', config: { category: 'games', selectedItems: ['sort2:1'] }, levels: ['I', 'II'] },
   { id: 'plan-de-lucru', title: 'Plan de lucru', text: 'Pașii unui experiment de pus în ordine; adevărat sau fals, cu „și”, „sau”, „nu”.', config: { category: 'games', selectedItems: ['plan:1'] }, levels: ['II'] },
@@ -155,6 +155,47 @@ export const SHEET_PRESETS: SheetPreset[] = [
     // clasa a II-a: its own sets (the sentences put in order instead of the pictures to join)
     byLevel: { II: { selectedItems: ['read:gap:5', 'read:order:4', 'read:fill:4', 'read:text:4'] } },
   },
+  // Clasa a III-a și a IV-a, Matematică (m34.ts): the first set of each class, free; the class picks its set
+  { id: 'numerele-naturale', title: 'Numerele naturale', text: 'Scrise cu cifre și cu litere, mii, sute, zeci, unități; compară și ordonează (până la 10 000, la clasa a IV-a până la 1 000 000).', config: { category: 'games', selectedItems: ['nr:1'] }, byLevel: { IV: { selectedItems: ['nr:3'] } }, levels: ['III', 'IV'] },
+  { id: 'cifre-romane', title: 'Cifrele romane', text: 'I, V, X la clasa a III-a; L, C, D, M la clasa a IV-a: scrie, citește, încercuiește scrierea corectă.', config: { category: 'games', selectedItems: ['rom:1'] }, byLevel: { IV: { selectedItems: ['rom:3'] } }, levels: ['III', 'IV'] },
+  { id: 'rotunjire', title: 'Rotunjirea numerelor', text: 'La zeci, sute, mii (la clasa a IV-a și la zeci și sute de mii), cu semnul ≈.', config: { category: 'games', selectedItems: ['rot:1'] }, byLevel: { IV: { selectedItems: ['rot:3'] } }, levels: ['III', 'IV'] },
+  { id: 'ordinea-operatiilor', title: 'Ordinea efectuării operațiilor', text: 'Înmulțirea înaintea adunării, parantezele rotunde; la clasa a IV-a și cele pătrate; adevărat sau fals.', config: { category: 'games', selectedItems: ['ops:1'] }, byLevel: { IV: { selectedItems: ['ops:3'] } }, levels: ['III', 'IV'] },
+  { id: 'inmultire-in-coloana', title: 'Înmulțirea în coloană', text: 'Cu 10, 100, 1000 în minte; în coloană, pe pătrățele: cu o cifră și cu două (la clasa a IV-a factori de trei cifre).', config: { category: 'games', selectedItems: ['inm:1'] }, byLevel: { IV: { selectedItems: ['inm:3'] } }, levels: ['III', 'IV'] },
+  { id: 'impartire-34', title: 'Împărțirea', text: 'Clasa a III-a: tabla împărțirii și numere de două cifre la o cifră; clasa a IV-a: cu rest, la o cifră și la două.', config: { category: 'games', selectedItems: ['inm:2'] }, byLevel: { IV: { selectedItems: ['inm:4'] } }, levels: ['III', 'IV'] },
+  { id: 'probleme-34', title: 'Probleme', text: 'Cu două operații („cu … mai mult”, „de … ori”); la clasa a IV-a metoda grafică, mersul invers, comparația; o problemă de compus.', config: { category: 'games', selectedItems: ['prob:1'] }, byLevel: { IV: { selectedItems: ['prob:3'] } }, levels: ['III', 'IV'] },
+  { id: 'fractii-34', title: 'Fracții', text: 'Partea colorată, numărătorul și numitorul (clasa a III-a); subunitare, echiunitare, supraunitare, adunări (clasa a IV-a).', config: { category: 'games', selectedItems: ['fr:1'] }, byLevel: { IV: { selectedItems: ['fr:3'] } }, levels: ['III', 'IV'] },
+  { id: 'fractii-34-2', title: 'Fracții: comparare, sutimi, procente', text: 'Compară, ordonează, adună fracții cu același numitor (clasa a III-a); sutimi, 25 %, 50 %, 75 % (clasa a IV-a).', config: { category: 'games', selectedItems: ['fr:2'] }, byLevel: { IV: { selectedItems: ['fr:4'] } }, levels: ['III', 'IV'] },
+  { id: 'perimetrul', title: 'Perimetrul', text: 'Pătrat, dreptunghi, triunghi cu laturile scrise, probleme; la clasa a IV-a romb, paralelogram și aria pe pătrățele de 1 cm.', config: { category: 'games', selectedItems: ['per:1'] }, byLevel: { IV: { selectedItems: ['per:2'] } }, levels: ['III', 'IV'] },
+  { id: 'linii-unghiuri', title: 'Linii, unghiuri, poligoane', text: 'Dreaptă, semidreaptă, segment, unghiul drept (clasa a III-a); unghiuri ascuțite și obtuze, drepte paralele și perpendiculare (clasa a IV-a).', config: { category: 'games', selectedItems: ['geo:1'] }, byLevel: { IV: { selectedItems: ['geo:2'] } }, levels: ['III', 'IV'] },
+  { id: 'unitati-masura-34', title: 'Unități de măsură', text: 'Unitatea potrivită, calcule fără transformări, instrumente (clasa a III-a); transformări de lungime, masă, capacitate (clasa a IV-a).', config: { category: 'games', selectedItems: ['mas:1'] }, byLevel: { IV: { selectedItems: ['mas:3'] } }, levels: ['III', 'IV'] },
+  { id: 'timp-bani-34', title: 'Timpul și banii', text: 'Ziua, săptămâna, anul, leul și banul, euro (clasa a III-a); intervale de timp și transformări (clasa a IV-a).', config: { category: 'games', selectedItems: ['mas:2'] }, byLevel: { IV: { selectedItems: ['mas:4'] } }, levels: ['III', 'IV'] },
+  { id: 'tabele-grafice', title: 'Tabele și grafice', text: 'Tabelul și graficul cu bare de desenat (clasa a III-a); grafice cu bare și liniare de citit (clasa a IV-a).', config: { category: 'games', selectedItems: ['date:1'] }, byLevel: { IV: { selectedItems: ['date:2'] } }, levels: ['III', 'IV'] },
+  // Clasa a III-a și a IV-a, Limba și literatura română (r34.ts)
+  { id: 'citeste-intelege', title: 'Citește și înțelege', text: 'O poveste scrisă pentru fișă și întrebări pe două pagini: detalii, adevărat sau fals, ordinea întâmplărilor, părerea ta.', config: { category: 'games', selectedItems: ['lect:1'] }, byLevel: { IV: { selectedItems: ['lect:4'] } }, levels: ['III', 'IV'] },
+  { id: 'text-informativ', title: 'Text informativ', text: 'Albinele (clasa a III-a), Delta Dunării (clasa a IV-a): informații de găsit, cuvinte-cheie, o concluzie.', config: { category: 'games', selectedItems: ['lect:3'] }, byLevel: { IV: { selectedItems: ['lect:6'] } }, levels: ['III', 'IV'] },
+  { id: 'asculta-raspunde', title: 'Ascultă și răspunde', text: 'Învățătorul citește povestea (pagina lui e separată), elevii răspund: detalii, sensul unui cuvânt, adevărat sau fals.', config: { category: 'games', selectedItems: ['aud:1'] }, byLevel: { IV: { selectedItems: ['aud:2'] } }, levels: ['III', 'IV'] },
+  { id: 'partile-de-vorbire', title: 'Părțile de vorbire', text: 'Substantiv, adjectiv, pronume, verb, dintr-un text scurt; numărul, timpul; la clasa a IV-a și greșeli de acord de corectat.', config: { category: 'games', selectedItems: ['parti:1'] }, byLevel: { IV: { selectedItems: ['parti:3'] } }, levels: ['III', 'IV'] },
+  { id: 'ortograme', title: 'Ortograme', text: 's-a / sa, s-au / sau, i-a / ia, i-au / iau: forma potrivită în propoziție; la clasa a IV-a și greșeli de găsit și corectat.', config: { category: 'games', selectedItems: ['orto:1'] }, byLevel: { IV: { selectedItems: ['orto:3'] } }, levels: ['III', 'IV'] },
+  { id: 'semne-de-punctuatie', title: 'Semnele de punctuație', text: 'Punctul, semnul întrebării și al exclamării, virgula, două puncte, linia de dialog; un dialog de scris corect.', config: { category: 'games', selectedItems: ['punct:1'] }, byLevel: { IV: { selectedItems: ['punct:2'] } }, levels: ['III', 'IV'] },
+  { id: 'compunere', title: 'Compunere cu plan', text: 'Clasa a III-a: o întâmplare trăită; clasa a IV-a: portretul unui personaj. Planul, apoi rândurile caietului.', config: { category: 'games', selectedItems: ['comp:1'] }, byLevel: { IV: { selectedItems: ['comp:3'] } }, levels: ['III', 'IV'] },
+  { id: 'compunere-2', title: 'Altă compunere cu plan', text: 'Clasa a III-a: descrierea animalului preferat, cu întrebări; clasa a IV-a: o poveste cu început dat.', config: { category: 'games', selectedItems: ['comp:2'] }, byLevel: { IV: { selectedItems: ['comp:4'] } }, levels: ['III', 'IV'] },
+  { id: 'texte-functionale', title: 'Invitația, scrisoarea', text: 'Clasa a III-a: invitația, cu desen; clasa a IV-a: scrisoarea, cu toate părțile ei.', config: { category: 'games', selectedItems: ['func:1'] }, byLevel: { IV: { selectedItems: ['func:3'] } }, levels: ['III', 'IV'] },
+  { id: 'texte-functionale-2', title: 'Afișul, anunțul, biletul', text: 'Clasa a III-a: afișul unei expoziții; clasa a IV-a: un anunț și un bilet.', config: { category: 'games', selectedItems: ['func:2'] }, byLevel: { IV: { selectedItems: ['func:4'] } }, levels: ['III', 'IV'] },
+  { id: 'dictare', title: 'Dictare', text: 'Propoziții cu goluri pentru cuvintele dictate (ortograme, â, î) și rânduri pentru propozițiile întregi; textul, pe pagina de răspunsuri.', config: { category: 'games', selectedItems: ['dict:1'] }, byLevel: { IV: { selectedItems: ['dict:2'] } }, levels: ['III', 'IV'] },
+  { id: 'fisa-de-lectura', title: 'Fișa de lectură', text: 'Fișa cărții citite (clasa a III-a), jurnalul de lectură pe o săptămână (clasa a IV-a).', config: { category: 'games', selectedItems: ['carte:1'] }, byLevel: { IV: { selectedItems: ['carte:2'] } }, levels: ['III', 'IV'] },
+  // no specific competence names synonyms and antonyms (sheet.ts prints no code): listed on the generator and /fise-de-lucru
+  { id: 'sinonime-antonime', title: 'Sinonime, antonime, omonime', text: 'Cuvinte cu înțeles asemănător sau opus și cuvinte cu mai multe înțelesuri, în propoziții.', config: { category: 'games', selectedItems: ['voc:1'] }, byLevel: { IV: { selectedItems: ['voc:2'] } }, levels: ['III', 'IV'] },
+  // Evaluări pentru clasa a III-a și a IV-a: a few exercises of each topic (evaluation.ts, m34-pages / r34-pages eval blocks)
+  {
+    id: 'evaluare-mate-34', title: 'Evaluare la matematică', text: 'Numere, cifre romane, rotunjire, ordinea operațiilor, înmulțire, fracții, o problemă; cu răspunsuri și calificative orientative.',
+    config: { category: 'games', selectedItems: ['nr:1', 'rom:1', 'rot:1', 'ops:1', 'inm:1', 'fr:1', 'prob:1'], evaluation: true }, levels: ['III', 'IV'], evaluation: true,
+    byLevel: { IV: { selectedItems: ['nr:3', 'rom:3', 'rot:3', 'ops:3', 'inm:3', 'fr:3', 'prob:3'] } },
+  },
+  {
+    id: 'evaluare-romana-34', title: 'Evaluare la limba română', text: 'Un text cu întrebări, ortograme, părțile de vorbire, punctuația; cu răspunsuri și calificative orientative.',
+    config: { category: 'games', selectedItems: ['lect:1', 'orto:1', 'parti:1', 'punct:1'], evaluation: true }, levels: ['III', 'IV'], evaluation: true,
+    byLevel: { IV: { selectedItems: ['lect:4', 'orto:3', 'parti:3', 'punct:2'] } },
+  },
   // Arte vizuale și abilități practice, Dezvoltare personală, limba engleză (subjects-pages.ts): set 1 of each, free
   { id: 'decupeaza-lipeste', title: 'Decupează și lipește', text: 'Piesele unei case, de decupat pe linia punctată și de lipit pe desen.', config: { category: 'games', selectedItems: ['cut:1'] }, levels: ['CP', 'I'] },
   { id: 'linii-puncte', title: 'Linii și puncte', text: 'Un fular în fâșii: fiecare fâșie cu linia sau punctele arătate lângă ea.', config: { category: 'games', selectedItems: ['lines:1'] }, levels: ['CP', 'I'] },
@@ -172,7 +213,7 @@ export const SHEET_PRESETS: SheetPreset[] = [
 ];
 
 /** The number range a class works in, for the math sheets it opens (programme contents). */
-const MATH_RANGE: Record<SchoolLevel, number> = { presc: 10, CP: 10, I: 100, II: 1000 };
+const MATH_RANGE: Record<SchoolLevel, number> = { presc: 10, CP: 10, I: 100, II: 1000, III: 10000, IV: 1000000 };
 
 /** The full generator settings of a preset for a class. */
 export function presetConfig(preset: SheetPreset, level: SchoolLevel): WorksheetConfig {
@@ -202,16 +243,19 @@ export const CLASS_PAGES: ClassPage[] = [
   { slug: 'clasa-pregatitoare', level: 'CP', title: 'Clasa pregătitoare', at: 'la clasa pregătitoare', programmes: ['clr-p-ii', 'mem-p-ii', 'avap-p-ii', 'dp-p-ii', 'lm-p-ii'] },
   { slug: 'clasa-1', level: 'I', title: 'Clasa I', at: 'la clasa I', programmes: ['clr-p-ii', 'mem-p-ii', 'avap-p-ii', 'dp-p-ii', 'lm-p-ii'] },
   { slug: 'clasa-2', level: 'II', title: 'Clasa a II-a', at: 'la clasa a II-a', programmes: ['clr-p-ii', 'mem-p-ii', 'avap-p-ii', 'dp-p-ii', 'lm-p-ii'] },
+  // OMEN 5003/2014: Limba și literatura română, Matematică (the other subjects of III–IV are not in the data yet)
+  { slug: 'clasa-3', level: 'III', title: 'Clasa a III-a', at: 'la clasa a III-a', programmes: ['llr-iii-iv', 'mate-iii-iv'] },
+  { slug: 'clasa-4', level: 'IV', title: 'Clasa a IV-a', at: 'la clasa a IV-a', programmes: ['llr-iii-iv', 'mate-iii-iv'] },
 ];
 
 /**
  * The programmes counted in the headline of a class page („Avem fișe pentru X din Y”): the preschool
- * curriculum, limba română and matematică, whose competences are largely practised on paper.
+ * curriculum, limba română and matematică (CP–II: clr, mem; III–IV: llr, mate), whose competences are largely practised on paper.
  * Arte vizuale și abilități practice, Dezvoltare personală and limba modernă are learnt mostly by
  * making things, playing, moving and talking, so only a few of their competences can have a sheet:
  * their groups show their own count, and the page says why they are counted apart.
  */
-export const HEADLINE_PROGRAMMES: readonly ProgrammeId[] = ['et-presc', 'clr-p-ii', 'mem-p-ii'];
+export const HEADLINE_PROGRAMMES: readonly ProgrammeId[] = ['et-presc', 'clr-p-ii', 'mem-p-ii', 'llr-iii-iv', 'mate-iii-iv'];
 
 /** One line under the title of a group that is counted apart (see HEADLINE_PROGRAMMES). */
 const GROUP_NOTES: Partial<Record<ProgrammeId, string>> = {

@@ -27,6 +27,8 @@ const INTRO: Record<string, string> = {
   CP: 'Fișe pe teme pentru clasa pregătitoare, după programele de Comunicare în limba română și Matematică și explorarea mediului. Pe fiecare fișă se tipărește competența specifică pe care o exersează, ca în planificare.',
   I: 'Fișe pe teme pentru clasa I: citire, scrierea literelor de mână, sunete și silabe, adunări și scăderi până la 100, ceasul, banii și explorarea mediului. Pe fiecare fișă se tipărește competența specifică din programă.',
   II: 'Fișe pe teme pentru clasa a II-a: citire și scriere, numere până la 1000, tabla înmulțirii, împărțiri, ceasul, calendarul și măsurările. Pe fiecare fișă se tipărește competența specifică din programă.',
+  III: 'Fișe pe teme pentru clasa a III-a, după programele de Limba și literatura română și de Matematică: texte de citit cu întrebări, ortograme, compuneri cu plan, numere până la 10 000, cifre romane, fracții și perimetre. Pe fiecare fișă se tipărește competența specifică.',
+  IV: 'Fișe pe teme pentru clasa a IV-a: lectură cu întrebări de înțelegere, părțile de vorbire, scrisoarea și anunțul, numere până la 1 000 000, ordinea operațiilor, fracții, transformări de unități și perimetre. Pe fiecare fișă se tipărește competența specifică.',
 };
 
 export default function LandingClassPage({ params }: { params: { clasa: string } }) {

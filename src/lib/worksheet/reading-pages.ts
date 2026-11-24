@@ -118,6 +118,8 @@ const NUNITO_BOLD: Record<string, number> = {
   N: 0.748, O: 0.785, P: 0.652, Q: 0.785, R: 0.686, S: 0.631, T: 0.621, U: 0.738, V: 0.713, W: 1.113, X: 0.672, Y: 0.618, Z: 0.605,
   Ă: 0.744, Â: 0.744, Î: 0.282, Ș: 0.631, Ț: 0.621,
   ' ': 0.271, '.': 0.248, ',': 0.248, '?': 0.459, '!': 0.248, '-': 0.434, '–': 0.5, '„': 0.443, '”': 0.443, ':': 0.248, '(': 0.358, ')': 0.358, '/': 0.313,
+  // the square brackets of the order of operations (clasa a IV-a), as wide as the round ones
+  '[': 0.358, ']': 0.358,
 };
 
 /** The width of a text in mm (bold; the regular weight is a little narrower). */
@@ -217,7 +219,7 @@ const RULE_S: Record<ReadLevel, number> = { CP: 0.1, I: 0.11, II: 0.1 };
  * the slanted lines of the tip I notebook in clasa I, without them in clasa a II-a.
  * Its ink goes from 100 units above the baseline to 50 below (handwriting) or to the baseline (print).
  */
-function rulingOps(level: ReadLevel, x: number, width: number, baseline: number, s: number): DrawOp[] {
+export function rulingOps(level: ReadLevel, x: number, width: number, baseline: number, s: number): DrawOp[] {
   if (level === 'CP') return guideOps({ x, width, baseline }, s, RULING, false);
   const line = (y: number, stroke: string, strokeWidth: number): DrawOp => ({ t: 'line', x1: x, y1: y, x2: x + width, y2: y, stroke, strokeWidth });
   const ops: DrawOp[] = [

@@ -44,8 +44,31 @@ export const TOPIC_MATH_TYPES = ['groups', 'mul', 'div', 'mulmiss', 'clock', 'cl
 export const MATH_TYPES = [...NUMBER_MATH_TYPES, ...TOPIC_MATH_TYPES] as const;
 export type MathType = (typeof MATH_TYPES)[number];
 export type TopicMathType = (typeof TOPIC_MATH_TYPES)[number];
-export const MATH_RANGES = [5, 10, 20, 31, 100, 1000] as const;
+export const MATH_RANGES = [5, 10, 20, 31, 100, 1000, 10000, 1000000] as const;
 export type MathRange = (typeof MATH_RANGES)[number];
+/**
+ * Clasa a III-a „Numerele naturale cuprinse între 0 - 10 000” and clasa a IV-a „… între 0 - 1 000 000” (programme
+ * Matematică, OMEN 5003/2014): the two large ranges. Only the exercises with numbers go by them (cmp, add, sub, mix,
+ * missing, seq, nbr); money, the picture problems and the equal groups stay at most 0–1000 (see typeRange).
+ */
+export const BIG_RANGES: readonly MathRange[] = [10000, 1000000];
+export const isBigRange = (range: number) => range >= 10000;
+/** The types that work in 0–10 000 and 0–1 000 000. */
+const BIG_TYPES: readonly MathType[] = ['cmp', 'add', 'sub', 'mix', 'missing', 'seq', 'nbr'];
+/** The range a type is drawn in: the large ranges only for the exercises with numbers, the others at most 0–1000. */
+export function typeRange(type: MathType, range: MathRange): MathRange {
+  return isBigRange(range) && !BIG_TYPES.includes(type) ? 1000 : range;
+}
+
+/**
+ * A number as written from 10 000 up, in groups of three digits with a space (thin no-break space would not print
+ * in every PDF font): „10 000”, „456 789”, „1 000 000”. Smaller numbers are written as they are („4387”).
+ */
+export function fmtNum(n: number): string {
+  const t = String(n);
+  if (Math.abs(n) < 10000) return t;
+  return t.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
 
 export const MATH_LABELS: Record<MathType, { title: string; text: string; icon: string }> = {
   cmp: { title: 'Compară numerele', text: '<, > sau =', icon: '⚖️' },
@@ -101,8 +124,12 @@ export function hasCarryChoice(range: MathRange): boolean {
   return range >= 20;
 }
 
-/** What a range does when no carry is chosen: 0–100 and 0–1000 without, the others mixed. */
+/**
+ * What a range does when no carry is chosen: 0–100 and 0–1000 without, the others mixed. 0–10 000 and 0–1 000 000
+ * mixed too: their contents are „Adunarea și scăderea … fără trecere și cu trecere peste ordin”.
+ */
 export function defaultCarry(range: MathRange): MathCarry {
+  if (isBigRange(range)) return 'mixed';
   return range >= 100 ? 'without' : 'mixed';
 }
 
@@ -176,6 +203,7 @@ const PICKS = 400;
 
 /** a + b within the range, with or without carrying. */
 function sumPair(rand: () => number, range: MathRange, carry: MathCarry = defaultCarry(range)): [number, number] {
+  if (isBigRange(range)) return sumPairBig(rand, range, carry);
   if (range === 1000) return sumPair1000(rand, carry);
   if (range === 31) {
     // CP 1.4: add 1–5 elements to a set of up to 30
@@ -217,6 +245,7 @@ function sumPair(rand: () => number, range: MathRange, carry: MathCarry = defaul
 
 /** a − b ≥ 0, with or without borrowing. */
 function diffPair(rand: () => number, range: MathRange, carry: MathCarry = defaultCarry(range)): [number, number] {
+  if (isBigRange(range)) return diffPairBig(rand, range, carry);
   if (range === 1000) return diffPair1000(rand, carry);
   if (range === 31) {
     // CP 1.4: take 1–5 elements away
@@ -300,7 +329,71 @@ function diffPair1000(rand: () => number, carry: MathCarry): [number, number] {
   return [768, 435];
 }
 
+/** The digits of a number, units first, padded to `len`. */
+const digitsOf = (n: number, len: number) => Array.from({ length: len }, (_, i) => Math.floor(n / 10 ** i) % 10);
+const fromDigits = (d: number[]) => d.reduce((s, x, i) => s + x * 10 ** i, 0);
+
+/**
+ * 0–10 000 (clasa a III-a) and 0–1 000 000 (clasa a IV-a): the first number has all the digits of the range minus one
+ * (4387, 456 789), so the sheet is not the smaller range again.
+ *   without: no column passes 10 (4325 + 3621)
+ *   with:    at least one column carries (4387 + 2549), the sum at most the range
+ */
+function sumPairBig(rand: () => number, range: MathRange, carry: MathCarry): [number, number] {
+  if (carry === 'mixed') return sumPairBig(rand, range, rand() < 0.5 ? 'with' : 'without');
+  const len = range === 10000 ? 4 : 6;
+  const lo = 10 ** (len - 1);
+  if (carry === 'with') {
+    for (let i = 0; i < PICKS; i++) {
+      const total = int(rand, lo + lo / 10, range);
+      const a = int(rand, lo, total - lo / 10);
+      if (carriesAny(a, total - a)) return [a, total - a];
+    }
+    return range === 10000 ? [4387, 2549] : [456789, 234567];
+  }
+  for (let i = 0; i < PICKS; i++) {
+    const da = digitsOf(int(rand, lo, range - 1), len);
+    const db = da.map((d, k) => (k === len - 1 ? int(rand, 0, 9 - d) : int(rand, 0, 9 - d)));
+    const a = fromDigits(da), b = fromDigits(db);
+    if (b >= lo / 10 && a >= lo) return [a, b];
+  }
+  return range === 10000 ? [4325, 3621] : [452314, 336481];
+}
+
+/** a − b ≥ 0 in 0–10 000 / 0–1 000 000: without borrowing in any column (8765 − 3421), or with (7003 − 2568). */
+function diffPairBig(rand: () => number, range: MathRange, carry: MathCarry): [number, number] {
+  if (carry === 'mixed') return diffPairBig(rand, range, rand() < 0.5 ? 'with' : 'without');
+  const len = range === 10000 ? 4 : 6;
+  const lo = 10 ** (len - 1);
+  if (carry === 'with') {
+    for (let i = 0; i < PICKS; i++) {
+      const a = int(rand, lo + lo / 10, range);
+      const b = int(rand, lo / 10, a - 1);
+      if (borrowsAny(a, b)) return [a, b];
+    }
+    return range === 10000 ? [7003, 2568] : [700300, 256841];
+  }
+  for (let i = 0; i < PICKS; i++) {
+    const da = digitsOf(int(rand, lo, range - 1), len);
+    const db = da.map((d) => int(rand, 0, d));
+    const a = fromDigits(da), b = fromDigits(db);
+    if (b >= lo / 10 && b < a) return [a, b];
+  }
+  return range === 10000 ? [8765, 3421] : [876543, 342121];
+}
+
+/** Two numbers to compare in a large range: often the same first digits, so the last ones decide (4387 ? 4378). */
+function cmpBig(rand: () => number, range: MathRange): [number, number] {
+  const lo = range === 10000 ? 1000 : 100000;
+  const keep = range === 10000 ? 100 : 1000;
+  const a = int(rand, lo, range);
+  const r = rand();
+  const b = r < 0.2 ? a : r < 0.6 ? Math.max(lo, Math.min(range, a - (a % keep) + int(rand, 0, keep - 1))) : int(rand, lo, range);
+  return [a, b];
+}
+
 function makeExercise(type: MathType, rand: () => number, range: MathRange, carry?: MathCarry): Exercise {
+  if (isBigRange(range) && BIG_TYPES.includes(type)) return makeBigExercise(type, rand, range, carry);
   switch (type) {
     case 'cmp': {
       if (range === 1000) {
@@ -364,6 +457,61 @@ function makeExercise(type: MathType, rand: () => number, range: MathRange, carr
     }
     default:
       // drawn by money.ts, problems.ts and the topics' own files; never asked for here
+      return { cells: [], answer: '' };
+  }
+}
+
+/** The exercises of 0–10 000 and 0–1 000 000, the numbers written in groups of three digits from 10 000 up. */
+function makeBigExercise(type: MathType, rand: () => number, range: MathRange, carry?: MathCarry): Exercise {
+  const f = fmtNum;
+  switch (type) {
+    case 'cmp': {
+      const [a, b] = cmpBig(rand, range);
+      return { cells: [f(a), null, f(b)], answer: a < b ? '<' : a > b ? '>' : '=' };
+    }
+    case 'add': {
+      const [a, b] = sumPair(rand, range, carry);
+      return { cells: [f(a), '+', f(b), '=', null], answer: f(a + b) };
+    }
+    case 'sub': {
+      const [a, b] = diffPair(rand, range, carry);
+      return { cells: [f(a), MINUS, f(b), '=', null], answer: f(a - b) };
+    }
+    case 'mix':
+      return makeBigExercise(rand() < 0.5 ? 'add' : 'sub', rand, range, carry);
+    case 'missing': {
+      if (rand() < 0.6) {
+        const [a, b] = sumPair(rand, range, carry);
+        return rand() < 0.5
+          ? { cells: [f(a), '+', null, '=', f(a + b)], answer: f(b) }
+          : { cells: [null, '+', f(b), '=', f(a + b)], answer: f(a) };
+      }
+      const [a, b] = diffPair(rand, range, carry);
+      return { cells: [f(a), MINUS, null, '=', f(a - b)], answer: f(b) };
+    }
+    case 'seq': {
+      // by ones over a thousand (3998, 3999, 4000), by tens, hundreds, thousands (and ten thousands in 0–1 000 000)
+      const steps = range === 10000 ? [1, 10, 100, 1000] : [1, 100, 1000, 10000];
+      const step = steps[int(rand, 0, steps.length - 1)];
+      const len = 5;
+      const down = rand() < 0.3;
+      const span = step * (len - 1);
+      const lo = range === 10000 ? 1000 : 100000;
+      let start = down ? int(rand, lo + span, range) : int(rand, lo, range - span);
+      // a round number crossed now and then, the hard part („9 999, 10 000”)
+      if (step === 1 && rand() < 0.5) start = Math.max(lo, Math.min(range - span, start - (start % 1000) + 1000 - int(rand, 1, 3)));
+      const values = Array.from({ length: len }, (_, i) => start + (down ? -1 : 1) * step * i);
+      const holes = new Set<number>();
+      while (holes.size < 2) holes.add(int(rand, 1, len - 1));
+      return { cells: values.map((v, i) => (holes.has(i) ? null : f(v))), answer: values.filter((_, i) => holes.has(i)).map(f).join(', ') };
+    }
+    case 'nbr': {
+      const lo = range === 10000 ? 1000 : 100000;
+      // often a round neighbour (4000 → 3999 și 4001; 10 000 → 9999 și 10 001)
+      const n = rand() < 0.3 ? Math.min(range - 1, (int(rand, lo / 1000, range / 1000 - 1)) * 1000) : int(rand, lo, range - 1);
+      return { cells: [null, f(n), null], answer: `${f(n - 1)}, ${f(n + 1)}` };
+    }
+    default:
       return { cells: [], answer: '' };
   }
 }
@@ -453,13 +601,16 @@ export function mathTitle(type: MathType, range: MathRange, carry: MathCarry = '
   if (type === 'clock' || type === 'clockdraw') return clockTitle(type, opts.clock ?? 'half');
   if (type === 'week' || type === 'months' || type === 'calmonth') return CALENDAR_TITLES[type];
   if ((TOPIC_MATH_TYPES as readonly string[]).includes(type)) return MATH_LABELS[type].title;
-  const base = `${MATH_LABELS[type].title} (0–${type === 'addpic' ? Math.min(range, 10) : range})`;
+  const base = `${MATH_LABELS[type].title} (0–${type === 'addpic' ? Math.min(range, 10) : fmtNum(range)})`;
   return CARRY_TYPES.includes(type) && CARRY_TEXT[carry] ? `${base}, ${CARRY_TEXT[carry]}` : base;
 }
 
 /** How many exercises fit on a page, and in how many columns. */
 export function grid(type: MathType, range: MathRange): { count: number; cols: number } {
   if (type === 'addpic') return { count: 6, cols: 1 };
+  // 0–1 000 000: one exercise a line, the six-digit numbers stay big enough to read; 0–10 000: two columns
+  if (range === 1000000 && BIG_TYPES.includes(type)) return { count: type === 'seq' ? 8 : 12, cols: type === 'nbr' ? 2 : 1 };
+  if (range === 10000 && BIG_TYPES.includes(type)) return type === 'seq' ? { count: 10, cols: 1 } : { count: 16, cols: 2 };
   if (type === 'seq') return { count: 10, cols: 1 };
   if (type === 'nbr') return { count: 16, cols: 2 };
   if (type === 'cmp') return { count: range <= 5 ? 8 : 16, cols: 2 };
@@ -498,10 +649,11 @@ function footer(ops: DrawOp[], tier: Tier, pageNo: number, pages: number): void 
  * One exercise as a line of cells (numbers, signs, boxes), left aligned at x, centred on cy.
  * `wide` (0–1000): the boxes for a number are wider, room for three handwritten digits.
  */
-export function exerciseOps(e: Exercise, x: number, cy: number, size: number, maxW: number, wide = false): DrawOp[] {
+export function exerciseOps(e: Exercise, x: number, cy: number, size: number, maxW: number, wide = false, boxChars = 0): DrawOp[] {
   const ops: DrawOp[] = [];
   const box = size * 1.55;
-  const boxW = wide && /\d/.test(e.answer) ? size * 2.4 : box;
+  // `boxChars` (0–10 000, 0–1 000 000): a box as wide as the longest number of the exercise, room to write it by hand
+  const boxW = boxChars && /\d/.test(e.answer) ? Math.max(box, size * 0.62 * boxChars + size * 0.9) : wide && /\d/.test(e.answer) ? size * 2.4 : box;
   // a sequence of three-digit numbers needs more air between them (621  620  619)
   const gap = size * (wide && e.cells.length > 5 ? 0.7 : 0.35);
   const widthOf = (c: string | null) => (c === null ? boxW : c.length > 1 && /\d/.test(c) ? size * 0.62 * c.length : size * 0.75);
@@ -557,7 +709,8 @@ function exercisePage(config: WorksheetConfig, type: MathType, range: MathRange,
       ops.push(...exerciseOps(e, M + 5 + 2 * groupW + 22, cy, 9, W - 2 * M - (2 * groupW + 30)));
     });
   } else {
-    const size = isMulType(type) ? 9 : type === 'seq' ? 9 : range === 1000 ? 8 : range === 100 ? 8.5 : 9.5;
+    const big = isBigRange(range) && BIG_TYPES.includes(type);
+    const size = big ? (range === 10000 ? 7.5 : 8) : isMulType(type) ? 9 : type === 'seq' ? 9 : range === 1000 ? 8 : range === 100 ? 8.5 : 9.5;
     exercises.forEach((e, i) => {
       const col = Math.floor(i / rows);
       const row = i % rows;
@@ -565,7 +718,7 @@ function exercisePage(config: WorksheetConfig, type: MathType, range: MathRange,
       const cy = top + row * rowH + rowH / 2;
       // a light number before each exercise, to talk about them ("la 5 ai greșit")
       ops.push({ t: 'text', x, y: cy + 1.4, text: `${i + 1}.`, size: 3.6, fill: MUTED, weight: 'bold' });
-      ops.push(...exerciseOps(e, x + 8, cy, size, colW - 16, range === 1000 && !isMulType(type)));
+      ops.push(...exerciseOps(e, x + 8, cy, size, colW - 16, range === 1000 && !isMulType(type), big ? bigBoxChars(e) : 0));
       if (type === 'cmp' && range <= 5) {
         // small ranges: dots under the numbers, so the child can count
         const [a, , b] = e.cells;
@@ -576,6 +729,11 @@ function exercisePage(config: WorksheetConfig, type: MathType, range: MathRange,
   }
   rewardBox(ops, Math.min(10, cols === 2 ? rows : exercises.length));
   return ops;
+}
+
+/** The longest number of an exercise (the box is drawn that wide): „456 789” is 7 characters. */
+export function bigBoxChars(e: Exercise): number {
+  return Math.max(...e.cells.map((c) => (c && /\d/.test(c) ? c.length : 0)), ...e.answer.split(', ').map((a) => a.length));
 }
 
 function countDots(n: number, x: number, y: number, size: number): DrawOp[] {
@@ -603,7 +761,9 @@ export function problemAnswer(p: WordProblem, range: MathRange): string {
 function answerSections(range: MathRange, sets: { type: MathType; exercises: Exercise[]; title?: string }[], carry: MathCarry): KeySection[] {
   // the topics label their own items („a)”, „1. b)”): only the exercise grids, groups, money and problems are numbered
   const numbered = (t: MathType) => !isDrawnType(t) || t === 'money' || t === 'problems' || t === 'groups';
-  return sets.map(({ type, exercises, title }) => ({ title: title ?? mathTitle(type, range, carry), entries: exercises.map((e) => e.answer), perLine: answersPerLine(type), numbered: numbered(type) }));
+  // the long numbers of 0–10 000 and 0–1 000 000 take more room on a line
+  const perLine = (t: MathType) => (isBigRange(range) && BIG_TYPES.includes(t) && t !== 'cmp' ? (t === 'seq' || t === 'nbr' ? 2 : range === 1000000 ? 4 : 6) : answersPerLine(t));
+  return sets.map(({ type, exercises, title }) => ({ title: title ?? mathTitle(type, range, carry), entries: exercises.map((e) => e.answer), perLine: perLine(type), numbered: numbered(type) }));
 }
 
 function moneyPage(config: WorksheetConfig, range: MathRange, exercises: ReturnType<typeof moneyExercises>): DrawOp[] {
@@ -715,17 +875,19 @@ export function buildMathPages(config: WorksheetConfig, tier: Tier): SheetPage[]
   const types = config.selectedItems.filter(isMathType).filter((t) => isMathTypeAllowed(t, tier));
   const carry = mathCarryOf({ ...config, mathRange: range });
   const opts = topicOptions(config, tier);
-  const money = types.includes('money') ? moneyExercises(range, rng(seedOf(`money:${range}:${seed}`))) : [];
-  const problems = types.includes('problems') ? wordProblems(range, rng(seedOf(`problems:${range}:${seed}`))) : [];
-  const topics = new Map(types.map((t) => [t, topicPage(t, range, seed, opts)] as const));
+  // money, the picture problems and the equal groups stay at most 0–1000 in the large ranges (typeRange)
+  const small = typeRange('money', range);
+  const money = types.includes('money') ? moneyExercises(small, rng(seedOf(`money:${small}:${seed}`))) : [];
+  const problems = types.includes('problems') ? wordProblems(small, rng(seedOf(`problems:${small}:${seed}`))) : [];
+  const topics = new Map(types.map((t) => [t, topicPage(t, typeRange(t, range), seed, opts)] as const));
   const sets = types.map((type) => {
     const topic = topics.get(type);
     return {
       type,
-      title: topic?.title ?? (isMulType(type) ? mathTitle(type, range, carry, opts) : undefined),
+      title: topic?.title ?? (isMulType(type) ? mathTitle(type, range, carry, opts) : type === 'money' || type === 'problems' ? mathTitle(type, small, carry) : undefined),
       exercises:
         type === 'money' ? money.map((m) => ({ cells: [], answer: m.answer }))
-        : type === 'problems' ? problems.map((p) => ({ cells: [], answer: problemAnswer(p, range) }))
+        : type === 'problems' ? problems.map((p) => ({ cells: [], answer: problemAnswer(p, small) }))
         : topic ? topic.answers.map((answer) => ({ cells: [], answer }))
         : mathExercises(type, range, seed, grid(type, range).count, carry, opts.table),
     };
@@ -733,7 +895,7 @@ export function buildMathPages(config: WorksheetConfig, tier: Tier): SheetPage[]
   const pages: DrawOp[][] = sets.map(({ type, exercises }) => {
     const topic = topics.get(type);
     if (topic) return drawTopicPage(config, topic);
-    return type === 'money' ? moneyPage(config, range, money) : type === 'problems' ? problemsPage(config, range, problems) : exercisePage(config, type, range, exercises, carry, opts.table);
+    return type === 'money' ? moneyPage(config, small, money) : type === 'problems' ? problemsPage(config, small, problems) : exercisePage(config, type, range, exercises, carry, opts.table);
   });
   const sheets = pages.length;
   if (config.mathAnswers && sets.length) pages.push(...answerKeyPages(config, answerSections(range, sets, carry)));

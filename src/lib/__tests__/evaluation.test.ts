@@ -16,7 +16,8 @@ import { CLASS_PAGES, SHEET_PRESETS, classCoverage, classEvaluations, presetById
 import { itemFitsCategory, sanitizeConfig } from '@/stores/sanitize-config';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import type { PageOps } from '@/lib/glyphs/types';
-import { opsOutside } from './bounds';
+import { opBox, opsOutside } from './bounds';
+import { flattenOps } from '@/lib/glyphs/geometry';
 import { drawnExercises, icons, readingOrder, solveDrawn, textOverlaps, texts } from './drawn';
 
 const H = 297;
@@ -45,12 +46,15 @@ function keySections(pages: PageOps[]): { title: string; entries: string[] }[] {
 
 describe('the evaluation presets', () => {
   it('one per subject and class: math for CP, I, II, sounds and syllables for CP and I, one for grădiniță, reading and writing for I and II', () => {
-    expect(EVALUATIONS.map((p) => p.id)).toEqual(['evaluare-mate', 'evaluare-clr', 'evaluare-gradinita', 'evaluare-citire']);
+    expect(EVALUATIONS.map((p) => p.id)).toEqual(['evaluare-mate', 'evaluare-clr', 'evaluare-gradinita', 'evaluare-citire', 'evaluare-mate-34', 'evaluare-romana-34']);
     const at = (slug: string) => classEvaluations(CLASS_PAGES.find((c) => c.slug === slug)!).map((e) => e.preset.id);
     expect(at('gradinita')).toEqual(['evaluare-gradinita']);
     expect(at('clasa-pregatitoare')).toEqual(['evaluare-mate', 'evaluare-clr']);
     expect(at('clasa-1')).toEqual(['evaluare-mate', 'evaluare-clr', 'evaluare-citire']);
     expect(at('clasa-2')).toEqual(['evaluare-mate', 'evaluare-citire']);
+    // clasa a III-a și a IV-a: Matematică and Limba și literatura română (OMEN 5003/2014)
+    expect(at('clasa-3')).toEqual(['evaluare-mate-34', 'evaluare-romana-34']);
+    expect(at('clasa-4')).toEqual(['evaluare-mate-34', 'evaluare-romana-34']);
     // listed apart, never under a competence
     for (const c of CLASS_PAGES) for (const g of classCoverage(c)) for (const it of g.items) expect(it.presets.some((p) => p.evaluation)).toBe(false);
     expect(presetHref(presetById('evaluare-mate')!, 'I')).toBe('/generator?fisa=evaluare-mate&clasa=I');
@@ -100,7 +104,8 @@ describe('an evaluation sheet', () => {
         expect(keys.length).toBeGreaterThanOrEqual(1);
         expect(pages.indexOf(keys[0])).toBe(sheets.length);
         const title = evaluationTitle(config);
-        expect(title).toBe(level === 'presc' ? 'Evaluare — nivel preșcolar' : `Evaluare — ${config.category === 'math' ? 'Matematică și explorarea mediului' : 'Comunicare în limba română'}, ${{ CP: 'clasa pregătitoare', I: 'clasa I', II: 'clasa a II-a' }[level as 'CP']}`);
+        const subject = level === 'III' || level === 'IV' ? (preset.id === 'evaluare-mate-34' ? 'Matematică' : 'Limba și literatura română') : config.category === 'math' ? 'Matematică și explorarea mediului' : 'Comunicare în limba română';
+        expect(title).toBe(level === 'presc' ? 'Evaluare — nivel preșcolar' : `Evaluare — ${subject}, ${{ CP: 'clasa pregătitoare', I: 'clasa I', II: 'clasa a II-a', III: 'clasa a III-a', IV: 'clasa a IV-a' }[level as 'CP']}`);
         for (const [i, p] of sheets.entries()) {
           const t = texts(p).map((x) => x.text);
           expect(t).toContain(title);
@@ -128,6 +133,23 @@ describe('an evaluation sheet', () => {
         }
       });
     }
+
+  it('nothing enters the footer band: every item ends above it, on every page, whatever the seed', () => {
+    // the items end at H − 12 − 7 mm; under that only the page number, the curriculum line and the brand line
+    const FOOTER = H - 12 - 7;
+    const footerText = (o: ReturnType<typeof flattenOps>[number]) => o.t === 'text' && o.y >= H - 12 - 0.5;
+    for (const preset of EVALUATIONS)
+      for (const level of preset.levels!)
+        for (const seed of [1, 2, 3, 7, 42])
+          for (const tier of ['full', 'free'] as const) {
+            const pages = buildWorksheetPages({ ...presetConfig(preset, level), mathSeed: seed }, tier);
+            pages.forEach((p, i) => {
+              const inBand = flattenOps(p.ops).filter((o) => !footerText(o)).map((o) => ({ o, b: opBox(o) })).filter(({ b }) => b && b.maxY > FOOTER + 0.3);
+              expect(inBand.map(({ o, b }) => `${o.t}${o.t === 'text' ? ` "${o.text}"` : ''} ${b!.maxY.toFixed(1)}`), `${preset.id} ${level} seed ${seed} ${tier} page ${i + 1}`).toEqual([]);
+              for (const o of flattenOps(p.ops).filter(footerText)) expect(opBox(o)!.minY, `${preset.id} ${level} page ${i + 1}`).toBeGreaterThan(FOOTER + 2);
+            });
+          }
+  });
 
   it('no picture twice in one evaluation', () => {
     for (const preset of EVALUATIONS.filter((p) => p.config.category === 'games'))

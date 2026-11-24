@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'WorksheetWiz – fișe de lucru',
     short_name: 'WorksheetWiz',
-    description: 'Fișe de lucru pe programă, de la grădiniță la clasa a II-a, gata de printat.',
+    description: 'Fișe de lucru pe programă, de la grădiniță la clasa a IV-a, gata de printat.',
     lang: 'ro',
     start_url: '/',
     display: 'standalone',
