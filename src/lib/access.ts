@@ -2,6 +2,8 @@ import type { ContentCategory, Tier } from '@/types';
 import { FREE_LIMITS } from '@/lib/constants';
 import { baseLetter, normalizeKey } from '@/lib/glyphs/data';
 import { READING_LEVELS, type ReadKind } from '@/lib/worksheet/reading';
+import { isFunItem } from '@/lib/worksheet/fun';
+import { isExploreItem } from '@/lib/worksheet/explore';
 
 /**
  * One place that decides whether an item is usable on a tier. The item picker,
@@ -39,6 +41,8 @@ export function isItemAllowed(item: string, category: ContentCategory, tier: Tie
       if (kind === 'first' || kind === 'syl' || kind === 'split') return arg === '1';
       // sorting, grouping and spatial orientation: set 1 of each
       if (kind === 'sort' || kind === 'odd' || kind === 'group' || kind === 'pos') return arg === '1';
+      // the fun preschool sheets and „Explorarea mediului”: set 1 of each (fun.ts, explore.ts)
+      if ((isFunItem(item) || isExploreItem(item)) && arg === '1') return true;
       // „Citire și scriere” ("read:<kind>:<set>"): the first set of each class (CP 1, I 1, II 1) of each kind
       if (kind === 'read') {
         const levels = READING_LEVELS[arg as ReadKind];

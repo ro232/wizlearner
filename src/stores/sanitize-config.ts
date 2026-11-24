@@ -30,6 +30,9 @@ const PHONO_ITEM = /^(sound:(A|B|C|D|F|L|M|P|R|S|T|U|V)|(first|syl|split):[1-6])
 const SORTING_ITEM = /^(sort|odd|group|pos):[1-6]$/;
 // „Citire și scriere” (reading.ts: isReadingItem)
 const READING_ITEM = /^read:(match|gap|draw|fill|order|copy|text):[1-6]$/;
+// the fun preschool sheets (fun.ts: isFunItem) and „Explorarea mediului” (explore.ts: isExploreItem)
+const FUN_ITEM = /^(color|colsum|maze|diff|trace|shadow):[1-6]$/;
+const EXPLORE_ITEM = /^((plant|body|senses|habitat|move|weather|wear|water|melt):1|(home|baby):[12]|season:[1-5])$/;
 const MATH_RANGES: readonly number[] = [5, 10, 20, 31, 100, 1000];
 
 const MAX_ITEMS = 120;
@@ -63,6 +66,7 @@ export function itemFitsCategory(item: unknown, category: ContentCategory): item
       if (PHONO_ITEM.test(item)) return true;
       if (SORTING_ITEM.test(item)) return true;
       if (READING_ITEM.test(item)) return true;
+      if (FUN_ITEM.test(item) || EXPLORE_ITEM.test(item)) return true;
       return GAME_ITEM.test(item);
     default:
       return false;

@@ -38,6 +38,12 @@ sheet('citire-cp', { category: 'games', selectedItems: ['read:match:1', 'read:ga
 sheet('citire-1', { category: 'games', selectedItems: ['read:match:4', 'read:gap:3', 'read:draw:4', 'read:fill:1', 'read:order:1', 'read:copy:3', 'read:text:1'], curriculumLevel: 'I', mathAnswers: true });
 sheet('citire-2', { category: 'games', selectedItems: ['read:gap:5', 'read:fill:4', 'read:order:4', 'read:copy:5', 'read:text:4'], curriculumLevel: 'II', mathAnswers: true });
 sheet('citire-mana', { category: 'games', selectedItems: ['read:copy:4', 'read:copy:6'], script: 'cursive', letterMode: 'paired' });
+// fun preschool sheets and „Explorarea mediului”, with their answers (drawn mazes and scenes)
+sheet('fun-coloreaza', { category: 'games', selectedItems: ['color:1', 'color:6', 'colsum:4'], curriculumLevel: 'presc', mathAnswers: true });
+sheet('fun-labirint-diferente', { category: 'games', selectedItems: ['maze:1', 'maze:6', 'diff:2', 'diff:6'], mathAnswers: true });
+sheet('fun-linii-umbre', { category: 'games', selectedItems: ['trace:3', 'trace:6', 'shadow:1', 'shadow:6'], curriculumLevel: 'presc' });
+sheet('explorare-presc', { category: 'games', selectedItems: ['plant:1', 'body:1', 'home:1', 'move:1', 'baby:1', 'season:1', 'season:5', 'weather:1', 'wear:1'], curriculumLevel: 'presc', mathAnswers: true });
+sheet('explorare-scoala', { category: 'games', selectedItems: ['senses:1', 'habitat:1', 'water:1', 'melt:1'], curriculumLevel: 'I', mathAnswers: true });
 sheet('matematica-10', { category: 'math', selectedItems: MATH_TYPES.filter((t) => t !== 'money' && t !== 'problems'), mathRange: 10, mathAnswers: true });
 sheet('matematica-100', { category: 'math', selectedItems: ['add', 'sub', 'seq'], mathRange: 100 });
 sheet('matematica-31', { category: 'math', selectedItems: MATH_TYPES.filter((t) => t !== 'problems'), mathRange: 31, mathAnswers: true });

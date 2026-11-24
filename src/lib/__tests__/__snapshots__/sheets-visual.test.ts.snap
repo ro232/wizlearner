@@ -195,9 +195,62 @@ exports[`how every kind of sheet looks > evaluare-mate-II 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > explorare-presc 1`] = `
+[
+  "1e6a2030f10cecb7",
+  "09f7d0a405422bdf",
+  "31cdef55aae2735e",
+  "dd72925abd7bf3bd",
+  "874fe5d76dae0b42",
+  "8c37ad8be8b5d70c",
+  "98fa44fbb559408d",
+  "daf2766d1a87734f",
+  "f7df22bd54af1364",
+  "02a7b1458190f0a8",
+]
+`;
+
+exports[`how every kind of sheet looks > explorare-scoala 1`] = `
+[
+  "8e6bf48ca8172902",
+  "d62063b6c27b674f",
+  "0c1b61df6a0f87f6",
+  "57cf21683a3c511d",
+  "72bc62b268cf805f",
+]
+`;
+
 exports[`how every kind of sheet looks > forme 1`] = `
 [
   "a94aabd666b62ef9",
+]
+`;
+
+exports[`how every kind of sheet looks > fun-coloreaza 1`] = `
+[
+  "4837d0109186dadd",
+  "bf06d5b72ea0e4df",
+  "3076dc01db965c5d",
+  "b49b5e1479619d0e",
+]
+`;
+
+exports[`how every kind of sheet looks > fun-labirint-diferente 1`] = `
+[
+  "7dbd5f29fcc25818",
+  "cba29a9e33626b6f",
+  "be204548a90dfa77",
+  "5bcd9c972a62caa4",
+  "8b7ee33b6d5c0ea7",
+]
+`;
+
+exports[`how every kind of sheet looks > fun-linii-umbre 1`] = `
+[
+  "32c6eab83ba5760a",
+  "8f180a9cebbcb314",
+  "c4424d0f39628a84",
+  "51cb238f6f90dc17",
 ]
 `;
 

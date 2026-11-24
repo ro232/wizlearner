@@ -194,6 +194,54 @@ const RULES: Record<string, Rule> = {
   // accesibile (incluzând desene, reproduceri de artă, reprezentări schematice)”, preschool E 2.2 („…formă…”);
   // not II 2.2 (characteristics of the shapes, not counting them)
   figures: { presc: presc('E', '2.2'), CP: school(MEM, 'CP', '2.2'), I: school(MEM, 'I', '2.2') },
+  // ── the fun preschool sheets (fun-pages.ts). „Colorează după cod”: the digits 1–5, E 2.1 „Demonstrează
+  // familiarizarea cu conceptul de număr și cu numerația”, CP 1.1 „Recunoașterea și scrierea numerelor în
+  // concentrul 0-31” (as „Numără și scrie”). With the exercises (result 1–5, second number 1–5): CP 1.4
+  // „Efectuarea de adunări și scăderi în concentrul 0-31, prin adăugarea /extragerea a 1-5 elemente dintr-o
+  // mulțime dată”; not preschool (no behaviour names operations, as for the math sheets).
+  color: { presc: presc('E', '2.1'), CP: school(MEM, 'CP', '1.1') },
+  colsum: { CP: school(MEM, 'CP', '1.4') },
+  // the dashed lines from picture to picture are pre-writing, as the „Elemente grafice” sheets: D 3.4
+  // „Asimilează unele elemente ale scrisului…”, CLR CP 4.1 „Trasarea elementelor grafice și a contururilor
+  // literelor, folosind resurse variate”. The maze, the differences and the shadows: no behaviour or competence
+  // names them, so no code.
+  trace: { presc: presc('D', '3.4'), CP: school(CLR, 'CP', '4.1') },
+  // ── „Explorarea mediului” (explore-pages.ts). Preschool E 3.2 „Identifică și valorifică unele caracteristici
+  // ale lumii vii, ale Pământului și Spațiului”: the parts of a plant and of the body, the senses, where animals
+  // live, how they move, their young. CP contents „Plante și animale: Părți componente”, „Corpul omenesc: Părți
+  // componente și rolul lor; Simțurile”: the parts written in the boxes of the drawing are CP 4.1 „Formularea unor
+  // observații asupra mediului apropiat folosind limbajul comun, reprezentări prin desene și operatorii logici
+  // „și”, „nu”” (the I and II contents are other: skeleton and organs, health).
+  plant: { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '4.1') },
+  body: { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '4.1') },
+  senses: { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '4.1') },
+  // where it lives, how it moves: sorting by the criterion the choices give, as „Sortează” (CP 5.1 „Sortarea/
+  // clasificarea unor obiecte/ materiale etc., pe baza unui criteriu dat”). The table of clasa a II-a (contents
+  // „Medii de viață: lacul/iazul/balta, pădurea, Delta Dunării, Marea Neagră, deșertul, Polul Nord, Polul Sud”):
+  // II 5.1 „Sortarea, clasificarea și înregistrarea prin desene și tabele a unor date din mediul cunoscut”.
+  home: { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '5.1') },
+  move: { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '5.1') },
+  habitat: { II: school(MEM, 'II', '5.1') },
+  // the names of the young (vițel, mânz, ied…) are words to learn: D 2.3 „Demonstrează extinderea progresivă a
+  // vocabularului”, and E 3.2; no CP–II contents name the young
+  baby: { presc: [presc('D', '2.3'), presc('E', '3.2')] },
+  // the seasons: E 1.1 „Identifică elementele caracterisice ale unor fenomene/relații din mediul apropiat”; CP 3.1
+  // „Descrierea unor fenomene/procese/ structuri repetitive simple din mediul apropiat, în scopul identificării
+  // unor regularități” (the seasons come back every year, each with its signs)
+  season: { presc: presc('E', '1.1'), CP: school(MEM, 'CP', '3.1') },
+  // the weather symbols and their names (CP contents „Fenomene ale naturii: ploaie, ninsoare, vânt, fulger,
+  // tunet”): E 1.1, CP 4.1 (the symbols are „reprezentări prin desene”, the names „limbajul comun”)
+  weather: { presc: presc('E', '1.1'), CP: school(MEM, 'CP', '4.1') },
+  // „dacă plouă, atunci iei umbrela”: CP 4.2 „Identificarea relațiilor de tipul „dacă... atunci…” între două
+  // evenimente succesive”; E 1.4 „Identifică posibile răspunsuri/soluții la întrebări, situații - problemă și
+  // provocări din viața proprie și a grupului de colegi”
+  wear: { presc: presc('E', '1.4'), CP: school(MEM, 'CP', '4.2') },
+  // water (clasa I contents „Transformări ale apei: solidificare, topire, evaporare, fierbere, condensare”):
+  // solid or liquid, I 4.1 „Formularea rezultatelor unor observații, folosind câțiva termeni științifici,
+  // reprezentări prin desene și operatorii logici „și”, „sau”, „nu””; what happens to it, I 4.2
+  // „Identificarea unor consecințe ale unor acțiuni, fenomene, procese simple”
+  water: { I: school(MEM, 'I', '4.1') },
+  melt: { I: school(MEM, 'I', '4.2') },
 };
 
 /** Topics whose sheet does not depend on the number range (only „groups” does): the range never takes their code away. */
