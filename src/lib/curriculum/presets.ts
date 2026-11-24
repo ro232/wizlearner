@@ -87,6 +87,10 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'coloreaza-dupa-cod', title: 'Colorează după cod', text: 'Un desen cu numere de la 1 la 5: fiecare parte cu culoarea numărului ei.', config: { category: 'games', selectedItems: ['color:1'] }, levels: ['presc'] },
   { id: 'calculeaza-coloreaza', title: 'Calculează și colorează', text: 'Adunări și scăderi cu rezultatul 1–5: fiecare parte cu culoarea rezultatului.', config: { category: 'games', selectedItems: ['colsum:1'] }, levels: ['CP'] },
   { id: 'urmareste-linia', title: 'Urmărește linia', text: 'Linii punctate de la imagine la imagine, de urmărit cu creionul.', config: { category: 'games', selectedItems: ['trace:1'] }, levels: ['presc', 'CP'] },
+  // no behaviour or competence names these three (sheet.ts prints no code): listed only on /fise-de-lucru
+  { id: 'labirint', title: 'Labirint', text: 'Un singur drum de la imagine la imagine, în 6 × 6, 9 × 9 sau 12 × 12 căsuțe.', config: { category: 'games', selectedItems: ['maze:1'] }, levels: ['presc'] },
+  { id: 'gaseste-diferentele', title: 'Găsește diferențele', text: 'Aceeași imagine de două ori; în a doua se schimbă 3–5 lucruri.', config: { category: 'games', selectedItems: ['diff:1'] }, levels: ['presc'] },
+  { id: 'gaseste-umbra', title: 'Găsește umbra', text: 'Șase imagini și umbrele lor: unește fiecare imagine cu umbra ei.', config: { category: 'games', selectedItems: ['shadow:1'] }, levels: ['presc'] },
   { id: 'partile-plantei', title: 'Părțile plantei', text: 'Rădăcină, tulpină, frunză, floare, fruct: scrie sau lipește cuvântul în căsuță.', config: { category: 'games', selectedItems: ['plant:1'] }, levels: ['presc', 'CP'] },
   { id: 'partile-corpului', title: 'Părțile corpului', text: 'Cap, gât, trunchi, mâini, picioare: scrie sau lipește cuvântul în căsuță.', config: { category: 'games', selectedItems: ['body:1'] }, levels: ['presc', 'CP'] },
   { id: 'simturile', title: 'Simțurile', text: 'Unește ochiul, urechea, nasul, limba și mâna cu simțul lor.', config: { category: 'games', selectedItems: ['senses:1'] }, levels: ['presc', 'CP'] },
