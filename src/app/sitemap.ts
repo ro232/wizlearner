@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { SEO_SHEETS } from '@/lib/seo/catalog';
 import { CLASS_PAGES } from '@/lib/curriculum/presets';
+import { LANDING_CLASSES, LANDING_PAGES, LANDING_ROOT } from '@/lib/seo/landing';
 import { CONTENT_UPDATED, absoluteUrl } from '@/lib/seo/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -22,6 +23,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/programa', 0.8),
     ...CLASS_PAGES.map((c) => page(`/programa/${c.slug}`, 0.7)),
     page('/planificare', 0.8),
+    page(LANDING_ROOT, 0.8, 'weekly'),
+    ...LANDING_CLASSES.map((c) => page(c.path, 0.7)),
+    ...LANDING_PAGES.map((p) => page(p.path, 0.6)),
     page('/confidentialitate', 0.2, 'yearly'),
     page('/termeni', 0.2, 'yearly'),
   ];

@@ -56,6 +56,10 @@ export default function ClassCurriculumPage({ params }: { params: { clasa: strin
                 <Link href={`/planificare?clasa=${c.level}`} className="font-bold underline">Fă-o pe 2026–2027, cu aceste competențe</Link>.
               </p>
             )}
+            <p className="mt-2 text-sm text-slate-700">
+              Fișele pe teme, cu explicații:{' '}
+              <Link href={`/fise-de-lucru/${c.slug}`} className="font-bold underline">fișe de lucru {c.at.replace(/^la /, 'pentru ')}</Link>.
+            </p>
           </div>
         </section>
 
