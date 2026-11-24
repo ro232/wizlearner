@@ -85,9 +85,65 @@ exports[`how every kind of sheet looks > cifre 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > citire-1 1`] = `
+[
+  "0655a82345db2501",
+  "a114444f1ab0cdd5",
+  "2467fae32211edec",
+  "a3cf1c8cace41508",
+  "1eac8c0da3a0380a",
+  "c9d57ebe6b22adb1",
+  "501eea22ea68f2a7",
+  "3e194a3054ec95f2",
+]
+`;
+
+exports[`how every kind of sheet looks > citire-2 1`] = `
+[
+  "0ac813c206450878",
+  "074b0dc4e938792c",
+  "cad1323d3bda613a",
+  "48d566884b1eb9e9",
+  "452f9980a91ce96e",
+  "83bac9e61f47a649",
+]
+`;
+
+exports[`how every kind of sheet looks > citire-cp 1`] = `
+[
+  "552165f5317ffc19",
+  "898c32595e105012",
+  "11c0cbde0077e62f",
+  "0f3f3e4eaedc8397",
+]
+`;
+
+exports[`how every kind of sheet looks > citire-mana 1`] = `
+[
+  "5715e52ec2b0a76e",
+  "57b1fe94a15974cc",
+]
+`;
+
 exports[`how every kind of sheet looks > coperta-kdp-mana 1`] = `
 [
   "163704e5738f5b87",
+]
+`;
+
+exports[`how every kind of sheet looks > evaluare-citire-I 1`] = `
+[
+  "542b7a46c387bf91",
+  "90d5c7480adc8563",
+  "41ae0540857e93a0",
+]
+`;
+
+exports[`how every kind of sheet looks > evaluare-citire-II 1`] = `
+[
+  "078b5d1c36066c6f",
+  "bec388881d2c2560",
+  "005b25619d46ee79",
 ]
 `;
 

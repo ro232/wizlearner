@@ -54,6 +54,14 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'intrusul', title: 'Ce nu se potrivește?', text: 'Taie imaginea care nu face parte din grupă.', config: { category: 'games', selectedItems: ['odd:1'] }, levels: ['presc'] },
   { id: 'grupeaza-numara', title: 'Grupează și numără', text: 'Numără fiecare fel de fruct și scrie numărul în tabel.', config: { category: 'games', selectedItems: ['group:1'] }, levels: ['presc', 'CP'] },
   { id: 'orientare', title: 'Unde se află?', text: 'Pe masă, sub masă, deasupra, în cutie, în stânga: încercuiește.', config: { category: 'games', selectedItems: ['pos:1'] }, levels: ['CP', 'I'] },
+  // „Citire și scriere”: the set written for each class (a set prints its code only in its class)
+  { id: 'citire-uneste', title: 'Unește cuvântul cu imaginea', text: 'Citește cuvântul și unește-l cu imaginea lui.', config: { category: 'games', selectedItems: ['read:match:1'] }, byLevel: { I: { selectedItems: ['read:match:4'] } }, levels: ['CP', 'I'] },
+  { id: 'citire-litera-lipsa', title: 'Ce literă lipsește?', text: 'Scrie litera care lipsește din numele imaginii.', config: { category: 'games', selectedItems: ['read:gap:1'] }, byLevel: { I: { selectedItems: ['read:gap:3'] }, II: { selectedItems: ['read:gap:5'] } }, levels: ['CP', 'I', 'II'] },
+  { id: 'citire-deseneaza', title: 'Citește și desenează', text: 'Citește „un nor”, „doi nori” și desenează în căsuță.', config: { category: 'games', selectedItems: ['read:draw:1'] }, byLevel: { I: { selectedItems: ['read:draw:4'] } }, levels: ['CP', 'I'] },
+  { id: 'citire-completeaza', title: 'Completează propoziția', text: 'Alege cuvântul potrivit și scrie-l pe linie.', config: { category: 'games', selectedItems: ['read:fill:1'] }, levels: ['I'] },
+  { id: 'citire-ordoneaza', title: 'Ordonează cuvintele', text: 'Așază cuvintele în ordine și scrie propoziția de mână.', config: { category: 'games', selectedItems: ['read:order:1'] }, byLevel: { II: { selectedItems: ['read:order:4'] } }, levels: ['I', 'II'] },
+  { id: 'citire-copiaza', title: 'Copiază', text: 'Cuvinte de tipar la pregătitoare; propoziții de mână, pe liniatura caietului, la clasa I și a II-a.', config: { category: 'games', selectedItems: ['read:copy:1'] }, byLevel: { I: { selectedItems: ['read:copy:3'] }, II: { selectedItems: ['read:copy:5'] } }, levels: ['CP', 'I', 'II'] },
+  { id: 'citire-text', title: 'Citește și răspunde', text: 'Un text scurt și trei întrebări despre el.', config: { category: 'games', selectedItems: ['read:text:1'] }, byLevel: { II: { selectedItems: ['read:text:4'] } }, levels: ['I', 'II'] },
   // Evaluări: the items of the class's programme as a short test, with the answers page (evaluation.ts)
   {
     id: 'evaluare-mate', title: 'Evaluare la matematică', text: 'Comparare, adunări și scăderi, probleme cu imagini, bani; cu răspunsuri și calificative orientative.',
@@ -71,6 +79,12 @@ export const SHEET_PRESETS: SheetPreset[] = [
   {
     id: 'evaluare-gradinita', title: 'Evaluare la grădiniță', text: 'Sortează, numără, ce nu se potrivește, sunetul de la început; cu răspunsuri și fișă de observare.',
     config: { category: 'games', selectedItems: ['sort:1', 'count:5', 'odd:1', 'sound:A'], evaluation: true }, levels: ['presc'], evaluation: true,
+  },
+  {
+    id: 'evaluare-citire', title: 'Evaluare: citire și scriere', text: 'Unește cuvântul cu imaginea, litera care lipsește, completează propoziția, un text cu întrebări; cu răspunsuri și calificative orientative.',
+    config: { category: 'games', selectedItems: ['read:match:4', 'read:gap:3', 'read:fill:1', 'read:text:1'], evaluation: true }, levels: ['I', 'II'], evaluation: true,
+    // clasa a II-a: its own sets (the sentences put in order instead of the pictures to join)
+    byLevel: { II: { selectedItems: ['read:gap:5', 'read:order:4', 'read:fill:4', 'read:text:4'] } },
   },
 ];
 

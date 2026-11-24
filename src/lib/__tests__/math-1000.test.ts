@@ -276,8 +276,8 @@ describe('clasa a II-a: the sheets open on 0–1000 and print the codes of the p
   it('the class page: 5 of 33 competences have sheets; the evaluation prints 1.2, 1.4, 5.2', () => {
     const items = classCoverage(II).flatMap((g) => g.items);
     expect(items).toHaveLength(33);
-    expect(items.filter((i) => i.presets.length).map((i) => i.code)).toEqual(['1.2', '1.3', '1.4', '5.2', '6.3']);
-    expect(classEvaluations(II).map((e) => [e.preset.id, e.codes])).toEqual([['evaluare-mate', ['1.2', '1.4', '5.2']]]);
+    expect(items.filter((i) => i.presets.length && i.programme === 'mem-p-ii').map((i) => i.code)).toEqual(['1.2', '1.3', '1.4', '5.2', '6.3']);
+    expect(classEvaluations(II).filter((e) => e.preset.id === 'evaluare-mate').map((e) => [e.preset.id, e.codes])).toEqual([['evaluare-mate', ['1.2', '1.4', '5.2']]]);
     const pages = buildWorksheetPages(presetConfig(presetById('evaluare-mate')!, 'II'), 'full');
     const t = textsOf(pages);
     // the numbers of the evaluation reach the hundreds

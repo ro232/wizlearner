@@ -8,6 +8,7 @@
  */
 import type { WorksheetConfig } from '@/types';
 import { findCompetence, type CompetenceRef, type Level, type ProgrammeId } from './index';
+import { readingSetLevel } from '@/lib/worksheet/reading';
 
 /** The class picked in the generator. "presc" = grădiniță. */
 export type SchoolLevel = 'presc' | 'CP' | 'I' | 'II';
@@ -106,6 +107,41 @@ const RULES: Record<string, Rule> = {
   // cu repere/direcții date…”. Not II 2.1 (coordinates in a reference system), nor a preschool behaviour
   // (A 2.2 „Se orientează în spațiu pe baza simțurilor” is about the senses, not a worksheet).
   pos: { CP: school(MEM, 'CP', '2.1'), I: school(MEM, 'I', '2.1') },
+  // „Citire și scriere” (reading-pages.ts): the key is "read:<kind>:<class of the set>" (see ruleKeys), so a
+  // set prints a code only in the class it is written for (a clasa I text gets nothing in clasa a II-a).
+  // CP 3.1 „Recunoașterea unor cuvinte uzuale, din universul apropiat, scrise cu litere mari și mici de tipar”
+  // (contents: „Citirea cuvintelor pe etichete asociate unor imagini sau obiecte”); I 3.1 „Citirea unor
+  // cuvinte și propoziții scurte, scrise cu litere de tipar sau de mână”.
+  'read:match:CP': { CP: school(CLR, 'CP', '3.1') },
+  'read:match:I': { I: school(CLR, 'I', '3.1') },
+  'read:draw:CP': { CP: school(CLR, 'CP', '3.1') },
+  'read:draw:I': { I: school(CLR, 'I', '3.1') },
+  'read:fill:I': { I: school(CLR, 'I', '3.1') },
+  // the missing letter: the child names the picture and finds the sound, as on „Primul sunet”. CP 1.3
+  // „Identificarea sunetului inițial și/ sau final dintr-un cuvânt…” (the CP sets leave out only the first
+  // or the last letter); I 1.3 „Identificarea unor sunete, silabe, cuvinte în enunțuri rostite cu claritate”;
+  // II 1.3 „Identificarea sunetelor și silabelor în cuvinte și a cuvintelor în enunțuri rostite cu claritate”.
+  'read:gap:CP': { CP: school(CLR, 'CP', '1.3') },
+  'read:gap:I': { I: school(CLR, 'I', '1.3') },
+  'read:gap:II': { II: school(CLR, 'II', '1.3') },
+  // the sentence put in order and written on the row: I 4.2 „Redactarea unor mesaje scurte, formate din
+  // cuvinte scrise cu litere de mână…”; II 4.2 „Redactarea unor mesaje simple, cu respectarea convențiilor de
+  // bază” (the capital at the start and the full stop the sheet asks for)
+  'read:order:I': { I: school(CLR, 'I', '4.2') },
+  'read:order:II': { II: school(CLR, 'II', '4.2') },
+  // copying: CP 4.1 „Trasarea elementelor grafice și a contururilor literelor…” (print letters, contents
+  // „Desenarea literelor de tipar”); I 4.1 „Scrierea literelor de mână” (the sentences are written in
+  // handwriting on the tip I ruling); II 4.1 „Scrierea unor mesaje, în diverse contexte de comunicare”
+  // (contents: „Copieri (texte de maxim 50 de cuvinte)”, „Transcrieri…”)
+  'read:copy:CP': { CP: school(CLR, 'CP', '4.1') },
+  'read:copy:I': { I: school(CLR, 'I', '4.1') },
+  'read:copy:II': { II: school(CLR, 'II', '4.1') },
+  // a short text and questions on it: I 3.2 „Identificarea mesajului unui scurt text care prezintă întâmplări,
+  // fenomene, evenimente familiare”; II 3.2 „Identificarea mesajului unui text în care se relatează
+  // întâmplări, fenomene din universul cunoscut”. Sentences to complete in clasa a II-a get no code: II 3.1
+  // „Citirea unor mesaje scrise, întâlnite în mediul cunoscut” is about the messages around the child.
+  'read:text:I': { I: school(CLR, 'I', '3.2') },
+  'read:text:II': { II: school(CLR, 'II', '3.2') },
 };
 
 /** The largest number each class works with, per the programme's contents. */
@@ -113,7 +149,7 @@ const NUMBER_LIMIT: Record<SchoolLevel, number> = { presc: 10, CP: 31, I: 100, I
 
 function ruleKeys(config: WorksheetConfig): string[] {
   if (config.category === 'math') return config.selectedItems;
-  if (config.category === 'games') return config.selectedItems.map((i) => i.split(':')[0]);
+  if (config.category === 'games') return config.selectedItems.map((i) => (readingSetLevel(i) ? `${i.split(':').slice(0, 2).join(':')}:${readingSetLevel(i)}` : i.split(':')[0]));
   return [config.category];
 }
 

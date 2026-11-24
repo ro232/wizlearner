@@ -12,6 +12,8 @@ import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/g
 import { COUNT_RANGES, DOT_SHAPES, DOT_SHAPE_LABELS } from '@/lib/worksheet/activities';
 import { PHONO_KIND_TITLES, phonologyItems } from '@/lib/worksheet/phonology-pages';
 import { SORTING_KIND_TITLES, sortingItems, sortingShortLabel } from '@/lib/worksheet/sorting-pages';
+import { READ_KIND_TITLES, readingItems, readingShortLabel } from '@/lib/worksheet/reading-pages';
+import { readingSetLevel } from '@/lib/worksheet/reading';
 import { Button } from '@/components/ui/button';
 import { MathPicker } from './math-picker';
 import { AnswerOptions } from './answer-options';
@@ -86,7 +88,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       case 'prewrite':
         return [...PATTERN_IDS];
       case 'games':
-        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems()];
+        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems(), ...readingItems()];
       default:
         return [];
     }
@@ -205,6 +207,16 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               { title: SORTING_KIND_TITLES.odd, text: 'Rânduri de câte patru imagini: copilul o taie pe cea din altă grupă. Seturile 4–6 sunt mai grele.', items: allItems.filter((i) => i.startsWith('odd:')), cols: 'grid-cols-6', show: sortingShortLabel },
               { title: SORTING_KIND_TITLES.group, text: 'Imagini amestecate (fructe, legume, animale domestice sau sălbatice, transport, jucării): copilul numără fiecare fel și scrie numărul în tabel.', items: allItems.filter((i) => i.startsWith('group:')), cols: 'grid-cols-2 sm:grid-cols-3', show: sortingShortLabel },
               { title: SORTING_KIND_TITLES.pos, text: 'Pe, sub, deasupra, în, stânga, dreapta: o scenă cu masa și cutia, o grilă de 3 × 3 cu întrebări, ori desene după indicații.', items: allItems.filter((i) => i.startsWith('pos:')), cols: 'grid-cols-2 sm:grid-cols-3', show: sortingShortLabel },
+              // „Citire și scriere” (reading-pages.ts): the sets of each class, CP = clasa pregătitoare
+              ...([
+                ['match', 'Șase cuvinte și șase imagini: copilul le unește cu o linie (CP = clasa pregătitoare).'],
+                ['gap', 'Cuvântul sub imagine, cu o literă lipsă și trei litere din care alege (CP = clasa pregătitoare).'],
+                ['draw', 'Câte o expresie scurtă („doi nori”) deasupra fiecărei căsuțe de desenat (CP = clasa pregătitoare).'],
+                ['fill', 'Propoziții cu un cuvânt lipsă și trei cuvinte din care alege (clasa I, a II-a).'],
+                ['order', 'Cuvintele unei propoziții amestecate, apoi rândul pe care o scrie (clasa I, a II-a).'],
+                ['copy', 'Cuvinte de tipar (CP = clasa pregătitoare) sau propoziții de scris de mână, pe liniatura caietului.'],
+                ['text', 'Un text scurt și trei întrebări cu răspuns de încercuit (clasa I, a II-a).'],
+              ] as const).map(([kind, text]) => ({ title: `Citire și scriere: ${READ_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`read:${kind}:`)), cols: 'grid-cols-3 sm:grid-cols-6', show: readingShortLabel })),
             ].map((group) => (
               <div key={group.title}>
                 <div className="font-extrabold text-ink">{group.title}</div>
@@ -272,6 +284,15 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
         {(config.category === 'math' || config.category === 'games') && (
           <div className="mt-3">
             <AnswerOptions />
+          </div>
+        )}
+        {config.category === 'games' && config.selectedItems.some((i) => i.startsWith('read:copy:') && readingSetLevel(i) !== 'CP') && (
+          <div className="mt-3">
+            <SectionLabel>Modelul de copiat</SectionLabel>
+            <div className="grid grid-cols-2 gap-2">
+              <Choice active={config.script !== 'cursive'} onClick={() => setScript('print')}><div className="text-sm font-bold">Ab · de tipar</div><div className="text-[11px] text-slate-500">copilul transcrie de mână</div></Choice>
+              <Choice active={config.script === 'cursive'} onClick={() => setScript('cursive')}><div className="text-sm font-bold italic">Ab · de mână</div><div className="text-[11px] text-slate-500">copilul copiază</div></Choice>
+            </div>
           </div>
         )}
       </div>

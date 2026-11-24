@@ -31,6 +31,9 @@ for (const m of phonology.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}
 // Pictures of the sorting and orientation sheets: every quoted emoji in that file.
 const sorting = readFileSync(join(root, 'src/lib/worksheet/sorting.ts'), 'utf8');
 for (const m of sorting.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)'/gu)) emojis.add(m[1]);
+// Pictures of the „Citire și scriere” words and texts: every quoted emoji in that file.
+const reading = readFileSync(join(root, 'src/lib/worksheet/reading.ts'), 'utf8');
+for (const m of reading.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)'/gu)) emojis.add(m[1]);
 // Objects of the „Probleme cu imagini”: every quoted emoji in that file.
 const problems = readFileSync(join(root, 'src/lib/worksheet/problems.ts'), 'utf8');
 for (const m of problems.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)'/gu)) emojis.add(m[1]);

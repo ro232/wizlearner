@@ -24,6 +24,8 @@ const GAME_ITEM = /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree)
 const PHONO_ITEM = /^(sound:(A|B|C|D|F|L|M|P|R|S|T|U|V)|(first|syl|split):[1-6])$/;
 // sorting, grouping and spatial orientation (sorting-pages.ts: isSortingItem)
 const SORTING_ITEM = /^(sort|odd|group|pos):[1-6]$/;
+// „Citire și scriere” (reading.ts: isReadingItem)
+const READING_ITEM = /^read:(match|gap|draw|fill|order|copy|text):[1-6]$/;
 const MATH_RANGES: readonly number[] = [5, 10, 20, 31, 100, 1000];
 
 const MAX_ITEMS = 120;
@@ -56,6 +58,7 @@ export function itemFitsCategory(item: unknown, category: ContentCategory): item
     case 'games':
       if (PHONO_ITEM.test(item)) return true;
       if (SORTING_ITEM.test(item)) return true;
+      if (READING_ITEM.test(item)) return true;
       return GAME_ITEM.test(item);
     default:
       return false;
