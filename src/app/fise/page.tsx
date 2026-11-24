@@ -32,6 +32,10 @@ export default function SheetsIndexPage() {
             <p className="mt-4 text-lg sm:text-xl text-slate-700 max-w-2xl">
               Alege o fișă, descarc-o ca PDF și printeaz-o. Toate au liniatură de caiet, ordinea liniilor și diacriticele corecte.
             </p>
+            <p className="mt-3 text-sm text-slate-700">
+              Cauți fișe pe clasă și temă (adunări clasa I, sunetul inițial, ceasul)? Vezi{' '}
+              <Link href="/fise-de-lucru" className="font-bold underline">fișele de lucru pe clase</Link>.
+            </p>
           </div>
         </section>
         {kinds.map((k) => (

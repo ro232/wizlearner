@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { LOCAL_SITE_URL, SITE_URL, absoluteUrl, resolveSiteUrl, CONTENT_UPDATED } from '@/lib/seo/site';
 import { ROUTE_META, TITLE_MAX, DESCRIPTION_MAX, SITE_NAME, DEFAULT_TITLE, DEFAULT_DESCRIPTION } from '@/lib/seo/metadata';
 import { SEO_SHEETS } from '@/lib/seo/catalog';
+import { LANDING_CLASSES, LANDING_PAGES } from '@/lib/seo/landing';
 import { readOperator, operatorSentence, operatorDetails, missingOperatorFields, warnIfOperatorIncomplete } from '@/lib/legal';
 import sitemap from '@/app/sitemap';
 import robots from '@/app/robots';
@@ -33,7 +34,8 @@ describe('public address of the site', () => {
 
   it('sitemap and robots are built from it', () => {
     const urls = sitemap().map((e) => e.url);
-    expect(urls.length).toBe(11 + SEO_SHEETS.length + 1 + CLASS_PAGES.length + 1); // + /programa, its class pages and /planificare
+    // + /programa, its class pages, /planificare, and /fise-de-lucru with its class and topic pages
+    expect(urls.length).toBe(11 + SEO_SHEETS.length + 1 + CLASS_PAGES.length + 1 + 1 + LANDING_CLASSES.length + LANDING_PAGES.length);
     expect(new Set(urls).size).toBe(urls.length);
     for (const u of urls) {
       expect(u.startsWith(SITE_URL), u).toBe(true);
@@ -54,6 +56,7 @@ describe('titles and descriptions', () => {
   const pages = [
     ...Object.entries(ROUTE_META).map(([path, m]) => ({ path, noindex: 'noindex' in m && m.noindex, title: 'absoluteTitle' in m && m.absoluteTitle ? m.title : `${m.title} · ${SITE_NAME}`, description: m.description })),
     ...SEO_SHEETS.map((s) => ({ path: `/fise/${s.slug}`, noindex: false, title: s.title, description: s.description })),
+    ...[...LANDING_CLASSES, ...LANDING_PAGES].map((p) => ({ path: p.path, noindex: false, title: p.title, description: p.description })),
   ];
 
   it('fit search results', () => {

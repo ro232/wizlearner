@@ -51,6 +51,10 @@ export default function CurriculumIndexPage() {
             })}
           </ul>
           <p className="max-w-6xl mx-auto px-4 sm:px-6 mt-8 text-slate-700">
+            Cauți fișele pe teme (adunări, citire, ceasul…)? Vezi{' '}
+            <Link href="/fise-de-lucru" className="font-bold underline">fișele de lucru pe clase</Link>.
+          </p>
+          <p className="max-w-6xl mx-auto px-4 sm:px-6 mt-4 text-slate-700">
             Pentru clasa pregătitoare, clasa I și a II-a poți face și{' '}
             <Link href="/planificare" className="font-bold underline">planificarea calendaristică pe 2026–2027</Link>, cu fișele potrivite fiecărei unități.
           </p>
