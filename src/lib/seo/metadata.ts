@@ -10,12 +10,12 @@ export const SITE_NAME = 'WorksheetWiz';
 export const TITLE_MAX = 60;
 export const DESCRIPTION_MAX = 155;
 
-export const DEFAULT_TITLE = 'WorksheetWiz – fișe de scris pentru grădiniță și clasa I';
+export const DEFAULT_TITLE = 'Fișe de lucru pe programă, de la grădiniță la clasa a II-a';
 export const DEFAULT_DESCRIPTION =
-  'Fișe de trasat litere, cifre și numele copilului, cu alfabetul românesc complet (Ă Â Î Ș Ț) și ordinea liniilor. PDF gata de printat.';
+  'Fișe PDF pentru grădiniță, clasa pregătitoare, I și a II-a, cu codul competenței pe pagină. Evaluări, planificare și fișe cu numele fiecărui copil.';
 
 /** The shared preview image for links sent on WhatsApp, Facebook etc. (src/app/opengraph-image.tsx). */
-export const OG_IMAGE = { url: '/opengraph-image', width: 1200, height: 630, alt: 'WorksheetWiz – fișe de scris pentru grădiniță și clasa I' };
+export const OG_IMAGE = { url: '/opengraph-image', width: 1200, height: 630, alt: 'WorksheetWiz – fișe de lucru pe programă, de la grădiniță la clasa a II-a' };
 
 interface PageMeta {
   /** Full <title> when `absolute`, otherwise the part before „ · WorksheetWiz”. */

@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   title: DEFAULT_TITLE,
   description: DEFAULT_DESCRIPTION,
   applicationName: SITE_NAME,
-  keywords: ["fișe grădiniță", "fișe de lucru", "litere de trasat", "alfabetul românesc", "clasa pregătitoare", "exerciții grafice", "fișa cu numele copilului"],
+  keywords: ["fișe de lucru pe programă", "fișe grădiniță", "fișe clasa I", "fișe clasa a II-a", "planificare calendaristică", "fișe de lucru", "litere de trasat", "alfabetul românesc", "clasa pregătitoare", "exerciții grafice", "fișa cu numele copilului"],
   openGraph: {
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,

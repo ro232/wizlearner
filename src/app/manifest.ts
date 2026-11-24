@@ -3,9 +3,9 @@ import type { MetadataRoute } from 'next';
 /** Web app manifest (served at /manifest.webmanifest and linked from every page). */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'WorksheetWiz – fișe de scris',
+    name: 'WorksheetWiz – fișe de lucru',
     short_name: 'WorksheetWiz',
-    description: 'Fișe de scris pentru grădiniță și clasa I, gata de printat.',
+    description: 'Fișe de lucru pe programă, de la grădiniță la clasa a II-a, gata de printat.',
     lang: 'ro',
     start_url: '/',
     display: 'standalone',
