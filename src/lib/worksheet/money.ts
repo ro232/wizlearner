@@ -9,16 +9,19 @@ import { INK, MUTED } from './rows';
  *   CP: „Leul (bancnotele de 1 leu, 5 lei, 10 lei)”, „Schimburi echivalente valoric în concentrul 0-31”
  *   clasa I: „Leul (1 leu = 100 de bani); monede și bancnote (maxim 100 lei)”,
  *            „Schimburi echivalente valoric în concentrul 0-100”
+ *   clasa a II-a: „Leul: bancnote de 200 de lei, 500 de lei”, „Schimburi echivalente valoric în
+ *            concentrul 0-1000”
  *
  * The notes are simple drawn rectangles with the value written on them (never pictures of real
- * banknotes): 1 leu, 5 lei, 10 lei, and from 0–100 also 50 de lei. Coins (bani) are left out:
- * they need 1 leu = 100 de bani, i.e. amounts that are not whole lei.
+ * banknotes): 1 leu, 5 lei, 10 lei, from 0–100 also 50 de lei, and in 0–1000 also 100, 200 and
+ * 500 de lei. Coins (bani) and euro are left out: they need 1 leu = 100 de bani (1 euro = 100 de
+ * cenți), i.e. amounts that are not whole lei.
  *
  * One page, six rows: two „Câți lei sunt?”, two „Unde sunt mai mulți bani?”, one „Colorează
  * bancnotele cu care plătești…” and one row of exchanges („schimburi echivalente”).
  */
 
-export type Note = 1 | 5 | 10 | 50;
+export type Note = 1 | 5 | 10 | 50 | 100 | 200 | 500;
 
 export type MoneyExercise =
   | { kind: 'count'; notes: Note[]; answer: string }
@@ -32,11 +35,15 @@ export function lei(n: number): string {
   return `${n} ${needsDe(n) ? 'de ' : ''}lei`;
 }
 
-/** The notes used in a range: 1 and 5 lei up to 5; 1, 5, 10 up to 31 (CP); 50 de lei too up to 100 (clasa I). */
+/**
+ * The notes used in a range: 1 and 5 lei up to 5; 1, 5, 10 up to 31 (CP); 50 de lei too up to 100
+ * (clasa I); 100, 200 and 500 de lei too up to 1000 (clasa a II-a).
+ */
 export function notesFor(range: number): Note[] {
   if (range <= 5) return [5, 1];
   if (range <= 31) return [10, 5, 1];
-  return [50, 10, 5, 1];
+  if (range <= 100) return [50, 10, 5, 1];
+  return [500, 200, 100, 50, 10, 5, 1];
 }
 
 const int = (rand: () => number, lo: number, hi: number) => lo + Math.floor(rand() * (hi - lo + 1));
@@ -49,8 +56,11 @@ function greedy(amount: number, kinds: Note[]): Note[] {
   return out;
 }
 
-/** What a note breaks into, one step down: 50 → 5 × 10, 10 → 2 × 5, 5 → 5 × 1. */
-const SPLIT: Record<Note, Note[]> = { 50: [10, 10, 10, 10, 10], 10: [5, 5], 5: [1, 1, 1, 1, 1], 1: [1] };
+/** What a note breaks into, one step down: 500 → 5 × 100, 200 → 2 × 100, 100 → 2 × 50, 50 → 5 × 10, 10 → 2 × 5, 5 → 5 × 1. */
+const SPLIT: Record<Note, Note[]> = {
+  500: [100, 100, 100, 100, 100], 200: [100, 100], 100: [50, 50],
+  50: [10, 10, 10, 10, 10], 10: [5, 5], 5: [1, 1, 1, 1, 1], 1: [1],
+};
 
 /**
  * An amount in notes, not always the fewest (5 + 5 for 10, so the child really counts),
@@ -72,11 +82,13 @@ function decompose(amount: number, kinds: Note[], max: number, rand: () => numbe
 export function moneyExercises(range: number, rand: () => number): MoneyExercise[] {
   const kinds = notesFor(range);
   const out: MoneyExercise[] = [];
+  // 0–1000: the amounts to count and to pay have hundreds, the exchanges start from 100 de lei up
+  const big = range >= 1000;
 
   // „Câți lei sunt?”: two different amounts, at most 10 notes
   const seen = new Set<number>();
   while (out.length < 2) {
-    const total = int(rand, Math.min(3, range), range);
+    const total = int(rand, big ? 100 : Math.min(3, range), range);
     if (seen.has(total) && seen.size < range - 2) continue;
     if (greedy(total, kinds).length > 10) continue;
     seen.add(total);
@@ -109,7 +121,7 @@ export function moneyExercises(range: number, rand: () => number): MoneyExercise
   {
     let target = 0, pay: Note[] = [];
     for (let tries = 0; tries < 100; tries++) {
-      target = int(rand, Math.min(4, range), range);
+      target = int(rand, big ? 100 : Math.min(4, range), range);
       pay = decompose(target, kinds, 6, rand);
       if (pay.length >= 2 && pay.length <= 6) break;
     }
@@ -134,11 +146,12 @@ export function moneyExercises(range: number, rand: () => number): MoneyExercise
           // two notes on the left: 10 + 5 = 3 × 5, 5 + 5 = 10 × 1 …
           for (const h of kinds) if (h <= g && h >= get && (g + h) % get === 0 && (g + h) / get <= 10 && g + h <= range) options.push({ give: [g, h], get, count: (g + h) / get });
         }
-    for (let i = options.length - 1; i > 0; i--) {
+    const pool = big ? options.filter((o) => o.give[0] >= 100) : options;
+    for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(rand() * (i + 1));
-      [options[i], options[j]] = [options[j], options[i]];
+      [pool[i], pool[j]] = [pool[j], pool[i]];
     }
-    const pairs = options.slice(0, 2);
+    const pairs = pool.slice(0, 2);
     out.push({ kind: 'exchange', pairs, answer: pairs.map((p) => String(p.count)).join('; ') });
   }
   return out;
@@ -155,17 +168,21 @@ const NOTE_STYLE: Record<Note, { fill: string; stroke: string; ink: string }> = 
   5: { fill: '#EDE9FE', stroke: '#6D28D9', ink: '#4C1D95' },
   10: { fill: '#FCE7F3', stroke: '#BE185D', ink: '#831843' },
   50: { fill: '#FEF3C7', stroke: '#B45309', ink: '#78350F' },
+  100: { fill: '#DBEAFE', stroke: '#1D4ED8', ink: '#1E3A8A' },
+  200: { fill: '#FFEDD5', stroke: '#C2410C', ink: '#7C2D12' },
+  500: { fill: '#CCFBF1', stroke: '#0F766E', ink: '#134E4A' },
 };
 
 /**
  * One stylised note: a rounded rectangle, an inner frame, its value written out („10 lei”) and
- * the number again in a small circle; „50 de lei” is longer, so it goes without the circle.
+ * the number again in a small circle; „50 de lei” (and 100, 200, 500) is longer, so it goes
+ * without the circle.
  */
 export function noteOps(note: Note, x: number, y: number, scale = 1): DrawOp[] {
   const w = NOTE_W * scale, h = NOTE_H * scale;
   const s = NOTE_STYLE[note];
   const label = lei(note);
-  const circle = note !== 50;
+  const circle = note < 50;
   const room = circle ? w - 10 * scale : w - 4.6 * scale;
   const size = Math.min(4.2 * scale, room / Math.max(0.1, textWidthMm(label, 1)));
   const ops: DrawOp[] = [
@@ -196,8 +213,8 @@ function notesBlock(notes: Note[], x: number, cy: number, perRow: number, scale 
   return { ops, w: cols * w + (cols - 1) * g };
 }
 
-function answerBox(ops: DrawOp[], x: number, cy: number, size = 13): void {
-  ops.push({ t: 'rect', x, y: cy - size / 2, w: size, h: size, rx: 1.6, fill: '#FFFFFF', stroke: INK, strokeWidth: 0.5 });
+function answerBox(ops: DrawOp[], x: number, cy: number, size = 13, w = size): void {
+  ops.push({ t: 'rect', x, y: cy - size / 2, w, h: size, rx: 1.6, fill: '#FFFFFF', stroke: INK, strokeWidth: 0.5 });
 }
 
 const PROMPTS: Record<MoneyExercise['kind'], string> = {
@@ -207,8 +224,14 @@ const PROMPTS: Record<MoneyExercise['kind'], string> = {
   exchange: 'Schimbă banii: câte bancnote primești?',
 };
 
-/** The rows of a money page between `top` and `bottom`. */
-export function moneyPageOps(exercises: MoneyExercise[], left: number, right: number, top: number, bottom: number, label: (i: number) => string = (i) => `${i + 1}.`): DrawOp[] {
+/**
+ * The rows of a money page between `top` and `bottom`. `wide`: the box for „Câți lei sunt?” has
+ * room for three digits (0–1000).
+ */
+export function moneyPageOps(
+  exercises: MoneyExercise[], left: number, right: number, top: number, bottom: number,
+  label: (i: number) => string = (i) => `${i + 1}.`, wide = false,
+): DrawOp[] {
   const ops: DrawOp[] = [];
   const rowH = (bottom - top) / exercises.length;
   const width = right - left;
@@ -226,8 +249,9 @@ export function moneyPageOps(exercises: MoneyExercise[], left: number, right: nu
         ops.push(...b.ops);
         const ax = left + 5 * (NOTE_W + GAP) + 16;
         ops.push({ t: 'text', x: ax, y: cy + 3, text: '=', size: 9, fill: INK, weight: 'bold', align: 'center' });
-        answerBox(ops, ax + 7, cy);
-        ops.push({ t: 'text', x: ax + 23, y: cy + 2.4, text: 'lei', size: 6.5, fill: INK, weight: 'bold' });
+        const bw = wide ? 21 : 13;
+        answerBox(ops, ax + 7, cy, 13, bw);
+        ops.push({ t: 'text', x: ax + 10 + bw, y: cy + 2.4, text: 'lei', size: 6.5, fill: INK, weight: 'bold' });
         break;
       }
       case 'compare': {

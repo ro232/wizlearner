@@ -58,12 +58,15 @@ const RULES: Record<string, Rule> = {
   missing: { CP: school(MEM, 'CP', '1.4'), I: school(MEM, 'I', '1.4'), II: school(MEM, 'II', '1.4') },
   seq: { presc: presc('E', '2.1'), CP: school(MEM, 'CP', '1.3'), I: school(MEM, 'I', '1.3'), II: school(MEM, 'II', '1.3') },
   nbr: { presc: presc('E', '2.1'), CP: school(MEM, 'CP', '1.3'), I: school(MEM, 'I', '1.3'), II: school(MEM, 'II', '1.3') },
-  // „Bani”: count, compare, pay, exchange notes of 1, 5, 10 (and 50) lei.
+  // „Bani”: count, compare, pay, exchange notes of 1, 5, 10 (and 50; 100, 200, 500 in 0–1000) lei.
   // CP 6.3 „Realizarea unor schimburi echivalente valoric folosind reprezentări neconvenționale în
   // probleme-joc simple de tip venituri-cheltuieli, cu numere din concentrul 0-31” (contents: „Leul
   // (bancnotele de 1 leu, 5 lei, 10 lei)”); I 6.3 the same „…cu numere din concentrul 0-100”.
-  // Clasa a II-a works with 200 and 500 de lei and euro, which the sheet does not draw: no code.
-  money: { CP: school(MEM, 'CP', '6.3'), I: school(MEM, 'I', '6.3') },
+  // II 6.3 „Realizarea unor schimburi echivalente valoric prin reprezentări convenționale standard și
+  // nonstandard și prin utilizarea banilor în probleme-joc simple de tip venituri-cheltuieli, cu numere
+  // din concentrul 0-1000” (contents: „Leul: bancnote de 200 de lei, 500 de lei”): only the 0–1000
+  // sheet, which draws those notes (see MONEY_II); euro is not drawn.
+  money: { CP: school(MEM, 'CP', '6.3'), I: school(MEM, 'I', '6.3'), II: school(MEM, 'II', '6.3') },
   // „Probleme cu imagini” (problems.ts): one operation, two from 0–100 up (a ± b ± c).
   // CP 5.2 „Rezolvarea de probleme în care intervin operații de adunare sau scădere cu 1-5 unități în
   // concentrul 0-31, cu ajutorul obiectelor” (up to 0–31 the second number is always 1–5; 0–20 and
@@ -122,6 +125,14 @@ function ruleKeys(config: WorksheetConfig): string[] {
 const BASIC_SHAPES = new Set(['circle', 'square', 'triangle', 'rectangle']);
 /** CP additions and subtractions add or take away 1–5 elements: only the 0–10 sheets fit. */
 const CP_OPERATIONS = new Set(['add', 'sub', 'mix', 'addpic', 'missing', 'problems']);
+/**
+ * Clasa a II-a, 0–1000: „Adunarea și scăderea în concentrul 0 – 1000, fără trecere peste ordin”
+ * (contents of II 1.4). These sheets carry in 0–1000 when „cu” or „amestecat” is chosen: then no
+ * II code (carrying with hundreds is clasa a III-a, 0–10 000). Unset is „fără” (math.ts defaultCarry).
+ */
+const II_OPERATIONS = new Set(['add', 'sub', 'mix', 'missing']);
+/** II 6.3 only for the money sheet of 0–1000 (the one with 200 and 500 de lei). */
+const MONEY_II = 1000;
 
 export function sheetCompetences(config: WorksheetConfig, level: SchoolLevel | undefined | null): CompetenceRef[] {
   if (!level) return [];
@@ -137,6 +148,8 @@ export function sheetCompetences(config: WorksheetConfig, level: SchoolLevel | u
       // scăderi în concentrul 0-31, prin adăugarea /extragerea a 1-5 elemente dintr-o mulțime dată”
       const cpOperations31 = level === 'CP' && config.mathRange === 31;
       if (level === 'CP' && CP_OPERATIONS.has(key) && (config.mathRange ?? 10) > 10 && !cpOperations31) continue;
+      if (level === 'II' && II_OPERATIONS.has(key) && config.mathRange === 1000 && (config.mathCarry ?? 'without') !== 'without') continue;
+      if (level === 'II' && key === 'money' && config.mathRange !== MONEY_II) continue;
       const r = RULES[key]?.[level];
       if (r) refs.push(...(Array.isArray(r) ? r : [r]));
     }

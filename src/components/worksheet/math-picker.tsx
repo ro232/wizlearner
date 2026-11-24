@@ -22,7 +22,7 @@ export function MathPicker({ onShowPaywall }: { onShowPaywall: () => void }) {
     <div className="space-y-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
       <div>
         <div className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Numere până la</div>
-        <div className="grid grid-cols-5 gap-1.5">
+        <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-3 xl:grid-cols-6 gap-1.5">
           {MATH_RANGES.map((r) => {
             const locked = tier === 'free' && r > FREE_MATH_RANGE;
             return (
@@ -42,7 +42,9 @@ export function MathPicker({ onShowPaywall }: { onShowPaywall: () => void }) {
               ? 'Clasa I, începutul anului.'
               : range === 31
                 ? 'Clasa pregătitoare: numerele 0–31; adunări și scăderi cu 1–5 unități.'
-                : 'Clasa I: zeci și unități.'}
+                : range === 100
+                  ? 'Clasa I: zeci și unități.'
+                  : 'Clasa a II-a: sute, zeci și unități.'}
         </p>
       </div>
 
@@ -61,7 +63,9 @@ export function MathPicker({ onShowPaywall }: { onShowPaywall: () => void }) {
           </div>
           <p className="mt-1 text-xs text-slate-600">
             {operations ? 'Pentru adunări, scăderi și numărul lipsă' : 'Alege adunări sau scăderi: opțiunea se aplică doar lor'}
-            {carry === 'with' ? ' (8\u00a0+\u00a05, 23\u00a0−\u00a07).' : carry === 'without' ? ' (14\u00a0+\u00a05, 27\u00a0−\u00a04).' : '.'}
+            {range === 1000
+              ? carry === 'with' ? ' (275\u00a0+\u00a0148, 503\u00a0−\u00a0127).' : carry === 'without' ? ' (324\u00a0+\u00a0152, 768\u00a0−\u00a0435).' : '.'
+              : carry === 'with' ? ' (8\u00a0+\u00a05, 23\u00a0−\u00a07).' : carry === 'without' ? ' (14\u00a0+\u00a05, 27\u00a0−\u00a04).' : '.'}
           </p>
         </div>
       )}

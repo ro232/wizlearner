@@ -40,8 +40,11 @@ sheet('matematica-20-cu-trecere', { category: 'math', selectedItems: ['add', 'su
 sheet('matematica-31-fara-trecere', { category: 'math', selectedItems: ['add', 'sub'], mathRange: 31, mathCarry: 'without' });
 sheet('matematica-100-cu-trecere', { category: 'math', selectedItems: ['add', 'sub', 'mix', 'missing'], mathRange: 100, mathCarry: 'with', mathAnswers: true });
 sheet('matematica-100-amestecat', { category: 'math', selectedItems: ['mix'], mathRange: 100, mathCarry: 'mixed' });
-for (const r of [5, 10, 20, 31, 100]) sheet(`bani-${r}`, { category: 'math', selectedItems: ['money'], mathRange: r, mathAnswers: true });
-for (const r of [5, 10, 20, 31, 100]) sheet(`probleme-${r}`, { category: 'math', selectedItems: ['problems'], mathRange: r, mathAnswers: r === 10 || r === 100, curriculumLevel: r === 20 || r === 100 ? 'I' : r === 5 ? 'presc' : 'CP' });
+// 0–1000, clasa a II-a
+sheet('matematica-1000', { category: 'math', selectedItems: ['cmp', 'add', 'sub', 'missing', 'seq', 'nbr'], mathRange: 1000, mathAnswers: true, curriculumLevel: 'II' });
+sheet('matematica-1000-cu-trecere', { category: 'math', selectedItems: ['add', 'sub', 'mix', 'missing'], mathRange: 1000, mathCarry: 'with', mathAnswers: true });
+for (const r of [5, 10, 20, 31, 100, 1000]) sheet(`bani-${r}`, { category: 'math', selectedItems: ['money'], mathRange: r, mathAnswers: true });
+for (const r of [5, 10, 20, 31, 100, 1000]) sheet(`probleme-${r}`, { category: 'math', selectedItems: ['problems'], mathRange: r, mathAnswers: r === 10 || r === 100, curriculumLevel: r === 1000 ? 'II' : r === 20 || r === 100 ? 'I' : r === 5 ? 'presc' : 'CP' });
 // „Pagină cu răspunsuri”: the games, and math with a class (no curriculum line on the answers)
 sheet('jocuri-raspunsuri', { category: 'games', selectedItems: ['find:Ș', 'count:10', 'sound:A', 'first:1', 'syl:1', 'split:1', 'sort:1', 'sort:5', 'odd:4', 'group:1', 'pos:1', 'pos:3'], mathAnswers: true, curriculumLevel: 'CP' });
 sheet('matematica-raspunsuri-clasa', { category: 'math', selectedItems: [...MATH_TYPES], mathRange: 10, mathAnswers: true, curriculumLevel: 'CP' });

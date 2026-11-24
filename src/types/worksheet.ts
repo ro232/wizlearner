@@ -55,7 +55,7 @@ export interface WorksheetConfig {
   itemWords?: boolean;
   /** How close together the dashes or dots of the traced copies are. */
   traceDensity?: 'sparse' | 'normal' | 'dense';
-  /** Math sheets: numbers up to 5, 10, 20, 31 or 100. */
+  /** Math sheets: numbers up to 5, 10, 20, 31, 100 or 1000. */
   mathRange?: number;
   /** Math sheets: which random set of exercises (changed by „Alte exerciții”). */
   mathSeed?: number;

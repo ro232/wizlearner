@@ -208,14 +208,14 @@ function gridBlock(type: MathType, exercises: Exercise[], range: MathRange): Eva
         });
         return;
       }
-      const size = type === 'seq' ? 8.5 : range === 100 ? 8 : 8.5;
+      const size = type === 'seq' ? 8.5 : range >= 100 ? 8 : 8.5;
       exercises.forEach((e, i) => {
         const col = Math.floor(i / rows);
         const row = i % rows;
         const x = a.x + col * colW + 4;
         const cy = a.y + row * rh + rh / 2;
         ops.push({ t: 'text', x, y: cy + 1.4, text: letter(i), size: 3.6, fill: MUTED, weight: 'bold' });
-        ops.push(...exerciseOps(e, x + 8, cy, size, colW - 16));
+        ops.push(...exerciseOps(e, x + 8, cy, size, colW - 16, range === 1000));
       });
     },
   };
@@ -240,7 +240,7 @@ function moneyAnswer(e: MoneyExercise): string {
   return e.answer;
 }
 
-function moneyBlock(exercises: MoneyExercise[]): EvalBlock {
+function moneyBlock(exercises: MoneyExercise[], range: MathRange): EvalBlock {
   return {
     item: 'money',
     title: MATH_LABELS.money.title,
@@ -250,7 +250,7 @@ function moneyBlock(exercises: MoneyExercise[]): EvalBlock {
     answers: exercises.map((e, i) => `${letter(i)} ${moneyAnswer(e)}`),
     perLine: 1,
     score: exercises.reduce((n, e) => n + (e.kind === 'exchange' ? e.pairs.length : 1), 0),
-    draw: (ops, a) => ops.push(...moneyPageOps(exercises, a.x, a.x + a.w, a.y, a.y + a.h, letter)),
+    draw: (ops, a) => ops.push(...moneyPageOps(exercises, a.x, a.x + a.w, a.y, a.y + a.h, letter, range === 1000)),
   };
 }
 
@@ -270,7 +270,7 @@ function mathBlocks(config: WorksheetConfig, tier: Tier): EvalBlock[] {
       // one of each: count, compare, exchange (as many as the range has), from the page's set
       const all = moneyExercises(range, rng(seedOf(`money:${range}:${seed}`)));
       const pick = (['count', 'compare', 'exchange'] as const).map((k) => all.find((e) => e.kind === k)).filter((e): e is MoneyExercise => !!e && (e.kind !== 'exchange' || e.pairs.length > 0));
-      return moneyBlock(pick);
+      return moneyBlock(pick, range);
     }
     // the first exercises of the ordinary page, with every sign among them (cmp: <, >, =; mix: +, −)
     const page = mathExercises(type, range, seed, grid(type, range).count, carry);

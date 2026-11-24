@@ -65,13 +65,15 @@ describe('curriculum competence of a sheet', () => {
     expect(at({ selectedItems: ['add'], mathRange: 20 }, 'CP')).toEqual([]);
     expect(at({ selectedItems: ['add'], mathRange: 31 }, 'I')).toEqual(['I 1.4']);
     expect(at({ selectedItems: ['add'], mathRange: 31 }, 'presc')).toEqual([]);
-    // money: CP 6.3 up to 31, I 6.3 up to 100; not preschool, not clasa a II-a (200/500 de lei, euro)
+    // money: CP 6.3 up to 31, I 6.3 up to 100, II 6.3 only for 0–1000 (the sheet with 200 and 500 de lei); not preschool
     expect(at({ selectedItems: ['money'], mathRange: 10 }, 'CP')).toEqual(['CP 6.3']);
     expect(at({ selectedItems: ['money'], mathRange: 31 }, 'CP')).toEqual(['CP 6.3']);
     expect(at({ selectedItems: ['money'], mathRange: 100 }, 'CP')).toEqual([]);
     expect(at({ selectedItems: ['money'], mathRange: 100 }, 'I')).toEqual(['I 6.3']);
     expect(at({ selectedItems: ['money'], mathRange: 10 }, 'presc')).toEqual([]);
     expect(at({ selectedItems: ['money'], mathRange: 100 }, 'II')).toEqual([]);
+    expect(at({ selectedItems: ['money'], mathRange: 1000 }, 'II')).toEqual(['II 6.3']);
+    expect(at({ selectedItems: ['money'], mathRange: 1000 }, 'I')).toEqual([]);
     expect(sheetCompetenceLabel(cfg({ category: 'math', selectedItems: ['add', 'money'], mathRange: 31 }), 'CP')).toBe(
       'Competențele specifice 1.4, 6.3 · Matematică și explorarea mediului, clasa pregătitoare',
     );
@@ -102,7 +104,7 @@ describe('curriculum competence of a sheet', () => {
       cfg({ category: 'shapes', selectedItems: ['circle', 'heart'] }),
       cfg({ category: 'prewrite', selectedItems: ['zigzag'] }),
       cfg({ category: 'games', selectedItems: ['find:A', 'count:5', 'dots:star'] }),
-      ...MATH_TYPES.flatMap((t) => [5, 10, 20, 31, 100].map((r) => cfg({ category: 'math', selectedItems: [t], mathRange: r }))),
+      ...MATH_TYPES.flatMap((t) => [5, 10, 20, 31, 100, 1000].map((r) => cfg({ category: 'math', selectedItems: [t], mathRange: r }))),
     ];
     for (const c of configs) {
       for (const level of LEVELS as SchoolLevel[]) {
