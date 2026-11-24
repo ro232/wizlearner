@@ -43,9 +43,14 @@
  *   count     a count (e.g. children in a group, never their names)
  *   words     true/false: the workbook includes words
  *   subject   the subject of a „Planificare calendaristică”: clr | mem
+ *   days      how long a homework link works: 7 | 30 | 90
+ *   named     true/false: the parent typed a name (never the name itself)
+ *
+ * Homework links (/tema/<link>): the link is replaced by "/tema/_" in every URL PostHog reports
+ * (current page, referrer, …), so the settings and the teacher's title in it never reach analytics.
  */
 export const ALLOWED_PROPS: ReadonlySet<string> = new Set([
-  'plan', 'tier', 'category', 'book', 'level', 'preset', 'kind', 'format', 'script', 'theme', 'source', 'result', 'status', 'pages', 'count', 'words', 'subject',
+  'plan', 'tier', 'category', 'book', 'level', 'preset', 'kind', 'format', 'script', 'theme', 'source', 'result', 'status', 'pages', 'count', 'words', 'subject', 'days', 'named',
 ]);
 
 type PostHog = typeof import('posthog-js').default;
@@ -70,6 +75,21 @@ export function safeProps(props?: Props): Props | undefined {
     if (typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v)) || (typeof v === 'string' && IDENTIFIER.test(v))) out[key] = v;
   }
   return Object.keys(out).length ? out : undefined;
+}
+
+const HOMEWORK_URL = /\/tema\/[^/?#\s"]+/g;
+
+/** Replace homework links in an event's URLs by "/tema/_" (see the top of this file). */
+export function redactHomeworkUrls<T>(event: T): T {
+  const props = (event as { properties?: Record<string, unknown> } | null)?.properties;
+  if (props) {
+    for (const [k, v] of Object.entries(props)) if (typeof v === 'string' && v.includes('/tema/')) props[k] = v.replace(HOMEWORK_URL, '/tema/_');
+    for (const nested of ['$set', '$set_once']) {
+      const n = props[nested];
+      if (n && typeof n === 'object') for (const [k, v] of Object.entries(n as Record<string, unknown>)) if (typeof v === 'string' && v.includes('/tema/')) (n as Record<string, unknown>)[k] = v.replace(HOMEWORK_URL, '/tema/_');
+    }
+  }
+  return event;
 }
 
 /** May this event be sent at all? Page views/leaves and our own named events; nothing else. */
@@ -105,7 +125,7 @@ export function initAnalytics(): void {
         mask_all_text: true,
         mask_all_element_attributes: true,
         // last lock: only page views, page leaves and our own events ever leave the browser
-        before_send: (event) => (event && allowedEvent(event.event) ? event : null),
+        before_send: (event) => (event && allowedEvent(event.event) ? redactHomeworkUrls(event) : null),
       });
       for (const [e, p] of queue.splice(0)) posthog.capture(e, p);
       return posthog;

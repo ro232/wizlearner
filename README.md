@@ -68,6 +68,7 @@ Configurează Oblio **înainte** de prima plată reală. Dacă lipsește, plata 
 | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | cont și bază de date |
 | `SUPABASE_SERVICE_ROLE_KEY` | doar pe server: webhook-ul scrie abonamentul și facturile |
+| `HOMEWORK_LINK_SECRET` | doar pe server: semnează linkurile „Temă pentru acasă” (`/tema/…`). Recomandat; fără ea se derivă o cheie din `SUPABASE_SERVICE_ROLE_KEY` |
 | `NEXT_PUBLIC_SITE_URL` | adresa reală a site-ului (întoarcerea de la Stripe). Nu pune un domeniu care încă nu există |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_MONTHLY`, `STRIPE_PRICE_YEARLY` | plăți |
 | `STRIPE_PRICE_LEGACY` | opțional: prețuri vechi încă plătite de abonați |
