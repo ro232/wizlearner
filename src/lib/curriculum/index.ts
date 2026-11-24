@@ -11,19 +11,25 @@
  *   mem-p-ii     Matematică și explorarea mediului, CP – a II-a (OMEN 3418/2013)
  *   llr-iii-iv   Limba și literatura română, a III-a – a IV-a (OMEN 5003/2014)
  *   mate-iii-iv  Matematică, a III-a – a IV-a (OMEN 5003/2014)
+ *   avap-p-ii    Arte vizuale și abilități practice, CP – a II-a (OMEN 3418/2013)
+ *   dp-p-ii      Dezvoltare personală, CP – a II-a (OMEN 3418/2013)
+ *   lm-p-ii      Comunicare în limba modernă 1, CP – a II-a (OMEN 3418/2013; one programme for every language)
  *
- * All five are the ones in force for school year 2026–2027 (checked 14.11.2026).
+ * All eight are the ones in force for school year 2026–2027 (checked 14.11.2026; the last three 24.11.2026).
  */
 import etPresc from './data/et-presc.json';
 import clrPII from './data/clr-p-ii.json';
 import memPII from './data/mem-p-ii.json';
 import llrIIIIV from './data/llr-iii-iv.json';
 import mateIIIIV from './data/mate-iii-iv.json';
+import avapPII from './data/avap-p-ii.json';
+import dpPII from './data/dp-p-ii.json';
+import lmPII from './data/lm-p-ii.json';
 
 /** Preschool: one band "3-6"; school: CP (clasa pregătitoare), I … IV. */
 export type Level = '3-6' | 'CP' | 'I' | 'II' | 'III' | 'IV';
 
-export type ProgrammeId = 'et-presc' | 'clr-p-ii' | 'mem-p-ii' | 'llr-iii-iv' | 'mate-iii-iv';
+export type ProgrammeId = 'et-presc' | 'clr-p-ii' | 'mem-p-ii' | 'llr-iii-iv' | 'mate-iii-iv' | 'avap-p-ii' | 'dp-p-ii' | 'lm-p-ii';
 
 export interface GeneralCompetence {
   code: string;
@@ -69,6 +75,9 @@ export const PROGRAMMES: Record<ProgrammeId, Programme> = {
   'mem-p-ii': memPII as unknown as Programme,
   'llr-iii-iv': llrIIIIV as unknown as Programme,
   'mate-iii-iv': mateIIIIV as unknown as Programme,
+  'avap-p-ii': avapPII as unknown as Programme,
+  'dp-p-ii': dpPII as unknown as Programme,
+  'lm-p-ii': lmPII as unknown as Programme,
 };
 
 /**
@@ -103,6 +112,9 @@ const SHORT: Record<ProgrammeId, string> = {
   'mem-p-ii': 'Matematică și explorarea mediului',
   'llr-iii-iv': 'Limba și literatura română',
   'mate-iii-iv': 'Matematică',
+  'avap-p-ii': 'Arte vizuale și abilități practice',
+  'dp-p-ii': 'Dezvoltare personală',
+  'lm-p-ii': 'Comunicare în limba modernă',
 };
 
 const LEVEL_NAME: Record<Level, string> = {

@@ -1,0 +1,278 @@
+{
+ "id": "lm-p-ii",
+ "subject": "Comunicare în limba modernă 1",
+ "levels": [
+  "CP",
+  "I",
+  "II"
+ ],
+ "order": "Anexa nr. 2 la ordinul ministrului educației naționale nr. 3418/19.03.2013",
+ "inForce2026": {
+  "status": "da",
+  "evidence": "Nu am găsit nicio programă nouă aprobată pentru clasa pregătitoare–a II-a care să o înlocuiască pe cea din 2013. Noile planuri-cadru și programe din 2026–2027 se aplică doar la clasa a IX-a (edupedu, 4.09.2026); pentru clasele I–VIII intră în vigoare doar standardele naționale de evaluare, care nu înlocuiesc programa. Noul cadru al curriculumului național era în consultare publică, fără calendar pentru primar (edupedu, 31.05.2026). O planificare pentru 2023–2024 (Comunicare în limba modernă 1 – engleză, clasa I) folosește codurile acestei programe (1.1–4.1, cu 2.4). Concluzia se sprijină pe faptul că nu există o programă mai nouă, nu pe o confirmare oficială explicită: pagina ROCNEE a programelor în vigoare pentru primar nu a putut fi consultată (blochează accesul automat). Verificat la 24.11.2026.",
+  "urls": [
+   "https://www.edupedu.ro/cand-incepe-scoala-in-septembrie-2026-si-care-sunt-noutatile-pentru-elevi-profesori-si-parinti-calendarul-anului-scolar-2026-2027-noile-programe-pentru-clasa-a-ix-a-manualele-evaluarea-elevilor/",
+   "https://www.edupedu.ro/evaluarea-elevilor-va-fi-legata-de-standarde-de-invatare-iar-profesorii-vor-fi-formati-ca-evaluatori-noul-cadru-al-curriculumului-national-2026-in-consultare-publica-schimbarile-pentru-scoli-si/",
+   "https://docs.google.com/document/d/1FKpgxcqZ2tiOy1bbzmxevDDz6X04jAp9/export?format=pdf"
+  ]
+ },
+ "sources": [
+  {
+   "title": "Programa școlară pentru disciplina Comunicare în limba modernă 1, Clasa pregătitoare, clasa I și clasa a II-a (Anexa nr. 2 la OMEN nr. 3418/19.03.2013), copie ISJ Mureș, 12 p., MD5 a4abbee3249f32cdbae2312b9f5af1bb; același nume de fișier ca originalul publicat de ISE (programe.ise.ro/Portals/1/2013_CP_I_II/24_CL_moderna_CP_II_OMEN.pdf, server închis)",
+   "url": "https://www.edums.ro/invprimar/24_CL_moderna_CP_II_OMEN.pdf",
+   "role": "primary"
+  },
+  {
+   "title": "Același PDF citit a doua oară, independent: titlurile bold extrase pe coloane după coordonate (pdftohtml -xml) și paginile randate ca imagini",
+   "url": "https://www.edums.ro/invprimar/24_CL_moderna_CP_II_OMEN.pdf",
+   "role": "check"
+  },
+  {
+   "title": "Planificare Comunicare în limba modernă 1 – engleză, clasa I, 2023–2024 (Google Docs): codurile competențelor clasei I (1.1–4.1, inclusiv 2.4)",
+   "url": "https://docs.google.com/document/d/1FKpgxcqZ2tiOy1bbzmxevDDz6X04jAp9/export?format=pdf",
+   "role": "check"
+  }
+ ],
+ "normalisation": "ș/ț/Ș/Ț (sedilă) → ș/ț/Ș/Ț (virgulă dedesubt); «s» fără sedilă din original («a cere si a oferi», «cântece si poezii») păstrat ca atare; spațiile duble din textul aliniat stânga-dreapta reduse la unul; rândurile rupte unite; liniuțele de listă din «Sugestii de contexte» nu au fost păstrate. Codurile sunt date fără punct final (în document apar și «1.1», și «3.1.», «4.1.», «2.4.»).",
+ "verification": {
+  "secondPass": "O singură copie a documentului oficial a putut fi descărcată: edums.ro (același nume de fișier ca originalul ISE din 2013). Copiile ROCNEE (rocnee.eu/images/rocnee/fisiere/planuri-cadru/primar/OMEM 3418_CL_moderna1.pdf) și Edupedu (cdn.edupedu.ro/…/Programa-scolara-la-Limba-moderna-pentru-Clasa-pregatitoare.pdf) nu au putut fi citite (blocare acces automat / permisiune neacordată). Trecerea 1: pdftotext -layout (coloanele CP / I / II). Trecerea 2, independentă: titlurile competențelor extrase din textul bold, pe coloane, după coordonate (pdftohtml -xml), și pagina de conținuturi (p. 9) randată și citită vizual. Cele două treceri coincid cuvânt cu cuvânt. Codurile clasei I coincid cu o planificare 2023–2024.",
+  "differences": [
+   "Fără diferențe între cele două treceri.",
+   "Competența generală 4: lista competențelor generale (p. 3) spune «Redactarea de mesaje simple în situații de comunicare uzuală», titlul secțiunii de competențe specifice (p. 8) «Redactarea de mesaje scrise simple în situații de comunicare uzuală». Folosit textul din lista competențelor generale.",
+   "Titlul de pe copertă este «COMUNICARE ÎN LIMBA MODERNA 1» (fără Ă); antetul paginilor: «Comunicare în limba modernă 1». Folosit antetul."
+  ]
+ },
+ "generalCompetences": [
+  {
+   "code": "1",
+   "text": "Receptarea de mesaje orale simple"
+  },
+  {
+   "code": "2",
+   "text": "Exprimarea orală în situații de comunicare uzuală"
+  },
+  {
+   "code": "3",
+   "text": "Receptarea de mesaje scrise simple"
+  },
+  {
+   "code": "4",
+   "text": "Redactarea de mesaje simple în situații de comunicare uzuală"
+  }
+ ],
+ "specificCompetences": [
+  {
+   "level": "CP",
+   "code": "1.1",
+   "text": "Oferirea unei reacții adecvate la salut și la o întrebare/ instrucțiune scurtă și simplă rostită clar și foarte rar, care este însoțită de gesturi de către interlocutor"
+  },
+  {
+   "level": "CP",
+   "code": "1.2",
+   "text": "Recunoașterea denumirilor unor obiecte din universul imediat, în mesaje articulate clar și rar"
+  },
+  {
+   "level": "CP",
+   "code": "1.3",
+   "text": "Manifestarea curiozității față de sesizarea semnificației globale a unor filme și a unor cântece pentru copii în limba modernă respectivă"
+  },
+  {
+   "level": "CP",
+   "code": "2.1",
+   "text": "Reproducerea unor informații simple/ cântece/poezii scurte și simple cu sprijinul profesorului"
+  },
+  {
+   "level": "CP",
+   "code": "2.2",
+   "text": "Oferirea unor informații elementare, punctuale, despre sine (nume, gen, vârstă), despre universul imediat, cu sprijin din partea interlocutorului"
+  },
+  {
+   "level": "CP",
+   "code": "2.3",
+   "text": "Participarea la jocuri de comunicare în care reproduce sau creează rime/ mesaje scurte"
+  },
+  {
+   "level": "CP",
+   "code": "3.1",
+   "text": "Manifestarea curiozității pentru decodarea unor mesaje scrise simple și scurte din universul imediat"
+  },
+  {
+   "level": "CP",
+   "code": "4.1",
+   "text": "Participarea la proiecte de grup/ la nivelul clasei în care elaborează cu sprijin scurte mesaje scrise"
+  },
+  {
+   "level": "I",
+   "code": "1.1",
+   "text": "Oferirea unei reacții adecvate la o întrebare/ instrucțiune scurtă și simplă rostită clar și foarte rar, adresată cu atenție de către interlocutor"
+  },
+  {
+   "level": "I",
+   "code": "1.2",
+   "text": "Recunoașterea localizării elementare (stânga, dreapta, aici, acolo) a unor obiecte din universul imediat, în mesaje articulate clar și rar"
+  },
+  {
+   "level": "I",
+   "code": "1.3",
+   "text": "Manifestarea curiozității față de sesizarea semnificației globale a unor filme și a unor cântece pentru copii în limba modernă respectivă"
+  },
+  {
+   "level": "I",
+   "code": "2.1",
+   "text": "Reproducerea unor cântece/poezii scurte și simple"
+  },
+  {
+   "level": "I",
+   "code": "2.2",
+   "text": "Formularea unor mesaje scurte de prezentare personală (hobby-uri, adresa), cu sprijin din partea interlocutorului"
+  },
+  {
+   "level": "I",
+   "code": "2.3",
+   "text": "Participarea la jocuri de comunicare în care reproduce sau creează rime/ mesaje scurte"
+  },
+  {
+   "level": "I",
+   "code": "2.4",
+   "text": "Exprimarea unei cereri simple pentru a obține un obiect din universul imediat"
+  },
+  {
+   "level": "I",
+   "code": "3.1",
+   "text": "Manifestarea curiozității pentru decodarea unor mesaje scrise simple și scurte din universul imediat"
+  },
+  {
+   "level": "I",
+   "code": "4.1",
+   "text": "Participarea la proiecte de grup/ la nivelul clasei în care elaborează cu sprijin scurte mesaje scrise"
+  },
+  {
+   "level": "II",
+   "code": "1.1",
+   "text": "Oferirea unei reacții adecvate, în situații de comunicare uzuale, la o întrebare/ instrucțiune simplă rostită clar și foarte rar"
+  },
+  {
+   "level": "II",
+   "code": "1.2",
+   "text": "Recunoașterea pozițiilor de bază (pe, sub, în față, în spatele, în) ale unor obiecte din universul imediat, în mesaje articulate clar și rar"
+  },
+  {
+   "level": "II",
+   "code": "1.3",
+   "text": "Manifestarea curiozității față de sesizarea semnificației globale a unor filme și a unor cântece pentru copii în limba modernă respectivă"
+  },
+  {
+   "level": "II",
+   "code": "2.1",
+   "text": "Reproducerea unor cântece/poezii simple pentru copii"
+  },
+  {
+   "level": "II",
+   "code": "2.2",
+   "text": "Prezentarea unei persoane / unui personaj cunoscut folosind câteva detalii familiare (nume, gen, vârstă, hobby)"
+  },
+  {
+   "level": "II",
+   "code": "2.3",
+   "text": "Participarea la jocuri de comunicare în care reproduce sau creează rime/ mesaje scurte"
+  },
+  {
+   "level": "II",
+   "code": "2.4",
+   "text": "Cererea și oferirea unor informații scurte și simple referitoare la localizarea obiectelor din universul imediat"
+  },
+  {
+   "level": "II",
+   "code": "3.1",
+   "text": "Manifestarea curiozității pentru decodarea unor mesaje scrise simple și scurte din universul imediat"
+  },
+  {
+   "level": "II",
+   "code": "4.1",
+   "text": "Participarea la proiecte de grup/ la nivelul clasei în care elaborează cu sprijin scurte mesaje scrise"
+  }
+ ],
+ "contents": [
+  {
+   "level": "CP",
+   "domain": "Acte de vorbire",
+   "subdomain": null,
+   "items": [
+    "a saluta persoane cunoscute,",
+    "a se prezenta (nume, gen, vârsta)",
+    "a identifica un obiect din universul imediat"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Sugestii de contexte",
+   "subdomain": null,
+   "items": [
+    "obiecte din universul imediat (spațiul clasei)",
+    "personaje de desen animat",
+    "jucării",
+    "corpul - câteva componente",
+    "comenzi simple",
+    "cântece simple, scurte"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Acte de vorbire",
+   "subdomain": null,
+   "items": [
+    "a saluta/răspunde la salutul familiar",
+    "a prezenta pe cineva (nume)",
+    "a localiza (aici, acolo, stânga, dreapta)",
+    "a cere un obiect din universul imediat"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Sugestii de contexte",
+   "subdomain": null,
+   "items": [
+    "animale preferate",
+    "obiecte uzuale",
+    "activități curente, instrucțiuni",
+    "culori",
+    "poziții (aici, acolo, stânga, dreapta)",
+    "cântece si poezii pentru copii",
+    "sărbători"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Acte de vorbire",
+   "subdomain": null,
+   "items": [
+    "a face prezentări simple (nume, gen, vârsta, hobby)",
+    "a localiza (pe, sub, în, în față, în spatele)",
+    "a cere si a oferi informații simple, uzuale",
+    "a descrie simplu (o calitate)",
+    "a face o felicitare simplă"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Sugestii de contexte",
+   "subdomain": null,
+   "items": [
+    "activități la școală și acasă",
+    "obiecte din clasă, școală, curte, de acasă",
+    "dimensiuni (mic, mare, lung, scurt, înalt, scund)",
+    "poziții (pe, sub, în, în fața, în spatele)",
+    "personaje îndrăgite",
+    "serbări și sărbători",
+    "concursuri"
+   ]
+  }
+ ],
+ "notes": [
+  "Programa este una singură pentru «Limba modernă 1», indiferent de limba studiată (engleză, franceză, germană…): exemplele din activități amestecă engleza, franceza și germana. Nu există o programă separată «limba engleză» pentru CP–II.",
+  "Tabelul «CONȚINUTURI» are coloanele CP | CLASA I | CLASA a II-a și, în fiecare, două blocuri: «Acte de vorbire» și «Sugestii de contexte» (câmpul domain).",
+  "Clasa pregătitoare are 8 competențe specifice (fără 2.4); clasele I și a II-a au câte 9.",
+  "Particularități păstrate exact ca în original: virgula finală din «a saluta persoane cunoscute,», «vârsta» fără accent, «a cere si a oferi», «cântece si poezii», «în față» (acte de vorbire) față de «în fața» (contexte), «hobby-uri, adresa».",
+  "Exemplele de activități de învățare și sugestiile metodologice NU au fost extrase."
+ ]
+}

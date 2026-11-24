@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { pageMetadata } from '@/lib/seo/metadata';
-import { CLASS_PAGES, classCoverage } from '@/lib/curriculum/presets';
+import { CLASS_PAGES, coverageCount, headlineItems } from '@/lib/curriculum/presets';
 
 export const metadata: Metadata = pageMetadata({
   title: 'Fișe pe programă: grădiniță, clasa pregătitoare, I, a II-a',
@@ -30,17 +30,17 @@ export default function CurriculumIndexPage() {
         <section className="py-12">
           <ul className="max-w-6xl mx-auto px-4 sm:px-6 grid gap-4 sm:grid-cols-2">
             {CLASS_PAGES.map((c) => {
-              const items = classCoverage(c).flatMap((g) => g.items);
-              const withSheets = items.filter((i) => i.presets.length).length;
+              // limba română and matematică; the other subjects are counted on the class page (HEADLINE_PROGRAMMES)
+              const { covered: withSheets, total } = coverageCount(headlineItems(c));
               return (
                 <li key={c.slug}>
                   <Link href={`/programa/${c.slug}`} className="group flex h-full flex-col rounded-2xl border-2 border-ink bg-white p-6 shadow-[4px_4px_0_#1F2A44] hover:-translate-y-0.5 transition-transform">
                     <span className="text-2xl font-extrabold text-ink">{c.title}</span>
                     <span className="mt-1 text-slate-700">
-                      {c.level === 'presc' ? 'Curriculum pentru educație timpurie' : 'Comunicare în limba română · Matematică și explorarea mediului'}
+                      {c.level === 'presc' ? 'Curriculum pentru educație timpurie' : 'Limba română · Matematică și explorarea mediului · Arte vizuale · Dezvoltare personală · Limba modernă'}
                     </span>
                     <span className="mt-3 text-sm text-slate-600">
-                      Fișe pentru {withSheets} din {items.length} {c.level === 'presc' ? 'comportamente' : 'competențe specifice'}
+                      Fișe pentru {withSheets} din {total} {c.level === 'presc' ? 'comportamente' : 'competențe de limba română și matematică'}
                     </span>
                     <span className="mt-4 inline-flex items-center gap-1 font-extrabold text-ink group-hover:underline">
                       Vezi competențele <ArrowRight className="w-4 h-4" aria-hidden />

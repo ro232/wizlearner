@@ -1,5 +1,18 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`how every kind of sheet looks > arte-vizuale 1`] = `
+[
+  "d6af6beb0f152f93",
+  "1af490495a7d9933",
+  "fdc6882075d38dac",
+  "ba645a0cbd3e7451",
+  "55fa1ada2724bc64",
+  "ee0918ae22824ce6",
+  "ea89e5a7fd403b3a",
+  "79290026be6c3847",
+]
+`;
+
 exports[`how every kind of sheet looks > bani-5 1`] = `
 [
   "cb996012625a7e44",
@@ -235,6 +248,21 @@ exports[`how every kind of sheet looks > coperta-kdp-mana 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > dezvoltare-personala 1`] = `
+[
+  "9e3aa09bf0071064",
+  "60ed4de56c432e1e",
+  "303f360522f2a816",
+  "859224fa72c5d79f",
+  "a134a4635c760115",
+  "6444425897b0e405",
+  "f4e7e6531f3b68a1",
+  "41f587e03d6c9c20",
+  "181e571ae7d74516",
+  "fd3a9c03222601d4",
+]
+`;
+
 exports[`how every kind of sheet looks > diploma-cititoare-tipar 1`] = `
 [
   "21eec6c74ecb0e91",
@@ -447,6 +475,15 @@ exports[`how every kind of sheet looks > jocuri-raspunsuri 1`] = `
   "d99d8ac723ae75fe",
   "a510a5c8120fccad",
   "3be38cbe5b4cbae1",
+]
+`;
+
+exports[`how every kind of sheet looks > limba-engleza 1`] = `
+[
+  "8167793aa61c9d15",
+  "073a0d95d638b63e",
+  "682a4867f9540617",
+  "5da7233c127f3d99",
 ]
 `;
 

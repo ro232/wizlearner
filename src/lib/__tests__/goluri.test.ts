@@ -18,7 +18,7 @@ import { isItemAllowed } from '@/lib/access';
 import { itemFitsCategory, sanitizeConfig } from '@/stores/sanitize-config';
 import { findCompetence } from '@/lib/curriculum';
 import { sheetCompetenceLabel, sheetCompetences, type SchoolLevel } from '@/lib/curriculum/sheet';
-import { CLASS_PAGES, SHEET_PRESETS, classCoverage, presetConfig } from '@/lib/curriculum/presets';
+import { CLASS_PAGES, SHEET_PRESETS, classCoverage, headlineItems, presetConfig } from '@/lib/curriculum/presets';
 import { opsOutside } from './bounds';
 import { textOverlaps } from './drawn';
 
@@ -488,7 +488,7 @@ describe('the competences', () => {
 
   it('„Avem fișe pentru X din Y”: grădiniță 13 din 23, CP 22 din 32, I 23 din 33, II 23 din 33', () => {
     const at = (slug: string) => {
-      const items = classCoverage(CLASS_PAGES.find((c) => c.slug === slug)!).flatMap((g) => g.items);
+      const items = headlineItems(CLASS_PAGES.find((c) => c.slug === slug)!);
       return [items.filter((i) => i.presets.length).length, items.length];
     };
     expect(['gradinita', 'clasa-pregatitoare', 'clasa-1', 'clasa-2'].map(at)).toEqual([[13, 23], [22, 32], [23, 33], [23, 33]]);

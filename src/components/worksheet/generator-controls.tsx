@@ -15,6 +15,7 @@ import { SORTING_KIND_TITLES, sortingItems, sortingShortLabel } from '@/lib/work
 import { READ_KIND_TITLES, readingItems, readingShortLabel } from '@/lib/worksheet/reading-pages';
 import { FUN_KIND_TITLES, funItems, funShortLabel } from '@/lib/worksheet/fun-pages';
 import { exploreItems, exploreShortLabel } from '@/lib/worksheet/explore-pages';
+import { SUBJECT_KIND_TITLES, subjectItems, subjectShortLabel } from '@/lib/worksheet/subjects-pages';
 import { CLR_KIND_TITLES, clrItems, clrShortLabel } from '@/lib/worksheet/clr-pages';
 import { MEM_KIND_TITLES, memItems, memShortLabel } from '@/lib/worksheet/mem-pages';
 import { readingSetLevel } from '@/lib/worksheet/reading';
@@ -92,7 +93,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       case 'prewrite':
         return [...PATTERN_IDS];
       case 'games':
-        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems(), ...readingItems(), ...funItems(), ...exploreItems(), ...clrItems(), ...memItems()];
+        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems(), ...readingItems(), ...funItems(), ...exploreItems(), ...clrItems(), ...memItems(), ...subjectItems()];
       default:
         return [];
     }
@@ -237,6 +238,21 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                 ['anotimpurile și vremea', 'Anotimpul fiecărei imagini, ce se întâmplă în fiecare anotimp, semnele vremii, „dacă plouă, iei umbrela”.', ['season:', 'weather:', 'wear:']],
                 ['apa', 'Apa solidă sau lichidă și ce se întâmplă cu ea: se topește, îngheață, fierbe, se evaporă (clasa I).', ['water:', 'melt:']],
               ] as const).map(([title, text, kinds]) => ({ title: `Explorarea mediului: ${title}`, text, items: allItems.filter((i) => kinds.some((k) => i.startsWith(k))), cols: 'grid-cols-2 sm:grid-cols-3', show: exploreShortLabel })),
+              // Arte vizuale și abilități practice, Dezvoltare personală, limba engleză (subjects-pages.ts)
+              ...([
+                ['Arte vizuale', 'sym', 'Jumătate de desen pe pătrățele, cealaltă jumătate de colorat ca în oglindă; desenul complet, pe pagina de răspunsuri.'],
+                ['Arte vizuale', 'model', 'Un desen pe puncte și aceleași puncte goale dedesubt, de unit la fel.'],
+                ['Arte vizuale', 'cut', 'Conturul unei case sau al unui robot și piesele lui colorate, de decupat pe linia punctată și de lipit.'],
+                ['Arte vizuale', 'lines', 'Un fular sau un brad în fâșii: fiecare fâșie cu linia sau punctele arătate lângă ea.'],
+                ['Dezvoltare personală', 'feel', 'Bucurie, tristețe, frică, furie: emoția fiecărei fețe, apoi „Cum se simte?” în situații de zi cu zi.'],
+                ['Dezvoltare personală', 'me', 'Numele, vârsta, ochii, părul, lucrurile preferate: de completat, colorat și desenat.'],
+                ['Dezvoltare personală', 'hyg', 'Obiectele de igienă personală, de încercuit printre alte obiecte (clasa pregătitoare).'],
+                ['Dezvoltare personală', 'habit', 'Obiceiuri de igienă: e bine sau nu e bine? (clasa I).'],
+                ['Dezvoltare personală', 'job', 'Meseria și unealta ei, de unit (clasa I).'],
+                ['Dezvoltare personală', 'jobuse', 'Meseria și ce face pentru ceilalți, de unit (clasa a II-a).'],
+                ['Dezvoltare personală', 'rules', 'Reguli de comunicare în clasă: e bine sau nu e bine? (clasa pregătitoare).'],
+                ['Limba engleză', 'en', 'Imaginea și cuvântul în limba engleză, de unit: animals, colours, numbers.'],
+              ] as const).map(([subject, kind, text]) => ({ title: `${subject}: ${SUBJECT_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: subjectShortLabel })),
               // Comunicare: povestea, semne, mesaje (clr-pages.ts)
               ...([
                 ['story', 'Patru imagini în altă ordine: copilul scrie 1, 2, 3, 4, încercuiește titlul, desenează sfârșitul (clasa pregătitoare).'],

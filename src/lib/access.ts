@@ -4,6 +4,7 @@ import { baseLetter, normalizeKey } from '@/lib/glyphs/data';
 import { READING_LEVELS, type ReadKind } from '@/lib/worksheet/reading';
 import { isFunItem } from '@/lib/worksheet/fun';
 import { isExploreItem } from '@/lib/worksheet/explore';
+import { isSubjectItem } from '@/lib/worksheet/subjects';
 import { isClrItem, isFreeClrItem } from '@/lib/worksheet/clr';
 import { isFreeMemItem, isMemItem } from '@/lib/worksheet/mem';
 
@@ -45,6 +46,8 @@ export function isItemAllowed(item: string, category: ContentCategory, tier: Tie
       if (kind === 'sort' || kind === 'odd' || kind === 'group' || kind === 'pos') return arg === '1';
       // the fun preschool sheets and „Explorarea mediului”: set 1 of each (fun.ts, explore.ts)
       if ((isFunItem(item) || isExploreItem(item)) && arg === '1') return true;
+      // Arte vizuale, Dezvoltare personală, limba engleză: set 1 of each (subjects.ts)
+      if (isSubjectItem(item) && arg === '1') return true;
       // the sheets that fill the gaps of the programme: set 1 of each kind, the first set of each class (clr.ts, mem.ts)
       if (isClrItem(item)) return isFreeClrItem(item);
       if (isMemItem(item)) return isFreeMemItem(item);

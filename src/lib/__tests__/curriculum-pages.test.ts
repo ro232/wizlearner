@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { findCompetence } from '@/lib/curriculum';
 import { sheetCompetenceLabel, sheetCompetences } from '@/lib/curriculum/sheet';
-import { CLASS_PAGES, SHEET_PRESETS, classCoverage, presetById, presetConfig, presetHref } from '@/lib/curriculum/presets';
+import { CLASS_PAGES, HEADLINE_PROGRAMMES, SHEET_PRESETS, classCoverage, coverageCount, headlineItems, presetById, presetConfig, presetHref } from '@/lib/curriculum/presets';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
 import { buildGroupPages, childSheetConfig } from '@/lib/worksheet/group';
 
@@ -24,15 +24,37 @@ describe('„Fișe pe programă” pages', () => {
 
   it('coverage lists each competence of the class once, verbatim from the data', () => {
     const cp = classCoverage(CLASS_PAGES.find((c) => c.slug === 'clasa-pregatitoare')!);
-    expect(cp.map((g) => g.title)).toEqual(['Comunicare în limba română', 'Matematică și explorarea mediului']);
-    expect(cp[0].items).toHaveLength(15);
-    expect(cp[1].items).toHaveLength(17);
+    expect(cp.map((g) => g.title)).toEqual(['Comunicare în limba română', 'Matematică și explorarea mediului', 'Arte vizuale și abilități practice', 'Dezvoltare personală', 'Comunicare în limba modernă 1']);
+    expect(cp.map((g) => g.items.length)).toEqual([15, 17, 9, 8, 8]);
     const c41 = cp[0].items.find((i) => i.code === '4.1')!;
     expect(c41.competence.text).toBe('Trasarea elementelor grafice și a contururilor literelor, folosind resurse variate');
     expect(c41.presets.map((p) => p.id)).toEqual(expect.arrayContaining(['litere-tipar', 'grafisme']));
     const presc = classCoverage(CLASS_PAGES[0]);
     expect(presc.map((g) => g.title[0])).toEqual(['D', 'E']);
     expect(presc.flatMap((g) => g.items).every((i) => /^[DE]\.\d\.\d$/.test(i.code))).toBe(true);
+  });
+
+  it('the headline counts limba română and matematică; the other subjects show their own count and say why', () => {
+    expect(HEADLINE_PROGRAMMES).toEqual(['et-presc', 'clr-p-ii', 'mem-p-ii']);
+    for (const c of CLASS_PAGES) {
+      const groups = classCoverage(c);
+      for (const g of groups) {
+        expect(g.headline, `${c.slug} ${g.title}`).toBe(HEADLINE_PROGRAMMES.includes(g.programme));
+        // a group counted apart explains why
+        if (!g.headline) expect(g.note, `${c.slug} ${g.title}`).toMatch(/^Se lucrează|^O singură programă/);
+      }
+      // the headline is exactly the CLR + MEM (preschool: D + E) items, as before the new subjects
+      expect(headlineItems(c)).toEqual(groups.filter((g) => g.headline).flatMap((g) => g.items));
+    }
+    const at = (slug: string) => classCoverage(CLASS_PAGES.find((c) => c.slug === slug)!);
+    // the groups of the new subjects: the competences per class, read from the programmes
+    expect(at('clasa-1').filter((g) => !g.headline).map((g) => [g.programme, g.items.length])).toEqual([['avap-p-ii', 9], ['dp-p-ii', 8], ['lm-p-ii', 9]]);
+    expect(at('clasa-2').filter((g) => !g.headline).map((g) => [g.programme, g.items.length])).toEqual([['avap-p-ii', 9], ['dp-p-ii', 8], ['lm-p-ii', 9]]);
+    // and how many of them have a sheet (subjects-pages.ts; codes in curriculum/sheet.ts)
+    const counts = (slug: string) => at(slug).filter((g) => !g.headline).map((g) => coverageCount(g.items));
+    expect(counts('clasa-pregatitoare')).toEqual([{ covered: 2, total: 9 }, { covered: 4, total: 8 }, { covered: 1, total: 8 }]);
+    expect(counts('clasa-1')).toEqual([{ covered: 2, total: 9 }, { covered: 4, total: 8 }, { covered: 1, total: 9 }]);
+    expect(counts('clasa-2')).toEqual([{ covered: 0, total: 9 }, { covered: 1, total: 8 }, { covered: 1, total: 9 }]);
   });
 
   it('lists „Banii” under 6.3 (CP, I, II) and „Adunări 0–31” under CP 1.4 only', () => {

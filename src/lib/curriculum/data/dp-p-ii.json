@@ -1,0 +1,402 @@
+{
+ "id": "dp-p-ii",
+ "subject": "Dezvoltare personală",
+ "levels": [
+  "CP",
+  "I",
+  "II"
+ ],
+ "order": "Anexa nr. 2 la ordinul ministrului educației naționale nr. 3418/19.03.2013",
+ "inForce2026": {
+  "status": "da",
+  "evidence": "Nu am găsit nicio programă nouă aprobată pentru clasa pregătitoare–a II-a care să o înlocuiască pe cea din 2013. Noile planuri-cadru și programe din 2026–2027 se aplică doar la clasa a IX-a (edupedu, 4.09.2026); pentru clasele I–VIII intră în vigoare doar standardele naționale de evaluare, care nu înlocuiesc programa. Noul cadru al curriculumului național era în consultare publică, fără calendar pentru primar (edupedu, 31.05.2026). Planificarea Editurii Corint pentru anul școlar 2024–2025 (Dezvoltare personală, clasa a II-a) citează încă programa aprobată prin O.M. nr. 3418/19.03.2013. Concluzia se sprijină pe faptul că nu există o programă mai nouă, nu pe o confirmare oficială explicită: pagina ROCNEE a programelor în vigoare pentru primar nu a putut fi consultată (blochează accesul automat). Verificat la 24.11.2026.",
+  "urls": [
+   "https://www.edupedu.ro/cand-incepe-scoala-in-septembrie-2026-si-care-sunt-noutatile-pentru-elevi-profesori-si-parinti-calendarul-anului-scolar-2026-2027-noile-programe-pentru-clasa-a-ix-a-manualele-evaluarea-elevilor/",
+   "https://www.edupedu.ro/evaluarea-elevilor-va-fi-legata-de-standarde-de-invatare-iar-profesorii-vor-fi-formati-ca-evaluatori-noul-cadru-al-curriculumului-national-2026-in-consultare-publica-schimbarile-pentru-scoli-si/",
+   "https://www.m.edituracorint.ro/planificare-calendaristica/dezvoltare-personala-clasa-II.docx"
+  ]
+ },
+ "sources": [
+  {
+   "title": "Programa școlară pentru disciplina Dezvoltare personală, Clasa pregătitoare, clasa I și clasa a II-a (Anexa nr. 2 la OMEN nr. 3418/19.03.2013), copie ISJ Mureș, 12 p., MD5 c9c6eca1f3ea76d5f95af6e9b89d4407",
+   "url": "https://www.edums.ro/invprimar/55_Dezvoltare%20personala_CP_II_OMEN.pdf",
+   "role": "primary"
+  },
+  {
+   "title": "Aceeași programă reprodusă integral (p. 20–29) în ghidul cadrului didactic Dezvoltare personală, clasa a II-a, Editura Corint – copie independentă, comparată cuvânt cu cuvânt",
+   "url": "https://edituracorint.ro/pub/media/catalog/product/attachment/g/h/ghid_dp_cls2.pdf",
+   "role": "check"
+  },
+  {
+   "title": "Editura Corint – planificare calendaristică Dezvoltare personală, clasa a II-a (citează programa aprobată prin O.M. nr. 3418/19.03.2013)",
+   "url": "https://www.m.edituracorint.ro/planificare-calendaristica/dezvoltare-personala-clasa-II.docx",
+   "role": "check"
+  }
+ ],
+ "normalisation": "ș/ț/Ș/Ț (sedilă) → ș/ț/Ș/Ț (virgulă dedesubt); spațiile duble din textul aliniat stânga-dreapta reduse la unul; rândurile rupte în celulele tabelului unite într-un singur item. Codurile sunt date fără punctul final (în document: «1.1.»).",
+ "verification": {
+  "secondPass": "Trecerea 1: PDF-ul edums.ro descărcat și extras cu pdftotext -layout (coloanele CP / I / II), apoi titlurile competențelor specifice extrase separat cu pdftohtml -xml (textul bold, împărțit pe coloane după coordonate). Tabelul de conținuturi (p. 10) a fost randat ca imagine și citit vizual, rând cu rând, pentru împărțirea pe domenii, subdomenii și itemi. Trecerea 2: ghidul Corint pentru clasa a II-a reproduce programa integral (p. 20–29); textul lui a fost extras separat și comparat automat cuvânt cu cuvânt cu textul edums (3 969 de cuvinte): singurele diferențe sunt antetele și numerele de pagină ale ghidului. Planificarea Corint citează același ordin și codurile 1.1–3.3.",
+  "differences": [
+   "Nicio diferență de text între copia edums și copia din ghidul Corint (doar antete/numere de pagină).",
+   "Clasa a II-a: competența de igienă are codul 1.3 (nu 1.2) și nu există 1.2 la clasa a II-a – așa în ambele copii (și în extragerea bold). Păstrat ca atare.",
+   "Clasa I, 2.2: «non-verbale» cu cratimă (rupt la capăt de rând ca «non-» / «verbale»; cratima este caracter în text, nu despărțire automată). Conținuturile scriu «nonverbale». Păstrat «non-verbale».",
+   "Clasa I, 3.2: în PDF «Evidențierea  importanței  învățării  pentru» are spații duble (aliniere stânga-dreapta); normalizat la un spațiu."
+  ]
+ },
+ "generalCompetences": [
+  {
+   "code": "1",
+   "text": "Manifestarea interesului pentru autocunoaștere și a atitudinii pozitive față de sine și față de ceilalți"
+  },
+  {
+   "code": "2",
+   "text": "Exprimarea adecvată a emoțiilor în interacțiunea cu copii și adulți cunoscuți"
+  },
+  {
+   "code": "3",
+   "text": "Utilizarea abilităților și a atitudinilor specifice învățării în context școlar"
+  }
+ ],
+ "specificCompetences": [
+  {
+   "level": "CP",
+   "code": "1.1",
+   "text": "Identificarea unor trăsături personale elementare"
+  },
+  {
+   "level": "CP",
+   "code": "1.2",
+   "text": "Identificarea unor obiecte și activități simple de igienă personală"
+  },
+  {
+   "level": "CP",
+   "code": "2.1",
+   "text": "Recunoașterea emoțiilor de bază în situații simple, familiare"
+  },
+  {
+   "level": "CP",
+   "code": "2.2",
+   "text": "Identificarea regulilor de comunicare în activitatea școlară"
+  },
+  {
+   "level": "CP",
+   "code": "2.3",
+   "text": "Explorarea caracteristicilor ființelor și obiectelor preferate și a interacțiunii simple cu acestea"
+  },
+  {
+   "level": "CP",
+   "code": "3.1",
+   "text": "Identificarea unor rutine în activitatea școlară"
+  },
+  {
+   "level": "CP",
+   "code": "3.2",
+   "text": "Aplicarea unor tehnici simple care sprijină învățarea și succesul școlar"
+  },
+  {
+   "level": "CP",
+   "code": "3.3",
+   "text": "Identificarea hobby-urilor, jocurilor și activităților preferate"
+  },
+  {
+   "level": "I",
+   "code": "1.1",
+   "text": "Prezentarea unor trăsături personale elementare, în contexte variate"
+  },
+  {
+   "level": "I",
+   "code": "1.2",
+   "text": "Identificarea unor reguli de igienă personală"
+  },
+  {
+   "level": "I",
+   "code": "2.1",
+   "text": "Asocierea emoțiilor de bază cu elemente simple de limbaj nonverbal și paraverbal"
+  },
+  {
+   "level": "I",
+   "code": "2.2",
+   "text": "Transmiterea unor mesaje verbale și non-verbale simple despre propriile experiențe de viață"
+  },
+  {
+   "level": "I",
+   "code": "2.3",
+   "text": "Explorarea caracteristicilor necesare pentru a fi bun prieten"
+  },
+  {
+   "level": "I",
+   "code": "3.1",
+   "text": "Identificarea unor sarcini de lucru simple în contexte variate"
+  },
+  {
+   "level": "I",
+   "code": "3.2",
+   "text": "Evidențierea importanței învățării pentru propria persoană"
+  },
+  {
+   "level": "I",
+   "code": "3.3",
+   "text": "Explorarea unor meserii cunoscute sau preferate"
+  },
+  {
+   "level": "II",
+   "code": "1.1",
+   "text": "Stabilirea unor asemănări și deosebiri între sine și ceilalți, după criterii simple"
+  },
+  {
+   "level": "II",
+   "code": "1.3",
+   "text": "Respectarea unor reguli de igienă personală"
+  },
+  {
+   "level": "II",
+   "code": "2.1",
+   "text": "Exprimarea emoțiilor de bază în situații variate"
+  },
+  {
+   "level": "II",
+   "code": "2.2",
+   "text": "Utilizarea unor elemente de ascultare activă"
+  },
+  {
+   "level": "II",
+   "code": "2.3",
+   "text": "Explorarea abilităților de relaționare cu ceilalți"
+  },
+  {
+   "level": "II",
+   "code": "3.1",
+   "text": "Realizarea unui program zilnic de activități, cu sprijinul adulților"
+  },
+  {
+   "level": "II",
+   "code": "3.2",
+   "text": "Prezentarea condițiilor (instrumente, persoane, contexte) care fac învățarea ușoară sau dificilă"
+  },
+  {
+   "level": "II",
+   "code": "3.3",
+   "text": "Prezentarea utilității unor meserii/profesii cunoscute"
+  }
+ ],
+ "contents": [
+  {
+   "level": "CP",
+   "domain": "Autocunoaștere și stil de viață sănătos",
+   "subdomain": "Autocunoaștere și atitudine pozitivă față de sine și față de ceilalți",
+   "items": [
+    "Cine sunt eu?",
+    "Trăsături fizice",
+    "Schema corporală: alcătuirea și denumirea părților corpului"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Autocunoaștere și stil de viață sănătos",
+   "subdomain": "Igiena personală",
+   "items": [
+    "Obiecte și activități zilnice de igienă personală"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Dezvoltare emoțională și socială",
+   "subdomain": "Trăire și manifestare emoțională, starea de bine",
+   "items": [
+    "Emoții de bază denumite prin cuvinte (bucurie, tristețe, frică, furie) în activități / contexte familiare"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Dezvoltare emoțională și socială",
+   "subdomain": "Comunicare școlară eficientă",
+   "items": [
+    "Reguli de comunicare în activitatea școlară",
+    "Comunicarea cu colegii și cadrele didactice"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Dezvoltare emoțională și socială",
+   "subdomain": "Interacțiuni simple cu ființe și obiecte familiare",
+   "items": [
+    "Ființe și obiecte preferate",
+    "Caracteristicile acestora"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Aspecte specifice ale organizării învățării și pregătirii pentru viață la școlarul mic",
+   "subdomain": "Rutine și sarcini de lucru",
+   "items": [
+    "Reguli elementare ale noilor rutine specifice activității clasei pregătitoare"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Aspecte specifice ale organizării învățării și pregătirii pentru viață la școlarul mic",
+   "subdomain": "Abilități și atitudini de învățare",
+   "items": [
+    "Tehnici simple care sprijină învățarea",
+    "Reguli de organizare a învățării"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Aspecte specifice ale organizării învățării și pregătirii pentru viață la școlarul mic",
+   "subdomain": "Explorarea meseriilor",
+   "items": [
+    "Hobby-uri și activități preferate",
+    "Portofoliul personal cu rezultate/evidențe ale învățării"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Autocunoaștere și stil de viață sănătos",
+   "subdomain": "Autocunoaștere și atitudine pozitivă față de sine și față de ceilalți",
+   "items": [
+    "Cine sunt eu?",
+    "Caracteristici personale simple, puncte tari și limite observabile în activitățile școlare și de timp liber"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Autocunoaștere și stil de viață sănătos",
+   "subdomain": "Igiena personală",
+   "items": [
+    "Norme de igienă la școală și acasă",
+    "Igiena locuinței, a sălii de clasă"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Dezvoltare emoțională și socială",
+   "subdomain": "Trăire și manifestare emoțională, starea de bine",
+   "items": [
+    "Emoții de bază (bucurie, tristețe, frică, furie) și elemente simple de limbaj nonverbal (expresii faciale, postură) și paraverbal (intonație)"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Dezvoltare emoțională și socială",
+   "subdomain": "Comunicare școlară eficientă",
+   "items": [
+    "Abilități de comunicare de bază",
+    "Mesaje verbale, nonverbale, paraverbale simple"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Dezvoltare emoțională și socială",
+   "subdomain": "Interacțiuni simple cu ființe și obiecte familiare",
+   "items": [
+    "Prietenia",
+    "Caracteristicile unui bun prieten",
+    "Ce este un bun prieten?"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Aspecte specifice ale organizării învățării și pregătirii pentru viață la școlarul mic",
+   "subdomain": "Rutine și sarcini de lucru",
+   "items": [
+    "Sarcini de lucru în activitatea școlară și acasă: tipuri de sarcini, încadrare în timp, finalizare"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Aspecte specifice ale organizării învățării și pregătirii pentru viață la școlarul mic",
+   "subdomain": "Abilități și atitudini de învățare",
+   "items": [
+    "Importanța învățări",
+    "Tehnici simple de monitorizare a achizițiilor învățării"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Aspecte specifice ale organizării învățării și pregătirii pentru viață la școlarul mic",
+   "subdomain": "Explorarea meseriilor",
+   "items": [
+    "Meserii cunoscute: denumire, activități principale, unelte și instrumente, loc de desfășurare"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Autocunoaștere și stil de viață sănătos",
+   "subdomain": "Autocunoaștere și atitudine pozitivă față de sine și față de ceilalți",
+   "items": [
+    "Eu și ceilalți",
+    "Asemănări și deosebiri dintre sine și ceilalți după criterii simple: aspecte fizice, gen, vârstă, tipuri de vestimentație (sport, elegant, tradițional etc.)",
+    "Diversitate. Fiecare este unic; diferențe individuale"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Autocunoaștere și stil de viață sănătos",
+   "subdomain": "Igiena personală",
+   "items": [
+    "Norme de igienă în contexte variate",
+    "Importanța normelor de igienă pentru sănătate, învățare și relațiile cu ceilalți"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Dezvoltare emoțională și socială",
+   "subdomain": "Trăire și manifestare emoțională, starea de bine",
+   "items": [
+    "Emoții de bază (bucurie, tristețe, frică, furie) exprimate în comportamente"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Dezvoltare emoțională și socială",
+   "subdomain": "Comunicare școlară eficientă",
+   "items": [
+    "Elemente de ascultare activă: contact vizual, postură, voce (intonație, accent)"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Dezvoltare emoțională și socială",
+   "subdomain": "Interacțiuni simple cu ființe și obiecte familiare",
+   "items": [
+    "Abilități necesare și comportamente acceptate în relațiile cu ceilalți",
+    "Respectul în relațiile cu ceilalți"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Aspecte specifice ale organizării învățării și pregătirii pentru viață la școlarul mic",
+   "subdomain": "Rutine și sarcini de lucru",
+   "items": [
+    "Cum folosim timpul?",
+    "Program zilnic de lucru",
+    "Alternanța efort/relaxare (timp de lucru/timp liber)",
+    "Importanța timpului în învățare"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Aspecte specifice ale organizării învățării și pregătirii pentru viață la școlarul mic",
+   "subdomain": "Abilități și atitudini de învățare",
+   "items": [
+    "Condițiile învățării: factori favorizanți/resurse, factori de stress/ obstacole (instrumente, persoane, contexte)"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Aspecte specifice ale organizării învățării și pregătirii pentru viață la școlarul mic",
+   "subdomain": "Explorarea meseriilor",
+   "items": [
+    "La ce folosesc meseriile?",
+    "Utilitatea socială a meseriilor: produse realizate, beneficii pentru sine și pentru comunitate"
+   ]
+  }
+ ],
+ "notes": [
+  "Tabelul «CONȚINUTURI» are capul «Domenii | Subdomenii | CP | CLASA I | CLASA a II-a»: 3 domenii, 8 subdomenii (câmpurile domain și subdomain), câte o celulă pe clasă. Fiecare rând dintr-o celulă este un item; rândurile continuate (rupte de lățimea coloanei) au fost unite.",
+  "Clasa a II-a are competențele specifice 1.1 și 1.3 la competența generală 1 (1.2 lipsește în document); clasele pregătitoare și I au 1.1 și 1.2.",
+  "Greșeli/particularități păstrate exact ca în original: «Importanța învățări» (clasa I, fără «i» final), «factori de stress/ obstacole», «non-verbale» (I 2.2) față de «nonverbale» (conținuturi), «la școlarul mic».",
+  "Exemplele de activități de învățare și sugestiile metodologice NU au fost extrase."
+ ]
+}

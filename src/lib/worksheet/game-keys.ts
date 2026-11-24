@@ -9,6 +9,7 @@ import { readingKeySection } from './reading-pages';
 import { answerKeyPages, type KeySection } from './answer-key';
 import { funKeyExtras, funKeySection } from './fun-pages';
 import { exploreKeySection } from './explore-pages';
+import { subjectKeyExtras, subjectKeySection } from './subjects-pages';
 import { clrKeySection } from './clr-pages';
 import { memKeySection } from './mem-pages';
 
@@ -82,7 +83,7 @@ export function gameKeySection(config: WorksheetConfig, item: string): KeySectio
     // the fun preschool sheets and „Explorarea mediului”: nothing for „Urmărește linia”
     default:
       // and the sheets that fill the gaps of the programme: nothing for the messages the child writes (note:1–3)
-      return funKeySection(item) ?? exploreKeySection(item) ?? clrKeySection(item) ?? memKeySection(item);
+      return funKeySection(item) ?? exploreKeySection(item) ?? clrKeySection(item) ?? memKeySection(item) ?? subjectKeySection(item);
   }
 }
 
@@ -98,6 +99,8 @@ export function gameKeySections(config: WorksheetConfig, tier: Tier): KeySection
 export function gameAnswerPages(config: WorksheetConfig, tier: Tier) {
   const sections = gameKeySections(config, tier);
   // the mazes with their path and the scenes with the differences circled, under the answers
-  const extras = funKeyExtras(config.selectedItems.filter((item) => isActivityItem(item) && isItemAllowed(item, 'games', tier)));
+  const drawn = config.selectedItems.filter((item) => isActivityItem(item) && isItemAllowed(item, 'games', tier));
+  // … and the finished symmetric drawings (subjects-pages.ts)
+  const extras = [...funKeyExtras(drawn), ...subjectKeyExtras(drawn)];
   return sections.length ? answerKeyPages(config, sections, extras) : [];
 }

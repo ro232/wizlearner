@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { pageMetadata } from '@/lib/seo/metadata';
-import { CLASS_PAGES, classCoverage, classEvaluations, classPage, presetHref } from '@/lib/curriculum/presets';
+import { CLASS_PAGES, classCoverage, classEvaluations, classPage, coverageCount, presetHref } from '@/lib/curriculum/presets';
 
 export const dynamicParams = false;
 
@@ -30,8 +30,10 @@ export default function ClassCurriculumPage({ params }: { params: { clasa: strin
   if (!c) notFound();
   const groups = classCoverage(c);
   const evaluations = classEvaluations(c);
-  const items = groups.flatMap((g) => g.items);
-  const withSheets = items.filter((i) => i.presets.length).length;
+  // the headline counts limba română and matematică (and the preschool curriculum); the other subjects
+  // are counted apart, in their own group (presets.ts HEADLINE_PROGRAMMES)
+  const { covered: withSheets, total } = coverageCount(groups.filter((g) => g.headline).flatMap((g) => g.items));
+  const apart = groups.filter((g) => !g.headline);
   const word = c.level === 'presc' ? 'comportament' : 'competență';
   const order = c.level === 'presc' ? 'Curriculumul pentru educație timpurie, OMEN nr. 4694/2019' : 'programele aprobate prin OMEN nr. 3418/2013';
 
@@ -49,7 +51,16 @@ export default function ClassCurriculumPage({ params }: { params: { clasa: strin
               Pentru fiecare {word} din programă vezi fișele care îl lucrează. Deschizi fișa în generator, pui literele sau numele
               copilului și o descarci; codul se tipărește jos, pe fiecare pagină.
             </p>
-            <p className="mt-3 text-sm font-bold text-ink">Avem fișe pentru {withSheets} din {items.length}.</p>
+            <p className="mt-3 text-sm font-bold text-ink">
+              Avem fișe pentru {withSheets} din {total}{apart.length > 0 ? ' competențe de limba română și matematică' : ''}.
+            </p>
+            {apart.length > 0 && (
+              <p className="mt-2 text-sm text-slate-700 max-w-2xl">
+                {apart.map((g) => g.title).join(', ').replace(/, ([^,]*)$/, ' și $1')} se învață mai ales prin activități practice,
+                joc și discuție, nu pe fișe. De aceea nu intră în numărătoarea de mai sus: la fiecare dintre ele vezi separat
+                pentru câte competențe avem fișe.
+              </p>
+            )}
             {c.level !== 'presc' && (
               <p className="mt-2 text-sm text-slate-700">
                 Ai nevoie și de planificarea calendaristică?{' '}
@@ -94,6 +105,15 @@ export default function ClassCurriculumPage({ params }: { params: { clasa: strin
           <section key={g.title} className="py-10 border-b-2 border-ink/10">
             <div className="max-w-6xl mx-auto px-4 sm:px-6">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{g.title}</h2>
+              {(() => {
+                const n = coverageCount(g.items);
+                return (
+                  <p className="mt-2 text-sm text-slate-700 max-w-2xl">
+                    <span className="font-bold text-ink">Fișe pentru {n.covered} din {n.total}.</span>
+                    {g.note ? ` ${g.note}` : ''}
+                  </p>
+                );
+              })()}
               <ol className="mt-6 space-y-3">
                 {g.items.map((it) => (
                   <li key={it.code} className={`rounded-xl border-2 p-4 ${it.presets.length ? 'border-ink bg-white' : 'border-slate-200 bg-white/60'}`}>

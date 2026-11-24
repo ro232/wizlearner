@@ -45,6 +45,10 @@ sheet('fun-labirint-diferente', { category: 'games', selectedItems: ['maze:1', '
 sheet('fun-linii-umbre', { category: 'games', selectedItems: ['trace:3', 'trace:6', 'shadow:1', 'shadow:6'], curriculumLevel: 'presc' });
 sheet('explorare-presc', { category: 'games', selectedItems: ['plant:1', 'body:1', 'home:1', 'move:1', 'baby:1', 'season:1', 'season:5', 'weather:1', 'wear:1'], curriculumLevel: 'presc', mathAnswers: true });
 sheet('explorare-scoala', { category: 'games', selectedItems: ['senses:1', 'habitat:1', 'water:1', 'melt:1'], curriculumLevel: 'I', mathAnswers: true });
+// Arte vizuale și abilități practice, Dezvoltare personală, limba engleză (subjects-pages.ts), with their answers
+sheet('arte-vizuale', { category: 'games', selectedItems: ['sym:1', 'sym:3', 'model:3', 'cut:1', 'cut:2', 'lines:1', 'lines:2'], curriculumLevel: 'CP', mathAnswers: true });
+sheet('dezvoltare-personala', { category: 'games', selectedItems: ['feel:1', 'feel:2', 'me:1', 'hyg:1', 'habit:1', 'job:1', 'jobuse:1', 'rules:1'], curriculumLevel: 'I', childName: 'Ioana', mathAnswers: true });
+sheet('limba-engleza', { category: 'games', selectedItems: ['en:1', 'en:2', 'en:3'], curriculumLevel: 'II', mathAnswers: true });
 // the sheets that fill the gaps of the programme (clr-pages.ts, mem-pages.ts), with their answers
 sheet('comunicare-cp', { category: 'games', selectedItems: ['story:1', 'story:2', 'sign:1', 'note:1', 'note:2'], curriculumLevel: 'CP', mathAnswers: true });
 sheet('comunicare-2', { category: 'games', selectedItems: ['sign:2', 'sign:3', 'msg:1', 'msg:2', 'msg:3'], curriculumLevel: 'II', mathAnswers: true });

@@ -1,0 +1,747 @@
+{
+ "id": "avap-p-ii",
+ "subject": "Arte vizuale și abilități practice",
+ "levels": [
+  "CP",
+  "I",
+  "II"
+ ],
+ "order": "Anexa nr. 2 la ordinul ministrului educației naționale nr. 3418/19.03.2013",
+ "inForce2026": {
+  "status": "da",
+  "evidence": "Nu am găsit nicio programă nouă aprobată pentru clasa pregătitoare–a II-a care să o înlocuiască pe cea din 2013. Noile planuri-cadru și programe din 2026–2027 se aplică doar la clasa a IX-a (edupedu, 4.09.2026); pentru clasele I–VIII intră în vigoare doar standardele naționale de evaluare, care nu înlocuiesc programa. Noul cadru al curriculumului național era în consultare publică, fără calendar pentru primar (edupedu, 31.05.2026). Planificările editurilor pentru anii recenți citează încă programa aprobată prin OMN 3418/19.03.2013 (Aramis, AVAP clasa a II-a, 2023–2024). Concluzia se sprijină pe faptul că nu există o programă mai nouă, nu pe o confirmare oficială explicită: pagina ROCNEE a programelor în vigoare pentru primar nu a putut fi consultată (blochează accesul automat). Verificat la 24.11.2026.",
+  "urls": [
+   "https://www.edupedu.ro/cand-incepe-scoala-in-septembrie-2026-si-care-sunt-noutatile-pentru-elevi-profesori-si-parinti-calendarul-anului-scolar-2026-2027-noile-programe-pentru-clasa-a-ix-a-manualele-evaluarea-elevilor/",
+   "https://www.edupedu.ro/evaluarea-elevilor-va-fi-legata-de-standarde-de-invatare-iar-profesorii-vor-fi-formati-ca-evaluatori-noul-cadru-al-curriculumului-national-2026-in-consultare-publica-schimbarile-pentru-scoli-si/",
+   "https://docs.google.com/document/d/1fBUrPA8d04x_ZZPd8tJ4YKptTgDLr3Ed/export?format=pdf"
+  ]
+ },
+ "sources": [
+  {
+   "title": "Programa școlară pentru disciplina Arte vizuale și abilități practice, Clasa pregătitoare, clasa I și clasa a II-a (Anexa nr. 2 la OMEN nr. 3418/19.03.2013), copie ISJ Mureș, 17 p., MD5 9075d7fce616cc5512df9c185b16e00f",
+   "url": "https://www.edums.ro/invprimar/37_AVAB_CP_II_OMEN.pdf",
+   "role": "primary"
+  },
+  {
+   "title": "Aceeași programă transcrisă integral ca pagină web (antet «Anexa nr. 2 la ordinul ministrului educației naționale nr. 3418/19.03.2013»), AcademiaABC – copie independentă, tabelele ca celule HTML",
+   "url": "https://academiaabc.ro/2020/03/15/arte-vizuale-si-abilitati-practice-clasa-pregatitoare-clasa-i-si-clasa-a-ii-a/",
+   "role": "check"
+  },
+  {
+   "title": "Planificare calendaristică AVAP clasa I/a II-a 2023–2024 (Editura Aramis, Google Docs): «Material realizat conform programei școlare aprobată prin ordinul ministrului nr. 3418/19.03.2013», cu textele competențelor de clasa a II-a",
+   "url": "https://docs.google.com/document/d/1fBUrPA8d04x_ZZPd8tJ4YKptTgDLr3Ed/export?format=pdf",
+   "role": "check"
+  }
+ ],
+ "normalisation": "ș/ț/Ș/Ț (sedilă) → ș/ț/Ș/Ț (virgulă dedesubt); spațiile duble din textul aliniat stânga-dreapta reduse la unul; rândurile rupte în celulele tabelului unite într-un singur item. Codurile sunt date fără punctul final (în document: «1.1.»).",
+ "verification": {
+  "secondPass": "Trecerea 1: PDF-ul edums.ro extras cu pdftotext -layout; titlurile competențelor specifice extrase separat cu pdftohtml -xml (textul bold, pe coloane după coordonate); paginile 3–12 randate ca imagini și citite vizual (în special tabelul de conținuturi, p. 11–12, pentru împărțirea pe subtitluri și itemi). Trecerea 2: transcrierea AcademiaABC a aceluiași document (celulele tabelelor sunt câte un bloc de text): toate cele 2 competențe generale și 27 de competențe specifice au fost căutate automat, după normalizarea spațiilor și a diacriticelor, și găsite cuvânt cu cuvânt. Verificare încrucișată: competențele de clasa a II-a din planificarea Aramis 2023–2024 (cu mici greșeli de tastare ale autorilor planificării, vezi diferențele).",
+  "differences": [
+   "Nicio diferență de cuvânt la competențe și la conținuturi între PDF și transcrierea AcademiaABC.",
+   "Spațiere: AcademiaABC redă «contextefamiliare» (competența generală 1) și alte cuvinte lipite (eroare a paginii web); PDF-ul are spațiu. În PDF apar spații duble din aliniere («semnificației  unui»), normalizate.",
+   "CP 2.4 și I 2.4: titlul este rupt de trecerea la pagina următoare («…prin tehnici» / «simple»; «…folosind o» / «tehnică simplă») în ambele copii; unite.",
+   "II 2.5: «în contexte utile și sau estetice» – așa în PDF (verificat pe imagine, p. 10) și în AcademiaABC; planificarea Aramis scrie «și/sau». Păstrat textul oficial «și sau».",
+   "Planificarea Aramis (clasa a II-a) are mici greșeli de tastare față de programă («semnificatiei», «în diverse context», «utilizari»); nu schimbă nimic."
+  ]
+ },
+ "generalCompetences": [
+  {
+   "code": "1",
+   "text": "Explorarea de mesaje artistice exprimate în limbaj vizual într-o diversitate de contexte familiare"
+  },
+  {
+   "code": "2",
+   "text": "Realizarea de creații funcționale și/sau estetice folosind materiale și tehnici elementare diverse"
+  }
+ ],
+ "specificCompetences": [
+  {
+   "level": "CP",
+   "code": "1.1",
+   "text": "Sesizarea semnificației unui mesaj vizual simplu, exprimat prin desen/ pictură/ modelaj/ colaj/ film/ desen animat, care reflectă un context familiar"
+  },
+  {
+   "level": "CP",
+   "code": "1.2",
+   "text": "Identificarea liniei, a punctului, a culorii și a formei în ipostaze familiare, în spațiul înconjurător"
+  },
+  {
+   "level": "CP",
+   "code": "1.3",
+   "text": "Manifestarea curiozității față de explorarea de mesaje artistice simple, exprimate vizual"
+  },
+  {
+   "level": "CP",
+   "code": "2.1",
+   "text": "Observarea unor caracteristici simple ale materialelor întâlnite în mediul familiar"
+  },
+  {
+   "level": "CP",
+   "code": "2.2",
+   "text": "Exprimarea ideilor și trăirilor personale, în aplicații simple, specifice artelor vizuale"
+  },
+  {
+   "level": "CP",
+   "code": "2.3",
+   "text": "Realizarea de aplicații/compoziții/obiecte/ construcții simple, pe baza interesului direct"
+  },
+  {
+   "level": "CP",
+   "code": "2.4",
+   "text": "Transformarea unui material prin tehnici simple"
+  },
+  {
+   "level": "CP",
+   "code": "2.5",
+   "text": "Exprimarea utilității obiectelor realizate prin efort propriu"
+  },
+  {
+   "level": "CP",
+   "code": "2.6",
+   "text": "Participarea la activități integrate adaptate nivelului de vârstă, în care se asociază elemente de exprimare vizuală, muzicală, verbală, kinestezică"
+  },
+  {
+   "level": "I",
+   "code": "1.1",
+   "text": "Sesizarea elementelor de detaliu ale unui mesaj vizual simplu, exprimat printr-o varietate de forme artistice"
+  },
+  {
+   "level": "I",
+   "code": "1.2",
+   "text": "Identificarea liniei, a punctului, a culorii și a formei în contexte cunoscute"
+  },
+  {
+   "level": "I",
+   "code": "1.3",
+   "text": "Manifestarea curiozității față de explorarea de mesaje artistice simple, exprimate vizual"
+  },
+  {
+   "level": "I",
+   "code": "2.1",
+   "text": "Identificarea unor caracteristici/ proprietăți ale materialelor întâlnite în mediul cunoscut"
+  },
+  {
+   "level": "I",
+   "code": "2.2",
+   "text": "Exprimarea ideilor și trăirilor personale prin utilizarea liniei, punctului, culorii și formei"
+  },
+  {
+   "level": "I",
+   "code": "2.3",
+   "text": "Realizarea de obiecte/construcții/folosind materiale ușor de prelucrat și tehnici accesibile"
+  },
+  {
+   "level": "I",
+   "code": "2.4",
+   "text": "Transformarea unui material folosind o tehnică simplă"
+  },
+  {
+   "level": "I",
+   "code": "2.5",
+   "text": "Explorarea de utilizări în contexte variate a obiectelor/ lucrărilor realizate prin efort propriu"
+  },
+  {
+   "level": "I",
+   "code": "2.6",
+   "text": "Participarea la activități integrate adaptate nivelului de vârstă, în care se asociază elemente de exprimare vizuală, muzicală, verbală, kinestezică"
+  },
+  {
+   "level": "II",
+   "code": "1.1",
+   "text": "Sesizarea diferenței dintre informația practică transmisă prin limbaj vizual și mesajul artistic"
+  },
+  {
+   "level": "II",
+   "code": "1.2",
+   "text": "Identificarea semnificației liniei, punctului, culorii și formei în opere de artă"
+  },
+  {
+   "level": "II",
+   "code": "1.3",
+   "text": "Manifestarea curiozității față de explorarea de mesaje artistice simple, exprimate vizual"
+  },
+  {
+   "level": "II",
+   "code": "2.1",
+   "text": "Explorarea unor caracteristici/ proprietăți ale materialelor în diverse contexte"
+  },
+  {
+   "level": "II",
+   "code": "2.2",
+   "text": "Exprimarea ideilor și trăirilor personale prin utilizarea liniei, punctului, culorii și formei"
+  },
+  {
+   "level": "II",
+   "code": "2.3",
+   "text": "Realizarea de produse utile și/sau estetice combinând materiale ușor de prelucrat și tehnici accesibile"
+  },
+  {
+   "level": "II",
+   "code": "2.4",
+   "text": "Transformarea unui material prin tehnici variate"
+  },
+  {
+   "level": "II",
+   "code": "2.5",
+   "text": "Explorarea de utilizări în contexte utile și sau estetice a obiectelor/ lucrărilor realizate prin efort propriu"
+  },
+  {
+   "level": "II",
+   "code": "2.6",
+   "text": "Participarea la activități integrate adaptate nivelului de vârstă, în care se asociază elemente de exprimare vizuală, muzicală, verbală, kinestezică"
+  }
+ ],
+ "contents": [
+  {
+   "level": "CP",
+   "domain": "Desen",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "hârtie, diverse obiecte",
+    "creion grafit, creioane colorate",
+    "(opțional: PC, tabletă)"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Desen",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "Linie modulată, repetiție"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Desen",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "linia, punctul, forma (fără terminologie)"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Desen",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "desen liber, decorații simple"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Pictură",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "acuarele, tempera, hârtie, hârtie colorată, burete",
+    "pensulă, deget, ștampilă, creioane colorate, PC, tabletă"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Pictură",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "pensulație, colaj, amprentare, ștampilare, tamponare, pulverizare"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Pictură",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "pata"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Pictură",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "compoziții"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Confecții și jucării",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "hârtie, materiale textile, folii de plastic, ac, foarfece, ramă de țesut, cretă, materiale din natură (frunze/petale uscate, ghinde)"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Confecții și jucării",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "origami, tangram, croit, cusut"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Confecții și jucării",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "punct, linie, nod, formă"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Confecții și jucării",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "Obiecte decorative și de îmbrăcăminte pentru păpuși"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Modelaj",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "plastilină"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Modelaj",
+   "subdomain": null,
+   "items": [
+    "presare, modelare liberă"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Modelaj",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "formă"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Modelaj",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "obiecte decorative, figurine etc."
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Colaj",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "foarfece, lipici",
+    "fire, mărgele, cuburi, hârtie, diferite obiecte"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Colaj",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "mototolire, rupere, tăiere, decupare după contur, îndoire, răsucire, lipire"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Colaj",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "formă, volum"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Colaj",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "obiecte decorative, bijuterii, spații, jucării, instalații, figurine etc."
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Foto-film",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "aparate de redare și înregistrare (telefon, aparate foto, PC, tabletă)",
+    "filme, fotografii"
+   ]
+  },
+  {
+   "level": "CP",
+   "domain": "Foto-film",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "vizionarea unor filme și fotografii; realizarea unor fotografii"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Desen",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "hârtie liniată și neliniată, diverse obiecte",
+    "creion grafit, creioane colorate, creioane cerate, peniță, radieră",
+    "(opțional: PC, tabletă)"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Desen",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "hașurare, linie modulată, repetiție, caligrafie"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Desen",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "linia, punctul, forme regulate și neregulate (fără terminologie)"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Desen",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "desen liber, decorații (ce pregătesc scrisul), decorații simple"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Pictură",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "acuarele, tușuri, guașe, tempera, hârtie, folie de plastic, hârtie colorată, cretă, pigmenți, burete",
+    "pensulă, deget, ștampilă, creioane colorate, PC, tabletă"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Pictură",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "pensulație, colaj, amprentare, ștampilare, tamponare, pulverizare"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Pictură",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "pata"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Pictură",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "compoziții"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Confecții și jucării",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "hârtie, materiale textile, folii de plastic, ac, foarfece, ramă de țesut, cretă, tipar, materiale din natură (frunze/petale uscate, ghinde, fructe, legume)"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Confecții și jucării",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "origami, tangram, croit, cusut (cusutul nasturelui, cusutul înaintea și în urma acului), țesut cu benzi de hârtie/fire"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Confecții și jucării",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "punct, linie, nod, pată, formă, volum"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Confecții și jucării",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "Obiecte decorative și de îmbrăcăminte pentru păpuși"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Modelaj",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "plastilină"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Modelaj",
+   "subdomain": null,
+   "items": [
+    "presare, modelare liberă"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Modelaj",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "formă, volum"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Modelaj",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "obiecte decorative, figurine etc."
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Colaj",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "foarfece, lipici",
+    "fire, mărgele, cuburi, hârtie, diferite obiecte"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Colaj",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "mototolire, rupere, tăiere, decupare după contur, îndoire, împletire"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Colaj",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "formă, volum (gol/ plin)"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Colaj",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "obiecte decorative, bijuterii, spații, jucării, instalații, figurine etc."
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Foto-film",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "aparate de redare și înregistrare (telefon, aparate foto, PC, tabletă)",
+    "filme, fotografii"
+   ]
+  },
+  {
+   "level": "I",
+   "domain": "Foto-film",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "vizionarea unor filme și fotografii; realizarea unor fotografii și filme scurte, neprelucrate tehnic"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Desen",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "hârtie liniată și neliniată, diverse obiecte",
+    "creion grafit, creioane colorate, creioane cerate, peniță, radieră",
+    "(opțional: PC, tabletă)"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Desen",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "hașurare, linie modulată, repetiție, caligrafie, stilizare, gravură"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Desen",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "linia, punctul, forme regulate și neregulate"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Desen",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "desen liber, decorații"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Pictură",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "acuarele, tușuri, guașe, tempera, acrilice, ulei, hârtie, hârtie colorată, pânză, sticlă, lemn, ceramică, cretă, pigmenți, burete",
+    "pensulă, deget, ștampilă, creioane colorate, PC, tabletă"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Pictură",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "pensulație, colaj, amprentare, ștampilare, tamponare, pulverizare"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Pictură",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "pata plată, pata vibrată"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Pictură",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "compoziții"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Confecții și jucării",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "hârtie, materiale textile, folii de plastic, ac, foarfece, croșetă, ramă de țesut, cretă, tipar, materiale din natură (frunze/petale uscate, ghinde, castane, fructe, legume)"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Confecții și jucării",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "origami, tangram, croit, cusut (puncte de coasere), țesut cu benzi de hârtie/fire"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Confecții și jucării",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "punct, linie, nod, pată, formă, volum"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Confecții și jucării",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "Obiecte decorative și de îmbrăcăminte pentru păpuși"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Modelaj",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "plastilină, cocă"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Modelaj",
+   "subdomain": null,
+   "items": [
+    "presare, modelare liberă, incizie, armături, gravură"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Modelaj",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "formă, volum (gol/ plin)"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Modelaj",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "obiecte decorative, figurine etc."
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Colaj",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "foarfece, lipici",
+    "fire, mărgele, cuburi, hârtie, diferite obiecte"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Colaj",
+   "subdomain": "Tehnici de lucru",
+   "items": [
+    "îndoirea, împletirea, origami, tangram"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Colaj",
+   "subdomain": "Elemente de limbaj plastic",
+   "items": [
+    "formă, volum (gol/ plin)"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Colaj",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "obiecte decorative, bijuterii, spații, jucării, instalații, figurine etc."
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Foto-film",
+   "subdomain": "Materiale și instrumente",
+   "items": [
+    "aparate de redare și înregistrare (telefon, aparate foto, PC, tabletă)",
+    "filme, fotografii"
+   ]
+  },
+  {
+   "level": "II",
+   "domain": "Foto-film",
+   "subdomain": "Sugestii de creații/ produse ale activității",
+   "items": [
+    "vizionarea unor filme și fotografii; realizarea unor fotografii și filme scurte, neprelucrate tehnic"
+   ]
+  }
+ ],
+ "notes": [
+  "Tabelul «CONȚINUTURI» (p. 11–12) are capul «Domenii | CP | CLASA I | CLASA a II-a» și 6 domenii: Desen, Pictură, Confecții și jucării, Modelaj, Colaj, Foto-film. În fiecare celulă, subtitlurile scrise cursiv-bold («Materiale și instrumente», «Tehnici de lucru», «Elemente de limbaj plastic», «Sugestii de creații/ produse ale activității») sunt în câmpul subdomain; fiecare rând de sub ele este un item (rândurile rupte de lățimea coloanei au fost unite).",
+  "Domeniul Modelaj: al doilea rând al tabelului («presare, modelare liberă…») nu are subtitlu în document (probabil «Tehnici de lucru», omis); subdomain = null. Foto-film nu are rândurile «Tehnici de lucru» și «Elemente de limbaj plastic».",
+  "Nota de prezentare enumeră alte domenii decât tabelul («Desen, Pictură, Modelaj, Textile și hârtie, Construcții, Foto-video»); câmpul domain folosește numele din tabel.",
+  "Rânduri pe care le-am considerat continuări: I Desen «linia, punctul, forme regulate și neregulate» + «(fără terminologie)» (la CP aceeași paranteză stă pe același rând); I Desen «desen liber, decorații (ce pregătesc scrisul),» + «decorații simple».",
+  "Greșeli/particularități păstrate exact ca în original: «Realizarea de obiecte/construcții/folosind…» (I 2.3, bară înainte de «folosind»), «în contexte utile și sau estetice» (II 2.5, fără bară între «și» și «sau»), «aplicații/compoziții/obiecte/ construcții» (CP 2.3), «Linie modulată» cu majusculă (CP Desen), virgula după «tipar» tipărită bold-cursiv (II Confecții).",
+  "Exemplele de activități de învățare, sugestiile metodologice și exemplele de abordare integrată NU au fost extrase."
+ ]
+}
