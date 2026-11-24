@@ -377,7 +377,7 @@ describe('the competences', () => {
     for (const id of ['sorteaza', 'intrusul', 'grupeaza-numara', 'orientare']) expect(SHEET_PRESETS.some((p) => p.id === id), id).toBe(true);
     const listed = (slug: string, code: string) =>
       classCoverage(CLASS_PAGES.find((c) => c.slug === slug)!).flatMap((g) => g.items).filter((i) => i.code === code && (slug === 'gradinita' || i.programme === 'mem-p-ii')).flatMap((i) => i.presets.map((p) => p.id));
-    expect(listed('gradinita', 'E.2.4')).toEqual(['sorteaza', 'intrusul', 'grupeaza-numara']);
+    expect(listed('gradinita', 'E.2.4')).toEqual(['sorteaza', 'intrusul', 'grupeaza-numara', 'mate-lungimi']);
     expect(listed('gradinita', 'E.2.1')).toContain('grupeaza-numara');
     expect(listed('clasa-pregatitoare', '5.1')).toEqual(['sorteaza', 'grupeaza-numara']);
     expect(listed('clasa-pregatitoare', '2.1')).toEqual(['orientare']);

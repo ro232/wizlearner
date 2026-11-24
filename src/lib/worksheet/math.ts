@@ -2,11 +2,18 @@ import type { DrawOp } from '@/lib/glyphs/types';
 import type { Tier, WorksheetConfig } from '@/types';
 import { hasIcon, iconOps } from '@/lib/hints/icons';
 import { madeWith } from '@/lib/brand';
+import { isItemAllowed } from '@/lib/access';
 import { textWidthMm } from '@/lib/book/text';
 import { ACCENT, INK, MUTED, PAPER, starPoints } from './rows';
 import { lei, moneyExercises, moneyPageOps } from './money';
 import { counted, problemsInstruction, problemsPageOps, wordProblems, type WordProblem } from './problems';
 import { answerKeyPages, type KeySection, type SheetPage } from './answer-key';
+import { FREE_MATH_TABLE, groupsAnswer, groupsInstruction, groupsItems, groupsPageOps, groupsTitle, groupsWithProduct, isMulType, mathTableOf, mulExercises, mulTitle } from './multiply';
+import { FREE_CLOCK_STEPS, clockStepOf, clockTimes, clockTitle, clocksOps, digital, handsWords, timeWords, type ClockStep } from './clock';
+import { CALENDAR_TITLES, calendarAnswers, calendarOps, calmonthSheet, monthsSheet, weekSheet, type CalendarSheet } from './calendar-pages';
+import { UNIT_NAMES, lengthAnswers, lengthOps, lengthSheet, massAnswers, massItems, massOps, rulerAnswers, rulerSheet, rulerSheetOps, unitsAnswers, unitsOps, unitsSheet } from './measure';
+import { fracAnswers, fracOps, fracSheet } from './fractions';
+import { figuresAnswers, figuresOps, figuresSheet } from './figures';
 
 /**
  * Math sheets ("Matematică"), new every time on request: compare numbers, add, subtract,
@@ -26,8 +33,17 @@ import { answerKeyPages, type KeySection, type SheetPage } from './answer-key';
  * dintr-o mulțime dată”).
  */
 
-export const MATH_TYPES = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr', 'money', 'problems'] as const;
+/** The sheets of numbers and operations with them (0–5 … 0–1000). */
+export const NUMBER_MATH_TYPES = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr', 'money', 'problems'] as const;
+/**
+ * The other topics of the programme: equal groups, multiplication and division (clasa a II-a), the
+ * clock, the calendar, measuring, halves and quarters, shapes (multiply.ts, clock.ts,
+ * calendar-pages.ts, measure.ts, fractions.ts, figures.ts). Only „groups” goes by the number range.
+ */
+export const TOPIC_MATH_TYPES = ['groups', 'mul', 'div', 'mulmiss', 'clock', 'clockdraw', 'week', 'months', 'calmonth', 'length', 'mass', 'ruler', 'units', 'frac', 'figures'] as const;
+export const MATH_TYPES = [...NUMBER_MATH_TYPES, ...TOPIC_MATH_TYPES] as const;
 export type MathType = (typeof MATH_TYPES)[number];
+export type TopicMathType = (typeof TOPIC_MATH_TYPES)[number];
 export const MATH_RANGES = [5, 10, 20, 31, 100, 1000] as const;
 export type MathRange = (typeof MATH_RANGES)[number];
 
@@ -42,7 +58,31 @@ export const MATH_LABELS: Record<MathType, { title: string; text: string; icon: 
   nbr: { title: 'Vecinii numărului', text: '? 7 ?', icon: '🏠' },
   money: { title: 'Bani', text: '1 leu, 5 lei, 10 lei', icon: '💵' },
   problems: { title: 'Probleme cu imagini', text: 'citește și rezolvă', icon: '🧺' },
+  groups: { title: 'Grupe egale', text: '4 + 4 + 4 = ?', icon: '🍓' },
+  mul: { title: 'Înmulțiri', text: '3 · 4 = ?', icon: '✖️' },
+  div: { title: 'Împărțiri', text: '12 : 3 = ?', icon: '➗' },
+  mulmiss: { title: 'Numărul lipsă (·, :)', text: '3 · ? = 12', icon: '🔍' },
+  clock: { title: 'Cât este ceasul?', text: 'citește ora', icon: '🕒' },
+  clockdraw: { title: 'Desenează acele', text: 'pe ceas', icon: '🕘' },
+  week: { title: 'Zilele săptămânii', text: 'luni, marți…', icon: '📅' },
+  months: { title: 'Lunile și anotimpurile', text: 'ianuarie… iarna', icon: '🍂' },
+  calmonth: { title: 'Calendarul lunii', text: 'citește calendarul', icon: '🗓️' },
+  length: { title: 'Lungimi (cuburi, agrafe)', text: 'măsoară și compară', icon: '🧱' },
+  mass: { title: 'Mai greu, mai ușor', text: 'balanța', icon: '🍉' },
+  ruler: { title: 'Măsoară cu rigla', text: 'centimetri', icon: '📏' },
+  units: { title: 'Unități de măsură', text: 'm, cm, l, kg', icon: '🧪' },
+  frac: { title: 'Jumătate și sfert', text: '½ și ¼', icon: '🍕' },
+  figures: { title: 'Figuri geometrice', text: 'numără formele', icon: '🔺' },
 };
+
+/**
+ * Sheets of the full plan only (clasa a II-a topics); on the free plan the other topics come in their
+ * easy form: the table of 2, clocks with ore fixe and half hours (see buildMathPages).
+ */
+export const PAID_MATH_TYPES: readonly MathType[] = ['calmonth', 'units', 'frac'];
+/** The topics drawn on pages of their own, not as a grid of exercises. */
+const DRAWN_TYPES: readonly MathType[] = ['money', 'problems', 'groups', 'clock', 'clockdraw', 'week', 'months', 'calmonth', 'length', 'mass', 'ruler', 'units', 'frac', 'figures'];
+export const isDrawnType = (t: MathType) => DRAWN_TYPES.includes(t);
 
 /**
  * „Fără / cu trecere peste ordin” for additions and subtractions, from 0–20 up. Unset, a sheet
@@ -322,9 +362,8 @@ function makeExercise(type: MathType, rand: () => number, range: MathRange, carr
       const n = int(rand, range === 1000 ? 100 : 1, range - 1);
       return { cells: [null, String(n), null], answer: `${n - 1}, ${n + 1}` };
     }
-    case 'money':
-    case 'problems':
-      // drawn by money.ts and problems.ts; never asked for here
+    default:
+      // drawn by money.ts, problems.ts and the topics' own files; never asked for here
       return { cells: [], answer: '' };
   }
 }
@@ -335,9 +374,11 @@ function makeExercise(type: MathType, rand: () => number, range: MathRange, carr
  * with every exercise coming back in turn, in a new order each round, the same number of times
  * (give or take one) and never twice in a row.
  */
-export function mathExercises(type: MathType, range: MathRange, seed: number, count: number, carry?: MathCarry): Exercise[] {
+export function mathExercises(type: MathType, range: MathRange, seed: number, count: number, carry?: MathCarry, table = 0): Exercise[] {
+  // multiplication and division: the tables, whatever the range (multiply.ts)
+  if (isMulType(type)) return mulExercises(type, table, rng(seedOf(`${type}:t${table}:${seed}`)), count);
   // an explicit carry choice that differs from what the range always did gets its own set
-  if (type === 'money' || type === 'problems') return []; // see money.ts, problems.ts
+  if (isDrawnType(type)) return []; // see money.ts, problems.ts and the topics' own files
   if (!hasCarryChoice(range)) carry = undefined;
   const own = carry && CARRY_TYPES.includes(type) && hasCarryChoice(range) && carry !== defaultCarry(range);
   const rand = rng(seedOf(`${type}:${range}:${seed}${own ? `:${carry}` : ''}`));
@@ -382,6 +423,21 @@ export const INSTRUCTIONS: Record<MathType, string> = {
   nbr: 'Scrie vecinii numărului: cel dinainte și cel de după.',
   money: 'Numără banii, compară, plătește și schimbă.',
   problems: 'Citește problema. Scrie numerele, semnul în cerc și răspunsul.', // see problemsInstruction
+  groups: 'Numără grupele și imaginile din fiecare grupă. Scrie adunarea.', // see groupsInstruction
+  mul: 'Calculează și scrie rezultatul în căsuță.',
+  div: 'Calculează și scrie rezultatul în căsuță.',
+  mulmiss: 'Ce număr lipsește? Scrie-l în căsuță.',
+  clock: 'Cât este ceasul? Scrie ora în căsuțe.',
+  clockdraw: 'Desenează acele: acul mic arată ora, acul mare minutele.',
+  week: 'Citește cu atenție și completează.',
+  months: 'Citește cu atenție și completează.',
+  calmonth: 'Citește calendarul și răspunde.',
+  length: 'Numără câte unități are fiecare obiect. Scrie numărul.',
+  mass: 'Talerul care coboară are obiectul mai greu.',
+  ruler: 'Citește pe riglă cât de lung este fiecare obiect.',
+  units: 'Alege unitatea de măsură potrivită și completează.',
+  frac: 'Toate figurile sunt împărțite în părți egale.',
+  figures: 'Numără figurile din fiecare desen și scrie numărul.',
 };
 
 const CARRY_TEXT: Record<MathCarry, string> = { without: 'fără trecere peste ordin', with: 'cu trecere peste ordin', mixed: '' };
@@ -390,8 +446,13 @@ const CARRY_TEXT: Record<MathCarry, string> = { without: 'fără trecere peste o
  * Title of a sheet and of its answers: picture sums never go above 10, whatever the range;
  * additions and subtractions say whether they carry („Adunări (0–100), fără trecere peste ordin”).
  */
-export function mathTitle(type: MathType, range: MathRange, carry: MathCarry = 'mixed'): string {
+export function mathTitle(type: MathType, range: MathRange, carry: MathCarry = 'mixed', opts: { table?: number; clock?: ClockStep } = {}): string {
   if (type === 'money') return `Bani (până la ${lei(range)})`;
+  if (isMulType(type)) return mulTitle(type, opts.table ?? 0);
+  if (type === 'groups') return groupsTitle(range);
+  if (type === 'clock' || type === 'clockdraw') return clockTitle(type, opts.clock ?? 'half');
+  if (type === 'week' || type === 'months' || type === 'calmonth') return CALENDAR_TITLES[type];
+  if ((TOPIC_MATH_TYPES as readonly string[]).includes(type)) return MATH_LABELS[type].title;
   const base = `${MATH_LABELS[type].title} (0–${type === 'addpic' ? Math.min(range, 10) : range})`;
   return CARRY_TYPES.includes(type) && CARRY_TEXT[carry] ? `${base}, ${CARRY_TEXT[carry]}` : base;
 }
@@ -471,9 +532,9 @@ export function picturesOps(n: number, emoji: string, x: number, cy: number, siz
   return ops;
 }
 
-function exercisePage(config: WorksheetConfig, type: MathType, range: MathRange, exercises: Exercise[], carry: MathCarry): DrawOp[] {
+function exercisePage(config: WorksheetConfig, type: MathType, range: MathRange, exercises: Exercise[], carry: MathCarry, table = 0): DrawOp[] {
   const ops: DrawOp[] = [];
-  const top = frame(ops, config, mathTitle(type, range, carry), INSTRUCTIONS[type]);
+  const top = frame(ops, config, mathTitle(type, range, carry, { table }), INSTRUCTIONS[type]);
   const { cols } = grid(type, range);
   const bottom = H - M - 24;
   const rows = Math.ceil(exercises.length / cols);
@@ -496,7 +557,7 @@ function exercisePage(config: WorksheetConfig, type: MathType, range: MathRange,
       ops.push(...exerciseOps(e, M + 5 + 2 * groupW + 22, cy, 9, W - 2 * M - (2 * groupW + 30)));
     });
   } else {
-    const size = type === 'seq' ? 9 : range === 1000 ? 8 : range === 100 ? 8.5 : 9.5;
+    const size = isMulType(type) ? 9 : type === 'seq' ? 9 : range === 1000 ? 8 : range === 100 ? 8.5 : 9.5;
     exercises.forEach((e, i) => {
       const col = Math.floor(i / rows);
       const row = i % rows;
@@ -504,7 +565,7 @@ function exercisePage(config: WorksheetConfig, type: MathType, range: MathRange,
       const cy = top + row * rowH + rowH / 2;
       // a light number before each exercise, to talk about them ("la 5 ai greșit")
       ops.push({ t: 'text', x, y: cy + 1.4, text: `${i + 1}.`, size: 3.6, fill: MUTED, weight: 'bold' });
-      ops.push(...exerciseOps(e, x + 8, cy, size, colW - 16, range === 1000));
+      ops.push(...exerciseOps(e, x + 8, cy, size, colW - 16, range === 1000 && !isMulType(type)));
       if (type === 'cmp' && range <= 5) {
         // small ranges: dots under the numbers, so the child can count
         const [a, , b] = e.cells;
@@ -526,7 +587,10 @@ function countDots(n: number, x: number, y: number, size: number): DrawOp[] {
 
 /** How many answers fit on one line of the answers page. */
 function answersPerLine(type: MathType): number {
-  return type === 'problems' ? 1 : type === 'money' ? 2 : type === 'seq' || type === 'nbr' ? 4 : 8;
+  if (type === 'problems' || type === 'groups' || type === 'clockdraw' || type === 'frac' || type === 'figures') return 1;
+  if (type === 'money' || type === 'clock' || type === 'week' || type === 'months' || type === 'calmonth' || type === 'length') return 2;
+  if (type === 'mass' || type === 'ruler' || type === 'units') return 3;
+  return type === 'seq' || type === 'nbr' ? 4 : 8;
 }
 
 /** A problem's answer for the grown-up: „4 + 3 = 7 — Răspuns: 7 mașini” (up to 0–5 there is no „Răspuns” line). */
@@ -536,8 +600,10 @@ export function problemAnswer(p: WordProblem, range: MathRange): string {
 }
 
 /** The answers of the math sheets, as sections of the answers page (see answer-key.ts). */
-function answerSections(range: MathRange, sets: { type: MathType; exercises: Exercise[] }[], carry: MathCarry): KeySection[] {
-  return sets.map(({ type, exercises }) => ({ title: mathTitle(type, range, carry), entries: exercises.map((e) => e.answer), perLine: answersPerLine(type), numbered: true }));
+function answerSections(range: MathRange, sets: { type: MathType; exercises: Exercise[]; title?: string }[], carry: MathCarry): KeySection[] {
+  // the topics label their own items („a)”, „1. b)”): only the exercise grids, groups, money and problems are numbered
+  const numbered = (t: MathType) => !isDrawnType(t) || t === 'money' || t === 'problems' || t === 'groups';
+  return sets.map(({ type, exercises, title }) => ({ title: title ?? mathTitle(type, range, carry), entries: exercises.map((e) => e.answer), perLine: answersPerLine(type), numbered: numbered(type) }));
 }
 
 function moneyPage(config: WorksheetConfig, range: MathRange, exercises: ReturnType<typeof moneyExercises>): DrawOp[] {
@@ -556,25 +622,119 @@ function problemsPage(config: WorksheetConfig, range: MathRange, problems: WordP
   return ops;
 }
 
+/** One topic page: its title, instruction, drawing and answers (multiply.ts, clock.ts …). */
+interface TopicPage {
+  title: string;
+  instruction: string;
+  stars: number;
+  answers: string[];
+  draw: (top: number, bottom: number) => DrawOp[];
+}
+
+/** The page of a topic sheet, seeded by the topic, its option and the seed (the range only for groups). */
+function topicPage(type: MathType, range: MathRange, seed: number, opts: { table: number; clock: ClockStep }): TopicPage | null {
+  const rand = rng(seedOf(type === 'groups' ? `${type}:${range}:${seed}` : type === 'clock' || type === 'clockdraw' ? `${type}:${opts.clock}:${seed}` : `${type}:${seed}`));
+  const title = mathTitle(type, range, 'mixed', opts);
+  const page = (instruction: string, stars: number, answers: string[], draw: TopicPage['draw']): TopicPage => ({ title, instruction, stars, answers, draw });
+  const X0 = M, X1 = W - M;
+  switch (type) {
+    case 'groups': {
+      const items = groupsItems(range, rand);
+      const product = groupsWithProduct(range);
+      return page(groupsInstruction(range), items.length, items.map((it) => groupsAnswer(it, product)), (t, b) => groupsPageOps(items, product, X0, X1, t, b));
+    }
+    case 'clock':
+    case 'clockdraw': {
+      const times = clockTimes(opts.clock, rand);
+      const read = type === 'clock';
+      const answers = times.map((t, i) => `${String.fromCharCode(97 + i)}) ${read ? `${digital(t)} – ${timeWords(t)}` : `${timeWords(t)} (${digital(t)}): ${handsWords(t)}`}`);
+      return page(INSTRUCTIONS[type], times.length, answers, (t, b) => clocksOps(times, read, X0, X1, t, b));
+    }
+    case 'week':
+    case 'months':
+    case 'calmonth': {
+      const sheet: CalendarSheet = type === 'week' ? weekSheet(rand) : type === 'months' ? monthsSheet(rand) : calmonthSheet(rand);
+      return page(INSTRUCTIONS[type], sheet.sections.length, calendarAnswers(sheet), (t, b) => calendarOps(sheet, X0, X1, t, b));
+    }
+    case 'length': {
+      const sheet = lengthSheet(rand);
+      // „Lungimi: măsoară cu cuburi” / „… cu agrafe”, the unit of this sheet
+      return { ...page(INSTRUCTIONS.length, sheet.items.length, lengthAnswers(sheet), (t, b) => lengthOps(sheet, X0, X1, t, b)), title: `Lungimi: măsoară cu ${UNIT_NAMES[sheet.unit].many}` };
+    }
+    case 'mass': {
+      const items = massItems(rand);
+      return page(INSTRUCTIONS.mass, items.length, massAnswers(items), (t, b) => massOps(items, X0, X1, t, b));
+    }
+    case 'ruler': {
+      const sheet = rulerSheet(rand);
+      return page(INSTRUCTIONS.ruler, sheet.measure.length + sheet.draw.length, rulerAnswers(sheet), (t, b) => rulerSheetOps(sheet, X0, X1, t, b));
+    }
+    case 'units': {
+      const sheet = unitsSheet(rand);
+      return page(INSTRUCTIONS.units, 3, unitsAnswers(sheet), (t, b) => unitsOps(sheet, X0, X1, t, b));
+    }
+    case 'frac': {
+      const sheet = fracSheet(rand);
+      return page(INSTRUCTIONS.frac, 4, fracAnswers(sheet), (t, b) => fracOps(sheet, X0, X1, t, b));
+    }
+    case 'figures': {
+      const pics = figuresSheet(rand);
+      return page(INSTRUCTIONS.figures, pics.length, figuresAnswers(pics), (t, b) => figuresOps(pics, X0, X1, t, b));
+    }
+    default:
+      return null;
+  }
+}
+
+function drawTopicPage(config: WorksheetConfig, p: TopicPage): DrawOp[] {
+  const ops: DrawOp[] = [];
+  const top = frame(ops, config, p.title, p.instruction);
+  ops.push(...p.draw(top, H - M - 24));
+  rewardBox(ops, Math.min(10, p.stars));
+  return ops;
+}
+
+/** The options of the topics on a tier: the free plan has the table of 2 and the clocks with ore fixe and half hours. */
+export function topicOptions(config: WorksheetConfig, tier: Tier): { table: number; clock: ClockStep } {
+  const table = mathTableOf(config);
+  const clock = clockStepOf(config);
+  if (tier !== 'free') return { table, clock };
+  return { table: FREE_MATH_TABLE, clock: FREE_CLOCK_STEPS.includes(clock) ? clock : 'half' };
+}
+
+/** Whether a math item is on the tier: the clasa a II-a topics (calendar, units, fractions) are full plan only. */
+export function isMathTypeAllowed(type: MathType, tier: Tier): boolean {
+  return isItemAllowed(type, 'math', tier);
+}
+
 /** The chosen math sheets, one page per exercise type, and the answers page if asked for. */
 export function buildMathPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
   let range = mathRangeOf(config);
   if (tier === 'free' && range > FREE_MATH_RANGE) range = FREE_MATH_RANGE;
   const seed = config.mathSeed ?? 1;
-  const types = config.selectedItems.filter(isMathType);
+  const types = config.selectedItems.filter(isMathType).filter((t) => isMathTypeAllowed(t, tier));
   const carry = mathCarryOf({ ...config, mathRange: range });
+  const opts = topicOptions(config, tier);
   const money = types.includes('money') ? moneyExercises(range, rng(seedOf(`money:${range}:${seed}`))) : [];
   const problems = types.includes('problems') ? wordProblems(range, rng(seedOf(`problems:${range}:${seed}`))) : [];
-  const sets = types.map((type) => ({
-    type,
-    exercises:
-      type === 'money' ? money.map((m) => ({ cells: [], answer: m.answer }))
-      : type === 'problems' ? problems.map((p) => ({ cells: [], answer: problemAnswer(p, range) }))
-      : mathExercises(type, range, seed, grid(type, range).count, carry),
-  }));
-  const pages: DrawOp[][] = sets.map(({ type, exercises }) =>
-    type === 'money' ? moneyPage(config, range, money) : type === 'problems' ? problemsPage(config, range, problems) : exercisePage(config, type, range, exercises, carry),
-  );
+  const topics = new Map(types.map((t) => [t, topicPage(t, range, seed, opts)] as const));
+  const sets = types.map((type) => {
+    const topic = topics.get(type);
+    return {
+      type,
+      title: topic?.title ?? (isMulType(type) ? mathTitle(type, range, carry, opts) : undefined),
+      exercises:
+        type === 'money' ? money.map((m) => ({ cells: [], answer: m.answer }))
+        : type === 'problems' ? problems.map((p) => ({ cells: [], answer: problemAnswer(p, range) }))
+        : topic ? topic.answers.map((answer) => ({ cells: [], answer }))
+        : mathExercises(type, range, seed, grid(type, range).count, carry, opts.table),
+    };
+  });
+  const pages: DrawOp[][] = sets.map(({ type, exercises }) => {
+    const topic = topics.get(type);
+    if (topic) return drawTopicPage(config, topic);
+    return type === 'money' ? moneyPage(config, range, money) : type === 'problems' ? problemsPage(config, range, problems) : exercisePage(config, type, range, exercises, carry, opts.table);
+  });
   const sheets = pages.length;
   if (config.mathAnswers && sets.length) pages.push(...answerKeyPages(config, answerSections(range, sets, carry)));
   return pages.map((ops, i): SheetPage => {
@@ -582,3 +742,4 @@ export function buildMathPages(config: WorksheetConfig, tier: Tier): SheetPage[]
     return { width: W, height: H, ops, ...(i >= sheets ? { answerKey: true } : {}) };
   });
 }
+

@@ -106,7 +106,66 @@ const RULES: Record<string, Rule> = {
   // cu repere/direcții date…”. Not II 2.1 (coordinates in a reference system), nor a preschool behaviour
   // (A 2.2 „Se orientează în spațiu pe baza simțurilor” is about the senses, not a worksheet).
   pos: { CP: school(MEM, 'CP', '2.1'), I: school(MEM, 'I', '2.1') },
+  // ── the other math topics (multiply.ts, clock.ts, calendar-pages.ts, measure.ts, fractions.ts, figures.ts)
+  // „Grupe egale”: CP 1.5 „Efectuarea de adunări repetate/ scăderi repetate prin numărare și reprezentări
+  // obiectuale în concentrul 0-31”, I 1.5 the same „…în concentrul 0-100”; in 0–1000 the sheet also writes the
+  // product: II 1.5 „Efectuarea de înmulțiri și împărțiri în concentrul 0-1000 prin adunări/scăderi repetate”
+  // (see GROUPS_II).
+  groups: { CP: school(MEM, 'CP', '1.5'), I: school(MEM, 'I', '1.5'), II: school(MEM, 'II', '1.5') },
+  // the tables: II 1.5 (contents: „Înmulțirea în concentrul 0-100”, „Împărțirea cu rest 0 în concentrul 0-100”);
+  // multiplication is not in CP or clasa I
+  mul: { II: school(MEM, 'II', '1.5') },
+  div: { II: school(MEM, 'II', '1.5') },
+  mulmiss: { II: school(MEM, 'II', '1.5') },
+  // the clock, under the time contents of 6.2: I „Utilizarea unor unități de măsură pentru determinarea și
+  // compararea duratelor unor activități cotidiene” (contents „Ora (ora fixă, jumătatea de oră)”: only those
+  // steps, see CLOCK_I); II „Utilizarea unor unități de măsură pentru determinarea, compararea și ordonarea
+  // duratelor unor evenimente variate” („Ora (1 oră = 60 de minute; 5 minute; jumătatea de oră, sfertul de
+  // oră)”, „Instrumente de măsură: ceasul”). No clock in the CP contents.
+  clock: { I: school(MEM, 'I', '6.2'), II: school(MEM, 'II', '6.2') },
+  clockdraw: { I: school(MEM, 'I', '6.2'), II: school(MEM, 'II', '6.2') },
+  // the week: CP 6.2 „Utilizarea unor unități de măsură pentru determinarea/ estimarea duratelor unor
+  // evenimente familiare” (contents „Ziua, săptămâna, luna: denumire, ordonare”), I 6.2, II 6.2 (as above;
+  // II contents „Ziua (ieri, alaltăieri, mâine, poimâine), săptămâna, luna, anul (calendarul)”)
+  week: { CP: school(MEM, 'CP', '6.2'), I: school(MEM, 'I', '6.2'), II: school(MEM, 'II', '6.2') },
+  // months and seasons: the sheet asks the season of a month, „Anotimpurile: lunile corespunzătoare” is in
+  // the II contents (CP has only „Anotimpurile: denumire, ordonare”): I 6.2 („…luna, anul: durată;
+  // Anotimpurile: durată”) and II 6.2, not CP
+  months: { I: school(MEM, 'I', '6.2'), II: school(MEM, 'II', '6.2') },
+  // a month's calendar: II („…anul (calendarul)”) only
+  calmonth: { II: school(MEM, 'II', '6.2') },
+  // lengths in cubes or paper clips: CP 6.1 „Utilizarea unor măsuri neconvenționale pentru determinarea și
+  // compararea lungimilor”, I 6.1 „…compararea capacităților și a lungimilor”, II 6.1 „…compararea maselor,
+  // lungimilor și capacităților”; preschool E 2.2 „Demonstrează familiarizarea cu informații despre mărime,
+  // formă, greutate, înălțime, lungime, volum” and E 2.4 „Efectuează operații de seriere, grupare, clasificare,
+  // măsurare a obiectelor”
+  length: { presc: [presc('E', '2.2'), presc('E', '2.4')], CP: school(MEM, 'CP', '6.1'), I: school(MEM, 'I', '6.1'), II: school(MEM, 'II', '6.1') },
+  // heavier / lighter on a balance: masses are only in II 6.1 (CP and I have no „Masă” contents) and in
+  // preschool E 2.2 („…greutate…”)
+  mass: { presc: presc('E', '2.2'), II: school(MEM, 'II', '6.1') },
+  // centimetres on a ruler: I 6.4 „Identificarea unităților de măsură uzuale pentru lungime, capacitate
+  // (centimetrul, litrul) și a unor instrumente adecvate” (contents „Instrumente de măsură: rigla”), II 6.4
+  // „Identificarea și utilizarea unităților de măsură uzuale pentru lungime, capacitate, masă (metrul,
+  // centimetrul, litrul, mililitrul, kilogramul, gramul) și a unor instrumente adecvate”
+  ruler: { I: school(MEM, 'I', '6.4'), II: school(MEM, 'II', '6.4') },
+  // m, cm, l, ml, kg, g and their instruments, 1 m = 100 cm …: II 6.4 only (clasa I has only cm and l)
+  units: { II: school(MEM, 'II', '6.4') },
+  // „Jumătate și sfert” (II contents „Fracții: ½ (jumătate/doime), ¼ (sfert/pătrime)”): no specific
+  // competence of clasa a II-a names fractions, so no code
+  frac: {},
+  // shapes found in a picture: CP 2.2 „Identificarea unor forme geometrice plane (pătrat, triunghi, dreptunghi,
+  // cerc)…”, I 2.2 „Recunoașterea unor figuri și corpuri geometrice în mediul apropiat și în reprezentări plane
+  // accesibile (incluzând desene, reproduceri de artă, reprezentări schematice)”, preschool E 2.2 („…formă…”);
+  // not II 2.2 (characteristics of the shapes, not counting them)
+  figures: { presc: presc('E', '2.2'), CP: school(MEM, 'CP', '2.2'), I: school(MEM, 'I', '2.2') },
 };
+
+/** Topics whose sheet does not depend on the number range (only „groups” does): the range never takes their code away. */
+const RANGE_FREE = new Set(['mul', 'div', 'mulmiss', 'clock', 'clockdraw', 'week', 'months', 'calmonth', 'length', 'mass', 'ruler', 'units', 'frac', 'figures']);
+/** Clasa I: „Ora (ora fixă, jumătatea de oră)”: clocks with quarters or minutes are clasa a II-a. */
+const CLOCK_I = new Set(['hour', 'half']);
+/** „Grupe egale” writes the multiplication only in 0–1000 (multiply.ts groupsWithProduct): II 1.5 only there. */
+const GROUPS_II = 1000;
 
 /** The largest number each class works with, per the programme's contents. */
 const NUMBER_LIMIT: Record<SchoolLevel, number> = { presc: 10, CP: 31, I: 100, II: 1000 };
@@ -136,7 +195,9 @@ const MONEY_II = 1000;
 
 export function sheetCompetences(config: WorksheetConfig, level: SchoolLevel | undefined | null): CompetenceRef[] {
   if (!level) return [];
-  if (config.category === 'math' && (config.mathRange ?? 10) > NUMBER_LIMIT[level]) return [];
+  // numbers beyond the class: no code, except for the topics that do not use the range
+  const overRange = config.category === 'math' && (config.mathRange ?? 10) > NUMBER_LIMIT[level];
+  if (overRange && !config.selectedItems.some((i) => RANGE_FREE.has(i))) return [];
   if (config.category === 'shapes' && level !== 'presc' && !config.selectedItems.every((s) => BASIC_SHAPES.has(s))) return [];
   const refs: CompetenceRef[] = [];
   if (config.category === 'letters') {
@@ -150,6 +211,9 @@ export function sheetCompetences(config: WorksheetConfig, level: SchoolLevel | u
       if (level === 'CP' && CP_OPERATIONS.has(key) && (config.mathRange ?? 10) > 10 && !cpOperations31) continue;
       if (level === 'II' && II_OPERATIONS.has(key) && config.mathRange === 1000 && (config.mathCarry ?? 'without') !== 'without') continue;
       if (level === 'II' && key === 'money' && config.mathRange !== MONEY_II) continue;
+      if (overRange && !RANGE_FREE.has(key)) continue;
+      if (level === 'I' && (key === 'clock' || key === 'clockdraw') && !CLOCK_I.has(config.mathClock ?? 'half')) continue;
+      if (level === 'II' && key === 'groups' && config.mathRange !== GROUPS_II) continue;
       const r = RULES[key]?.[level];
       if (r) refs.push(...(Array.isArray(r) ? r : [r]));
     }

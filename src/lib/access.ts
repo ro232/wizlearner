@@ -10,6 +10,9 @@ import { baseLetter, normalizeKey } from '@/lib/glyphs/data';
  * This is a convenience gate in the browser, not a security boundary: the paid
  * tier itself is only ever set on the server (see supabase/migrations).
  */
+/** Math sheets of the full plan only (a test checks they match math.ts PAID_MATH_TYPES). */
+const PAID_MATH_ITEMS: readonly string[] = ['calmonth', 'units', 'frac'];
+
 export function isItemAllowed(item: string, category: ContentCategory, tier: Tier): boolean {
   if (tier !== 'free') return true;
   switch (category) {
@@ -38,8 +41,10 @@ export function isItemAllowed(item: string, category: ContentCategory, tier: Tie
       return item === 'count:5' || item === 'dots:star';
     }
     case 'math':
-      // every exercise type is free; numbers above 10 are part of the full plan (see buildMathPages)
-      return true;
+      // every exercise type is free; numbers above 10 are part of the full plan (see buildMathPages), and so
+      // are the other tables than 2, quarters and minutes on the clock (math.ts topicOptions) and three
+      // clasa a II-a topics: the month's calendar, units of measure, halves and quarters (PAID_MATH_TYPES)
+      return !PAID_MATH_ITEMS.includes(item);
     default:
       return false;
   }

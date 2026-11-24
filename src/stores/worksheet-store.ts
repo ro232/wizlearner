@@ -18,6 +18,8 @@ interface WorksheetState {
   setCategory: (category: ContentCategory) => void;
   setMathRange: (range: number) => void;
   setMathCarry: (carry: 'without' | 'with' | 'mixed') => void;
+  setMathTable: (table: number) => void;
+  setMathClock: (step: 'hour' | 'half' | 'quarter' | 'five') => void;
   setTraceDensity: (density: 'sparse' | 'normal' | 'dense') => void;
   newMathSet: () => void;
   toggleMathAnswers: () => void;
@@ -97,6 +99,8 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   }),
   setMathRange: (mathRange) => set((state) => ({ config: { ...state.config, mathRange } })),
   setMathCarry: (mathCarry) => set((state) => ({ config: { ...state.config, mathCarry } })),
+  setMathTable: (mathTable) => set((state) => ({ config: { ...state.config, mathTable } })),
+  setMathClock: (mathClock) => set((state) => ({ config: { ...state.config, mathClock } })),
   setTraceDensity: (traceDensity) => set((state) => ({ config: { ...state.config, traceDensity } })),
   newMathSet: () => set((state) => ({ config: { ...state.config, mathSeed: (state.config.mathSeed ?? 1) + 1 } })),
   toggleMathAnswers: () => set((state) => ({ config: { ...state.config, mathAnswers: !state.config.mathAnswers } })),
