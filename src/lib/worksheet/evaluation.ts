@@ -23,6 +23,7 @@ import { SORT_SETS, oddRows, shapeOps, sortPictures, type OddRow, type SortPictu
 import { CATEGORY_NAMES } from './sorting';
 import { answerKeyPages, type KeyExtra, type KeySection, type SheetPage } from './answer-key';
 import { hasIcon } from '@/lib/hints/icons';
+import { readingEvalBlock, readingPictureWords } from './reading-pages';
 
 /**
  * „Evaluare”: a short test of the chosen exercise types, on two or three pages, then the answers.
@@ -37,8 +38,8 @@ import { hasIcon } from '@/lib/hints/icons';
  * clasa pregătitoare, I or a II-a an orientative table of calificative (FB, B, S, I) by the number of
  * correct answers; at grădiniță there are no calificative, only an optional observation grid.
  *
- * Items without a short form (connect the dots, find the letter, group and count, orientation) are
- * left out of an evaluation; see isEvaluationItem.
+ * Items without a short form (connect the dots, find the letter, group and count, orientation, read
+ * and draw, copy) are left out of an evaluation; see isEvaluationItem.
  */
 
 const W = 210;
@@ -84,6 +85,7 @@ const EVAL_LESS_MATH = new Set<string>(['groups', 'clockdraw', 'week', 'months',
 export function isEvaluationItem(item: string): boolean {
   // of the other math topics: multiplication, division and reading the clock
   if (isMathType(item)) return !EVAL_LESS_MATH.has(item);
+  if (/^read:(match|gap|fill|order|text):[1-6]$/.test(item)) return true; // „Citire și scriere” (reading-pages.ts)
   return /^(count:(5|10)|sound:[A-Z]|(first|syl|split|sort|odd):[1-6])$/.test(item);
 }
 
@@ -91,7 +93,7 @@ export function isEvaluationItem(item: string): boolean {
 
 const SUBJECTS: Partial<Record<ProgrammeId, string>> = { 'clr-p-ii': 'Comunicare în limba română', 'mem-p-ii': 'Matematică și explorarea mediului' };
 const CLASS_NAMES: Record<Exclude<SchoolLevel, 'presc'>, string> = { CP: 'clasa pregătitoare', I: 'clasa I', II: 'clasa a II-a' };
-const PHONO = /^(sound|first|syl|split):/;
+const PHONO = /^(sound|first|syl|split|read):/;
 
 /** „Evaluare — Matematică și explorarea mediului, clasa I”; „Evaluare — nivel preșcolar”. */
 export function evaluationTitle(config: WorksheetConfig): string {
@@ -642,6 +644,9 @@ function gameBlocks(config: WorksheetConfig, tier: Tier): EvalBlock[] {
       const pics = all.filter((p) => keep.has(p));
       if (def.by === 'category') pics.forEach((p) => used.add(p.word));
       blocks.push(sortBlock(item, n, pics));
+    } else if (kind === 'read') {
+      const block = readingEvalBlock(config, item, used);
+      if (block) blocks.push(block);
     } else if (kind === 'odd') {
       const rows = oddRows(n);
       const free = rows.filter((r) => r.objects.every((o) => !used.has(o.word)));
@@ -662,6 +667,7 @@ function pictureWords(item: string): string[] {
   if (kind === 'split') return splitSet(n).map((w) => w.word);
   if (kind === 'sort') return sortPictures(n).map((p) => p.word);
   if (kind === 'odd') return oddRows(n).flatMap((r) => r.objects.map((o) => o.word));
+  if (kind === 'read') return readingPictureWords(item);
   return [];
 }
 

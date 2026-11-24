@@ -600,7 +600,7 @@ describe('curriculum codes of the topics', () => {
       return { n: items.filter((i) => i.presets.length).length, of: items.length, codes: (code: string) => items.filter((i) => i.code === code && i.programme !== 'clr-p-ii').flatMap((i) => i.presets.map((p) => p.id)) };
     };
     const cp = at('clasa-pregatitoare'), i = at('clasa-1'), ii = at('clasa-2');
-    expect([cp.n, cp.of, i.n, i.of, ii.n, ii.of]).toEqual([14, 32, 14, 33, 9, 33]);
+    expect([cp.n, cp.of, i.n, i.of, ii.n, ii.of]).toEqual([15, 32, 17, 33, 13, 33]);
     expect(cp.codes('1.5')).toEqual(['mate-grupe']);
     expect(cp.codes('6.1')).toEqual(['mate-lungimi']);
     expect(cp.codes('6.2')).toEqual(['mate-saptamana']);

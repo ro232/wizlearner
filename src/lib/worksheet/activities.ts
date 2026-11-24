@@ -8,6 +8,8 @@ import { madeWith } from '@/lib/brand';
 import { INK, ACCENT, PAPER, MUTED, itemOps, itemWidth, starPoints } from './rows';
 import { buildPhonologyPage, isPhonologyItem, phonologyLabel } from './phonology-pages';
 import { buildSortingPage, isSortingItem, sortingLabel } from './sorting-pages';
+import { buildReadingPage, readingLabel } from './reading-pages';
+import { isReadingItem } from './reading';
 
 /**
  * Full-page activities ("Jocuri"): find the letter, count and write, connect the dots.
@@ -24,12 +26,13 @@ export const DOT_SHAPE_LABELS: Record<DotShape, string> = { star: 'stea', heart:
 export const COUNT_RANGES = ['count:5', 'count:10'] as const;
 
 export function isActivityItem(item: string): boolean {
-  return /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/.test(item) || isPhonologyItem(item) || isSortingItem(item);
+  return /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/.test(item) || isPhonologyItem(item) || isSortingItem(item) || isReadingItem(item);
 }
 
 export function activityLabel(item: string): string {
   if (isPhonologyItem(item)) return phonologyLabel(item);
   if (isSortingItem(item)) return sortingLabel(item);
+  if (isReadingItem(item)) return readingLabel(item);
   const [kind, arg] = item.split(':');
   if (kind === 'find') return `Găsește ${arg}`;
   if (kind === 'count') return `Numără 1–${arg}`;
@@ -305,6 +308,12 @@ export function buildActivityPages(config: WorksheetConfig, tier: Tier, allowed:
     const sorting = buildSortingPage(config, item, tier);
     if (sorting) {
       pages.push(sorting);
+      continue;
+    }
+    // „Citire și scriere” (reading-pages.ts)
+    const reading = buildReadingPage(config, item, tier);
+    if (reading) {
+      pages.push(reading);
       continue;
     }
     const [kind, arg] = item.split(':');

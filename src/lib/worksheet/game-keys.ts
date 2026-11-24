@@ -5,6 +5,7 @@ import { activityLabel, countSet, findGrid, isActivityItem } from './activities'
 import { caseOf, firstSet, soundSet, splitSet, sylSet } from './phonology-pages';
 import { SORT_SETS, gridLayout, groupSet, oddRows, sceneLayout, sortPictures } from './sorting-pages';
 import { CATEGORY_NAMES } from './sorting';
+import { readingKeySection } from './reading-pages';
 import { answerKeyPages, type KeySection } from './answer-key';
 
 /**
@@ -13,6 +14,7 @@ import { answerKeyPages, type KeySection } from './answer-key';
  * oddRows, groupSet, sceneLayout, gridLayout), so they always match the drawing.
  *
  * „Unește punctele” and „Desenează unde ți se cere” (pos:5, pos:6) have no single answer: no section.
+ * Neither do „Citește și desenează” and „Copiază” (read:draw, read:copy).
  */
 
 const list = (xs: string[]) => xs.join(', ');
@@ -70,6 +72,9 @@ export function gameKeySection(config: WorksheetConfig, item: string): KeySectio
       const questions = n <= 2 ? sceneLayout(n, 0).questions : gridLayout(n, 0).questions;
       return { title: activityLabel(item), entries: questions.map((q) => q.answer.word), perLine: 5, numbered: true };
     }
+    // „Citire și scriere” (reading-pages.ts): nothing for „Citește și desenează” and „Copiază”
+    case 'read':
+      return readingKeySection(config, item);
     default:
       return null;
   }

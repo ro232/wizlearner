@@ -44,13 +44,13 @@ function keySections(pages: PageOps[]): { title: string; entries: string[] }[] {
 }
 
 describe('the evaluation presets', () => {
-  it('one per subject and class: math for CP, I, II, sounds and syllables for CP and I, one for grădiniță', () => {
-    expect(EVALUATIONS.map((p) => p.id)).toEqual(['evaluare-mate', 'evaluare-clr', 'evaluare-gradinita']);
+  it('one per subject and class: math for CP, I, II, sounds and syllables for CP and I, one for grădiniță, reading and writing for I and II', () => {
+    expect(EVALUATIONS.map((p) => p.id)).toEqual(['evaluare-mate', 'evaluare-clr', 'evaluare-gradinita', 'evaluare-citire']);
     const at = (slug: string) => classEvaluations(CLASS_PAGES.find((c) => c.slug === slug)!).map((e) => e.preset.id);
     expect(at('gradinita')).toEqual(['evaluare-gradinita']);
     expect(at('clasa-pregatitoare')).toEqual(['evaluare-mate', 'evaluare-clr']);
-    expect(at('clasa-1')).toEqual(['evaluare-mate', 'evaluare-clr']);
-    expect(at('clasa-2')).toEqual(['evaluare-mate']);
+    expect(at('clasa-1')).toEqual(['evaluare-mate', 'evaluare-clr', 'evaluare-citire']);
+    expect(at('clasa-2')).toEqual(['evaluare-mate', 'evaluare-citire']);
     // listed apart, never under a competence
     for (const c of CLASS_PAGES) for (const g of classCoverage(c)) for (const it of g.items) expect(it.presets.some((p) => p.evaluation)).toBe(false);
     expect(presetHref(presetById('evaluare-mate')!, 'I')).toBe('/generator?fisa=evaluare-mate&clasa=I');

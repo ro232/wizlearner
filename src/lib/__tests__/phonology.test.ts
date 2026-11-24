@@ -203,7 +203,8 @@ describe('the „Sunete și silabe” competences', () => {
     const listed = (slug: string, code: string) =>
       classCoverage(CLASS_PAGES.find((c) => c.slug === slug)!).flatMap((g) => g.items).find((i) => i.code === code && (slug === 'gradinita' || i.programme === 'clr-p-ii'))!.presets.map((p) => p.id);
     expect(listed('gradinita', 'D.3.2')).toEqual(['sunetul-initial', 'primul-sunet', 'cate-silabe']);
-    expect(listed('clasa-pregatitoare', '1.3')).toEqual(ids);
-    expect(listed('clasa-1', '1.3')).toEqual(ids);
+    // „Ce literă lipsește?” (reading-pages.ts) practises 1.3 too
+    expect(listed('clasa-pregatitoare', '1.3')).toEqual([...ids, 'citire-litera-lipsa']);
+    expect(listed('clasa-1', '1.3')).toEqual([...ids, 'citire-litera-lipsa']);
   });
 });

@@ -33,6 +33,11 @@ sheet('jocuri', { category: 'games', selectedItems: ['find:Ș', 'count:10', 'dot
 sheet('sunete-silabe', { category: 'games', selectedItems: ['sound:A', 'first:1', 'syl:1', 'split:1'], curriculumLevel: 'CP' });
 sheet('sortare', { category: 'games', selectedItems: ['sort:1', 'sort:3', 'sort:4', 'sort:5', 'odd:1', 'odd:4', 'group:1', 'group:4'], curriculumLevel: 'presc' });
 sheet('orientare', { category: 'games', selectedItems: ['pos:1', 'pos:3', 'pos:5'], curriculumLevel: 'CP' });
+// „Citire și scriere”: the sets of each class, the answers, the handwriting model
+sheet('citire-cp', { category: 'games', selectedItems: ['read:match:1', 'read:gap:1', 'read:draw:1', 'read:copy:1'], curriculumLevel: 'CP' });
+sheet('citire-1', { category: 'games', selectedItems: ['read:match:4', 'read:gap:3', 'read:draw:4', 'read:fill:1', 'read:order:1', 'read:copy:3', 'read:text:1'], curriculumLevel: 'I', mathAnswers: true });
+sheet('citire-2', { category: 'games', selectedItems: ['read:gap:5', 'read:fill:4', 'read:order:4', 'read:copy:5', 'read:text:4'], curriculumLevel: 'II', mathAnswers: true });
+sheet('citire-mana', { category: 'games', selectedItems: ['read:copy:4', 'read:copy:6'], script: 'cursive', letterMode: 'paired' });
 sheet('matematica-10', { category: 'math', selectedItems: MATH_TYPES.filter((t) => t !== 'money' && t !== 'problems'), mathRange: 10, mathAnswers: true });
 sheet('matematica-100', { category: 'math', selectedItems: ['add', 'sub', 'seq'], mathRange: 100 });
 sheet('matematica-31', { category: 'math', selectedItems: MATH_TYPES.filter((t) => t !== 'problems'), mathRange: 31, mathAnswers: true });
