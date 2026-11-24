@@ -62,13 +62,35 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'citire-ordoneaza', title: 'Ordonează cuvintele', text: 'Așază cuvintele în ordine și scrie propoziția de mână.', config: { category: 'games', selectedItems: ['read:order:1'] }, byLevel: { II: { selectedItems: ['read:order:4'] } }, levels: ['I', 'II'] },
   { id: 'citire-copiaza', title: 'Copiază', text: 'Cuvinte de tipar la pregătitoare; propoziții de mână, pe liniatura caietului, la clasa I și a II-a.', config: { category: 'games', selectedItems: ['read:copy:1'] }, byLevel: { I: { selectedItems: ['read:copy:3'] }, II: { selectedItems: ['read:copy:5'] } }, levels: ['CP', 'I', 'II'] },
   { id: 'citire-text', title: 'Citește și răspunde', text: 'Un text scurt și trei întrebări despre el.', config: { category: 'games', selectedItems: ['read:text:1'] }, byLevel: { II: { selectedItems: ['read:text:4'] } }, levels: ['I', 'II'] },
+  // Înmulțire și împărțire, ceasul, calendarul, măsurări, figuri (multiply.ts … figures.ts)
+  { id: 'mate-grupe', title: 'Grupe egale', text: '3 grupe a câte 4: 4 + 4 + 4; la clasa a II-a și 3 · 4.', config: { category: 'math', selectedItems: ['groups'] }, levels: ['CP', 'I', 'II'] },
+  { id: 'mate-inmultiri', title: 'Înmulțiri', text: 'Tabla înmulțirii: una aleasă (2–10) sau toate amestecate.', config: { category: 'math', selectedItems: ['mul'] }, levels: ['II'] },
+  { id: 'mate-impartiri', title: 'Împărțiri', text: 'Împărțiri exacte din tabla împărțirii, numere până la 100.', config: { category: 'math', selectedItems: ['div'] }, levels: ['II'] },
+  { id: 'mate-factor-lipsa', title: 'Numărul lipsă la înmulțire și împărțire', text: '3 · □ = 12, □ : 4 = 5.', config: { category: 'math', selectedItems: ['mulmiss'] }, levels: ['II'] },
+  {
+    id: 'mate-ceas', title: 'Cât este ceasul?', text: 'Citește ora pe ceas și scrie-o: ora fixă și jumătatea; la clasa a II-a și sferturi, minute.',
+    config: { category: 'math', selectedItems: ['clock'] }, levels: ['I', 'II'], byLevel: { I: { mathClock: 'half' }, II: { mathClock: 'five' } },
+  },
+  {
+    id: 'mate-ceas-acele', title: 'Desenează acele ceasului', text: 'Ora scrisă sub ceas, acele de desenat.',
+    config: { category: 'math', selectedItems: ['clockdraw'] }, levels: ['I', 'II'], byLevel: { I: { mathClock: 'half' }, II: { mathClock: 'five' } },
+  },
+  { id: 'mate-saptamana', title: 'Zilele săptămânii', text: 'Zilele în ordine, ziua de după și cea dinainte, ieri și mâine.', config: { category: 'math', selectedItems: ['week'] }, levels: ['CP', 'I', 'II'] },
+  { id: 'mate-luni', title: 'Lunile anului și anotimpurile', text: 'Lunile și anotimpurile în ordine, anotimpul fiecărei luni.', config: { category: 'math', selectedItems: ['months'] }, levels: ['I', 'II'] },
+  { id: 'mate-calendar', title: 'Calendarul lunii', text: 'Citește calendarul: ziua săptămânii, poimâine, alaltăieri.', config: { category: 'math', selectedItems: ['calmonth'] }, levels: ['II'] },
+  { id: 'mate-lungimi', title: 'Măsoară cu cuburi sau agrafe', text: 'Câte unități are fiecare obiect; cel mai lung, cel mai scurt.', config: { category: 'math', selectedItems: ['length'] }, levels: ['presc', 'CP', 'I', 'II'] },
+  { id: 'mate-balanta', title: 'Mai greu, mai ușor', text: 'Balanța coboară spre obiectul mai greu: încercuiește.', config: { category: 'math', selectedItems: ['mass'] }, levels: ['presc', 'II'] },
+  { id: 'mate-rigla', title: 'Măsoară cu rigla', text: 'Lungimi în centimetri pe riglă, linii de desenat.', config: { category: 'math', selectedItems: ['ruler'] }, levels: ['I', 'II'] },
+  { id: 'mate-unitati', title: 'Unități de măsură', text: 'Metrul, centimetrul, litrul, kilogramul; instrumente; 1 m = 100 cm.', config: { category: 'math', selectedItems: ['units'] }, levels: ['II'] },
+  { id: 'mate-figuri', title: 'Figuri geometrice în desen', text: 'Numără pătratele, dreptunghiurile, triunghiurile și cercurile.', config: { category: 'math', selectedItems: ['figures'] }, levels: ['presc', 'CP', 'I'] },
   // Evaluări: the items of the class's programme as a short test, with the answers page (evaluation.ts)
   {
-    id: 'evaluare-mate', title: 'Evaluare la matematică', text: 'Comparare, adunări și scăderi, probleme cu imagini, bani; cu răspunsuri și calificative orientative.',
+    id: 'evaluare-mate', title: 'Evaluare la matematică', text: 'Comparare, adunări și scăderi, probleme cu imagini, bani (la clasa a II-a: înmulțiri și ceasul); cu răspunsuri și calificative orientative.',
     config: { category: 'math', selectedItems: ['cmp', 'mix', 'problems', 'money'], evaluation: true }, levels: ['CP', 'I', 'II'], evaluation: true,
     // clasa a II-a: 0–1000, „Adunarea și scăderea în concentrul 0 – 1000, fără trecere peste ordin”; the
-    // missing number instead of money (an evaluation of four items, as in the other classes)
-    byLevel: { II: { selectedItems: ['cmp', 'mix', 'missing', 'problems'], mathCarry: 'without' } },
+    // missing number instead of money
+    // clasa a II-a also: the tables (II 1.5) and the clock with quarters and minutes (II 6.2)
+    byLevel: { II: { selectedItems: ['cmp', 'mix', 'missing', 'mul', 'clock', 'problems'], mathCarry: 'without', mathClock: 'five' } },
   },
   {
     id: 'evaluare-clr', title: 'Evaluare: sunete și silabe', text: 'Sunetul de la început, primul sunet, câte silabe, despărțirea în silabe; cu răspunsuri și calificative orientative.',

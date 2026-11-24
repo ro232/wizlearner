@@ -68,6 +68,10 @@ export interface WorksheetConfig {
   evaluation?: boolean;
   /** Math sheets from 0–20 up: additions and subtractions „fără” / „cu trecere peste ordin”, or both (unset: as the range always did). */
   mathCarry?: 'without' | 'with' | 'mixed';
+  /** Multiplication and division sheets: one table (2–10) or all of them mixed (0 / unset). */
+  mathTable?: number;
+  /** Clock sheets: ore fixe, also half hours (unset), also quarters, every 5 minutes. */
+  mathClock?: 'hour' | 'half' | 'quarter' | 'five';
   /** Print the curriculum competence of the sheet for this class (grădiniță, CP, I, II); unset = no label. */
   curriculumLevel?: 'presc' | 'CP' | 'I' | 'II';
   /** Pictures next to traced words (theme words): word as typed → emoji. */

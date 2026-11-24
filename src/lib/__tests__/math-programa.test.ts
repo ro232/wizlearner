@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
-import { CARRY_TYPES, MATH_TYPES, borrows, carries, mathCarryOf, mathExercises, mathTitle, type MathCarry, type MathRange } from '@/lib/worksheet/math';
+import { CARRY_TYPES, NUMBER_MATH_TYPES as MATH_TYPES, borrows, carries, mathCarryOf, mathExercises, mathTitle, type MathCarry, type MathRange } from '@/lib/worksheet/math';
 import { lei, moneyExercises, notesFor, type Note } from '@/lib/worksheet/money';
 import { sanitizeConfig } from '@/stores/sanitize-config';
 import { opsOutside } from './bounds';

@@ -10,8 +10,10 @@ import type { ProgrammeId } from '@/lib/curriculum';
 import { ACCENT, INK, MUTED, PAPER } from './rows';
 import {
   FREE_MATH_RANGE, INSTRUCTIONS, grid, MATH_LABELS, PICTURES, exerciseOps, isMathType, mathCarryOf, mathExercises, mathRangeOf, picturesOps,
-  problemAnswer, rng, seedOf, type Exercise, type MathRange, type MathType,
+  problemAnswer, rng, seedOf, topicOptions, type Exercise, type MathRange, type MathType,
 } from './math';
+import { isMulType } from './multiply';
+import { clockTimes, clocksOps, digital, timeWords, type ClockTime } from './clock';
 import { lei, moneyExercises, moneyPageOps, type MoneyExercise } from './money';
 import { problemsHeight, problemsPageOps, wordProblems, type WordProblem } from './problems';
 import { countSet } from './activities';
@@ -76,9 +78,13 @@ interface EvalBlock {
 
 const letter = (i: number) => `${String.fromCharCode(97 + i)})`;
 
+/** Math topics without a short form in an evaluation (their pages are whole exercises of their own). */
+const EVAL_LESS_MATH = new Set<string>(['groups', 'clockdraw', 'week', 'months', 'calmonth', 'length', 'mass', 'ruler', 'units', 'frac', 'figures']);
+
 /** Whether an item has a short form for an evaluation. */
 export function isEvaluationItem(item: string): boolean {
-  if (isMathType(item)) return true;
+  // of the other math topics: multiplication, division and reading the clock
+  if (isMathType(item)) return !EVAL_LESS_MATH.has(item);
   if (/^read:(match|gap|fill|order|text):[1-6]$/.test(item)) return true; // „Citire și scriere” (reading-pages.ts)
   return /^(count:(5|10)|sound:[A-Z]|(first|syl|split|sort|odd):[1-6])$/.test(item);
 }
@@ -156,7 +162,7 @@ function fit(text: string, size: number, room: number): number {
 // ───────────────────────── math items ─────────────────────────
 
 /** How many exercises of a type an evaluation asks (two columns, three rows; one column for the sequences). */
-const GRID_COUNT: Partial<Record<MathType, number>> = { cmp: 6, add: 6, sub: 6, mix: 6, missing: 6, nbr: 6, seq: 3, addpic: 3 };
+const GRID_COUNT: Partial<Record<MathType, number>> = { cmp: 6, add: 6, sub: 6, mix: 6, missing: 6, nbr: 6, seq: 3, addpic: 3, mul: 6, div: 6, mulmiss: 6 };
 const GRID_PROMPT: Partial<Record<MathType, string>> = {
   cmp: 'Compară numerele. Scrie semnul potrivit: <, > sau =.',
   add: 'Calculează.',
@@ -166,6 +172,9 @@ const GRID_PROMPT: Partial<Record<MathType, string>> = {
   nbr: 'Scrie vecinii fiecărui număr.',
   seq: INSTRUCTIONS.seq,
   addpic: INSTRUCTIONS.addpic,
+  mul: 'Calculează.',
+  div: 'Calculează.',
+  mulmiss: 'Scrie numărul care lipsește.',
 };
 
 /** The exercise written out with its answer in the box: „4 + 3 = 7”, „8 > 5”, „3, 4, 5, 6”. */
@@ -256,12 +265,40 @@ function moneyBlock(exercises: MoneyExercise[], range: MathRange): EvalBlock {
   };
 }
 
+/** Four clocks to read, of every kind the page has (ore fixe, jumătăți, sferturi, minute). */
+function clockBlock(times: ClockTime[]): EvalBlock {
+  return {
+    item: 'clock',
+    title: MATH_LABELS.clock.title,
+    prompt: 'Cât este ceasul? Scrie ora în căsuțe.',
+    height: 50,
+    grow: 14,
+    answers: times.map((t, i) => `${letter(i)} ${digital(t)} – ${timeWords(t)}`),
+    perLine: 2,
+    score: times.length,
+    draw: (ops, a) => ops.push(...clocksOps(times, true, a.x, a.x + a.w, a.y, a.y + a.h, times.length, letter)),
+  };
+}
+
+const minuteKind = (t: ClockTime) => (t.m === 0 ? 'h' : t.m === 30 ? 'half' : t.m % 15 === 0 ? 'quarter' : 'five');
+
 function mathBlocks(config: WorksheetConfig, tier: Tier): EvalBlock[] {
   let range = mathRangeOf(config);
   if (tier === 'free' && range > FREE_MATH_RANGE) range = FREE_MATH_RANGE;
   const seed = config.mathSeed ?? 1;
   const carry = mathCarryOf({ ...config, mathRange: range });
-  return config.selectedItems.filter(isMathType).map((type) => {
+  const opts = topicOptions(config, tier);
+  return config.selectedItems.filter((t): t is MathType => isMathType(t) && isEvaluationItem(t) && isItemAllowed(t, 'math', tier)).map((type) => {
+    if (type === 'clock') {
+      // the clocks of the ordinary page (same seed), four of them with every kind of time among them
+      const all = clockTimes(opts.clock, rng(seedOf(`clock:${opts.clock}:${seed}`)));
+      return clockBlock(varied(all, 4, minuteKind));
+    }
+    if (isMulType(type)) {
+      // with one table, from the mixed-up half of the page (not 3 · 1, 3 · 2, 3 · 3 in a row)
+      const page = mathExercises(type, range, seed, grid(type, range).count, carry, opts.table);
+      return gridBlock(type, opts.table ? page.slice(10, 16) : page.slice(0, 6), range);
+    }
     if (type === 'problems') {
       // the first problem of the page's set, and the next one of another kind
       const all = wordProblems(range, rng(seedOf(`problems:${range}:${seed}`)));

@@ -7,7 +7,7 @@ import { buildNameBookPages } from '@/lib/worksheet/name-book';
 import { buildBookPages, DEFAULT_BOOK_CONFIG } from '@/lib/book/interior';
 import { buildCoverPage } from '@/lib/book/cover';
 import { pageToSvg } from '@/lib/glyphs/backends/svg';
-import { MATH_TYPES } from '@/lib/worksheet/math';
+import { NUMBER_MATH_TYPES as MATH_TYPES } from '@/lib/worksheet/math';
 import { THEMES } from '@/lib/themes';
 import { SHEET_PRESETS, presetConfig } from '@/lib/curriculum/presets';
 import type { PageOps } from '@/lib/glyphs/types';
@@ -50,6 +50,15 @@ sheet('matematica-1000', { category: 'math', selectedItems: ['cmp', 'add', 'sub'
 sheet('matematica-1000-cu-trecere', { category: 'math', selectedItems: ['add', 'sub', 'mix', 'missing'], mathRange: 1000, mathCarry: 'with', mathAnswers: true });
 for (const r of [5, 10, 20, 31, 100, 1000]) sheet(`bani-${r}`, { category: 'math', selectedItems: ['money'], mathRange: r, mathAnswers: true });
 for (const r of [5, 10, 20, 31, 100, 1000]) sheet(`probleme-${r}`, { category: 'math', selectedItems: ['problems'], mathRange: r, mathAnswers: r === 10 || r === 100, curriculumLevel: r === 1000 ? 'II' : r === 20 || r === 100 ? 'I' : r === 5 ? 'presc' : 'CP' });
+// the other topics: equal groups, the tables, the clock, the calendar, measuring, halves and quarters, shapes
+sheet('matematica-grupe-10', { category: 'math', selectedItems: ['groups'], mathRange: 10, mathAnswers: true, curriculumLevel: 'CP' });
+sheet('matematica-inmultire', { category: 'math', selectedItems: ['groups', 'mul', 'div', 'mulmiss'], mathRange: 1000, mathAnswers: true, curriculumLevel: 'II' });
+sheet('matematica-tabla-7', { category: 'math', selectedItems: ['mul', 'div', 'mulmiss'], mathRange: 1000, mathTable: 7 });
+sheet('matematica-ceas-clasa-1', { category: 'math', selectedItems: ['clock', 'clockdraw'], mathRange: 100, mathClock: 'half', mathAnswers: true, curriculumLevel: 'I' });
+sheet('matematica-ceas-minute', { category: 'math', selectedItems: ['clock', 'clockdraw'], mathRange: 1000, mathClock: 'five', mathAnswers: true, curriculumLevel: 'II' });
+sheet('matematica-calendar', { category: 'math', selectedItems: ['week', 'months', 'calmonth'], mathRange: 1000, mathAnswers: true, curriculumLevel: 'II' });
+sheet('matematica-masurari', { category: 'math', selectedItems: ['length', 'mass', 'ruler', 'units'], mathRange: 1000, mathAnswers: true, curriculumLevel: 'II' });
+sheet('matematica-fractii-figuri', { category: 'math', selectedItems: ['frac', 'figures'], mathRange: 1000, mathAnswers: true });
 // „Pagină cu răspunsuri”: the games, and math with a class (no curriculum line on the answers)
 sheet('jocuri-raspunsuri', { category: 'games', selectedItems: ['find:Ș', 'count:10', 'sound:A', 'first:1', 'syl:1', 'split:1', 'sort:1', 'sort:5', 'odd:4', 'group:1', 'pos:1', 'pos:3'], mathAnswers: true, curriculumLevel: 'CP' });
 sheet('matematica-raspunsuri-clasa', { category: 'math', selectedItems: [...MATH_TYPES], mathRange: 10, mathAnswers: true, curriculumLevel: 'CP' });

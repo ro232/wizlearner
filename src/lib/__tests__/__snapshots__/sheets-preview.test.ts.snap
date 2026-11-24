@@ -189,9 +189,9 @@ exports[`how every kind of sheet looks > evaluare-mate-I 1`] = `
 
 exports[`how every kind of sheet looks > evaluare-mate-II 1`] = `
 [
-  "4dc8f2c5959232db",
-  "991552c121e777c2",
-  "7b9a63c9da0fd498",
+  "a5ba9a656e8fb738",
+  "392369500af269a9",
+  "30862684c45c3673",
 ]
 `;
 
@@ -372,6 +372,66 @@ exports[`how every kind of sheet looks > matematica-1000-cu-trecere 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > matematica-calendar 1`] = `
+[
+  "15ec37a4c98acd97",
+  "083c568fb2e62f16",
+  "b902c1f38a628110",
+  "0026b26beb20accd",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-ceas-clasa-1 1`] = `
+[
+  "811e6e844ff343c0",
+  "cb592711ed4a9269",
+  "045fdf6f27373285",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-ceas-minute 1`] = `
+[
+  "42c2ab683ff9cf94",
+  "21ce036d0c4f70b0",
+  "ff8c8d61fef45502",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-fractii-figuri 1`] = `
+[
+  "33d11dc401aa3baf",
+  "5e1120d32adb9c1a",
+  "0532d9bca84f4e39",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-grupe-10 1`] = `
+[
+  "8c1fa082cbacf232",
+  "38e6468c028cbe27",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-inmultire 1`] = `
+[
+  "d546e347f3c4924f",
+  "18cb5db215bbeaae",
+  "32356d1974f8df8e",
+  "6f2a0b51eccf5ff6",
+  "957498de68cb4da8",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-masurari 1`] = `
+[
+  "416ebd08a2be3572",
+  "a8476a7f438863fc",
+  "48a531df815ce3e2",
+  "1ace86f98eac6690",
+  "da3271c8f88339f7",
+]
+`;
+
 exports[`how every kind of sheet looks > matematica-raspunsuri-clasa 1`] = `
 [
   "637e3894be65bf6b",
@@ -386,6 +446,14 @@ exports[`how every kind of sheet looks > matematica-raspunsuri-clasa 1`] = `
   "3e7032a06ebaae1f",
   "7876941164755311",
   "fda3c616b4048b6f",
+]
+`;
+
+exports[`how every kind of sheet looks > matematica-tabla-7 1`] = `
+[
+  "15f9e522e82e1f9d",
+  "a709c615b43e8393",
+  "aea55518366579df",
 ]
 `;
 

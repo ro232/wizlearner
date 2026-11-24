@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
 import { buildEvaluationPages, calificativBands, evaluationTitle, isEvaluationItem, solved, varied } from '@/lib/worksheet/evaluation';
-import { MATH_TYPES, problemAnswer, rng, seedOf, type MathRange } from '@/lib/worksheet/math';
+import { NUMBER_MATH_TYPES as MATH_TYPES, problemAnswer, rng, seedOf, type MathRange } from '@/lib/worksheet/math';
 import { wordProblems } from '@/lib/worksheet/problems';
 import { PHONO_WORDS } from '@/lib/worksheet/phonology';
 import { phonologyItems } from '@/lib/worksheet/phonology-pages';
@@ -62,7 +62,8 @@ describe('the evaluation presets', () => {
     expect(presetConfig(mate, 'I')).toMatchObject({ mathRange: 100, selectedItems: ['cmp', 'mix', 'problems', 'money'] });
     expect(presetConfig(mate, 'II').selectedItems).not.toContain('money');
     // clasa a II-a: 0–1000, „fără trecere peste ordin” as the programme's contents say
-    expect(presetConfig(mate, 'II')).toMatchObject({ mathRange: 1000, mathCarry: 'without', selectedItems: ['cmp', 'mix', 'missing', 'problems'] });
+    // … and the tables and the clock (II 1.5, II 6.2: quarters and minutes)
+    expect(presetConfig(mate, 'II')).toMatchObject({ mathRange: 1000, mathCarry: 'without', mathClock: 'five', selectedItems: ['cmp', 'mix', 'missing', 'mul', 'clock', 'problems'] });
     expect(presetConfig(presetById('evaluare-clr')!, 'CP').selectedItems.every((i) => /^(sound|first|syl|split):/.test(i))).toBe(true);
   });
 

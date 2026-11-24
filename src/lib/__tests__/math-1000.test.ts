@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
-import {
-  CARRY_TYPES, MATH_RANGES, MATH_TYPES, borrowsAny, carriesAny, defaultCarry, mathCarryOf, mathExercises, mathTitle, rng, type MathCarry,
-} from '@/lib/worksheet/math';
+import { CARRY_TYPES, MATH_RANGES, NUMBER_MATH_TYPES as MATH_TYPES, borrowsAny, carriesAny, defaultCarry, mathCarryOf, mathExercises, mathTitle, rng, type MathCarry } from '@/lib/worksheet/math';
 import { lei, moneyExercises, notesFor, type Note } from '@/lib/worksheet/money';
 import { sanitizeConfig } from '@/stores/sanitize-config';
 import { sheetCompetences } from '@/lib/curriculum/sheet';
@@ -273,11 +271,12 @@ describe('clasa a II-a: the sheets open on 0–1000 and print the codes of the p
     expect(sheetCompetences(cfg({ selectedItems: ['add'], mathRange: 1000 }), 'I')).toEqual([]);
   });
 
-  it('the class page: 5 of 33 competences have sheets; the evaluation prints 1.2, 1.4, 5.2', () => {
+  it('the class page: 9 of 33 competences have sheets; the evaluation prints 1.2, 1.4, 1.5, 5.2, 6.2', () => {
     const items = classCoverage(II).flatMap((g) => g.items);
     expect(items).toHaveLength(33);
-    expect(items.filter((i) => i.presets.length && i.programme === 'mem-p-ii').map((i) => i.code)).toEqual(['1.2', '1.3', '1.4', '5.2', '6.3']);
-    expect(classEvaluations(II).filter((e) => e.preset.id === 'evaluare-mate').map((e) => [e.preset.id, e.codes])).toEqual([['evaluare-mate', ['1.2', '1.4', '5.2']]]);
+    // 1.5 the tables, 6.1 lengths and masses, 6.2 the clock and the calendar, 6.4 units (math-topics.test.ts)
+    expect(items.filter((i) => i.presets.length && i.programme === 'mem-p-ii').map((i) => i.code)).toEqual(['1.2', '1.3', '1.4', '1.5', '5.2', '6.1', '6.2', '6.3', '6.4']);
+    expect(classEvaluations(II).filter((e) => e.preset.id === 'evaluare-mate').map((e) => [e.preset.id, e.codes])).toEqual([['evaluare-mate', ['1.2', '1.4', '1.5', '5.2', '6.2']]]);
     const pages = buildWorksheetPages(presetConfig(presetById('evaluare-mate')!, 'II'), 'full');
     const t = textsOf(pages);
     // the numbers of the evaluation reach the hundreds

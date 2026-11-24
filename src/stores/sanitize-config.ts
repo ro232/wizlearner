@@ -18,7 +18,11 @@ import { SHAPES } from '@/lib/constants';
 const CATEGORIES: readonly ContentCategory[] = ['letters', 'numbers', 'shapes', 'prewrite', 'math', 'games'];
 // Kept here (not imported from the math and games builders) so the store stays light on pages
 // that only need the menu; a test checks they match MATH_TYPES and isActivityItem.
-const MATH_IDS: readonly string[] = ['cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr', 'money', 'problems'];
+const MATH_IDS: readonly string[] = [
+  'cmp', 'add', 'sub', 'mix', 'addpic', 'missing', 'seq', 'nbr', 'money', 'problems',
+  // the other topics (TOPIC_MATH_TYPES): groups, multiplication, clock, calendar, measuring, fractions, shapes
+  'groups', 'mul', 'div', 'mulmiss', 'clock', 'clockdraw', 'week', 'months', 'calmonth', 'length', 'mass', 'ruler', 'units', 'frac', 'figures',
+];
 const GAME_ITEM = /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/;
 // „Sunete și silabe” (phonology-pages.ts: isPhonologyItem)
 const PHONO_ITEM = /^(sound:(A|B|C|D|F|L|M|P|R|S|T|U|V)|(first|syl|split):[1-6])$/;
@@ -140,6 +144,8 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
   if (typeof r.mathAnswers === 'boolean') config.mathAnswers = r.mathAnswers;
   if (typeof r.evaluation === 'boolean' && (category === 'math' || category === 'games')) config.evaluation = r.evaluation;
   if (r.mathCarry === 'without' || r.mathCarry === 'with' || r.mathCarry === 'mixed') config.mathCarry = r.mathCarry;
+  if (typeof r.mathTable === 'number' && [0, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(r.mathTable)) config.mathTable = r.mathTable;
+  if (r.mathClock === 'hour' || r.mathClock === 'half' || r.mathClock === 'quarter' || r.mathClock === 'five') config.mathClock = r.mathClock;
   if (r.curriculumLevel === 'presc' || r.curriculumLevel === 'CP' || r.curriculumLevel === 'I' || r.curriculumLevel === 'II') config.curriculumLevel = r.curriculumLevel;
   if (wordPictures) config.wordPictures = wordPictures;
   return config;
