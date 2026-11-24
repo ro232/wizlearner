@@ -6,10 +6,10 @@
  * Source: Twemoji (https://github.com/jdecked/twemoji), graphics licensed CC-BY 4.0.
  * Attribution is printed on the book colophon and in the site footer.
  *
- * Run after changing LETTER_HINTS in src/lib/glyphs/data.ts or THEMES in src/lib/themes.ts:
+ * Run after changing LETTER_HINTS in src/lib/glyphs/data.ts, THEMES in src/lib/themes.ts or a picture of src/lib/printables:
  *   node scripts/build-hint-icons.mjs
  */
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -37,6 +37,11 @@ for (const m of reading.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p
 // Pictures of the fun preschool sheets and of „Explorarea mediului”: every quoted emoji in those files.
 for (const f of ['src/lib/worksheet/fun.ts', 'src/lib/worksheet/explore.ts']) {
   const src = readFileSync(join(root, f), 'utf8');
+  for (const m of src.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)'/gu)) emojis.add(m[1]);
+}
+// Pictures of the classroom printables (planșe, cartonașe, diplome): every quoted emoji in src/lib/printables.
+for (const f of readdirSync(join(root, 'src/lib/printables')).filter((n) => n.endsWith('.ts'))) {
+  const src = readFileSync(join(root, 'src/lib/printables', f), 'utf8');
   for (const m of src.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)'/gu)) emojis.add(m[1]);
 }
 // Objects of the „Probleme cu imagini”: every quoted emoji in that file.

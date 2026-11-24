@@ -35,7 +35,7 @@ describe('public address of the site', () => {
   it('sitemap and robots are built from it', () => {
     const urls = sitemap().map((e) => e.url);
     // + /programa, its class pages, /planificare, and /fise-de-lucru with its class and topic pages
-    expect(urls.length).toBe(11 + SEO_SHEETS.length + 1 + CLASS_PAGES.length + 1 + 1 + LANDING_CLASSES.length + LANDING_PAGES.length);
+    expect(urls.length).toBe(12 + SEO_SHEETS.length + 1 + CLASS_PAGES.length + 1 + 1 + LANDING_CLASSES.length + LANDING_PAGES.length);
     expect(new Set(urls).size).toBe(urls.length);
     for (const u of urls) {
       expect(u.startsWith(SITE_URL), u).toBe(true);

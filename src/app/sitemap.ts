@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/nume', 0.8),
     page('/caiete', 0.8),
     page('/advent', 0.8),
+    page('/planse', 0.8),
     page('/preturi', 0.8),
     page('/book', 0.7),
     ...SEO_SHEETS.map((s) => page(`/fise/${s.slug}`, 0.7)),

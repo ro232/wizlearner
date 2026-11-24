@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { Download, Users, Check, ChevronLeft, ChevronRight, CalendarDays, Save, Trash2, Loader2, Eraser } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -12,6 +13,7 @@ import { THEMES, themeById } from '@/lib/themes';
 import { ALPHABETS } from '@/lib/glyphs/data';
 import { buildGroupPages, childSheetConfig, parseNameList, MAX_CHILDREN, MAX_LETTERS } from '@/lib/worksheet/group';
 import { SCHOOL_YEAR, WEEKS_IN_YEAR, weekLabel, weekOfSchoolYear } from '@/lib/calendar';
+import { useTypedBeforeHydration } from '@/hooks/use-typed-before-hydration';
 import { clearGroupDraft, loadGroupDraft, loadGroups, storeGroupDraft, storeGroups, type SavedGroup } from '@/lib/saved-groups';
 import { sanitizeGroupProject } from '@/components/projects/sanitize-project';
 import { DownloadError } from '@/components/worksheet/download-error';
@@ -108,6 +110,8 @@ export default function GroupPage() {
     setRestored(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const namesRef = useRef<HTMLTextAreaElement>(null);
+  useTypedBeforeHydration(namesRef, setNamesText);
 
   // …and is written back at every change. Nothing here is sent anywhere.
   useEffect(() => {
@@ -299,7 +303,7 @@ export default function GroupPage() {
                   )}
                 </span>
               </div>
-              <textarea id="names" rows={5} value={namesText} onChange={(e) => setNamesText(e.target.value)} placeholder={EXAMPLE}
+              <textarea ref={namesRef} id="names" rows={5} value={namesText} onChange={(e) => setNamesText(e.target.value)} placeholder={EXAMPLE}
                 className="w-full px-3 py-2 border-2 border-slate-300 rounded-xl text-sm bg-white focus:outline-none focus:border-ink" />
               <p className="text-[11px] text-slate-600 mt-1">
                 Câte un nume pe rând (merge și copiat din catalog sau din Excel). Lista se păstrează singură, doar în browserul tău.
@@ -470,6 +474,7 @@ export default function GroupPage() {
             <PagesPreview pages={pages} width={440} pageLabel="Pagina" />
           </div>
           {!names.length && <p className="text-sm text-slate-600">Exemplu pentru „Ana”. Adaugă numele copiilor ca să le vezi fișele.</p>}
+          <p className="text-sm text-slate-600">Sfârșit de an? <Link href="/planse?p=diplome" className="font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-2">Diplome cu numele fiecărui copil</Link>: lipești aceeași listă.</p>
           {overFree && <p className="text-sm text-slate-600">Previzualizare pentru primii {FREE_GROUP_LIMIT} copii din {names.length}.</p>}
         </section>
       </main>

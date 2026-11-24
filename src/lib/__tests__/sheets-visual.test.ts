@@ -11,6 +11,7 @@ import { NUMBER_MATH_TYPES as MATH_TYPES } from '@/lib/worksheet/math';
 import { THEMES } from '@/lib/themes';
 import { SHEET_PRESETS, presetConfig } from '@/lib/curriculum/presets';
 import type { PageOps } from '@/lib/glyphs/types';
+import { PRINTABLE_SAMPLES } from './printables-samples';
 
 /**
  * Reference fingerprints of every kind of sheet. A change that alters how any sheet looks
@@ -76,6 +77,8 @@ SAMPLES['grupa'] = () => buildGroupPages({ names: ['Ana', 'Ștefan'], themeId: T
 SAMPLES['caiet-nume'] = () => buildNameBookPages('Ioana', 'print');
 SAMPLES['caiet-kdp'] = () => buildBookPages(DEFAULT_BOOK_CONFIG).filter((_, i) => i % 7 === 0);
 SAMPLES['coperta-kdp-mana'] = () => [buildCoverPage({ ...DEFAULT_BOOK_CONFIG, script: 'cursive' }, 60) as PageOps];
+// „Planșe pentru clasă”: posters, cards, tokens, diplomas, the timetable and „Ziua de azi”
+Object.assign(SAMPLES, PRINTABLE_SAMPLES);
 
 const fingerprint = (p: PageOps) => createHash('sha256').update(pageToSvg(p)).digest('hex').slice(0, 16);
 

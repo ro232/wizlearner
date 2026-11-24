@@ -79,6 +79,80 @@ exports[`how every kind of sheet looks > caiet-nume 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > cartonase-buline 1`] = `
+[
+  "dd9473c5ee8d6c7d",
+  "c8ed7c9f84b8b135",
+  "bfa4646e7770bf19",
+  "406064e06e8219fa",
+]
+`;
+
+exports[`how every kind of sheet looks > cartonase-imagini 1`] = `
+[
+  "339f894ef8c09fbd",
+  "0d1f2a69f791bfd0",
+  "dee88190350a7606",
+  "3166e1613e5a872d",
+]
+`;
+
+exports[`how every kind of sheet looks > cartonase-imagini-mana 1`] = `
+[
+  "2ad9b3a1d8c633be",
+]
+`;
+
+exports[`how every kind of sheet looks > cartonase-imagini-mari 1`] = `
+[
+  "1dd651dec9bab232",
+]
+`;
+
+exports[`how every kind of sheet looks > cartonase-litere 1`] = `
+[
+  "9cc14e7390ec5a22",
+  "b88e5f3e71f2c29b",
+  "cbb5da83bf0a7388",
+  "7af62a903e69fb17",
+]
+`;
+
+exports[`how every kind of sheet looks > cartonase-litere-mana-8 1`] = `
+[
+  "582cedae106d98ee",
+  "fa703706411dd871",
+]
+`;
+
+exports[`how every kind of sheet looks > cartonase-numere-100 1`] = `
+[
+  "20b8e24386fddf94",
+  "07f996f231fbb534",
+]
+`;
+
+exports[`how every kind of sheet looks > cartonase-obiecte-8 1`] = `
+[
+  "3cd2a1025638391f",
+  "1d388b6b313330ae",
+  "8c3f1a8431ffbb89",
+]
+`;
+
+exports[`how every kind of sheet looks > cartonase-silabe 1`] = `
+[
+  "cc78b1b5295a2f17",
+  "a3ff37efc625e82f",
+]
+`;
+
+exports[`how every kind of sheet looks > cartonase-silabe-comune 1`] = `
+[
+  "80dce479a5d0dbc3",
+]
+`;
+
 exports[`how every kind of sheet looks > cifre 1`] = `
 [
   "ae510ebb25f94ff1",
@@ -128,6 +202,32 @@ exports[`how every kind of sheet looks > citire-mana 1`] = `
 exports[`how every kind of sheet looks > coperta-kdp-mana 1`] = `
 [
   "163704e5738f5b87",
+]
+`;
+
+exports[`how every kind of sheet looks > diploma-cititoare-tipar 1`] = `
+[
+  "21eec6c74ecb0e91",
+]
+`;
+
+exports[`how every kind of sheet looks > diploma-cp 1`] = `
+[
+  "88a66ed3335cb381",
+]
+`;
+
+exports[`how every kind of sheet looks > diploma-fara-nume 1`] = `
+[
+  "8886295260614209",
+]
+`;
+
+exports[`how every kind of sheet looks > diplome-grupa 1`] = `
+[
+  "9e52f956eac8cfc6",
+  "d008e7d547e4a619",
+  "998b61271eed6e15",
 ]
 `;
 
@@ -266,6 +366,30 @@ exports[`how every kind of sheet looks > grupa 1`] = `
   "691059d6711b6019",
   "3dd8b53d55b7e2f5",
   "c6f0e3d5dd8f093f",
+]
+`;
+
+exports[`how every kind of sheet looks > jetoane-litere-mari 1`] = `
+[
+  "ed6877b217fd5202",
+]
+`;
+
+exports[`how every kind of sheet looks > jetoane-litere-mici 1`] = `
+[
+  "00c42881b94677ff",
+]
+`;
+
+exports[`how every kind of sheet looks > jetoane-numere-20 1`] = `
+[
+  "55d4cb5e9f7061fe",
+]
+`;
+
+exports[`how every kind of sheet looks > jetoane-numere-rotunde 1`] = `
+[
+  "b53cb3a08c1011e1",
 ]
 `;
 
@@ -516,11 +640,55 @@ exports[`how every kind of sheet looks > optiuni 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > orar-5 1`] = `
+[
+  "14859f4667533d28",
+]
+`;
+
+exports[`how every kind of sheet looks > orar-7-buline 1`] = `
+[
+  "c421a8549e3f6943",
+]
+`;
+
 exports[`how every kind of sheet looks > orientare 1`] = `
 [
   "b620db033944d2db",
   "71e9fd359907c253",
   "c6f0c4a281ce7fc0",
+]
+`;
+
+exports[`how every kind of sheet looks > plansa-alfabet 1`] = `
+[
+  "3ecaac82a3621dc7",
+  "e7722da43ae2b03c",
+  "93c55a77c27a50f7",
+  "7dc83e33588362ef",
+  "22a1f17bbe2f3694",
+  "2d56aa13673161e3",
+  "1331587872b2d3e4",
+  "cf016346a2ea5520",
+  "06d26b3640139100",
+]
+`;
+
+exports[`how every kind of sheet looks > plansa-alfabet-contur 1`] = `
+[
+  "e24f38c971c16f59",
+  "25f96b47a863579d",
+  "0adcb21045f171ed",
+]
+`;
+
+exports[`how every kind of sheet looks > plansa-alfabet-mana 1`] = `
+[
+  "d9b3765bcd7c84d5",
+  "9ce161859e4f4e7b",
+  "bc46dc4aa14ff285",
+  "2bd9443225b4728e",
+  "4be0b443341c99ef",
 ]
 `;
 
@@ -581,5 +749,11 @@ exports[`how every kind of sheet looks > sunete-silabe 1`] = `
   "60c833ee48c81cf2",
   "e8285a12ecb9e5f6",
   "e1297fe9d5c7eb52",
+]
+`;
+
+exports[`how every kind of sheet looks > ziua-de-azi 1`] = `
+[
+  "26d3a986bd00a6c6",
 ]
 `;
