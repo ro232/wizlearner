@@ -1,7 +1,7 @@
 'use client';
 
 import { ForeignLettersNote } from '@/components/worksheet/foreign-letters-note';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, Download, FileText, Printer, UserRound } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -20,6 +20,7 @@ import { sanitizeNameProject } from '@/components/projects/sanitize-project';
 import { DownloadError } from '@/components/worksheet/download-error';
 import { pagini } from '@/components/worksheet/plural';
 import { useDownload } from '@/hooks/use-download';
+import { useTypedBeforeHydration } from '@/hooks/use-typed-before-hydration';
 
 /**
  * The name sheet: one child's name, traced over a whole page. It is free on purpose:
@@ -45,6 +46,8 @@ export default function NameSheetPage() {
     setScript(p.script);
     setKind(p.kind);
   }, []);
+  const nameRef = useRef<HTMLInputElement>(null);
+  useTypedBeforeHydration(nameRef, setName);
   const bookPages = useMemo(() => (kind === 'book' ? buildNameBookPages(name || 'Ana', script) : []), [kind, name, script]);
 
   const config: WorksheetConfig = useMemo(() => {
@@ -116,7 +119,7 @@ export default function NameSheetPage() {
               <label htmlFor="name" className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                 <UserRound className="w-3.5 h-3.5" aria-hidden /> Numele
               </label>
-              <input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="ex. Ștefan" autoComplete="off" maxLength={28}
+              <input ref={nameRef} id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="ex. Ștefan" autoComplete="off" maxLength={28}
                 className="w-full px-4 py-3 border border-slate-300 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
               <ForeignLettersNote text={name} className="mt-2" />
             </div>
