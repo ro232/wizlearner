@@ -199,6 +199,36 @@ exports[`how every kind of sheet looks > citire-mana 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > comunicare-2 1`] = `
+[
+  "0259859dfcc1e02e",
+  "be63847fbeb982f7",
+  "180fef402cd1d0cb",
+  "ebf7ab877a933dd6",
+  "f7ac75e143ee6471",
+  "04f939089233e9d4",
+]
+`;
+
+exports[`how every kind of sheet looks > comunicare-cp 1`] = `
+[
+  "273a53b589bbd1a8",
+  "9cc2affab198b030",
+  "77296d243cf19c5a",
+  "650a796d18c85a55",
+  "954c49f3f22c53d0",
+  "0725671da0a11614",
+]
+`;
+
+exports[`how every kind of sheet looks > comunicare-presc 1`] = `
+[
+  "38085150a2024d46",
+  "ced5e010280b32e5",
+  "c4989e8af9144d8f",
+]
+`;
+
 exports[`how every kind of sheet looks > coperta-kdp-mana 1`] = `
 [
   "163704e5738f5b87",
@@ -453,6 +483,57 @@ exports[`how every kind of sheet looks > litere-tipar-beginner 1`] = `
 exports[`how every kind of sheet looks > litere-tipar-intermediate 1`] = `
 [
   "b9f1849c6a74dc1a",
+]
+`;
+
+exports[`how every kind of sheet looks > mate-experimente 1`] = `
+[
+  "5f6425b6c31778e0",
+  "a7cb7224eee6ef66",
+  "64efb49e1afc5af0",
+  "35d4af1a130a7727",
+  "a7ee025130739cdf",
+]
+`;
+
+exports[`how every kind of sheet looks > mate-numere-figuri-2 1`] = `
+[
+  "e14059f5170caed1",
+  "373ef27470aa3517",
+  "651de34245611f13",
+  "f6651ba5ff20f6a5",
+  "1622813ecd727fe4",
+]
+`;
+
+exports[`how every kind of sheet looks > mate-presc 1`] = `
+[
+  "ed838a0a0a47c222",
+  "4390d60e77dba720",
+  "930640ea43561416",
+  "0298d27a39ae7663",
+  "36c3912883e74ea4",
+]
+`;
+
+exports[`how every kind of sheet looks > mate-regularitati-sortare 1`] = `
+[
+  "a8225b467d29f7da",
+  "0426d352ff4fcdd5",
+  "50282eb9c94cb78e",
+  "31fe7d14e6967d5b",
+  "866ae03ae3f96622",
+  "6491850e2c6c726c",
+]
+`;
+
+exports[`how every kind of sheet looks > mate-termeni 1`] = `
+[
+  "94245d3ffcf3a283",
+  "913b46a1737cafa6",
+  "1f049660b6915600",
+  "8d1ba7e60f2fba46",
+  "b64888fc30519895",
 ]
 `;
 
