@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_CONFIG } from '@/types';
 import { buildWorksheetPages, hasContent } from '@/lib/worksheet/layout';
-import { MATH_RANGES, MATH_TYPES, mathExercises } from '@/lib/worksheet/math';
+import { MATH_RANGES, NUMBER_MATH_TYPES as MATH_TYPES, mathExercises } from '@/lib/worksheet/math';
 import { opsOutside } from './bounds';
 
 const calc = (cells: (string | null)[], fill: string) => {
