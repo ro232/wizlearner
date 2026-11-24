@@ -6,6 +6,7 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { pageMetadata } from '@/lib/seo/metadata';
 import { CLASS_PAGES, classCoverage, classEvaluations, classPage, coverageCount, presetHref } from '@/lib/curriculum/presets';
+import { needsDe } from '@/components/worksheet/plural';
 
 export const dynamicParams = false;
 
@@ -54,7 +55,7 @@ export default function ClassCurriculumPage({ params }: { params: { clasa: strin
               copilului și o descarci; codul se tipărește jos, pe fiecare pagină.
             </p>
             <p className="mt-3 text-sm font-bold text-ink">
-              Avem fișe pentru {withSheets} din {total}{apart.length > 0 ? ' competențe de limba română și matematică' : ''}.
+              Avem fișe pentru {withSheets} din {total}{apart.length > 0 ? ' competențe de limba română și matematică' : c.level === 'III' || c.level === 'IV' ? `${needsDe(total) ? ' de' : ''} competențe de limba română și matematică` : ''}.
             </p>
             {apart.length > 0 && (
               <p className="mt-2 text-sm text-slate-700 max-w-2xl">

@@ -30,6 +30,9 @@ import { isCursive } from '@/lib/worksheet/layout';
 import { cleanWord } from '@/stores/sanitize-config';
 import { alese } from './plural';
 
+/** The groups of „Jocuri” written for clasa a III-a and a IV-a (r34-pages.ts, m34-pages.ts). */
+const UPPER_GROUP = /^(Limba română|Matematică): /;
+
 interface GeneratorControlsProps {
   onShowPaywall: () => void;
 }
@@ -102,6 +105,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   })();
 
   const isFree = (item: string) => isItemAllowed(item, config.category, tier);
+  const upper = config.curriculumLevel === 'III' || config.curriculumLevel === 'IV';
   const usable = allItems.filter(isFree);
 
   const handleItemClick = (item: string) => {
@@ -306,7 +310,10 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                 ['date', 'Tabelul și graficul cu bare de desenat; grafice cu bare și liniare de citit.'],
                 ['sir', 'Șiruri după o regulă: continuă, găsește regula, inventează una.'],
               ] as const).map(([kind, text]) => ({ title: `Matematică: ${M34_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: m34ShortLabel })),
-            ].map((group) => (
+            ]
+              // clasa a III-a / a IV-a chosen: their sheets first, the long list of the younger classes after them
+              .sort((a, b) => (upper ? Number(UPPER_GROUP.test(b.title)) - Number(UPPER_GROUP.test(a.title)) : 0))
+              .map((group) => (
               <div key={group.title}>
                 <div className="font-extrabold text-ink">{group.title}</div>
                 <div className="text-xs text-slate-600 mb-2">{group.text} O pagină pentru fiecare.</div>

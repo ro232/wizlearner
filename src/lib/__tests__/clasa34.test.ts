@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
 import type { PageOps } from '@/lib/glyphs/types';
 import { flattenOps } from '@/lib/glyphs/geometry';
@@ -54,6 +55,8 @@ describe('clasa a III-a și a IV-a: the classes', () => {
     expect(sitemap().filter((e) => /\/programa\/[a-z0-9-]+$/.test(e.url))).toHaveLength(6);
     expect(LANDING_CLASSES).toHaveLength(6);
     for (const slug of ['clasa-3', 'clasa-4']) for (const p of classLandingPages(slug)) expect(urls.has(absoluteUrl(p.path)), p.path).toBe(true);
+    // the generator accepts the links of the class pages (/generator?fisa=…&clasa=III)
+    expect(readFileSync('src/app/generator/page.tsx', 'utf8')).toContain('isSchoolLevel(level)');
   });
 
   it('the labels name the subject and the class: „Competența specifică … · Limba și literatura română, clasa a III-a”', () => {
