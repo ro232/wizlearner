@@ -379,10 +379,12 @@ describe('the competences', () => {
       classCoverage(CLASS_PAGES.find((c) => c.slug === slug)!).flatMap((g) => g.items).filter((i) => i.code === code && (slug === 'gradinita' || i.programme === 'mem-p-ii')).flatMap((i) => i.presets.map((p) => p.id));
     expect(listed('gradinita', 'E.2.4')).toEqual(['sorteaza', 'intrusul', 'grupeaza-numara', 'mate-lungimi']);
     expect(listed('gradinita', 'E.2.1')).toContain('grupeaza-numara');
-    expect(listed('clasa-pregatitoare', '5.1')).toEqual(['sorteaza', 'grupeaza-numara']);
+    // and „Cine unde trăiește?”, „Cum se deplasează?” (explore.test.ts)
+    expect(listed('clasa-pregatitoare', '5.1')).toEqual(['sorteaza', 'grupeaza-numara', 'cine-unde-traieste', 'cum-se-deplaseaza']);
     expect(listed('clasa-pregatitoare', '2.1')).toEqual(['orientare']);
     expect(listed('clasa-1', '2.1')).toEqual(['orientare']);
     expect(listed('clasa-2', '2.1')).toEqual([]);
-    expect(listed('clasa-2', '5.1')).toEqual([]);
+    // the table of the „Medii de viață” (explore.test.ts)
+    expect(listed('clasa-2', '5.1')).toEqual(['mediile-de-viata']);
   });
 });

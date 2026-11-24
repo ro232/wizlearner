@@ -79,3 +79,21 @@ export function iconOps(emoji: string, cx: number, cy: number, size: number): Dr
     },
   ];
 }
+
+/**
+ * The shadow of `emoji` („Umbre”): the same shapes as its picture, all in one dark colour, so only
+ * the outline is left. Null when the picture is not in the set (no shadow of a screen-only emoji).
+ */
+export function silhouetteOps(emoji: string, cx: number, cy: number, size: number, fill = '#3A4150'): DrawOp[] | null {
+  const shapes = shapesFor(emoji);
+  if (!shapes) return null;
+  return [
+    {
+      t: 'group',
+      tx: cx - size / 2,
+      ty: cy - size / 2,
+      scale: size / BOX,
+      ops: shapes.map((s) => ({ t: 'path' as const, subpaths: s.subpaths, fill, closed: true })),
+    },
+  ];
+}

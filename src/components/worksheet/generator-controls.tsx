@@ -13,6 +13,8 @@ import { COUNT_RANGES, DOT_SHAPES, DOT_SHAPE_LABELS } from '@/lib/worksheet/acti
 import { PHONO_KIND_TITLES, phonologyItems } from '@/lib/worksheet/phonology-pages';
 import { SORTING_KIND_TITLES, sortingItems, sortingShortLabel } from '@/lib/worksheet/sorting-pages';
 import { READ_KIND_TITLES, readingItems, readingShortLabel } from '@/lib/worksheet/reading-pages';
+import { FUN_KIND_TITLES, funItems, funShortLabel } from '@/lib/worksheet/fun-pages';
+import { exploreItems, exploreShortLabel } from '@/lib/worksheet/explore-pages';
 import { readingSetLevel } from '@/lib/worksheet/reading';
 import { Button } from '@/components/ui/button';
 import { MathPicker } from './math-picker';
@@ -88,7 +90,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       case 'prewrite':
         return [...PATTERN_IDS];
       case 'games':
-        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems(), ...readingItems()];
+        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems(), ...readingItems(), ...funItems(), ...exploreItems()];
       default:
         return [];
     }
@@ -217,6 +219,22 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                 ['copy', 'Cuvinte de tipar (CP = clasa pregătitoare) sau propoziții de scris de mână, pe liniatura caietului.'],
                 ['text', 'Un text scurt și trei întrebări cu răspuns de încercuit (clasa I, a II-a).'],
               ] as const).map(([kind, text]) => ({ title: `Citire și scriere: ${READ_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`read:${kind}:`)), cols: 'grid-cols-3 sm:grid-cols-6', show: readingShortLabel })),
+              // Fișe distractive (fun-pages.ts)
+              ...([
+                ['color', 'Un desen cu numere de la 1 la 5 și culorile lor, cu numele culorii (merge și la imprimarea alb-negru).'],
+                ['colsum', 'Aceleași desene, cu adunări și scăderi cu rezultatul 1–5 în loc de numere (clasa pregătitoare).'],
+                ['maze', 'Un singur drum de la o imagine la alta: 6 × 6, 9 × 9 sau 12 × 12 căsuțe; drumul, pe pagina de răspunsuri.'],
+                ['diff', 'Aceeași imagine de două ori, a doua cu 3–5 diferențe, și câte un cerc de colorat pentru fiecare.'],
+                ['trace', 'Linii punctate de urmărit de la o imagine la alta: drepte, valuri, zigzag, cupe și castel, bucle.'],
+                ['shadow', 'Șase imagini și umbrele lor, amestecate: copilul le unește.'],
+              ] as const).map(([kind, text]) => ({ title: FUN_KIND_TITLES[kind], text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: funShortLabel })),
+              // „Explorarea mediului” (explore-pages.ts)
+              ...([
+                ['corpul și plantele', 'Părțile plantei și ale corpului (cuvinte de scris sau de lipit), simțurile.', ['plant:', 'body:', 'senses:']],
+                ['animalele', 'Unde trăiesc, cum se deplasează, puii lor; tabelul mediilor de viață pentru clasa a II-a.', ['home:', 'habitat:', 'move:', 'baby:']],
+                ['anotimpurile și vremea', 'Anotimpul fiecărei imagini, ce se întâmplă în fiecare anotimp, semnele vremii, „dacă plouă, iei umbrela”.', ['season:', 'weather:', 'wear:']],
+                ['apa', 'Apa solidă sau lichidă și ce se întâmplă cu ea: se topește, îngheață, fierbe, se evaporă (clasa I).', ['water:', 'melt:']],
+              ] as const).map(([title, text, kinds]) => ({ title: `Explorarea mediului: ${title}`, text, items: allItems.filter((i) => kinds.some((k) => i.startsWith(k))), cols: 'grid-cols-2 sm:grid-cols-3', show: exploreShortLabel })),
             ].map((group) => (
               <div key={group.title}>
                 <div className="font-extrabold text-ink">{group.title}</div>

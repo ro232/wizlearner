@@ -83,6 +83,22 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'mate-rigla', title: 'Măsoară cu rigla', text: 'Lungimi în centimetri pe riglă, linii de desenat.', config: { category: 'math', selectedItems: ['ruler'] }, levels: ['I', 'II'] },
   { id: 'mate-unitati', title: 'Unități de măsură', text: 'Metrul, centimetrul, litrul, kilogramul; instrumente; 1 m = 100 cm.', config: { category: 'math', selectedItems: ['units'] }, levels: ['II'] },
   { id: 'mate-figuri', title: 'Figuri geometrice în desen', text: 'Numără pătratele, dreptunghiurile, triunghiurile și cercurile.', config: { category: 'math', selectedItems: ['figures'] }, levels: ['presc', 'CP', 'I'] },
+  // Fișe distractive și „Explorarea mediului” (fun-pages.ts, explore-pages.ts): set 1 of each, free
+  { id: 'coloreaza-dupa-cod', title: 'Colorează după cod', text: 'Un desen cu numere de la 1 la 5: fiecare parte cu culoarea numărului ei.', config: { category: 'games', selectedItems: ['color:1'] }, levels: ['presc'] },
+  { id: 'calculeaza-coloreaza', title: 'Calculează și colorează', text: 'Adunări și scăderi cu rezultatul 1–5: fiecare parte cu culoarea rezultatului.', config: { category: 'games', selectedItems: ['colsum:1'] }, levels: ['CP'] },
+  { id: 'urmareste-linia', title: 'Urmărește linia', text: 'Linii punctate de la imagine la imagine, de urmărit cu creionul.', config: { category: 'games', selectedItems: ['trace:1'] }, levels: ['presc', 'CP'] },
+  { id: 'partile-plantei', title: 'Părțile plantei', text: 'Rădăcină, tulpină, frunză, floare, fruct: scrie sau lipește cuvântul în căsuță.', config: { category: 'games', selectedItems: ['plant:1'] }, levels: ['presc', 'CP'] },
+  { id: 'partile-corpului', title: 'Părțile corpului', text: 'Cap, gât, trunchi, mâini, picioare: scrie sau lipește cuvântul în căsuță.', config: { category: 'games', selectedItems: ['body:1'] }, levels: ['presc', 'CP'] },
+  { id: 'simturile', title: 'Simțurile', text: 'Unește ochiul, urechea, nasul, limba și mâna cu simțul lor.', config: { category: 'games', selectedItems: ['senses:1'] }, levels: ['presc', 'CP'] },
+  { id: 'cine-unde-traieste', title: 'Cine unde trăiește?', text: 'În pădure, la fermă sau în apă: încercuiește locul fiecărui animal.', config: { category: 'games', selectedItems: ['home:1'] }, levels: ['presc', 'CP'] },
+  { id: 'cum-se-deplaseaza', title: 'Cum se deplasează?', text: 'Zboară, înoată, merge sau se târăște: încercuiește.', config: { category: 'games', selectedItems: ['move:1'] }, levels: ['presc', 'CP'] },
+  { id: 'mediile-de-viata', title: 'Mediile de viață', text: 'Pădurea, deșertul, Polul Nord, Polul Sud, Marea Neagră: un X în tabel pentru fiecare animal.', config: { category: 'games', selectedItems: ['habitat:1'] }, levels: ['II'] },
+  { id: 'puiul-cui-este', title: 'Puiul cui este?', text: 'Vaca și vițelul, oaia și mielul, calul și mânzul: unește.', config: { category: 'games', selectedItems: ['baby:1'] }, levels: ['presc'] },
+  { id: 'anotimpurile', title: 'Anotimpurile', text: 'Încercuiește anotimpul fiecărei imagini: primăvara, vara, toamna, iarna.', config: { category: 'games', selectedItems: ['season:1'] }, levels: ['presc', 'CP'] },
+  { id: 'vremea', title: 'Vremea', text: 'Soare, nori, ploaie, ninsoare, vânt, fulger: unește semnul cu numele lui.', config: { category: 'games', selectedItems: ['weather:1'] }, levels: ['presc', 'CP'] },
+  { id: 'ce-iei-cu-tine', title: 'Ce iei cu tine?', text: 'Dacă plouă, iei umbrela: unește vremea cu ce îți trebuie.', config: { category: 'games', selectedItems: ['wear:1'] }, levels: ['presc', 'CP'] },
+  { id: 'apa-solida-lichida', title: 'Apa: solidă sau lichidă?', text: 'Gheață, zăpadă, ploaie, valuri: încercuiește cum este apa.', config: { category: 'games', selectedItems: ['water:1'] }, levels: ['I'] },
+  { id: 'ce-se-intampla-cu-apa', title: 'Ce se întâmplă cu apa?', text: 'Se topește, îngheață, fierbe sau se evaporă: citește și încercuiește.', config: { category: 'games', selectedItems: ['melt:1'] }, levels: ['I'] },
   // Evaluări: the items of the class's programme as a short test, with the answers page (evaluation.ts)
   {
     id: 'evaluare-mate', title: 'Evaluare la matematică', text: 'Comparare, adunări și scăderi, probleme cu imagini, bani (la clasa a II-a: înmulțiri și ceasul); cu răspunsuri și calificative orientative.',

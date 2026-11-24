@@ -7,6 +7,8 @@ import { SORT_SETS, gridLayout, groupSet, oddRows, sceneLayout, sortPictures } f
 import { CATEGORY_NAMES } from './sorting';
 import { readingKeySection } from './reading-pages';
 import { answerKeyPages, type KeySection } from './answer-key';
+import { funKeyExtras, funKeySection } from './fun-pages';
+import { exploreKeySection } from './explore-pages';
 
 /**
  * The answers of the game pages („Jocuri”) for the answers page: read from the same functions
@@ -75,8 +77,9 @@ export function gameKeySection(config: WorksheetConfig, item: string): KeySectio
     // „Citire și scriere” (reading-pages.ts): nothing for „Citește și desenează” and „Copiază”
     case 'read':
       return readingKeySection(config, item);
+    // the fun preschool sheets and „Explorarea mediului”: nothing for „Urmărește linia”
     default:
-      return null;
+      return funKeySection(item) ?? exploreKeySection(item);
   }
 }
 
@@ -91,5 +94,7 @@ export function gameKeySections(config: WorksheetConfig, tier: Tier): KeySection
 /** The answers pages of a games sheet (none when no page has answers). */
 export function gameAnswerPages(config: WorksheetConfig, tier: Tier) {
   const sections = gameKeySections(config, tier);
-  return sections.length ? answerKeyPages(config, sections) : [];
+  // the mazes with their path and the scenes with the differences circled, under the answers
+  const extras = funKeyExtras(config.selectedItems.filter((item) => isActivityItem(item) && isItemAllowed(item, 'games', tier)));
+  return sections.length ? answerKeyPages(config, sections, extras) : [];
 }
