@@ -16,7 +16,7 @@ import { iconOps } from '@/lib/hints/icons';
 import { sanitizeConfig } from '@/stores/sanitize-config';
 import { sheetCompetences } from '@/lib/curriculum/sheet';
 import { findCompetence } from '@/lib/curriculum';
-import { CLASS_PAGES, classCoverage, presetById, presetConfig } from '@/lib/curriculum/presets';
+import { CLASS_PAGES, headlineItems, presetById, presetConfig } from '@/lib/curriculum/presets';
 import { opBox, opsOutside } from './bounds';
 import { drawnExercises, readingOrder, textOverlaps, texts } from './drawn';
 
@@ -596,8 +596,9 @@ describe('curriculum codes of the topics', () => {
 
   it('the class pages list the new sheets', () => {
     const at = (slug: string) => {
-      const items = classCoverage(CLASS_PAGES.find((c) => c.slug === slug)!).flatMap((g) => g.items);
-      return { n: items.filter((i) => i.presets.length).length, of: items.length, codes: (code: string) => items.filter((i) => i.code === code && i.programme !== 'clr-p-ii').flatMap((i) => i.presets.map((p) => p.id)) };
+      // the headline of the class page: CLR and MEM (the other subjects are counted apart, presets.ts HEADLINE_PROGRAMMES)
+      const items = headlineItems(CLASS_PAGES.find((c) => c.slug === slug)!);
+      return { n: items.filter((i) => i.presets.length).length, of: items.length, codes: (code: string) => items.filter((i) => i.code === code && i.programme === 'mem-p-ii').flatMap((i) => i.presets.map((p) => p.id)) };
     };
     const cp = at('clasa-pregatitoare'), i = at('clasa-1'), ii = at('clasa-2');
     // with the „Explorarea mediului” sheets (explore.test.ts): CP 3.1, 4.1, 4.2; I 4.1, 4.2; II 5.1

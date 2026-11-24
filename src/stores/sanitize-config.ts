@@ -33,6 +33,8 @@ const READING_ITEM = /^read:(match|gap|draw|fill|order|copy|text):[1-6]$/;
 // the fun preschool sheets (fun.ts: isFunItem) and „Explorarea mediului” (explore.ts: isExploreItem)
 const FUN_ITEM = /^(color|colsum|maze|diff|trace|shadow):[1-6]$/;
 const EXPLORE_ITEM = /^((plant|body|senses|habitat|move|weather|wear|water|melt):1|(home|baby):[12]|season:[1-5])$/;
+// Arte vizuale, Dezvoltare personală, limba engleză (subjects.ts: isSubjectItem)
+const SUBJECT_ITEM = /^((sym|model|en):[1-3]|(cut|lines|feel):[12]|(me|hyg|habit|job|jobuse|rules):1)$/;
 const MATH_RANGES: readonly number[] = [5, 10, 20, 31, 100, 1000];
 
 const MAX_ITEMS = 120;
@@ -67,6 +69,7 @@ export function itemFitsCategory(item: unknown, category: ContentCategory): item
       if (SORTING_ITEM.test(item)) return true;
       if (READING_ITEM.test(item)) return true;
       if (FUN_ITEM.test(item) || EXPLORE_ITEM.test(item)) return true;
+      if (SUBJECT_ITEM.test(item)) return true;
       return GAME_ITEM.test(item);
     default:
       return false;

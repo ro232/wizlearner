@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { CLASS_PAGES, classCoverage } from '@/lib/curriculum/presets';
+import { CLASS_PAGES, coverageCount, headlineItems } from '@/lib/curriculum/presets';
 import { landingPage } from '@/lib/seo/landing';
 import { countOf } from '@/components/worksheet/plural';
 
@@ -22,8 +22,8 @@ export function ClassPicker() {
   return (
     <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
       {CLASS_PAGES.map((c) => {
-        const items = classCoverage(c).flatMap((g) => g.items);
-        const covered = items.filter((i) => i.presets.length).length;
+        // limba română and matematică (presets.ts HEADLINE_PROGRAMMES): the other subjects are counted on the class page
+        const { covered, total } = coverageCount(headlineItems(c));
         const presc = c.level === 'presc';
         const topics = (CLASS_TOPICS[c.slug] ?? []).map((t) => landingPage(c.slug, t)).filter((p) => !!p);
         return (
@@ -48,10 +48,10 @@ export function ClassPicker() {
 
             <div className="mt-auto pt-5">
               <p className="text-sm text-slate-700">
-                Fișe pentru <strong className="text-ink">{covered} din {countOf(items.length, presc ? 'comportament' : 'competență', presc ? 'comportamente' : 'competențe')}</strong>
+                Fișe pentru <strong className="text-ink">{covered} din {countOf(total, presc ? 'comportament' : 'competență', presc ? 'comportamente' : 'competențe')}</strong>
               </p>
               <div className="mt-1.5 h-1.5 rounded-full bg-rule overflow-hidden" aria-hidden>
-                <div className="h-full bg-ink" style={{ width: `${Math.round((covered / Math.max(1, items.length)) * 100)}%` }} />
+                <div className="h-full bg-ink" style={{ width: `${Math.round((covered / Math.max(1, total)) * 100)}%` }} />
               </div>
               <Link href={`/programa/${c.slug}`} className="mt-4 inline-flex items-center gap-1 font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">
                 {presc ? 'Vezi comportamentele' : 'Vezi competențele'} <ArrowRight className="w-4 h-4" aria-hidden />

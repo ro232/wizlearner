@@ -5,7 +5,7 @@ import { CARRY_TYPES, MATH_RANGES, NUMBER_MATH_TYPES as MATH_TYPES, borrowsAny, 
 import { lei, moneyExercises, notesFor, type Note } from '@/lib/worksheet/money';
 import { sanitizeConfig } from '@/stores/sanitize-config';
 import { sheetCompetences } from '@/lib/curriculum/sheet';
-import { CLASS_PAGES, classCoverage, classEvaluations, presetById, presetConfig } from '@/lib/curriculum/presets';
+import { CLASS_PAGES, classEvaluations, headlineItems, presetById, presetConfig } from '@/lib/curriculum/presets';
 import { findCompetence } from '@/lib/curriculum';
 import type { PageOps } from '@/lib/glyphs/types';
 import { flattenOps } from '@/lib/glyphs/geometry';
@@ -272,7 +272,8 @@ describe('clasa a II-a: the sheets open on 0–1000 and print the codes of the p
   });
 
   it('the class page: 10 of 33 competences have sheets; the evaluation prints 1.2, 1.4, 1.5, 5.2, 6.2', () => {
-    const items = classCoverage(II).flatMap((g) => g.items);
+    // the headline counts CLR and MEM; Arte vizuale, Dezvoltare personală and limba modernă are counted apart (presets.ts)
+    const items = headlineItems(II);
     expect(items).toHaveLength(33);
     // 1.5 the tables, 6.1 lengths and masses, 6.2 the clock and the calendar, 6.4 units (math-topics.test.ts)
     // 5.1 the table of the „Medii de viață” (explore.test.ts)

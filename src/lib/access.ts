@@ -4,6 +4,7 @@ import { baseLetter, normalizeKey } from '@/lib/glyphs/data';
 import { READING_LEVELS, type ReadKind } from '@/lib/worksheet/reading';
 import { isFunItem } from '@/lib/worksheet/fun';
 import { isExploreItem } from '@/lib/worksheet/explore';
+import { isSubjectItem } from '@/lib/worksheet/subjects';
 
 /**
  * One place that decides whether an item is usable on a tier. The item picker,
@@ -43,6 +44,8 @@ export function isItemAllowed(item: string, category: ContentCategory, tier: Tie
       if (kind === 'sort' || kind === 'odd' || kind === 'group' || kind === 'pos') return arg === '1';
       // the fun preschool sheets and „Explorarea mediului”: set 1 of each (fun.ts, explore.ts)
       if ((isFunItem(item) || isExploreItem(item)) && arg === '1') return true;
+      // Arte vizuale, Dezvoltare personală, limba engleză: set 1 of each (subjects.ts)
+      if (isSubjectItem(item) && arg === '1') return true;
       // „Citire și scriere” ("read:<kind>:<set>"): the first set of each class (CP 1, I 1, II 1) of each kind
       if (kind === 'read') {
         const levels = READING_LEVELS[arg as ReadKind];

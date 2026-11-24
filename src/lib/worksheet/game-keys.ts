@@ -9,6 +9,7 @@ import { readingKeySection } from './reading-pages';
 import { answerKeyPages, type KeySection } from './answer-key';
 import { funKeyExtras, funKeySection } from './fun-pages';
 import { exploreKeySection } from './explore-pages';
+import { subjectKeyExtras, subjectKeySection } from './subjects-pages';
 
 /**
  * The answers of the game pages („Jocuri”) for the answers page: read from the same functions
@@ -79,7 +80,7 @@ export function gameKeySection(config: WorksheetConfig, item: string): KeySectio
       return readingKeySection(config, item);
     // the fun preschool sheets and „Explorarea mediului”: nothing for „Urmărește linia”
     default:
-      return funKeySection(item) ?? exploreKeySection(item);
+      return funKeySection(item) ?? exploreKeySection(item) ?? subjectKeySection(item);
   }
 }
 
@@ -95,6 +96,8 @@ export function gameKeySections(config: WorksheetConfig, tier: Tier): KeySection
 export function gameAnswerPages(config: WorksheetConfig, tier: Tier) {
   const sections = gameKeySections(config, tier);
   // the mazes with their path and the scenes with the differences circled, under the answers
-  const extras = funKeyExtras(config.selectedItems.filter((item) => isActivityItem(item) && isItemAllowed(item, 'games', tier)));
+  const drawn = config.selectedItems.filter((item) => isActivityItem(item) && isItemAllowed(item, 'games', tier));
+  // … and the finished symmetric drawings (subjects-pages.ts)
+  const extras = [...funKeyExtras(drawn), ...subjectKeyExtras(drawn)];
   return sections.length ? answerKeyPages(config, sections, extras) : [];
 }

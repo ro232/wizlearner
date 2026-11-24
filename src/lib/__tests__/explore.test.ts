@@ -247,7 +247,8 @@ describe('the competences', () => {
   it('the codes exist with their official texts; the class pages list the presets, which open free sheets', () => {
     for (const item of ITEMS) for (const level of ['presc', 'CP', 'I', 'II'] as const) for (const r of sheetCompetences(games([item]), level)) expect(findCompetence(r), `${item} ${level}`).toBeTruthy();
     expect(findCompetence({ programme: 'mem-p-ii', level: 'CP', code: '4.2' })?.text).toBe('Identificarea relațiilor de tipul „dacă... atunci…” între două evenimente succesive');
-    const listed = (slug: string, code: string) => classCoverage(CLASS_PAGES.find((c) => c.slug === slug)!).flatMap((g) => g.items).filter((i) => i.code === code && i.programme !== 'clr-p-ii').flatMap((i) => i.presets.map((p) => p.id));
+    // the class pages also list Arte vizuale, Dezvoltare personală and limba modernă: only the MEM (preschool: the curriculum) codes here
+    const listed = (slug: string, code: string) => classCoverage(CLASS_PAGES.find((c) => c.slug === slug)!).flatMap((g) => g.items).filter((i) => i.code === code && (i.programme === 'et-presc' || i.programme === 'mem-p-ii')).flatMap((i) => i.presets.map((p) => p.id));
     expect(listed('gradinita', 'E.3.2')).toEqual(['partile-plantei', 'partile-corpului', 'simturile', 'cine-unde-traieste', 'cum-se-deplaseaza', 'puiul-cui-este']);
     expect(listed('gradinita', 'E.1.1')).toEqual(['anotimpurile', 'vremea']);
     expect(listed('gradinita', 'E.1.4')).toEqual(['ce-iei-cu-tine']);

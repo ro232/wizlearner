@@ -14,6 +14,8 @@ import { buildFunPage, funLabel } from './fun-pages';
 import { isFunItem } from './fun';
 import { buildExplorePage, exploreLabel } from './explore-pages';
 import { isExploreItem } from './explore';
+import { buildSubjectPage, subjectLabel } from './subjects-pages';
+import { isSubjectItem } from './subjects';
 
 /**
  * Full-page activities ("Jocuri"): find the letter, count and write, connect the dots.
@@ -30,7 +32,7 @@ export const DOT_SHAPE_LABELS: Record<DotShape, string> = { star: 'stea', heart:
 export const COUNT_RANGES = ['count:5', 'count:10'] as const;
 
 export function isActivityItem(item: string): boolean {
-  return /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/.test(item) || isPhonologyItem(item) || isSortingItem(item) || isReadingItem(item) || isFunItem(item) || isExploreItem(item);
+  return /^(find:.+|count:(5|10)|dots:(star|heart|house|fish|boat|tree))$/.test(item) || isPhonologyItem(item) || isSortingItem(item) || isReadingItem(item) || isFunItem(item) || isExploreItem(item) || isSubjectItem(item);
 }
 
 export function activityLabel(item: string): string {
@@ -39,6 +41,7 @@ export function activityLabel(item: string): string {
   if (isReadingItem(item)) return readingLabel(item);
   if (isFunItem(item)) return funLabel(item);
   if (isExploreItem(item)) return exploreLabel(item);
+  if (isSubjectItem(item)) return subjectLabel(item);
   const [kind, arg] = item.split(':');
   if (kind === 'find') return `Găsește ${arg}`;
   if (kind === 'count') return `Numără 1–${arg}`;
@@ -323,7 +326,8 @@ export function buildActivityPages(config: WorksheetConfig, tier: Tier, allowed:
       continue;
     }
     // the fun preschool sheets (fun-pages.ts) and „Explorarea mediului” (explore-pages.ts)
-    const fun = buildFunPage(config, item, tier) ?? buildExplorePage(config, item, tier);
+    // … and Arte vizuale, Dezvoltare personală, limba engleză (subjects-pages.ts)
+    const fun = buildFunPage(config, item, tier) ?? buildExplorePage(config, item, tier) ?? buildSubjectPage(config, item, tier);
     if (fun) {
       pages.push(fun);
       continue;

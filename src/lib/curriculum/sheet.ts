@@ -22,6 +22,9 @@ export const SCHOOL_LEVELS: { id: SchoolLevel; label: string }[] = [
 
 const CLR = 'clr-p-ii' as const;
 const MEM = 'mem-p-ii' as const;
+const AVAP = 'avap-p-ii' as const;
+const DP = 'dp-p-ii' as const;
+const LM = 'lm-p-ii' as const;
 
 function school(programme: ProgrammeId, level: Exclude<SchoolLevel, 'presc'>, code: string): CompetenceRef {
   return { programme, level, code };
@@ -242,6 +245,48 @@ const RULES: Record<string, Rule> = {
   // „Identificarea unor consecințe ale unor acțiuni, fenomene, procese simple”
   water: { I: school(MEM, 'I', '4.1') },
   melt: { I: school(MEM, 'I', '4.2') },
+  // ── Arte vizuale și abilități practice (subjects-pages.ts). „Decupează și lipește”: pieces cut along their
+  // outline and glued on the picture. CP 2.3 „Realizarea de aplicații/compoziții/obiecte/ construcții simple, pe
+  // baza interesului direct” (contents, Colaj: „mototolire, rupere, tăiere, decupare după contur, îndoire,
+  // răsucire, lipire”); I 2.3 „Realizarea de obiecte/construcții/folosind materiale ușor de prelucrat și tehnici
+  // accesibile” (Colaj: „…tăiere, decupare după contur…”). Not II: its Colaj techniques are „îndoirea, împletirea,
+  // origami, tangram”, no cutting out.
+  cut: { CP: school(AVAP, 'CP', '2.3'), I: school(AVAP, 'I', '2.3') },
+  // „Linii și puncte”: each stripe with the kind of line or point shown next to it. CP 1.2 „Identificarea liniei,
+  // a punctului, a culorii și a formei în ipostaze familiare, în spațiul înconjurător”, I 1.2 „Identificarea
+  // liniei, a punctului, a culorii și a formei în contexte cunoscute” (contents, Desen: „linia, punctul, forma”).
+  // Not II 1.2 („…în opere de artă”).
+  lines: { CP: school(AVAP, 'CP', '1.2'), I: school(AVAP, 'I', '1.2') },
+  // „Simetrie” and „Desenează după model”: no AVAP competence or content names symmetry or copying a drawing
+  // (the axis of symmetry is a MEM II content of plane figures, not of drawings), so no code.
+  sym: {},
+  model: {},
+  // ── Dezvoltare personală. The faces and „Cum se simte?”: CP 2.1 „Recunoașterea emoțiilor de bază în situații
+  // simple, familiare” (contents „Emoții de bază denumite prin cuvinte (bucurie, tristețe, frică, furie)…”);
+  // I 2.1 „Asocierea emoțiilor de bază cu elemente simple de limbaj nonverbal și paraverbal” (contents „…elemente
+  // simple de limbaj nonverbal (expresii faciale, postură)…”). Not II 2.1 („Exprimarea emoțiilor…”).
+  feel: { CP: school(DP, 'CP', '2.1'), I: school(DP, 'I', '2.1') },
+  // „Despre mine”: CP 1.1 „Identificarea unor trăsături personale elementare” (contents „Cine sunt eu? Trăsături
+  // fizice”), I 1.1 „Prezentarea unor trăsături personale elementare, în contexte variate”.
+  me: { CP: school(DP, 'CP', '1.1'), I: school(DP, 'I', '1.1') },
+  // the objects of hygiene: CP 1.2 „Identificarea unor obiecte și activități simple de igienă personală”
+  hyg: { CP: school(DP, 'CP', '1.2') },
+  // good and not good habits: I 1.2 „Identificarea unor reguli de igienă personală”. Not II 1.3 („Respectarea…”:
+  // a sheet cannot show that a rule is kept).
+  habit: { I: school(DP, 'I', '1.2') },
+  // a job and its tool: I 3.3 „Explorarea unor meserii cunoscute sau preferate” (contents „Meserii cunoscute:
+  // denumire, activități principale, unelte și instrumente, loc de desfășurare”)
+  job: { I: school(DP, 'I', '3.3') },
+  // what a job does for the others: II 3.3 „Prezentarea utilității unor meserii/profesii cunoscute” (contents „La ce
+  // folosesc meseriile? Utilitatea socială a meseriilor: produse realizate, beneficii pentru sine și pentru comunitate”)
+  jobuse: { II: school(DP, 'II', '3.3') },
+  // the class rules: CP 2.2 „Identificarea regulilor de comunicare în activitatea școlară”
+  rules: { CP: school(DP, 'CP', '2.2') },
+  // ── Comunicare în limba modernă 1 (engleză): a picture and its written English word. 3.1 „Manifestarea
+  // curiozității pentru decodarea unor mesaje scrise simple și scurte din universul imediat” (the same text in CP,
+  // I and II; learning activities CP „reperarea etichetelor și asocierea lor cu imaginea”, I „asocierea
+  // etichetelor cu imaginea”). Not 1.2 (that is listening).
+  en: { CP: school(LM, 'CP', '3.1'), I: school(LM, 'I', '3.1'), II: school(LM, 'II', '3.1') },
 };
 
 /** Topics whose sheet does not depend on the number range (only „groups” does): the range never takes their code away. */
@@ -319,6 +364,9 @@ const SUBJECT: Record<ProgrammeId, string> = {
   'mem-p-ii': 'Matematică și explorarea mediului',
   'llr-iii-iv': 'Limba și literatura română',
   'mate-iii-iv': 'Matematică',
+  'avap-p-ii': 'Arte vizuale și abilități practice',
+  'dp-p-ii': 'Dezvoltare personală',
+  'lm-p-ii': 'Comunicare în limba modernă 1',
 };
 const LEVEL_NAME: Record<Level, string> = {
   '3-6': 'nivel preșcolar',

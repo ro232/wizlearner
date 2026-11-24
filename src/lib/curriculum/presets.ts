@@ -128,6 +128,20 @@ export const SHEET_PRESETS: SheetPreset[] = [
     // clasa a II-a: its own sets (the sentences put in order instead of the pictures to join)
     byLevel: { II: { selectedItems: ['read:gap:5', 'read:order:4', 'read:fill:4', 'read:text:4'] } },
   },
+  // Arte vizuale și abilități practice, Dezvoltare personală, limba engleză (subjects-pages.ts): set 1 of each, free
+  { id: 'decupeaza-lipeste', title: 'Decupează și lipește', text: 'Piesele unei case, de decupat pe linia punctată și de lipit pe desen.', config: { category: 'games', selectedItems: ['cut:1'] }, levels: ['CP', 'I'] },
+  { id: 'linii-puncte', title: 'Linii și puncte', text: 'Un fular în fâșii: fiecare fâșie cu linia sau punctele arătate lângă ea.', config: { category: 'games', selectedItems: ['lines:1'] }, levels: ['CP', 'I'] },
+  // no competence names these two (sheet.ts prints no code): listed only on the generator and /fise-de-lucru
+  { id: 'simetrie', title: 'Simetrie', text: 'Jumătate de desen pe pătrățele: copilul colorează cealaltă jumătate, ca în oglindă.', config: { category: 'games', selectedItems: ['sym:1'] }, levels: ['CP', 'I', 'II'] },
+  { id: 'deseneaza-dupa-model', title: 'Desenează după model', text: 'Un desen pe puncte și aceleași puncte goale dedesubt.', config: { category: 'games', selectedItems: ['model:1'] }, levels: ['CP', 'I', 'II'] },
+  { id: 'emotiile', title: 'Emoțiile', text: 'Bucurie, tristețe, frică, furie: încercuiește emoția fiecărei fețe.', config: { category: 'games', selectedItems: ['feel:1'] }, levels: ['CP', 'I'] },
+  { id: 'despre-mine', title: 'Despre mine', text: 'Numele, vârsta, ochii, părul și lucrurile preferate: de completat, colorat și desenat.', config: { category: 'games', selectedItems: ['me:1'] }, levels: ['CP', 'I'] },
+  { id: 'obiecte-igiena', title: 'Obiectele de igienă', text: 'Periuța, săpunul, dușul: încercuiește-le printre alte obiecte.', config: { category: 'games', selectedItems: ['hyg:1'] }, levels: ['CP'] },
+  { id: 'obiceiuri-sanatoase', title: 'Obiceiuri sănătoase', text: 'Mă spăl pe mâini înainte de masă: e bine sau nu e bine?', config: { category: 'games', selectedItems: ['habit:1'] }, levels: ['I'] },
+  { id: 'meserii-unelte', title: 'Meserii și unelte', text: 'Bucătarul și tigaia, pompierul și stingătorul: unește.', config: { category: 'games', selectedItems: ['job:1'] }, levels: ['I'] },
+  { id: 'la-ce-folosesc-meseriile', title: 'La ce folosesc meseriile?', text: 'Medicul ne îngrijește, pompierul stinge incendiile: unește.', config: { category: 'games', selectedItems: ['jobuse:1'] }, levels: ['II'] },
+  { id: 'reguli-in-clasa', title: 'Reguli în clasă', text: 'Ridic mâna, îmi aștept rândul: e bine sau nu e bine?', config: { category: 'games', selectedItems: ['rules:1'] }, levels: ['CP'] },
+  { id: 'engleza-cuvinte', title: 'Cuvinte în engleză', text: 'Dog, cat, fish: unește imaginea cu cuvântul în limba engleză.', config: { category: 'games', selectedItems: ['en:1'] }, levels: ['CP', 'I', 'II'] },
 ];
 
 /** The number range a class works in, for the math sheets it opens (programme contents). */
@@ -158,10 +172,26 @@ export interface ClassPage {
 
 export const CLASS_PAGES: ClassPage[] = [
   { slug: 'gradinita', level: 'presc', title: 'Grădiniță', at: 'la grădiniță', programmes: ['et-presc'] },
-  { slug: 'clasa-pregatitoare', level: 'CP', title: 'Clasa pregătitoare', at: 'la clasa pregătitoare', programmes: ['clr-p-ii', 'mem-p-ii'] },
-  { slug: 'clasa-1', level: 'I', title: 'Clasa I', at: 'la clasa I', programmes: ['clr-p-ii', 'mem-p-ii'] },
-  { slug: 'clasa-2', level: 'II', title: 'Clasa a II-a', at: 'la clasa a II-a', programmes: ['clr-p-ii', 'mem-p-ii'] },
+  { slug: 'clasa-pregatitoare', level: 'CP', title: 'Clasa pregătitoare', at: 'la clasa pregătitoare', programmes: ['clr-p-ii', 'mem-p-ii', 'avap-p-ii', 'dp-p-ii', 'lm-p-ii'] },
+  { slug: 'clasa-1', level: 'I', title: 'Clasa I', at: 'la clasa I', programmes: ['clr-p-ii', 'mem-p-ii', 'avap-p-ii', 'dp-p-ii', 'lm-p-ii'] },
+  { slug: 'clasa-2', level: 'II', title: 'Clasa a II-a', at: 'la clasa a II-a', programmes: ['clr-p-ii', 'mem-p-ii', 'avap-p-ii', 'dp-p-ii', 'lm-p-ii'] },
 ];
+
+/**
+ * The programmes counted in the headline of a class page („Avem fișe pentru X din Y”): the preschool
+ * curriculum, limba română and matematică, whose competences are largely practised on paper.
+ * Arte vizuale și abilități practice, Dezvoltare personală and limba modernă are learnt mostly by
+ * making things, playing, moving and talking, so only a few of their competences can have a sheet:
+ * their groups show their own count, and the page says why they are counted apart.
+ */
+export const HEADLINE_PROGRAMMES: readonly ProgrammeId[] = ['et-presc', 'clr-p-ii', 'mem-p-ii'];
+
+/** One line under the title of a group that is counted apart (see HEADLINE_PROGRAMMES). */
+const GROUP_NOTES: Partial<Record<ProgrammeId, string>> = {
+  'avap-p-ii': 'Se lucrează mai ales cu materiale: desen, pictură, modelaj, colaj. Avem fișe doar pentru ce se poate face pe hârtie.',
+  'dp-p-ii': 'Se lucrează mai ales prin joc, discuție și activități în grup. Fișele sprijină câteva dintre ele.',
+  'lm-p-ii': 'O singură programă pentru orice limbă modernă; fișele noastre sunt în limba engleză. Se lucrează mai ales oral.',
+};
 
 export function classPage(slug: string): ClassPage | undefined {
   return CLASS_PAGES.find((c) => c.slug === slug);
@@ -184,6 +214,11 @@ export interface CompetenceCoverage {
 export interface CoverageGroup {
   title: string;
   items: CompetenceCoverage[];
+  programme: ProgrammeId;
+  /** Counted in the headline of the class page (HEADLINE_PROGRAMMES); the others show their own count. */
+  headline: boolean;
+  /** Why the group is counted apart, for the groups that are. */
+  note?: string;
 }
 
 const sameRef = (a: CompetenceRef, b: SpecificCompetence, programme: ProgrammeId) =>
@@ -211,13 +246,24 @@ export function classCoverage(page: ClassPage): CoverageGroup[] {
     if (id === 'et-presc') {
       for (const d of ['D', 'E']) {
         const domain = prog.generalCompetences.find((g) => g.code === d);
-        groups.push({ title: `${d}. ${sentenceCase(domain?.text ?? d)}`, items: competences.filter((c) => c.domain === d).map(item) });
+        groups.push({ title: `${d}. ${sentenceCase(domain?.text ?? d)}`, items: competences.filter((c) => c.domain === d).map(item), programme: id, headline: true });
       }
     } else {
-      groups.push({ title: prog.subject, items: competences.map(item) });
+      const headline = HEADLINE_PROGRAMMES.includes(id);
+      groups.push({ title: prog.subject, items: competences.map(item), programme: id, headline, ...(headline ? {} : { note: GROUP_NOTES[id] }) });
     }
   }
   return groups;
+}
+
+/** The competences counted in the headline „Avem fișe pentru X din Y” (see HEADLINE_PROGRAMMES). */
+export function headlineItems(page: ClassPage): CompetenceCoverage[] {
+  return classCoverage(page).filter((g) => g.headline).flatMap((g) => g.items);
+}
+
+/** „X din Y” of a list of competences: how many have a sheet, of how many. */
+export function coverageCount(items: CompetenceCoverage[]): { covered: number; total: number } {
+  return { covered: items.filter((i) => i.presets.length).length, total: items.length };
 }
 
 /** The evaluations of a class, with the codes they print (as teachers write them: „1.2”, „D.3.2”). */
