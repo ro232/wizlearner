@@ -33,6 +33,9 @@ const READING_ITEM = /^read:(match|gap|draw|fill|order|copy|text):[1-6]$/;
 // the fun preschool sheets (fun.ts: isFunItem) and „Explorarea mediului” (explore.ts: isExploreItem)
 const FUN_ITEM = /^(color|colsum|maze|diff|trace|shadow):[1-6]$/;
 const EXPLORE_ITEM = /^((plant|body|senses|habitat|move|weather|wear|water|melt):1|(home|baby):[12]|season:[1-5])$/;
+// the sheets that fill the gaps of the programme (clr.ts: isClrItem, mem.ts: isMemItem)
+const CLR_ITEM = /^(story:[1-4]|(sign|note|msg):[1-3]|written:[12])$/;
+const MEM_ITEM = /^(terms:[1-6]|(place|coord):[1-3]|regular:[1-4]|(sort2|plan|cause|pict):[12]|(sides|solid|around|more):1)$/;
 const MATH_RANGES: readonly number[] = [5, 10, 20, 31, 100, 1000];
 
 const MAX_ITEMS = 120;
@@ -67,6 +70,7 @@ export function itemFitsCategory(item: unknown, category: ContentCategory): item
       if (SORTING_ITEM.test(item)) return true;
       if (READING_ITEM.test(item)) return true;
       if (FUN_ITEM.test(item) || EXPLORE_ITEM.test(item)) return true;
+      if (CLR_ITEM.test(item) || MEM_ITEM.test(item)) return true;
       return GAME_ITEM.test(item);
     default:
       return false;

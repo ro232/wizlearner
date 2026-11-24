@@ -242,6 +242,79 @@ const RULES: Record<string, Rule> = {
   // „Identificarea unor consecințe ale unor acțiuni, fenomene, procese simple”
   water: { I: school(MEM, 'I', '4.1') },
   melt: { I: school(MEM, 'I', '4.2') },
+  // ── the sheets that fill the gaps of the programme: „Comunicare” (clr-pages.ts). A key "kind:n" holds the
+  // rule of one set (see ruleKeys), for the kinds whose sets are written for different classes.
+  // „Povestea în imagini”: CLR CP 3.2 „Identificarea semnificației unei/ unor imagini care prezintă întâmplări,
+  // fenomene, evenimente familiare” (contents: „Povestirea după imagini”, „Ordonarea propozițiilor pe baza unui
+  // suport intuitiv”). Not I 3.2 or II 3.2: those are the message of a written text.
+  story: { CP: school(CLR, 'CP', '3.2') },
+  // „Semne și simboluri”: CP 3.3 „Identificarea semnificației unor simboluri care transmit mesaje de necesitate
+  // imediată, din universul familiar” (contents: „Simboluri uzuale din universul apropiat: metrou, intrare, ieșire,
+  // spital, trecere de pietoni etc.”); I 3.3 „Identificarea semnificației unor simboluri din universul familiar,
+  // care transmit mesaje simple”; II 3.3 „Identificarea semnificației unor simboluri, în contexte cunoscute” (set 3:
+  // each sign in a context, „La teatru vezi acest semn…”)
+  'sign:1': { CP: school(CLR, 'CP', '3.3'), I: school(CLR, 'I', '3.3') },
+  'sign:2': { I: school(CLR, 'I', '3.3') },
+  'sign:3': { II: school(CLR, 'II', '3.3') },
+  // the card to complete (felicitarea, biletul, invitația): CP 4.2 „Redactarea unor mesaje simple, în contexte
+  // uzuale de comunicare” (contents: „Felicitarea”, „Biletul”); in capitals, so not I 4.2 („…cu litere de mână…”)
+  note: { CP: school(CLR, 'CP', '4.2') },
+  // an invitation, a poster, a note with questions: II 3.1 „Citirea unor mesaje scrise, întâlnite în mediul
+  // cunoscut” (contents of clasa a II-a: „Biletul…”, „Felicitarea”, „Afișul”)
+  msg: { II: school(CLR, 'II', '3.1') },
+  // the cards with and without writing: D 3.3 „Identifică prezența mesajului scris, apreciază și valorifică mesajul
+  // scris în activitățile curente”
+  written: { presc: presc('D', '3.3') },
+  // ── „Matematică și explorarea mediului” (mem-pages.ts). „Termenii operațiilor”, the set of each class:
+  // CP 1.6 „Utilizarea unor denumiri și simboluri matematice (sumă, total, diferență, =, +. -) în rezolvarea și/sau
+  // compunerea de probleme”; I 1.6 „…(termen, sumă, total, diferență, <, >, =, +. -)…”; II 1.6 „…(sumă, total,
+  // termenii unei sume, diferență, rest, descăzut, scăzător, produs, factorii unui produs, cât, deîmpărțit,
+  // împărțitor, <, >, =, +, -, ·, :)…”
+  'terms:1': { CP: school(MEM, 'CP', '1.6') },
+  'terms:2': { CP: school(MEM, 'CP', '1.6') },
+  'terms:3': { I: school(MEM, 'I', '1.6') },
+  'terms:4': { I: school(MEM, 'I', '1.6') },
+  'terms:5': { II: school(MEM, 'II', '1.6') },
+  'terms:6': { II: school(MEM, 'II', '1.6') },
+  // hundreds, tens and units, the numbers in digits and in words: II 1.1 „Scrierea, citirea și formarea numerelor
+  // până la 1000” (contents: „…recunoaștere, formare, citire, scriere, (cu cifre și litere)…”)
+  place: { II: school(MEM, 'II', '1.1') },
+  // the grid A–E × 1–5: II 2.1 „Localizarea unor obiecte prin stabilirea unor coordonate în raport cu un sistem de
+  // referință dat, folosind sintagmele învățate”
+  coord: { II: school(MEM, 'II', '2.1') },
+  // sides, vertices, the axis of symmetry; the faces and vertices of the solids: II 2.2 „Evidențierea unor
+  // caracteristici simple specifice formelor geometrice plane și corpurilor geometrice identificate în diferite
+  // contexte” (contents: „Pătrat, dreptunghi, triunghi, cerc, semicerc: axa de simetrie”, „Cub, cuboid, cilindru,
+  // sferă, con…”). Not I 2.2: the cone is not in the clasa I contents.
+  sides: { II: school(MEM, 'II', '2.2') },
+  solid: { II: school(MEM, 'II', '2.2') },
+  // patterns and regularities: I 3.1 „Rezolvarea de probleme prin observarea unor regularități din mediul
+  // apropiat”; II 3.1 „Rezolvarea de probleme în cadrul unor investigații, prin observarea și generalizarea unor
+  // modele sau regularități din mediul apropiat” (the rule written, the figures that grow)
+  'regular:1': { I: school(MEM, 'I', '3.1') },
+  'regular:2': { I: school(MEM, 'I', '3.1') },
+  'regular:3': { II: school(MEM, 'II', '3.1') },
+  'regular:4': { II: school(MEM, 'II', '3.1') },
+  // the table of two criteria: I 5.1 „Sortarea și clasificarea unor date din mediul apropiat pe baza a două
+  // criterii”; II 5.1 „Sortarea, clasificarea și înregistrarea prin desene și tabele a unor date din mediul cunoscut”
+  sort2: { I: school(MEM, 'I', '5.1'), II: school(MEM, 'II', '5.1') },
+  // the steps of an experiment and the statements with „și”, „sau”, „nu”: II 4.1 „Descrierea unui plan de lucru
+  // folosind câțiva termeni științifici, reprezentări prin desene și operatorii logici „ și”, „sau”, „nu””
+  plan: { II: school(MEM, 'II', '4.1') },
+  // „dacă…, atunci…” and the consequence written: II 4.2 „Formularea unor consecințe rezultate în urma observării
+  // unor relații, fenomene, procese simple” (magnets, electricity, sound: clasa a II-a contents)
+  cause: { II: school(MEM, 'II', '4.2') },
+  // the shape of everyday objects: E 2.3 „Identifică și numește formele obiectelor din mediul înconjurător”; CP 2.2
+  // „Identificarea unor forme geometrice plane (pătrat, triunghi, dreptunghi, cerc)… în obiecte manipulate de copii
+  // și în mediul înconjurător”; I 2.2 „Recunoașterea unor figuri și corpuri geometrice în mediul apropiat…”
+  around: { presc: presc('E', '2.3'), CP: school(MEM, 'CP', '2.2'), I: school(MEM, 'I', '2.2') },
+  // count each kind, colour the pictogram, the most and the fewest: E 2.5 „Rezolvă situații-problemă, pornind de
+  // la sortarea și reprezentarea unor date”
+  pict: { presc: presc('E', '2.5') },
+  // faster, warmer, louder, first: E 1.2 „Compară experiențe, acțiuni, evenimente, fenomene/relații din mediul
+  // apropiat”. No sheet for E 3.1 („Evidențiează caracteristicile unor obiecte localizate în spațiul
+  // înconjurător”): it asks for real objects observed in the room, not pictures.
+  more: { presc: presc('E', '1.2') },
 };
 
 /** Topics whose sheet does not depend on the number range (only „groups” does): the range never takes their code away. */
@@ -256,7 +329,8 @@ const NUMBER_LIMIT: Record<SchoolLevel, number> = { presc: 10, CP: 31, I: 100, I
 
 function ruleKeys(config: WorksheetConfig): string[] {
   if (config.category === 'math') return config.selectedItems;
-  if (config.category === 'games') return config.selectedItems.map((i) => (readingSetLevel(i) ? `${i.split(':').slice(0, 2).join(':')}:${readingSetLevel(i)}` : i.split(':')[0]));
+  // "kind:n" when one set has its own rule (sign:1, terms:3 …), else the kind
+  if (config.category === 'games') return config.selectedItems.map((i) => (readingSetLevel(i) ? `${i.split(':').slice(0, 2).join(':')}:${readingSetLevel(i)}` : i in RULES ? i : i.split(':')[0]));
   return [config.category];
 }
 

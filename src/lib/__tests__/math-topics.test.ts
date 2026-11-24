@@ -601,7 +601,9 @@ describe('curriculum codes of the topics', () => {
     };
     const cp = at('clasa-pregatitoare'), i = at('clasa-1'), ii = at('clasa-2');
     // with the „Explorarea mediului” sheets (explore.test.ts): CP 3.1, 4.1, 4.2; I 4.1, 4.2; II 5.1
-    expect([cp.n, cp.of, i.n, i.of, ii.n, ii.of]).toEqual([18, 32, 19, 33, 14, 33]);
+    // and the sheets that fill the gaps (goluri.test.ts): CP CLR 3.2, 3.3, 4.2, MEM 1.6; I CLR 3.3, MEM 1.6, 3.1, 5.1;
+    // II CLR 3.1, 3.3, MEM 1.1, 1.6, 2.1, 2.2, 3.1, 4.1, 4.2
+    expect([cp.n, cp.of, i.n, i.of, ii.n, ii.of]).toEqual([22, 32, 23, 33, 23, 33]);
     expect(cp.codes('1.5')).toEqual(['mate-grupe']);
     expect(cp.codes('6.1')).toEqual(['mate-lungimi']);
     expect(cp.codes('6.2')).toEqual(['mate-saptamana']);

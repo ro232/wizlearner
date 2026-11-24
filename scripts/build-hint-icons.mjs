@@ -35,7 +35,8 @@ for (const m of sorting.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p
 const reading = readFileSync(join(root, 'src/lib/worksheet/reading.ts'), 'utf8');
 for (const m of reading.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)'/gu)) emojis.add(m[1]);
 // Pictures of the fun preschool sheets and of „Explorarea mediului”: every quoted emoji in those files.
-for (const f of ['src/lib/worksheet/fun.ts', 'src/lib/worksheet/explore.ts']) {
+// …and of the sheets that fill the gaps of the programme (clr.ts, mem.ts).
+for (const f of ['src/lib/worksheet/fun.ts', 'src/lib/worksheet/explore.ts', 'src/lib/worksheet/clr.ts', 'src/lib/worksheet/mem.ts']) {
   const src = readFileSync(join(root, f), 'utf8');
   for (const m of src.matchAll(/'(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)'/gu)) emojis.add(m[1]);
 }

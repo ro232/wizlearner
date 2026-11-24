@@ -383,8 +383,9 @@ describe('the competences', () => {
     expect(listed('clasa-pregatitoare', '5.1')).toEqual(['sorteaza', 'grupeaza-numara', 'cine-unde-traieste', 'cum-se-deplaseaza']);
     expect(listed('clasa-pregatitoare', '2.1')).toEqual(['orientare']);
     expect(listed('clasa-1', '2.1')).toEqual(['orientare']);
-    expect(listed('clasa-2', '2.1')).toEqual([]);
+    // the grid A–E × 1–5 (goluri.test.ts)
+    expect(listed('clasa-2', '2.1')).toEqual(['coordonate']);
     // the table of the „Medii de viață” (explore.test.ts)
-    expect(listed('clasa-2', '5.1')).toEqual(['mediile-de-viata']);
+    expect(listed('clasa-2', '5.1')).toEqual(['mediile-de-viata', 'sortare-doua-criterii']);
   });
 });

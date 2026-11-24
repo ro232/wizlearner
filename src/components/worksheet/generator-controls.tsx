@@ -15,6 +15,8 @@ import { SORTING_KIND_TITLES, sortingItems, sortingShortLabel } from '@/lib/work
 import { READ_KIND_TITLES, readingItems, readingShortLabel } from '@/lib/worksheet/reading-pages';
 import { FUN_KIND_TITLES, funItems, funShortLabel } from '@/lib/worksheet/fun-pages';
 import { exploreItems, exploreShortLabel } from '@/lib/worksheet/explore-pages';
+import { CLR_KIND_TITLES, clrItems, clrShortLabel } from '@/lib/worksheet/clr-pages';
+import { MEM_KIND_TITLES, memItems, memShortLabel } from '@/lib/worksheet/mem-pages';
 import { readingSetLevel } from '@/lib/worksheet/reading';
 import { Button } from '@/components/ui/button';
 import { MathPicker } from './math-picker';
@@ -90,7 +92,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
       case 'prewrite':
         return [...PATTERN_IDS];
       case 'games':
-        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems(), ...readingItems(), ...funItems(), ...exploreItems()];
+        return [...uppercaseLetters(alphabet).map((l) => `find:${l}`), ...COUNT_RANGES, ...DOT_SHAPES.map((d) => `dots:${d}`), ...phonologyItems(), ...sortingItems(), ...readingItems(), ...funItems(), ...exploreItems(), ...clrItems(), ...memItems()];
       default:
         return [];
     }
@@ -235,6 +237,29 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                 ['anotimpurile și vremea', 'Anotimpul fiecărei imagini, ce se întâmplă în fiecare anotimp, semnele vremii, „dacă plouă, iei umbrela”.', ['season:', 'weather:', 'wear:']],
                 ['apa', 'Apa solidă sau lichidă și ce se întâmplă cu ea: se topește, îngheață, fierbe, se evaporă (clasa I).', ['water:', 'melt:']],
               ] as const).map(([title, text, kinds]) => ({ title: `Explorarea mediului: ${title}`, text, items: allItems.filter((i) => kinds.some((k) => i.startsWith(k))), cols: 'grid-cols-2 sm:grid-cols-3', show: exploreShortLabel })),
+              // Comunicare: povestea, semne, mesaje (clr-pages.ts)
+              ...([
+                ['story', 'Patru imagini în altă ordine: copilul scrie 1, 2, 3, 4, încercuiește titlul, desenează sfârșitul (clasa pregătitoare).'],
+                ['sign', 'Semne de circulație și pictograme: unește semnul cu ce înseamnă; la clasa a II-a, ce faci când îl vezi.'],
+                ['note', 'Felicitarea, biletul, invitația: mesajul de completat cu litere de tipar (clasa pregătitoare).'],
+                ['msg', 'O invitație, un afiș, un bilet și patru întrebări cu răspuns de încercuit (clasa a II-a).'],
+                ['written', 'Cartonașe cu litere și cartonașe cu desene sau forme: copilul le încercuiește pe cele scrise (grădiniță).'],
+              ] as const).map(([kind, text]) => ({ title: `Comunicare: ${CLR_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: clrShortLabel })),
+              // Matematică și explorare: termeni, numere, figuri, regularități, date, experimente (mem-pages.ts)
+              ...([
+                ['terms', 'Sumă, diferență, total, semnele; la clasa I termenii; la clasa a II-a descăzut, scăzător, produs, cât.'],
+                ['place', 'Sute, zeci și unități desenate; numere până la 1000 cu cifre și cu litere (clasa a II-a).'],
+                ['coord', 'Un tabel cu coloanele A–E și rândurile 1–5: ce este în B3, unde este pisica, ce desenezi în D2 (clasa a II-a).'],
+                ['sides', 'Laturile și vârfurile figurilor; axa de simetrie, DA sau NU (clasa a II-a).'],
+                ['solid', 'Cub, cuboid, cilindru, sferă, con: numele, obiecte cu aceeași formă, fețe și vârfuri (clasa a II-a).'],
+                ['regular', 'Șiruri de imagini și de numere după o regulă, figuri care cresc, o problemă (clasa I, a II-a).'],
+                ['sort2', 'Un tabel cu două criterii: forma și mărimea, unde merge și dacă are motor (clasa I, a II-a).'],
+                ['plan', 'Pașii unui experiment de pus în ordine; adevărat sau fals cu „și”, „sau”, „nu” (clasa a II-a).'],
+                ['cause', '„Dacă…, atunci…”: unește și scrie urmarea (clasa a II-a).'],
+                ['around', 'Ce formă au obiectele din jur: cerc, pătrat, triunghi, dreptunghi.'],
+                ['pict', 'Numără, colorează câte o căsuță pentru fiecare, apoi spune din care sunt mai multe (grădiniță).'],
+                ['more', 'Mai repede, mai cald, mai sus, mai întâi: încercuiește imaginea (grădiniță).'],
+              ] as const).map(([kind, text]) => ({ title: `Matematică și explorare: ${MEM_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: memShortLabel })),
             ].map((group) => (
               <div key={group.title}>
                 <div className="font-extrabold text-ink">{group.title}</div>
