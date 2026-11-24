@@ -30,10 +30,10 @@
  *   tier      the account level at that moment: free | starter | full
  *   category  the generator's sheet category
  *   book      a ready-made workbook id
- *   level     difficulty level
+ *   level     difficulty level, or the class: cp | i | ii
  *   preset    a quick-start preset id
  *   kind      what was made: sheet | workbook | book | name-book | group
- *   format    output format or paper size
+ *   format    output format or paper size (pdf | docx | print …)
  *   script    print | cursive
  *   theme     a weekly theme id
  *   source    where a click came from: account | paywall | navbar …
@@ -42,9 +42,10 @@
  *   pages     number of pages
  *   count     a count (e.g. children in a group, never their names)
  *   words     true/false: the workbook includes words
+ *   subject   the subject of a „Planificare calendaristică”: clr | mem
  */
 export const ALLOWED_PROPS: ReadonlySet<string> = new Set([
-  'plan', 'tier', 'category', 'book', 'level', 'preset', 'kind', 'format', 'script', 'theme', 'source', 'result', 'status', 'pages', 'count', 'words',
+  'plan', 'tier', 'category', 'book', 'level', 'preset', 'kind', 'format', 'script', 'theme', 'source', 'result', 'status', 'pages', 'count', 'words', 'subject',
 ]);
 
 type PostHog = typeof import('posthog-js').default;

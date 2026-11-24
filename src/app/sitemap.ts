@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...SEO_SHEETS.map((s) => page(`/fise/${s.slug}`, 0.7)),
     page('/programa', 0.8),
     ...CLASS_PAGES.map((c) => page(`/programa/${c.slug}`, 0.7)),
+    page('/planificare', 0.8),
     page('/confidentialitate', 0.2, 'yearly'),
     page('/termeni', 0.2, 'yearly'),
   ];
