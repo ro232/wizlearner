@@ -22,6 +22,7 @@ import { downloadPagesPdf } from '@/lib/pdf/actions';
 import { logDownload, takeProject } from '@/lib/projects';
 import type { Difficulty, LetterMode, Script } from '@/types';
 import { SCHOOL_LEVELS, sheetCompetenceLabel, type SchoolLevel } from '@/lib/curriculum/sheet';
+import { HomeworkButton } from '@/components/homework/homework-dialog';
 
 /** On the free plan the group sheets can be tried with a few children. */
 const FREE_GROUP_LIMIT = 3;
@@ -433,6 +434,16 @@ export default function GroupPage() {
                 : overFree ? `Descarcă fișele primilor ${FREE_GROUP_LIMIT} copii (${pagini(pages.length)})`
                 : `Descarcă fișele (${copii(names.length)}, ${pagini(pages.length)})`}
             </button>
+            {/* The same sheet for the parents: no list of names goes along, each parent types their own child's name. */}
+            <HomeworkButton
+              build={() => ({ kind: 'group', group: { themeId, letters, letterMode, script, difficulty, withFind, ...(curriculumLevel ? { curriculumLevel } : {}) } })}
+              level={curriculumLevel}
+              category="letters"
+              disabled={busy}
+              onShowPaywall={() => setShowPaywall(true)}
+              className="w-full min-h-12 px-3 text-sm"
+              label="Trimite ca temă (părinții scriu numele)"
+            />
             {overFree && leftOut > 0 && (
               <div role="status" data-free-offer className="rounded-xl border-2 border-ink bg-white p-4 shadow-[4px_4px_0_#F2B632]">
                 <p className="font-extrabold text-ink">Ai fișele pentru primii {FREE_GROUP_LIMIT} copii.</p>

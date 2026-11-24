@@ -25,6 +25,8 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/toast';
 import { presetById, presetConfig } from '@/lib/curriculum/presets';
 import { sanitizeConfig } from '@/stores/sanitize-config';
+import { HomeworkButton, type HomeworkRequest } from '@/components/homework/homework-dialog';
+import { nameRowIndex } from '@/lib/homework/pages';
 
 export default function GeneratorPage() {
   const [showPaywall, setShowPaywall] = useState(false);
@@ -167,6 +169,24 @@ export default function GeneratorPage() {
     setChanged(false);
   };
 
+  // „Trimite ca temă”: the sheet on screen, without the child's name (configForSaving takes it out of
+  // the header, the rows and the title; only the position of a traced name row goes along).
+  const homeworkRequest = (): HomeworkRequest => {
+    const current = useWorksheetStore.getState().config;
+    const nameAt = nameRowIndex(current);
+    return { kind: 'sheet', config: configForSaving(current), ...(nameAt !== undefined ? { nameAt } : {}) };
+  };
+  const homework = (className: string) => (
+    <HomeworkButton
+      build={homeworkRequest}
+      level={config.curriculumLevel}
+      category={config.category}
+      disabled={empty}
+      onShowPaywall={() => setShowPaywall(true)}
+      className={className}
+    />
+  );
+
   const spinner = <Loader2 className="w-5 h-5 animate-spin" aria-hidden />;
 
   const actions = (
@@ -225,10 +245,13 @@ export default function GeneratorPage() {
             <div ref={deskRef} className={`rounded-2xl overflow-hidden desk border-2 border-ink p-4 sm:p-8 lg:p-4 xl:p-5 justify-center ${empty ? 'hidden lg:flex' : 'flex'}`}>
               <WorksheetPreview config={config} tier={tier} />
             </div>
+            {/* phones: sending the sheet to the parents, right under it (the action bar has no room left) */}
+            {!empty && <div className="lg:hidden">{homework('w-full h-12 text-sm')}</div>}
             {/* stays in view even when the column cannot shrink any further (a long notice, a very low window) */}
             <div className="hidden lg:block space-y-1.5 lg:sticky lg:bottom-0 lg:z-10 lg:bg-paper lg:pt-1 lg:pb-2">
               <DownloadError message={error} />
               {actions}
+              {homework('w-full h-10 text-sm')}
               <p className="text-center text-xs text-slate-600">
                 <kbd className="font-sans font-bold">{mac ? '⌘' : 'Ctrl'}+S</kbd> descarcă · <kbd className="font-sans font-bold">{mac ? '⌘' : 'Ctrl'}+P</kbd> printează · fișa se păstrează în acest browser
               </p>
