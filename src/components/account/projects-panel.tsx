@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, FileText, Folder, FolderInput, Library, Pencil, Trash2, UserRound, Users } from 'lucide-react';
+import { BookOpen, FileText, Folder, FolderInput, LayoutGrid, Library, Pencil, Trash2, UserRound, Users } from 'lucide-react';
 import type { SavedWorksheet } from '@/hooks/use-worksheets';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
 import { PROJECT_LABELS, stashProject, type ProjectKind } from '@/lib/projects';
 
-const ICONS: Record<ProjectKind, typeof FileText> = { sheet: FileText, workbook: Library, book: BookOpen, 'name-book': UserRound, group: Users };
+const ICONS: Record<ProjectKind, typeof FileText> = { sheet: FileText, workbook: Library, book: BookOpen, 'name-book': UserRound, group: Users, printable: LayoutGrid };
 const day = (iso: string) => new Date(iso).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' });
 
 /** Open a project on the page that makes it. */
@@ -48,7 +48,7 @@ export function ProjectsPanel({ projects, onUpdate, onDelete }: {
   }, [shown]);
 
   if (!projects.length) {
-    return <p className="text-slate-600">Nimic salvat încă. Butonul „Salvează” din generator, din Caiete gata, din Caiet KDP sau de la caietul cu numele îl păstrează aici, ca să-l refaci oricând.</p>;
+    return <p className="text-slate-600">Nimic salvat încă. Butonul „Salvează” din generator, din Caiete gata, din Caiet KDP, de la caietul cu numele sau de la planșe îl păstrează aici, ca să-l refaci oricând.</p>;
   }
 
   const commit = () => {

@@ -96,7 +96,7 @@ function Gallery() {
 function ForWhom() {
   const groups = [
     { icon: UserRound, title: 'Părinți', text: 'O fișă cu numele copilului sau cu literele pe care le învață acum, în două minute, înainte de școală.', href: '/nume', cta: 'Fișa cu numele' },
-    { icon: Users, title: 'Educatoare și învățătoare', text: 'Lipești lista copiilor și primești câte o fișă pentru fiecare: numele lui, literele săptămânii și cuvintele temei, cu imagini.', href: '/grupa', cta: 'Fișe pentru grupă' },
+    { icon: Users, title: 'Educatoare și învățătoare', text: 'Lipești lista copiilor și primești câte o fișă pentru fiecare: numele lui, literele săptămânii și cuvintele temei, cu imagini.', href: '/grupa', cta: 'Fișe pentru grupă', more: { href: '/planse', cta: 'Planșe, cartonașe și diplome' } },
     { icon: BookOpen, title: 'Autori pe Amazon KDP', text: 'Un caiet complet de 60 de pagini, cu interior și copertă la dimensiunile cerute de KDP.', href: '/book', cta: 'Fă un caiet' },
   ];
   return (
@@ -114,6 +114,11 @@ function ForWhom() {
               <Link href={g.href} className="mt-5 inline-flex items-center font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">
                 {g.cta} <ArrowRight className="w-4 h-4 ml-1" aria-hidden />
               </Link>
+              {'more' in g && g.more && (
+                <Link href={g.more.href} className="mt-2 inline-flex items-center font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">
+                  {g.more.cta} <ArrowRight className="w-4 h-4 ml-1" aria-hidden />
+                </Link>
+              )}
             </div>
           ))}
         </div>

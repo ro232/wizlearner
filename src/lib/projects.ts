@@ -9,8 +9,9 @@ import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
  *   book      – a KDP book from /book
  *   name-book – the name workbook from /nume
  *   group     – sheets for a group (only theme, letters and level; never the children's names)
+ *   printable – a classroom printable from /planse (only its settings; never the names on the diplomas)
  */
-export type ProjectKind = 'sheet' | 'workbook' | 'book' | 'name-book' | 'group';
+export type ProjectKind = 'sheet' | 'workbook' | 'book' | 'name-book' | 'group' | 'printable';
 
 export const PROJECT_ROUTES: Record<ProjectKind, string> = {
   sheet: '/generator',
@@ -18,6 +19,7 @@ export const PROJECT_ROUTES: Record<ProjectKind, string> = {
   book: '/book',
   'name-book': '/nume',
   group: '/grupa',
+  printable: '/planse',
 };
 
 export const PROJECT_LABELS: Record<ProjectKind, string> = {
@@ -26,6 +28,7 @@ export const PROJECT_LABELS: Record<ProjectKind, string> = {
   book: 'Caiet KDP',
   'name-book': 'Caiet cu numele',
   group: 'Grupă',
+  printable: 'Planșă',
 };
 
 const KEY = 'ww-open-project';

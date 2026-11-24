@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Pencil, LogIn, LogOut, User, BookOpen, Menu, X, UserRound, Users, Crown, Library } from 'lucide-react';
+import { Pencil, LogIn, LogOut, User, BookOpen, Menu, X, UserRound, Users, Crown, Library, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from './logo';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,7 @@ export const NAV_LINKS = [
   { href: '/caiete', label: 'Caiete gata', icon: Library },
   { href: '/nume', label: 'Fișa cu numele', icon: UserRound },
   { href: '/grupa', label: 'Pentru grupă', icon: Users },
+  { href: '/planse', label: 'Planșe', icon: LayoutGrid },
   { href: '/book', label: 'Caiet KDP', icon: BookOpen },
 ];
 
@@ -37,14 +38,14 @@ export function Navbar() {
         <div className="hidden lg:flex items-center gap-0.5 xl:gap-1">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href}>
-              <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 px-2 xl:px-3 text-ink hover:bg-white', pathname === link.href && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
+              <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 px-2 xl:px-2.5 text-ink hover:bg-white', pathname === link.href && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
                 <link.icon className="hidden xl:block w-3.5 h-3.5" aria-hidden />
                 {link.label}
               </Button>
             </Link>
           ))}
           <Link href="/preturi">
-            <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 px-2 xl:px-3 text-ink hover:bg-white', pathname === '/preturi' && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
+            <Button variant="ghost" size="sm" className={cn('text-[13px] font-bold gap-1.5 px-2 xl:px-2.5 text-ink hover:bg-white', pathname === '/preturi' && 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4')}>
               <Crown className="hidden xl:block w-3.5 h-3.5" aria-hidden /> Prețuri
             </Button>
           </Link>

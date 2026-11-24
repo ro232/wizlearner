@@ -32,7 +32,8 @@
  *   book      a ready-made workbook id
  *   level     difficulty level, or the class: cp | i | ii
  *   preset    a quick-start preset id
- *   kind      what was made: sheet | workbook | book | name-book | group
+ *   kind      what was made: sheet | workbook | book | name-book | group, or a printable of /planse:
+ *             alfabet | cartonase | jetoane | diplome | orar | ziua-de-azi
  *   format    output format or paper size (pdf | docx | print …)
  *   script    print | cursive
  *   theme     a weekly theme id

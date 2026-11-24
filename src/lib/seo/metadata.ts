@@ -64,6 +64,10 @@ export const ROUTE_META = {
     title: 'Fișe cu numele fiecărui copil din grupă',
     description: 'Lipești lista grupei și primești câte o fișă cu numele fiecărui copil, literele săptămânii și cuvintele temei. Numele rămân în browserul tău.',
   },
+  '/planse': {
+    title: 'Planșe, cartonașe și diplome pentru clasă',
+    description: 'Alfabetul pentru perete, cartonașe și jetoane de decupat, diplome cu numele copiilor, orarul și panoul „Ziua de azi”. PDF A4 gata de printat.',
+  },
   '/book': {
     title: 'Caiet de scris pentru Amazon KDP, cu copertă',
     description: 'Faci un caiet de scris de 60 de pagini pentru Amazon KDP: interior și copertă la dimensiunile cerute, în română sau engleză, ca PDF.',

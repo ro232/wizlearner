@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { Download, Users, Check, ChevronLeft, ChevronRight, CalendarDays, Save, Trash2, Loader2, Eraser } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -470,6 +471,7 @@ export default function GroupPage() {
             <PagesPreview pages={pages} width={440} pageLabel="Pagina" />
           </div>
           {!names.length && <p className="text-sm text-slate-600">Exemplu pentru „Ana”. Adaugă numele copiilor ca să le vezi fișele.</p>}
+          <p className="text-sm text-slate-600">Sfârșit de an? <Link href="/planse?p=diplome" className="font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-2">Diplome cu numele fiecărui copil</Link>: lipești aceeași listă.</p>
           {overFree && <p className="text-sm text-slate-600">Previzualizare pentru primii {FREE_GROUP_LIMIT} copii din {names.length}.</p>}
         </section>
       </main>
