@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { OPEN_ACCESS } from '@/lib/open-access';
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, Script, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
 import { ALPHABETS, normalizeKey } from '@/lib/glyphs/data';
@@ -26,6 +27,8 @@ interface WorksheetState {
   newVariant: (first?: boolean) => void;
   toggleMathAnswers: () => void;
   toggleEvaluation: () => void;
+  /** An evaluation with or without its answers page (the class set is printed without it). */
+  toggleEvaluationAnswers: () => void;
   setAlphabet: (alphabet: Alphabet) => void;
   setLetterMode: (mode: LetterMode) => void;
   toggleItem: (item: string) => void;
@@ -89,7 +92,7 @@ const safeStorage: StateStorage = {
 
 export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   config: { ...DEFAULT_CONFIG },
-  tier: 'free',
+  tier: OPEN_ACCESS ? 'full' : 'free',
   language: 'en',
   nameSlot: null,
 
@@ -97,6 +100,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
     // an evaluation is a way of printing math or game items: another category starts as an ordinary sheet
     const config = { ...state.config, category, selectedItems: [] };
     delete config.evaluation;
+    delete config.evaluationAnswers;
     return { config };
   }),
   setMathRange: (mathRange) => set((state) => ({ config: { ...state.config, mathRange } })),
@@ -114,6 +118,11 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   }),
   toggleMathAnswers: () => set((state) => ({ config: { ...state.config, mathAnswers: !state.config.mathAnswers } })),
   toggleEvaluation: () => set((state) => ({ config: { ...state.config, evaluation: !state.config.evaluation } })),
+  toggleEvaluationAnswers: () =>
+    set((state) => {
+      const { evaluationAnswers, ...config } = state.config;
+      return { config: evaluationAnswers === false ? config : { ...config, evaluationAnswers: false } };
+    }),
   setAlphabet: (alphabet) => set((state) => {
     // Keep only the letters that exist in the newly chosen alphabet.
     const allowed = new Set(ALPHABETS[alphabet]);
@@ -232,7 +241,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   setCustomTitle: (customTitle) => set((state) => ({ config: { ...state.config, customTitle } })),
   setSchoolName: (schoolName) => set((state) => ({ config: { ...state.config, schoolName } })),
   resetConfig: () => set({ nameSlot: null, config: { ...DEFAULT_CONFIG } }),
-  setTier: (tier) => set({ tier }),
+  setTier: (tier) => set({ tier: OPEN_ACCESS ? 'full' : tier }),
   setLanguage: (language) => set({ language }),
 }), {
   name: 'wizlearner-last-sheet',

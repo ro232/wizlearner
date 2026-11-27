@@ -66,8 +66,10 @@ export interface WorksheetConfig {
    * have answers (the name stays from when only math had it, so saved sheets keep the setting).
    */
   mathAnswers?: boolean;
-  /** Math and games: print the chosen items as a short „Evaluare”, always with its answers page. */
+  /** Math and games: print the chosen items as a short „Evaluare”, with its answers page (see evaluationAnswers). */
   evaluation?: boolean;
+  /** An evaluation without its answers page (false), for printing the class set; unset: the answers page is printed. */
+  evaluationAnswers?: boolean;
   /** Math sheets from 0–20 up: additions and subtractions „fără” / „cu trecere peste ordin”, or both (unset: as the range always did). */
   mathCarry?: 'without' | 'with' | 'mixed';
   /** Multiplication and division sheets: one table (2–10) or all of them mixed (0 / unset). */

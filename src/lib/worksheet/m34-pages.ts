@@ -3,7 +3,8 @@ import type { Tier, WorksheetConfig } from '@/types';
 import { ACCENT, INK, MUTED, PAPER } from './rows';
 import type { KeySection } from './answer-key';
 import { CELL_STROKE, SOFT, fitSize } from './page-kit';
-import { blockAnswers, blockHeight, blockScore, blocksKeySection, buildBlocksPage, drawBlock, exprOps, exprWidth, fractionOps, gridOps, inkText, letterOf, LIGHT, type Block } from './blocks34';
+import { BODY, blockAnswers, blockHeight, blockScore, blocksKeySection, buildBlocksPage, drawBlock, exprOps, exprWidth, fractionOps, gridOps, inkText, letterOf, LIGHT, type Block } from './blocks34';
+import { onePart, type EvalArea, type EvalBlock } from './eval-block';
 import {
   M34_KINDS, M34_SETS, M34_TITLES, SHAPE_NAMES, SHAPE_WORD, inmColumns, isM34Item, m34Data, m34Fractions, m34Geometry, m34Parts, m34Patterns, m34Perimeter, m34Sheet,
   type AngleKind, type FracFigure, type LineKind, type M34Kind, type PairKind, type PerFigure, type ShapePattern,
@@ -452,23 +453,16 @@ export function m34KeySection(item: string): KeySection | null {
 }
 
 /** The block an evaluation takes from each item (the first task with exercises of its own, trimmed to fit). */
-export interface M34EvalBlock {
-  item: string;
-  title: string;
-  prompt: string;
-  height: number;
-  grow: number;
-  draw: (ops: DrawOp[], a: { x: number; y: number; w: number; h: number }) => void;
-  answers: string[];
-  perLine: number;
-  score: number;
-}
+export type M34EvalBlock = EvalBlock;
 
 /** Which task of each kind an evaluation uses, and how many of its exercises. */
 const EVAL_PICK: Partial<Record<M34Kind, { block: number; take: number }>> = {
   nr: { block: 0, take: 2 }, rom: { block: 0, take: 4 }, rot: { block: 1, take: 3 }, ops: { block: 1, take: 4 }, inm: { block: 0, take: 3 },
   fr: { block: 2, take: 3 }, mas: { block: 1, take: 4 }, prob: { block: 0, take: 1 }, per: { block: 0, take: 3 }, sir: { block: 0, take: 2 },
 };
+
+/** The squared rows under a problem in an evaluation: seven, up to ten when the page has room. */
+const PROBLEM_ROWS = 7;
 
 export function m34EvalBlock(item: string, w: number): M34EvalBlock | null {
   if (!isM34Item(item)) return null;
@@ -479,24 +473,31 @@ export function m34EvalBlock(item: string, w: number): M34EvalBlock | null {
   let b = blocks[pick.block];
   if (!b) return null;
   if ((b.t === 'fill' || b.t === 'choice' || b.t === 'expr') && b.items.length > pick.take) b = { ...b, items: b.items.slice(0, pick.take) } as Block;
-  if (b.t === 'write') b = { ...b, rows: Math.min(typeof b.rows === 'number' ? b.rows : 6, 7) };
+  // the few expressions left of a task in two columns: in one row when each has its room (an evaluation saves the paper)
+  if (b.t === 'expr' && (b.cols ?? 1) > 1 && b.items.length > (b.cols ?? 1) && b.items.length <= 3) {
+    const { items, size = BODY } = b;
+    if (items.every((it) => exprWidth(it.toks, size) <= w / items.length - 10)) b = { ...b, cols: items.length };
+  }
   const heading = 'heading' in b ? b.heading ?? '' : '';
   // a problem: its text stays in the body, the heading says what to do
   const prompt = b.t === 'write' ? 'Rezolvă problema.' : heading;
-  const body = b.t === 'write' ? { ...b, heading: undefined } : ({ ...b, heading: '' } as Block);
   const answers = blockAnswers(b);
-  const height = blockHeight(body, w);
-  return {
-    item,
-    title: m34Sheet(item).title,
-    prompt,
-    height,
-    grow: 6,
-    draw: (ops, a) => drawBlock(ops, body, a.x, a.y, a.w, a.h, false),
-    answers,
-    perLine: Math.max(...answers.map((x) => x.length)) > 40 ? 1 : 2,
-    score: Math.max(1, b.t === 'write' ? 1 : blockScore(b)),
-  };
+  const common = { item, title: m34Sheet(item).title, prompt, answers, perLine: Math.max(...answers.map((x) => x.length)) > 40 ? 1 : 2 };
+  if (b.t === 'write') {
+    // the squared rows take the height the block is given
+    const rows = typeof b.rows === 'number' ? Math.min(b.rows, PROBLEM_ROWS) : PROBLEM_ROWS - 1;
+    const body = { ...b, heading: undefined };
+    const height = (n: number) => blockHeight({ ...body, rows: n }, w);
+    return { ...common, score: 1, parts: onePart(height(rows), height(rows + 3) - height(rows), (ops, a) => drawBlock(ops, { ...body, rows: 'fill' }, a.x, a.y, a.w, a.h + 0.01, false)) };
+  }
+  const body = { ...b, heading: '' } as Block;
+  const score = Math.max(1, blockScore(b));
+  // one exercise a line: a page break may fall between two lines (in columns the letters run down each column: one piece)
+  if ((body.t === 'fill' || body.t === 'choice' || body.t === 'expr') && (body.cols ?? 1) === 1 && body.items.length > 1) {
+    const rows = body.items.map((_, i) => ({ ...body, items: [body.items[i]] }) as Block);
+    return { ...common, score, parts: rows.map((row, i) => ({ height: blockHeight(row, w), min: blockHeight(row, w), grow: 1.5, draw: (ops: DrawOp[], a: EvalArea) => drawBlock(ops, row, a.x, a.y, a.w, a.h, false, i) })) };
+  }
+  return { ...common, score, parts: onePart(blockHeight(body, w), 3, (ops, a) => drawBlock(ops, body, a.x, a.y, a.w, a.h, false)) };
 }
 
 export function m34Items(): string[] {

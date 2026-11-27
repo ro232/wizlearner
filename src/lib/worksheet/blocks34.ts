@@ -438,8 +438,11 @@ export function rowsThatFit(ruling: Ruling, h: number): number {
   return Math.max(1, Math.floor((h - 3) / rowPitch(ruling)));
 }
 
-/** Draws a block at (x, y), `w` wide; `h` is the height it was given (≥ its own). Returns nothing: heights come from blockHeight. */
-export function drawBlock(ops: DrawOp[], b: Block, x: number, y: number, w: number, h: number, withHeading = true): void {
+/**
+ * Draws a block at (x, y), `w` wide; `h` is the height it was given (≥ its own). Returns nothing: heights come from blockHeight.
+ * `from`: the index its first item is lettered or numbered with (an evaluation draws the rows of a block one by one).
+ */
+export function drawBlock(ops: DrawOp[], b: Block, x: number, y: number, w: number, h: number, withHeading = true, from = 0): void {
   let top = y;
   if (withHeading && 'heading' in b && b.heading) top += headingOps(ops, b.heading, x, y, w);
   switch (b.t) {
@@ -454,7 +457,7 @@ export function drawBlock(ops: DrawOp[], b: Block, x: number, y: number, w: numb
         const row = i % rows;
         const cx = x + col * colW;
         const cy = top + row * rowH + rowH / 2;
-        ops.push({ t: 'text', x: cx, y: cy + 1.3, text: letterOf(i), size: 3.5, fill: MUTED, weight: 'bold' });
+        ops.push({ t: 'text', x: cx, y: cy + 1.3, text: letterOf(i + from), size: 3.5, fill: MUTED, weight: 'bold' });
         fillOps(ops, f, cx + 7, cy, colW - 10, size, b.box ?? 15);
       });
       return;
@@ -468,7 +471,7 @@ export function drawBlock(ops: DrawOp[], b: Block, x: number, y: number, w: numb
         const row = i % rows;
         const cx = x + col * colW;
         const cy = top + row * CHOICE_ROW + CHOICE_ROW / 2;
-        ops.push({ t: 'text', x: cx, y: cy + 1.3, text: letterOf(i), size: 3.5, fill: MUTED, weight: 'bold' });
+        ops.push({ t: 'text', x: cx, y: cy + 1.3, text: letterOf(i + from), size: 3.5, fill: MUTED, weight: 'bold' });
         choiceOps(ops, c, cx + 7, cy, colW - 10);
       });
       return;
@@ -478,7 +481,7 @@ export function drawBlock(ops: DrawOp[], b: Block, x: number, y: number, w: numb
       b.items.forEach((it, i) => {
         const lines = wrap(it.text, BODY, w - 40);
         const lh = Math.max(1, lines.length) * 6.2 + 3.6;
-        ops.push({ t: 'text', x, y: cy + 5.2, text: letterOf(i), size: 3.5, fill: MUTED, weight: 'bold' });
+        ops.push({ t: 'text', x, y: cy + 5.2, text: letterOf(i + from), size: 3.5, fill: MUTED, weight: 'bold' });
         lines.forEach((l, k) => inkText(ops, l, x + 7, cy + 5.4 + k * 6.2, BODY));
         ['A', 'F'].forEach((o, k) => {
           const px = x + w - 24 + k * 13;
@@ -560,7 +563,7 @@ export function drawBlock(ops: DrawOp[], b: Block, x: number, y: number, w: numb
     case 'mc': {
       let cy = top;
       b.items.forEach((it, i) => {
-        mcOps(ops, it, i, x, cy, w);
+        mcOps(ops, it, i + from, x, cy, w);
         cy += mcHeight(it, w);
       });
       return;
@@ -576,7 +579,7 @@ export function drawBlock(ops: DrawOp[], b: Block, x: number, y: number, w: numb
         const row = i % rows;
         const cx = x + col * colW;
         const cy = top + row * rowH + rowH / 2;
-        ops.push({ t: 'text', x: cx, y: cy + 1.3, text: letterOf(i), size: 3.5, fill: MUTED, weight: 'bold' });
+        ops.push({ t: 'text', x: cx, y: cy + 1.3, text: letterOf(i + from), size: 3.5, fill: MUTED, weight: 'bold' });
         exprOps(ops, it.toks, cx + 7, cy, size, colW - 10);
       });
       return;

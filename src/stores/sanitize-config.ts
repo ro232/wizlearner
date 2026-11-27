@@ -161,6 +161,8 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
   if (typeof r.variantSeed === 'number' && Number.isFinite(r.variantSeed) && int(r.variantSeed, 1, 999_999, 1) > 1) config.variantSeed = int(r.variantSeed, 1, 999_999, 1);
   if (typeof r.mathAnswers === 'boolean') config.mathAnswers = r.mathAnswers;
   if (typeof r.evaluation === 'boolean' && (category === 'math' || category === 'games')) config.evaluation = r.evaluation;
+  // only „without the answers page” is kept, and only on an evaluation (unset: the answers page is printed)
+  if (config.evaluation && r.evaluationAnswers === false) config.evaluationAnswers = false;
   if (r.mathCarry === 'without' || r.mathCarry === 'with' || r.mathCarry === 'mixed') config.mathCarry = r.mathCarry;
   if (typeof r.mathTable === 'number' && [0, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(r.mathTable)) config.mathTable = r.mathTable;
   if (r.mathClock === 'hour' || r.mathClock === 'half' || r.mathClock === 'quarter' || r.mathClock === 'five') config.mathClock = r.mathClock;

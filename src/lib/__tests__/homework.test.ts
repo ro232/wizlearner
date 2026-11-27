@@ -5,7 +5,7 @@ import { sanitizeConfig } from '@/stores/sanitize-config';
 import { configForSaving } from '@/lib/worksheet/saved';
 import { presetConfig, presetById } from '@/lib/curriculum/presets';
 import { HOMEWORK_BASELINE, MAX_TOKEN_LENGTH, createHomeworkToken, homeworkKeys, verifyHomeworkToken } from '@/lib/homework/token';
-import { QR_MAX_URL, homeworkShareText, sanitizeHomeworkTitle, whatsappLink, type Homework } from '@/lib/homework/shared';
+import { QR_MAX_URL, evaluationHomeworkConfig, homeworkShareText, sanitizeHomeworkTitle, whatsappLink, type Homework } from '@/lib/homework/shared';
 import { homeworkPages, homeworkSheetConfig, nameRowIndex } from '@/lib/homework/pages';
 import { ALLOWED_PROPS, redactHomeworkUrls } from '@/lib/analytics';
 import sitemap from '@/app/sitemap';
@@ -39,6 +39,26 @@ describe('homework link: sign and verify', () => {
       const res = open(make(config));
       expect(res.ok && res.homework.kind === 'sheet' && res.homework.config).toEqual(sanitizeConfig({ ...config, childName: '' }));
     }
+  });
+
+  it('an evaluation goes to the parents without its answers page unless the teacher asks; the link carries the choice', () => {
+    const evaluation = presetConfig(presetById('evaluare-clr')!, 'CP');
+    const pagesOf = (config: unknown) => {
+      const res = verifyHomeworkToken(createHomeworkToken({ kind: 'sheet', config, tier: 'full', expiresAt: NOW + DAY } as never, KEY), [KEY], NOW);
+      if (!res.ok || res.homework.kind !== 'sheet') throw new Error('link');
+      return { config: res.homework.config, pages: homeworkPages(res.homework, 'Ana') };
+    };
+    const isKey = (p: { ops: unknown[] }) => JSON.stringify(p.ops).includes('"Răspunsuri"');
+    const without = pagesOf(evaluationHomeworkConfig(evaluation, false));
+    expect(without.config.evaluationAnswers).toBe(false);
+    expect(without.pages).toHaveLength(1);
+    expect(without.pages.some(isKey)).toBe(false);
+    const asked = pagesOf(evaluationHomeworkConfig(evaluation, true));
+    expect('evaluationAnswers' in asked.config).toBe(false);
+    expect(asked.pages).toHaveLength(2);
+    expect(isKey(asked.pages[1])).toBe(true);
+    // a link made before the choice existed: as it was sent, with its answers
+    expect(pagesOf(evaluation).pages).toHaveLength(2);
   });
 
   it('round-trips a /grupa sheet without any child', () => {
