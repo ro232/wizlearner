@@ -12,12 +12,12 @@ import {
   Mail,
   Lock,
   Chrome,
-  Sparkles,
   MailCheck,
   ArrowRight,
   Loader2,
 } from 'lucide-react';
-import { BRAND_NAME } from '@/lib/brand';
+import { BRAND_WORDMARK } from '@/lib/brand';
+import { LogoMark } from '@/components/layout/logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -160,9 +160,9 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2">
-            <Sparkles className="w-8 h-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-ink">
-              {BRAND_NAME}
+            <LogoMark size={34} />
+            <h1 className="text-3xl font-bold tracking-[-0.02em] text-ink">
+              {BRAND_WORDMARK}
             </h1>
           </div>
           <p className="text-slate-600">{isSignUp && !useMagicLink ? 'Creează-ți un cont' : 'Intră în contul tău'}</p>
