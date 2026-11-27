@@ -79,7 +79,7 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'mate-luni', title: 'Lunile anului și anotimpurile', text: 'Lunile și anotimpurile în ordine, anotimpul fiecărei luni.', config: { category: 'math', selectedItems: ['months'] }, levels: ['I', 'II'] },
   { id: 'mate-calendar', title: 'Calendarul lunii', text: 'Citește calendarul: ziua săptămânii, poimâine, alaltăieri.', config: { category: 'math', selectedItems: ['calmonth'] }, levels: ['II'] },
   { id: 'mate-lungimi', title: 'Măsoară cu cuburi sau agrafe', text: 'Câte unități are fiecare obiect; cel mai lung, cel mai scurt.', config: { category: 'math', selectedItems: ['length'] }, levels: ['presc', 'CP', 'I', 'II'] },
-  { id: 'mate-balanta', title: 'Mai greu, mai ușor', text: 'Balanța coboară spre obiectul mai greu: încercuiește.', config: { category: 'math', selectedItems: ['mass'] }, levels: ['presc', 'II'] },
+  { id: 'mate-balanta', title: 'Mai greu, mai ușor', text: 'Balanța: ce este mai greu, ce este mai ușor; la clasa a II-a, kilograme și grame.', config: { category: 'math', selectedItems: ['mass'] }, levels: ['presc', 'II'] },
   { id: 'mate-rigla', title: 'Măsoară cu rigla', text: 'Lungimi în centimetri pe riglă, linii de desenat.', config: { category: 'math', selectedItems: ['ruler'] }, levels: ['I', 'II'] },
   { id: 'mate-unitati', title: 'Unități de măsură', text: 'Metrul, centimetrul, litrul, kilogramul; instrumente; 1 m = 100 cm.', config: { category: 'math', selectedItems: ['units'] }, levels: ['II'] },
   { id: 'mate-figuri', title: 'Figuri geometrice în desen', text: 'Numără pătratele, dreptunghiurile, triunghiurile și cercurile.', config: { category: 'math', selectedItems: ['figures'] }, levels: ['presc', 'CP', 'I'] },

@@ -7,6 +7,7 @@ import { PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/pattern
 import { countWorksheetPages, rowItems } from '@/lib/worksheet/layout';
 import { activityLabel, isActivityItem } from '@/lib/worksheet/activities';
 import { MATH_LABELS, isMathType } from '@/lib/worksheet/math';
+import { VariantButton } from './variant-button';
 
 /** What is on the sheet right now, with one-click removal. */
 export const SheetContentBar = () => {
@@ -58,6 +59,7 @@ export const SheetContentBar = () => {
           </button>
         ))}
       </div>
+      <VariantButton className="mt-3" />
     </div>
   );
 };

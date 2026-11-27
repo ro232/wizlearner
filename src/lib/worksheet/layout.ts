@@ -12,6 +12,7 @@ import { buildActivityPages } from './activities';
 import { buildMathPages, isMathType } from './math';
 import { buildEvaluationPages } from './evaluation';
 import { gameAnswerPages } from './game-keys';
+import { variantOf, withVariant } from './variant';
 import type { SheetPage } from './answer-key';
 import { textWidthMm } from '@/lib/book/text';
 import {
@@ -213,7 +214,12 @@ export function buildWorksheetPages(config: WorksheetConfig, tier: Tier): PageOp
   });
 }
 
+/** Every generator called while the pages are built draws the variant of this sheet (variant.ts). */
 function buildPagesWithoutCompetence(config: WorksheetConfig, tier: Tier): SheetPage[] {
+  return withVariant(variantOf(config), () => buildSheetPages(config, tier));
+}
+
+function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
   // „Evaluare”: the chosen items as a short test, with its answers (evaluation.ts)
   if (config.evaluation && (config.category === 'math' || config.category === 'games')) {
     const pages = buildEvaluationPages(config, tier);

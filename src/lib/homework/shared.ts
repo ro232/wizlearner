@@ -31,6 +31,8 @@ export interface HomeworkGroup {
   difficulty: Difficulty;
   withFind: boolean;
   curriculumLevel?: SchoolLevel;
+  /** „Altă variantă” of the „Găsește litera” pages, so the parent prints the teacher's variant. */
+  variantSeed?: number;
 }
 
 export type HomeworkSheet =

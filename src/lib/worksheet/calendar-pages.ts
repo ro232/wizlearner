@@ -9,7 +9,7 @@ import { ACCENT, INK, MUTED, PAPER } from './rows';
  *             day after / before, mâine and ieri
  *   months    the months and the seasons in order; clasa a II-a „Anotimpurile: lunile corespunzătoare”
  *   calmonth  clasa a II-a „Ziua (ieri, alaltăieri, mâine, poimâine), săptămâna, luna, anul (calendarul)”:
- *             a real month (2026 or 2027) and questions about it
+ *             a real month of the school year 2026–2027 (septembrie 2026 – iunie 2027) and questions about it
  *
  * Names are written as in Romanian, in small letters: luni, marți …; ianuarie …; primăvara, vara ….
  */
@@ -156,9 +156,17 @@ export const weekdayOf = (g: MonthGrid, day: number) => (g.first + day - 1) % 7;
 /** „Câte zile de duminică”: how many times a day of the week comes in the month. */
 export const countWeekday = (g: MonthGrid, wd: number) => Array.from({ length: g.days }, (_, i) => weekdayOf(g, i + 1)).filter((x) => x === wd).length;
 
-/** A month of 2026 or 2027 and six questions about it, all answered from its calendar. */
+/**
+ * The months the calendar sheet draws: those of the school year 2026–2027, from its first month to its
+ * last (septembrie 2026 … iunie 2027), so the sheet never shows a month that was over before the year
+ * began. A fixed list, not today's date: the same seed is the same sheet on every day and in every test.
+ */
+export const SCHOOL_YEAR_MONTHS: { year: number; month: number }[] = Array.from({ length: 10 }, (_, k) => ({ year: k < 4 ? 2026 : 2027, month: (8 + k) % 12 }));
+
+/** A month of the school year and six questions about it, all answered from its calendar. */
 export function calmonthSheet(rand: () => number): CalendarSheet {
-  const g = monthGrid(2026 + int(rand, 0, 1), int(rand, 0, 11));
+  const at = SCHOOL_YEAR_MONTHS[int(rand, 0, SCHOOL_YEAR_MONTHS.length - 1)];
+  const g = monthGrid(at.year, at.month);
   const name = MONTHS[g.month];
   const [d1, d2, d3] = pick(rand, 3, g.days - 2, 3);
   const wd = pick(rand, 0, 6, 2);

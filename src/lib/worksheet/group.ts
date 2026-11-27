@@ -30,6 +30,8 @@ export interface GroupOptions {
   script?: Script;
   /** The class whose curriculum competence is printed on every sheet (none: no label). */
   curriculumLevel?: SchoolLevel;
+  /** „Altă variantă” of the „Găsește litera” pages (worksheet/variant.ts); unset = the first. */
+  variantSeed?: number;
 }
 
 export interface NameList {
@@ -145,7 +147,7 @@ export function buildGroupPages(opts: GroupOptions): { pages: PageOps[]; perChil
     const difficulty = opts.levels?.[opts.keys?.[i] ?? name] ?? opts.difficulty;
     const sheet = buildWorksheetPages(childSheetConfig(name, { ...opts, difficulty }), 'full');
     if (opts.withFindPages && opts.letters.length) {
-      const games = { ...childSheetConfig(name, { ...opts, difficulty }), category: 'games' as const, selectedItems: opts.letters.slice(0, MAX_LETTERS).map((l) => `find:${l}`) };
+      const games = { ...childSheetConfig(name, { ...opts, difficulty }), category: 'games' as const, selectedItems: opts.letters.slice(0, MAX_LETTERS).map((l) => `find:${l}`), ...(opts.variantSeed ? { variantSeed: opts.variantSeed } : {}) };
       sheet.push(...buildWorksheetPages(games, 'full'));
     }
     perChild.push(sheet.length);

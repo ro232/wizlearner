@@ -8,9 +8,10 @@ import { ACCENT, INK, PAPER } from './rows';
 import type { KeyExtra, KeySection } from './answer-key';
 import { BOTTOM, CELL_STROKE, H, M, SOFT, W, adultNote, derangement, exampleLine, exampleTag, fitSize, footer, frame, rng, seedOf, shuffle } from './page-kit';
 import {
-  COLOUR_FILLS, COLOUR_NAMES, COLOUR_PICTURES, FUN_KINDS, FUN_SETS, MAZE_SETS, SCENES, SHADOW_SETS, TRACE_SETS, isFunItem,
-  type ColourPicture, type FunKind, type Scene, type SceneObject, type TracePattern,
+  COLOUR_FILLS, COLOUR_NAMES, COLOUR_PICTURES, FUN_KINDS, FUN_SETS, MAZE_SETS, SCENES, SCENE_SWAPS, SHADOW_POOLS, SHADOW_SETS, TRACE_PAIRS, TRACE_SETS, TRACE_WINTER_PAIRS, isFunItem,
+  type ColourPicture, type FunKind, type Scene, type SceneDiff, type SceneObject, type ShadowSet, type TracePattern,
 } from './fun';
+import { currentVariant, vkey } from './variant';
 
 /**
  * The fun preschool sheets, full pages in the „Jocuri” category (see activities.ts), seeded by the
@@ -28,8 +29,13 @@ import {
  *                 picture to picture, drawn with the pre-writing patterns (patterns.ts);
  * - "shadow:1–6"  Găsește umbra — six pictures and their shadows (the same picture in one dark colour).
  *
- * The layouts are computed by exported functions (colourLayout, mazeOf, sceneLayout, traceRows,
+ * The layouts are computed by exported functions (colourLayout, mazeOf, sceneOf, traceRows,
  * shadowLayout), which the tests and the answers page read, so the answers match the drawing.
+ *
+ * „Altă variantă” (variant.ts): the first variant is the sheet as it was written; the others are drawn
+ * from the same data under the same rules — the numbers of the legend change places (the drawing and
+ * the colour of each part stay), other exercises, another maze, other differences in the same scene,
+ * other pairs and lines, six other pictures of the same kind and their shadows.
  */
 
 export const FUN_KIND_TITLES: Record<FunKind, string> = {
@@ -98,7 +104,7 @@ function segDist(p: Pt, a: Pt, b: Pt): number {
 const OUTLINE = 0.45;
 const DECOR = 0.6;
 
-const rasterCache = new Map<ColourPicture, ColourRaster>();
+const rasterCache = new WeakMap<ColourPicture, ColourRaster>();
 
 /** The region on top at every point of the drawing; the lines and dots of the decor are marked apart. */
 export function colourRaster(pic: ColourPicture): ColourRaster {
@@ -140,7 +146,21 @@ export function colourRaster(pic: ColourPicture): ColourRaster {
  * with its margin all round.
  */
 export function placeLabel(pic: ColourPicture, k: number, hw: number, hh: number): { x: number; y: number; fit: number } {
-  const { step, cols, rows, top } = colourRaster(pic);
+  // the place depends on the shapes only, which every variant of a drawing shares (with its raster)
+  const raster = colourRaster(pic);
+  const places = labelCache.get(raster) ?? new Map<string, { x: number; y: number; fit: number }>();
+  labelCache.set(raster, places);
+  const key = `${k}:${hw}:${hh}`;
+  const hit = places.get(key);
+  if (hit) return hit;
+  const at = findLabelPlace(raster, k, hw, hh);
+  places.set(key, at);
+  return at;
+}
+
+const labelCache = new WeakMap<ColourRaster, Map<string, { x: number; y: number; fit: number }>>();
+
+function findLabelPlace({ step, cols, rows, top }: ColourRaster, k: number, hw: number, hh: number): { x: number; y: number; fit: number } {
   // summed-area table of the region's visible cells
   const S = new Int32Array((cols + 1) * (rows + 1));
   let sx = 0;
@@ -192,10 +212,35 @@ const SUM_SIZE = 4;
 const LABEL_PAD = 0.9;
 const LEGEND_H = 22;
 
+const pictureCache = new Map<string, ColourPicture>();
+
+/**
+ * The drawing of a set. From the second variant on, the numbers of the legend change places: every
+ * part keeps its colour (the water stays blue), but under another number, so the sheet is read again.
+ */
+export function colourPicture(n: number, variant = currentVariant()): ColourPicture {
+  const base = COLOUR_PICTURES[n - 1];
+  if (variant === 1) return base;
+  const key = `${n}:${variant}`;
+  const hit = pictureCache.get(key);
+  if (hit) return hit;
+  const rand = rng(seedOf(vkey(`color:${n}`, variant)));
+  const same = base.palette.map((_, i) => i);
+  // order[i]: the colour (its place in the first legend) that gets the number i + 1; never the first legend again
+  let order = shuffle(same, rand);
+  while (order.every((v, i) => v === i)) order = shuffle(same, rand);
+  const pic: ColourPicture = { ...base, palette: order.map((i) => base.palette[i]), regions: base.regions.map((r) => ({ ...r, code: order.indexOf(r.code - 1) + 1 })) };
+  // the same shapes: the same raster
+  rasterCache.set(pic, colourRaster(base));
+  if (pictureCache.size > 60) pictureCache.clear();
+  pictureCache.set(key, pic);
+  return pic;
+}
+
 /** An addition or subtraction for each region, with the region's code as result (second number 1–5). */
-export function colourSums(n: number): string[] {
-  const pic = COLOUR_PICTURES[n - 1];
-  const rand = rng(seedOf(`colsum:${n}`));
+export function colourSums(n: number, variant = currentVariant()): string[] {
+  const pic = colourPicture(n, variant);
+  const rand = rng(seedOf(vkey(`colsum:${n}`, variant)));
   return pic.regions.map((r) => {
     const c = r.code;
     const options: string[] = [];
@@ -225,13 +270,13 @@ export interface ColourLayout {
 }
 
 /** Where the drawing and its labels go (`top`: the top of the activity area). */
-export function colourLayout(n: number, sums: boolean, top: number): ColourLayout {
-  const pic = COLOUR_PICTURES[n - 1];
+export function colourLayout(n: number, sums: boolean, top: number, variant = currentVariant()): ColourLayout {
+  const pic = colourPicture(n, variant);
   const roomH = BOTTOM - LEGEND_H - 6 - top;
   const scale = Math.min((W - 2 * M) / pic.w, roomH / pic.h);
   const ox = (W - pic.w * scale) / 2;
   const oy = top + (roomH - pic.h * scale) / 2;
-  const texts = sums ? colourSums(n) : pic.regions.map((r) => String(r.code));
+  const texts = sums ? colourSums(n, variant) : pic.regions.map((r) => String(r.code));
   const size = sums ? SUM_SIZE : CODE_SIZE;
   // every label of a page gets the same box: the widest text it can hold
   const widest = sums ? '8−3' : '5';
@@ -246,7 +291,7 @@ export function colourLayout(n: number, sums: boolean, top: number): ColourLayou
 
 function colourPage(config: WorksheetConfig, n: number, sums: boolean, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
-  const pic = COLOUR_PICTURES[n - 1];
+  const pic = colourPicture(n);
   const top = sums
     ? frame(ops, config, `${FUN_KIND_TITLES.colsum}: ${pic.title}`, 'Calculează, apoi colorează fiecare parte cu culoarea rezultatului.', 'Rezultatele și culorile lor sunt jos, în chenar.')
     : frame(ops, config, `${FUN_KIND_TITLES.color}: ${pic.title}`, 'Colorează fiecare parte cu culoarea numărului ei.', 'Numerele și culorile lor sunt jos, în chenar.');
@@ -280,9 +325,9 @@ function colourPage(config: WorksheetConfig, n: number, sums: boolean, tier: Tie
 }
 
 /** The answers: which parts get which colour (and the results of the exercises). */
-function colourKey(n: number, sums: boolean): string[] {
-  const pic = COLOUR_PICTURES[n - 1];
-  const texts = sums ? colourSums(n) : [];
+function colourKey(n: number, sums: boolean, variant: number): string[] {
+  const pic = colourPicture(n, variant);
+  const texts = sums ? colourSums(n, variant) : [];
   return pic.palette.map((key, i) => {
     const code = i + 1;
     const names = [...new Set(pic.regions.filter((r) => r.code === code).map((r) => r.name))];
@@ -332,19 +377,20 @@ function solve(m: Maze): { r: number; c: number }[] {
   return path;
 }
 
-const mazeCache = new Map<number, Maze>();
+const mazeCache = new Map<string, Maze>();
 
 /**
  * The maze of a set: carved by a seeded depth-first walk, so every cell is reached by exactly one
  * way (a tree): there is one path only. The seed is tried again until the path is long enough to be
  * a maze, not a corridor (at least 1.6 times the shortest possible walk).
  */
-export function mazeOf(n: number): Maze {
-  const hit = mazeCache.get(n);
+export function mazeOf(n: number, variant = currentVariant()): Maze {
+  const key = `${n}:${variant}`;
+  const hit = mazeCache.get(key);
   if (hit) return hit;
   const N = MAZE_SETS[n - 1].size;
   for (let attempt = 0; ; attempt++) {
-    const rand = rng(seedOf(`maze:${n}:${attempt}`));
+    const rand = rng(seedOf(`${vkey(`maze:${n}`, variant)}:${attempt}`));
     const open = Array.from({ length: N }, () => Array.from({ length: N }, () => 0));
     const seen = new Set<number>([0]);
     const stack = [0];
@@ -368,7 +414,8 @@ export function mazeOf(n: number): Maze {
     const maze = { size: N, open, path: [] as { r: number; c: number }[] };
     maze.path = solve(maze);
     if (maze.path.length >= 1.6 * (2 * N - 1) || attempt > 200) {
-      mazeCache.set(n, maze);
+      if (mazeCache.size > 60) mazeCache.clear();
+      mazeCache.set(key, maze);
       return maze;
     }
   }
@@ -399,8 +446,8 @@ const MAZE_PIC = 24;
 
 export interface MazeLayout { maze: Maze; x: number; y: number; side: number; from: Pt; to: Pt }
 
-export function mazeLayout(n: number, top: number): MazeLayout {
-  const maze = mazeOf(n);
+export function mazeLayout(n: number, top: number, variant = currentVariant()): MazeLayout {
+  const maze = mazeOf(n, variant);
   const side = Math.min(W - 2 * M - 10, BOTTOM - top - 2 * (MAZE_PIC + 6));
   const x = (W - side) / 2;
   const y = top + MAZE_PIC + 6;
@@ -430,14 +477,14 @@ interface KeyDrawing { height: number; draw: (ops: DrawOp[], x: number, top: num
 const KEY_COL = (W - 2 * M) / 2;
 
 /** The maze drawn small with its path, for the answers page. */
-function mazeKeyDrawing(n: number): KeyDrawing {
+function mazeKeyDrawing(n: number, variant: number): KeyDrawing {
   const set = MAZE_SETS[n - 1];
   const side = 56;
   return {
     height: side + 15,
     draw: (ops, x0, top) => {
       ops.push({ t: 'text', x: x0, y: top + 2, text: `${FUN_KIND_TITLES.maze}: ${funShortLabel(`maze:${n}`)}`, size: 4, fill: INK, weight: 'bold' });
-      const m = mazeOf(n);
+      const m = mazeOf(n, variant);
       const x = x0 + 12;
       const y = top + 8;
       const c = side / m.size;
@@ -457,6 +504,94 @@ function mazeKeyDrawing(n: number): KeyDrawing {
 /** Scene box, in scene units (a scene is 100 × 56). */
 export const SCENE_W = 100;
 export const SCENE_H = 56;
+
+const SCENE_BANDS: Record<Scene['ground'], number[]> = { meadow: [0, 34, SCENE_H], snow: [0, 34, SCENE_H], sea: [0, 20, 41, SCENE_H] };
+const DIFF_KINDS: SceneDiff['t'][] = ['missing', 'changed', 'moved'];
+const sceneCache = new Map<string, Scene>();
+
+/**
+ * The scene of a set. The first variant has the differences written with the scene; every other one
+ * draws as many, in the same scene, under the same rules: each kind at least once (a picture missing,
+ * another picture in its place, a picture moved), every changed picture big enough to see, a move of
+ * one to two picture sizes that stays in the frame and in its part of the scene (the sky, the ground,
+ * the water), and no picture on top of another in either image.
+ */
+export function sceneOf(n: number, variant = currentVariant()): Scene {
+  const base = SCENES[n - 1];
+  if (variant === 1) return base;
+  const key = `${n}:${variant}`;
+  const hit = sceneCache.get(key);
+  if (hit) return hit;
+  const swaps = SCENE_SWAPS[n - 1] ?? {};
+  const count = base.diffs.length;
+  const bands = SCENE_BANDS[base.ground];
+  const band = (y: number) => bands.findIndex((b, i) => i + 1 < bands.length && y >= b && y < bands[i + 1]);
+  const box = (o: { x: number; y: number; s: number }) => ({ x0: o.x - o.s / 2, x1: o.x + o.s / 2, y0: o.y - o.s / 2, y1: o.y + o.s / 2 });
+  const overlap = (p: { x: number; y: number; s: number }, q: { x: number; y: number; s: number }) => {
+    const a = box(p);
+    const b = box(q);
+    return (Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0))) / Math.min(p.s, q.s) ** 2;
+  };
+  const named = (name: string) => name.charAt(0).toLocaleUpperCase('ro') + name.slice(1);
+  let scene = base;
+  for (let attempt = 0; attempt < 400; attempt++) {
+    const rand = rng(seedOf(`${vkey(`diff:${n}`, variant)}:${attempt}`));
+    const picked = shuffle(base.objects.map((_, i) => i).filter((i) => base.objects[i].s >= 8), rand).slice(0, count);
+    // each kind once, then any kind
+    const kinds = shuffle([...DIFF_KINDS, ...Array.from({ length: count - DIFF_KINDS.length }, () => DIFF_KINDS[Math.floor(rand() * DIFF_KINDS.length)])], rand);
+    // where every picture is in the second image, as far as it is decided (a moved one: both places stay free)
+    const taken: { k: number; x: number; y: number; s: number }[] = base.objects.map((ob, k) => ({ k, x: ob.x, y: ob.y, s: ob.s }));
+    const used = new Set<string>();
+    const diffs: SceneDiff[] = [];
+    for (const [j, i] of picked.entries()) {
+      const ob = base.objects[i];
+      const kind = kinds[j];
+      if (kind === 'missing') diffs.push({ t: 'missing', i, desc: `Lipsește ${ob.name}.` });
+      else if (kind === 'changed') {
+        const options = (swaps[i] ?? []).filter(([e]) => !used.has(e));
+        if (!options.length) break;
+        const [e, desc] = options[Math.floor(rand() * options.length)];
+        used.add(e);
+        diffs.push({ t: 'changed', i, e, desc });
+      } else {
+        // left or right for everything; up or down only for what stays whole in its part of the scene
+        const whole = (y: number) => band(y - ob.s / 2) === band(y + ob.s / 2 - 0.01);
+        const moves = shuffle(
+          [
+            { dx: -1, dy: 0, where: 'spre stânga' }, { dx: 1, dy: 0, where: 'spre dreapta' },
+            ...(whole(ob.y) ? [{ dx: 0, dy: -1, where: 'mai sus' }, { dx: 0, dy: 1, where: 'mai jos' }] : []),
+          ],
+          rand,
+        );
+        const far = shuffle([1.1, 1.3, 1.5, 1.7, 1.9], rand);
+        let moved: SceneDiff | null = null;
+        for (const m of moves) {
+          for (const f of far) {
+            const to = { k: i, x: Math.round(ob.x + m.dx * f * ob.s), y: Math.round(ob.y + m.dy * f * ob.s), s: ob.s };
+            const dist = Math.hypot(to.x - ob.x, to.y - ob.y) / ob.s;
+            if (dist < 1 || dist > 2) continue;
+            const b = box(to);
+            if (b.x0 < 1 || b.x1 > SCENE_W - 1 || b.y0 < 1 || b.y1 > SCENE_H - 1) continue;
+            if (m.dy && (!whole(to.y) || band(to.y) !== band(ob.y))) continue;
+            if (taken.some((t) => t.k !== i && overlap(t, to) > 0.04)) continue;
+            moved = { t: 'moved', i, x: to.x, y: to.y, desc: `${named(ob.name)} s-a mutat ${m.where}.` };
+            taken.push(to);
+            break;
+          }
+          if (moved) break;
+        }
+        if (!moved) break;
+        diffs.push(moved);
+      }
+    }
+    if (diffs.length !== count) continue;
+    scene = { ...base, diffs };
+    break;
+  }
+  if (sceneCache.size > 60) sceneCache.clear();
+  sceneCache.set(key, scene);
+  return scene;
+}
 
 /** The pictures of the scene, in the first (`a`) or the second picture (`b`), with their index in the scene. */
 export function sceneObjects(scene: Scene, which: 'a' | 'b'): (SceneObject & { k: number })[] {
@@ -507,8 +642,8 @@ function sceneOps(scene: Scene, which: 'a' | 'b', x: number, y: number, s: numbe
 
 export interface DiffLayout { scene: Scene; scale: number; x: number; ya: number; yb: number; countY: number }
 
-export function diffLayout(n: number, top: number): DiffLayout {
-  const scene = SCENES[n - 1];
+export function diffLayout(n: number, top: number, variant = currentVariant()): DiffLayout {
+  const scene = sceneOf(n, variant);
   const countH = 14;
   const gap = 6;
   const scale = Math.min((W - 2 * M - 10) / SCENE_W, (BOTTOM - top - countH - gap - 2) / (2 * SCENE_H));
@@ -520,7 +655,7 @@ export function diffLayout(n: number, top: number): DiffLayout {
 
 function diffPage(config: WorksheetConfig, n: number, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
-  const scene = SCENES[n - 1];
+  const scene = sceneOf(n);
   const k = scene.diffs.length;
   const top = frame(ops, config, `${FUN_KIND_TITLES.diff}: ${scene.title}`, `Găsește ${k} diferențe între cele două imagini.`, 'Încercuiește fiecare diferență în imaginea de jos, apoi colorează câte un cerc.');
   const lay = diffLayout(n, top + 1);
@@ -540,8 +675,8 @@ function diffPage(config: WorksheetConfig, n: number, tier: Tier): PageOps {
 }
 
 /** The second picture drawn small with the differences circled, for the answers page. */
-function diffKeyDrawing(n: number): KeyDrawing {
-  const scene = SCENES[n - 1];
+function diffKeyDrawing(n: number, variant: number): KeyDrawing {
+  const scene = sceneOf(n, variant);
   const s = (KEY_COL - 6) / SCENE_W;
   return {
     height: SCENE_H * s + 12,
@@ -567,11 +702,32 @@ const TRACE_BAND = 16;
 
 export interface TraceRow { from: string; to: string; pattern: TracePattern; cy: number; x0: number; x1: number }
 
-export function traceRows(n: number, top: number): TraceRow[] {
+/**
+ * The pairs and the line of each row. The first variant: the set as written. The others: five pairs of
+ * the set's pool, no picture twice on the page, and the lines of the set in another order (every line
+ * of the set at least once).
+ */
+export function traceSet(n: number, variant = currentVariant()): { pairs: [string, string][]; patterns: TracePattern[] } {
   const set = TRACE_SETS[n - 1];
+  if (variant === 1) return { pairs: set.pairs.slice(0, TRACE_ROWS), patterns: Array.from({ length: TRACE_ROWS }, (_, i) => set.patterns[i % set.patterns.length]) };
+  const rand = rng(seedOf(vkey(`trace:${n}`, variant)));
+  let pairs: [string, string][] = [];
+  for (let tries = 0; tries < 50 && pairs.length < TRACE_ROWS; tries++) {
+    pairs = [];
+    for (const p of shuffle(n === 6 ? TRACE_WINTER_PAIRS : TRACE_PAIRS, rand)) {
+      if (pairs.length < TRACE_ROWS && !pairs.some((q) => q.includes(p[0]) || q.includes(p[1]))) pairs.push(p);
+    }
+  }
+  if (pairs.length < TRACE_ROWS) pairs = set.pairs.slice(0, TRACE_ROWS);
+  const patterns = shuffle(Array.from({ length: TRACE_ROWS }, (_, i) => set.patterns[i % set.patterns.length]), rand);
+  return { pairs, patterns };
+}
+
+export function traceRows(n: number, top: number, variant = currentVariant()): TraceRow[] {
+  const set = traceSet(n, variant);
   const rowH = (BOTTOM - top) / TRACE_ROWS;
-  return set.pairs.slice(0, TRACE_ROWS).map(([from, to], i) => ({
-    from, to, pattern: set.patterns[i % set.patterns.length],
+  return set.pairs.map(([from, to], i) => ({
+    from, to, pattern: set.patterns[i],
     cy: top + (i + 0.5) * rowH,
     x0: M + TRACE_PIC + 9,
     x1: W - M - TRACE_PIC - 9,
@@ -677,19 +833,37 @@ export interface ShadowLayout {
   rightX: number;
 }
 
-export function shadowLayout(n: number, top: number): ShadowLayout {
+/**
+ * The six pictures of a set. The first variant: the set as written. The others: six of the set's kind
+ * (its own six and the pool's), never two whose shadows resemble each other.
+ */
+export function shadowSet(n: number, variant = currentVariant()): ShadowSet {
   const set = SHADOW_SETS[n - 1];
+  if (variant === 1) return set;
+  const pool = SHADOW_POOLS[n - 1];
+  const rand = rng(seedOf(vkey(`shadow-set:${n}`, variant)));
   const rows = set.pictures.length;
+  const pictures: [string, string][] = [];
+  for (const p of shuffle([...set.pictures, ...(pool?.more ?? [])], rand)) {
+    if (pictures.length >= rows || pictures.some((q) => q[0] === p[0])) continue;
+    if ((pool?.alike ?? []).some((group) => group.includes(p[0]) && pictures.some((q) => group.includes(q[0])))) continue;
+    pictures.push(p);
+  }
+  return pictures.length === rows ? { ...set, pictures } : set;
+}
+
+export function shadowLayout(n: number, top: number, variant = currentVariant()): ShadowLayout {
+  const rows = shadowSet(n, variant).pictures.length;
   const rowH = (BOTTOM - top) / rows;
   const size = Math.min(26, rowH - 7);
-  return { order: derangement(rows, rng(seedOf(`shadow:${n}`))), rowH, top, size, leftX: M + 22, rightX: W - M - 22 };
+  return { order: derangement(rows, rng(seedOf(vkey(`shadow:${n}`, variant)))), rowH, top, size, leftX: M + 22, rightX: W - M - 22 };
 }
 
 const SHADOW_FILL = '#3A4150';
 
 function shadowPage(config: WorksheetConfig, n: number, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
-  const set = SHADOW_SETS[n - 1];
+  const set = shadowSet(n);
   const top = frame(ops, config, `${FUN_KIND_TITLES.shadow}: ${set.title}`, 'Unește fiecare imagine cu umbra ei.', 'Trage o linie de la punctul imaginii la punctul umbrei. Prima linie este exemplul.');
   const lay = shadowLayout(n, top + 2);
   const cy = (i: number) => lay.top + (i + 0.5) * lay.rowH;
@@ -718,7 +892,7 @@ function shadowPage(config: WorksheetConfig, n: number, tier: Tier): PageOps {
 // ───────────────────────── answers and entry point ─────────────────────────
 
 /** The answers of a fun item, or null when it has nothing to check (the lines to trace). */
-export function funKeySection(item: string): KeySection | null {
+export function funKeySection(item: string, variant = currentVariant()): KeySection | null {
   if (!isFunItem(item)) return null;
   const [kind, arg] = item.split(':') as [FunKind, string];
   const n = Number(arg);
@@ -726,14 +900,14 @@ export function funKeySection(item: string): KeySection | null {
   switch (kind) {
     case 'color':
     case 'colsum':
-      return { title, entries: colourKey(n, kind === 'colsum'), perLine: 1 };
+      return { title, entries: colourKey(n, kind === 'colsum', variant), perLine: 1 };
     case 'maze':
       return { title, entries: ['Drumul corect este desenat la sfârșitul paginii de răspunsuri.'], perLine: 1 };
     case 'diff':
-      return { title, entries: SCENES[n - 1].diffs.map((d) => d.desc), perLine: 2, numbered: true };
+      return { title, entries: sceneOf(n, variant).diffs.map((d) => d.desc), perLine: 2, numbered: true };
     case 'shadow': {
-      const set = SHADOW_SETS[n - 1];
-      const { order } = shadowLayout(n, 0);
+      const set = shadowSet(n, variant);
+      const { order } = shadowLayout(n, 0, variant);
       return { title, entries: ['Imaginile și umbrele, numărate de sus în jos:', ...set.pictures.map(([, name], i) => `${i + 1}. ${name} – umbra ${order.indexOf(i) + 1}`)], perLine: 1 };
     }
     default:
@@ -742,11 +916,11 @@ export function funKeySection(item: string): KeySection | null {
 }
 
 /** The drawings under the answers: the mazes with their path, the scenes with the differences circled, two by two. */
-export function funKeyExtras(items: string[]): KeyExtra[] {
+export function funKeyExtras(items: string[], variant = currentVariant()): KeyExtra[] {
   const drawings = items.filter(isFunItem).flatMap((item) => {
     const [kind, arg] = item.split(':');
-    if (kind === 'maze') return [mazeKeyDrawing(Number(arg))];
-    if (kind === 'diff') return [diffKeyDrawing(Number(arg))];
+    if (kind === 'maze') return [mazeKeyDrawing(Number(arg), variant)];
+    if (kind === 'diff') return [diffKeyDrawing(Number(arg), variant)];
     return [];
   });
   const extras: KeyExtra[] = [];

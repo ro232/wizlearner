@@ -205,7 +205,9 @@ const RULES: Record<string, Rule> = {
   length: { presc: [presc('E', '2.2'), presc('E', '2.4')], CP: school(MEM, 'CP', '6.1'), I: school(MEM, 'I', '6.1'), II: school(MEM, 'II', '6.1') },
   // heavier / lighter on a balance: masses are only in II 6.1 (CP and I have no „Masă” contents) and in
   // preschool E 2.2 („…greutate…”)
-  mass: { presc: presc('E', '2.2'), II: school(MEM, 'II', '6.1') },
+  // clasa a II-a prints the sheet with kilograms and grams on a balance (measure.ts massSheetII): II 6.4 „…unităților de
+  // măsură uzuale pentru … masă (… kilogramul, gramul) și a unor instrumente adecvate”, not the unconventional measures of 6.1
+  mass: { presc: presc('E', '2.2'), II: school(MEM, 'II', '6.4') },
   // centimetres on a ruler: I 6.4 „Identificarea unităților de măsură uzuale pentru lungime, capacitate
   // (centimetrul, litrul) și a unor instrumente adecvate” (contents „Instrumente de măsură: rigla”), II 6.4
   // „Identificarea și utilizarea unităților de măsură uzuale pentru lungime, capacitate, masă (metrul,
