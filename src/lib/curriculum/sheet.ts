@@ -11,6 +11,7 @@ import { findCompetence, type CompetenceRef, type Level, type ProgrammeId } from
 import { readingSetLevel } from '@/lib/worksheet/reading';
 import { isM34Item, m34SetLevel } from '@/lib/worksheet/m34';
 import { isR34Item, r34SetLevel } from '@/lib/worksheet/r34';
+import { BOOK_LEVELS, LISTEN_LEVELS, SIGN_SET_LEVELS } from '@/lib/worksheet/clr';
 
 /** The class picked in the generator. "presc" = grădiniță. */
 export type SchoolLevel = 'presc' | 'CP' | 'I' | 'II' | 'III' | 'IV';
@@ -269,6 +270,58 @@ const RULES: Record<string, Rule> = {
   // „Identificarea unor consecințe ale unor acțiuni, fenomene, procese simple”
   water: { I: school(MEM, 'I', '4.1') },
   melt: { I: school(MEM, 'I', '4.2') },
+  // ── the „Explorarea mediului” sets and kinds added later (explore.ts). A key "kind:n" is the rule of one set.
+  // The organs (clasa I contents: „Scheletul și organe majore ale corpului (creier, inimă, plămâni, stomac, rinichi);
+  // localizare și roluri”): written on the drawing, I 4.1 „Formularea rezultatelor unor observații, folosind câțiva
+  // termeni științifici, reprezentări prin desene…”; not a CP or preschool sheet.
+  'body:3': { I: school(MEM, 'I', '4.1') },
+  // where there is water (CP contents: „Prezența apei în natură sub diverse forme (precipitații, râuri, lacuri, mare
+  // etc.)”): sorting by the criterion given, CP 5.1; E 3.2 („…caracteristici ale lumii vii, ale Pământului…”)
+  'water:2': { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '5.1') },
+  // the stages of a life in order (egg, chick, hen): E 3.2; CP 3.1 „Descrierea unor fenomene/procese/ structuri
+  // repetitive simple din mediul apropiat, în scopul identificării unor regularități”
+  cycle: { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '3.1') },
+  // fur, feathers or scales; domestic or wild: E 3.2, and sorting by the criterion given, CP 5.1
+  cover: { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '5.1') },
+  tame: { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '5.1') },
+  // what each animal eats (CP contents: „Plante și animale: … Hrana ca sursă de energie”): E 3.2, CP 4.1
+  eat: { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '4.1') },
+  // living or not, the child among the living things: E 3.4 „Demonstrează cunoașterea poziției omului în univers, ca
+  // parte a lumii vii și ca ființă socială”; CP 5.1. What a plant needs (CP contents: „Condiții de viață (apă, aer,
+  // lumină, căldură)”): E 3.2, CP 4.1
+  'alive:1': { presc: presc('E', '3.4'), CP: school(MEM, 'CP', '5.1') },
+  'alive:2': { presc: presc('E', '3.4'), CP: school(MEM, 'CP', '5.1') },
+  'alive:3': { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '4.1') },
+  // healthy food, teeth, the food groups (CP contents: „Hrana ca sursă de energie…; igiena alimentației”): sorting by
+  // the criterion given, CP 5.1. No preschool behaviour of domains D and E is about food.
+  food: { CP: school(MEM, 'CP', '5.1') },
+  // wood, metal, plastic, glass; the recycling containers: CP 5.1 „Sortarea/clasificarea unor obiecte/ materiale etc.,
+  // pe baza unui criteriu dat”; E 2.4 „Efectuează operații de seriere, grupare, clasificare, măsurare a obiectelor”.
+  // „Avem grijă de natură” (recycle:3) gets no code: 3.2 „Manifestarea grijii pentru comportarea corectă…” is an
+  // attitude, which a sheet cannot show.
+  mat: { presc: presc('E', '2.4'), CP: school(MEM, 'CP', '5.1') },
+  'recycle:1': { presc: presc('E', '2.4'), CP: school(MEM, 'CP', '5.1') },
+  'recycle:2': { presc: presc('E', '2.4'), CP: school(MEM, 'CP', '5.1') },
+  'recycle:3': {},
+  // day and night, the parts of the day (they come back every day): E 1.1, CP 3.1. The true / false sentences about
+  // the „Ciclul zi-noapte” of clasa a II-a: no specific competence of clasa a II-a names them, so no code.
+  'day:1': { presc: presc('E', '1.1'), CP: school(MEM, 'CP', '3.1') },
+  'day:2': { presc: presc('E', '1.1'), CP: school(MEM, 'CP', '3.1') },
+  'day:3': {},
+  // the Sun, the Earth, the Moon (CP contents: „Pământul, Soarele și Luna: recunoaștere în modele simple”). The sentence
+  // completed with the right word and said aloud: E 3.3 „Descrie unele caracteristici ale lumii vii, ale Pământului și
+  // Spațiului”, CP 4.1; the pictures joined with their names: E 3.2, CP 4.1; whom the sentence is about (clasa I
+  // contents: „Soarele, sursă de căldură și lumină”): I 4.1. The planets (contents of clasa a II-a: „Planetele
+  // sistemului solar”): no specific competence names them, so no code.
+  'space:1': { presc: presc('E', '3.3'), CP: school(MEM, 'CP', '4.1') },
+  'space:2': { presc: presc('E', '3.2'), CP: school(MEM, 'CP', '4.1') },
+  'space:3': { I: school(MEM, 'I', '4.1') },
+  'space:4': {},
+  // the weather calendar and the plant diary: E 1.5 „Realizează, în mod dirijat, activități simple de investigare a
+  // mediului, folosind instrumente și metode specifice”; CP 4.1 „Formularea unor observații asupra mediului apropiat
+  // folosind limbajul comun, reprezentări prin desene…”; I 4.1 „Formularea rezultatelor unor observații, folosind câțiva
+  // termeni științifici, reprezentări prin desene…”
+  obs: { presc: presc('E', '1.5'), CP: school(MEM, 'CP', '4.1'), I: school(MEM, 'I', '4.1') },
   // ── Arte vizuale și abilități practice (subjects-pages.ts). „Decupează și lipește”: pieces cut along their
   // outline and glued on the picture. CP 2.3 „Realizarea de aplicații/compoziții/obiecte/ construcții simple, pe
   // baza interesului direct” (contents, Colaj: „mototolire, rupere, tăiere, decupare după contur, îndoire,
@@ -391,6 +444,30 @@ const RULES: Record<string, Rule> = {
   // înconjurător”): it asks for real objects observed in the room, not pictures.
   more: { presc: presc('E', '1.2') },
 };
+
+// ── The „Comunicare” sets added later (clr.ts): each set is written for one class and prints its code only there.
+// „Semne și simboluri” 4–9 (the street, public places; rules, recycling; weather warnings, packages): 3.3 of the class
+// of the set, as sets 1–3 above (CP „…simboluri care transmit mesaje de necesitate imediată, din universul familiar”,
+// I „…simboluri din universul familiar, care transmit mesaje simple”, II „…simboluri, în contexte cunoscute”).
+SIGN_SET_LEVELS.forEach((level, i) => {
+  if (i >= 3) RULES[`sign:${i + 1}`] = { [level]: school(CLR, level, '3.3') };
+});
+// „Ascultă și răspunde”: the adult reads a short text aloud; the first question asks what it is about, the others ask
+// for details. CP 1.1 „Identificarea semnificației unui mesaj scurt, pe teme familiare, rostit clar și rar”, CP 1.2
+// „Identificarea unor informații variate dintr-un mesaj scurt, rostit clar și rar”; I 1.1 „Identificarea semnificației
+// unui mesaj oral, pe teme accesibile, rostit cu claritate”, I 1.2 „Identificarea unor informații variate dintr-un mesaj
+// rostit cu claritate”; II 1.1 „Identificarea semnificației unui mesaj oral din texte accesibile variate”, II 1.2
+// „Identificarea unor informații variate dintr-un text audiat”.
+LISTEN_LEVELS.forEach((level, i) => {
+  RULES[`listen:${i + 1}`] = { [level]: [school(CLR, level, '1.1'), school(CLR, level, '1.2')] };
+});
+// „Fișa cărții” and „Jurnalul de lectură”: CP 3.4 „Exprimarea în cuvinte proprii a mesajelor redate pe suport vizual sau
+// auditiv, manifestând interes pentru lucrul cu cartea” (the child draws the cover and a character, then tells the
+// story; contents „Cartea. Coperte, foaie, pagină, text, ilustrații”); I 3.4 „Exprimarea interesului pentru lectura unor
+// texte simple, susținute de suport imagistic”; II 3.4 „Exprimarea interesului pentru lectura unor cărți adecvate vârstei”.
+BOOK_LEVELS.forEach((level, i) => {
+  RULES[`book:${i + 1}`] = { [level]: school(CLR, level, '3.4') };
+});
 
 /**
  * ── Clasa a III-a și a IV-a: the Matematică sheets (m34.ts) and the Limba și literatura română sheets (r34.ts). Each set is

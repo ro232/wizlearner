@@ -2,7 +2,8 @@
 
 import { SCHOOL_LEVELS, sheetCompetenceLabel } from '@/lib/curriculum/sheet';
 import { ForeignLettersNote } from '@/components/worksheet/foreign-letters-note';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { useTypedBeforeHydration } from '@/hooks/use-typed-before-hydration';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { CATEGORY_TABS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
 import { isItemAllowed } from '@/lib/access';
@@ -84,6 +85,10 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   } = useWorksheetStore();
 
   const [wordInput, setWordInput] = useState('');
+  // the long groups of sets (citire, mediu, comunicare) show a few sets until „Arată toate” is pressed
+  const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const wordRef = useRef<HTMLInputElement>(null);
+  useTypedBeforeHydration(wordRef, setWordInput);
   const alphabet = config.alphabet ?? 'ro';
   const cursive = isCursive(config);
 
@@ -226,8 +231,8 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                 ['fill', 'Propoziții cu un cuvânt lipsă și trei cuvinte din care alege (clasa I, a II-a).'],
                 ['order', 'Cuvintele unei propoziții amestecate, apoi rândul pe care o scrie (clasa I, a II-a).'],
                 ['copy', 'Cuvinte de tipar (CP = clasa pregătitoare) sau propoziții de scris de mână, pe liniatura caietului.'],
-                ['text', 'Un text scurt și trei întrebări cu răspuns de încercuit (clasa I, a II-a).'],
-              ] as const).map(([kind, text]) => ({ title: `Citire și scriere: ${READ_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`read:${kind}:`)), cols: 'grid-cols-3 sm:grid-cols-6', show: readingShortLabel })),
+                ['text', 'Un text scurt și întrebări cu răspuns de încercuit (clasa I, a II-a).'],
+              ] as const).map(([kind, text]) => ({ title: `Citire și scriere: ${READ_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`read:${kind}:`)), cols: 'grid-cols-3 sm:grid-cols-6', show: readingShortLabel, fold: true })),
               // Fișe distractive (fun-pages.ts)
               ...([
                 ['color', 'Un desen cu numere de la 1 la 5 și culorile lor, cu numele culorii (merge și la imprimarea alb-negru).'],
@@ -239,11 +244,15 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               ] as const).map(([kind, text]) => ({ title: FUN_KIND_TITLES[kind], text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: funShortLabel })),
               // „Explorarea mediului” (explore-pages.ts)
               ...([
-                ['corpul și plantele', 'Părțile plantei și ale corpului (cuvinte de scris sau de lipit), simțurile.', ['plant:', 'body:', 'senses:']],
+                ['corpul și plantele', 'Părțile plantei, ale copacului și ale lalelei, ale corpului și ale feței (cuvinte de scris sau de lipit), organele, simțurile, hrana sănătoasă.', ['plant:', 'body:', 'senses:', 'food:']],
                 ['animalele', 'Unde trăiesc, cum se deplasează, puii lor; tabelul mediilor de viață pentru clasa a II-a.', ['home:', 'habitat:', 'move:', 'baby:']],
+                ['ființe vii', 'Ce este viu, cum cresc (de la ou la găină, de la sămânță la dovleac), cu ce este acoperit corpul, ce mănâncă, domestic sau sălbatic.', ['alive:', 'cycle:', 'cover:', 'eat:', 'tame:']],
                 ['anotimpurile și vremea', 'Anotimpul fiecărei imagini, ce se întâmplă în fiecare anotimp, semnele vremii, „dacă plouă, iei umbrela”.', ['season:', 'weather:', 'wear:']],
-                ['apa', 'Apa solidă sau lichidă și ce se întâmplă cu ea: se topește, îngheață, fierbe, se evaporă (clasa I).', ['water:', 'melt:']],
-              ] as const).map(([title, text, kinds]) => ({ title: `Explorarea mediului: ${title}`, text, items: allItems.filter((i) => kinds.some((k) => i.startsWith(k))), cols: 'grid-cols-2 sm:grid-cols-3', show: exploreShortLabel })),
+                ['apa', 'Unde este apă, apa solidă sau lichidă, ce se întâmplă cu ea (se topește, îngheață, fierbe, se evaporă), circuitul apei în natură.', ['water:', 'melt:']],
+                ['materiale și reciclare', 'Lemn, metal, plastic sau sticlă; unde aruncăm fiecare lucru; cum avem grijă de natură.', ['mat:', 'recycle:']],
+                ['ziua, noaptea și spațiul', 'Ziua sau noaptea, părțile zilei; Pământul, Soarele și Luna; planetele.', ['day:', 'space:']],
+                ['observ și notez', 'Calendarul vremii pe o săptămână sau pe o lună și jurnalul unei plante: de completat zi de zi, fără răspunsuri.', ['obs:']],
+              ] as const).map(([title, text, kinds]) => ({ title: `Explorarea mediului: ${title}`, text, items: allItems.filter((i) => kinds.some((k) => i.startsWith(k))), cols: 'grid-cols-2 sm:grid-cols-3', show: exploreShortLabel, fold: true })),
               // Arte vizuale și abilități practice, Dezvoltare personală, limba engleză (subjects-pages.ts)
               ...([
                 ['Arte vizuale', 'sym', 'Jumătate de desen pe pătrățele, cealaltă jumătate de colorat ca în oglindă; desenul complet, pe pagina de răspunsuri.'],
@@ -262,11 +271,13 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               // Comunicare: povestea, semne, mesaje (clr-pages.ts)
               ...([
                 ['story', 'Patru imagini în altă ordine: copilul scrie 1, 2, 3, 4, încercuiește titlul, desenează sfârșitul (clasa pregătitoare).'],
-                ['sign', 'Semne de circulație și pictograme: unește semnul cu ce înseamnă; la clasa a II-a, ce faci când îl vezi.'],
-                ['note', 'Felicitarea, biletul, invitația: mesajul de completat cu litere de tipar (clasa pregătitoare).'],
-                ['msg', 'O invitație, un afiș, un bilet și patru întrebări cu răspuns de încercuit (clasa a II-a).'],
+                ['sign', 'Semne de circulație, de la școală, de pe ambalaje, de reciclare, avertizări de vreme: unește semnul cu ce înseamnă sau alege ce faci când îl vezi (CP = clasa pregătitoare).'],
+                ['note', 'Felicitarea, biletul, invitația, mulțumirea, lista de cumpărături, afișul, rețeta: mesajul de completat cu litere de tipar (clasa pregătitoare).'],
+                ['msg', 'O invitație, un afiș, un bilet, un anunț, o rețetă, un program și patru întrebări cu răspuns de încercuit (clasa a II-a).'],
+                ['listen', 'Adultul citește povestea de pe pagina lui; copilul încercuiește imaginea (clasa pregătitoare) sau răspunsul a, b, c (clasa I, a II-a). Două pagini.'],
+                ['book', 'Fișa cărții citite și jurnalul de lectură: titlul, personajele, desenul, părerea (CP = clasa pregătitoare).'],
                 ['written', 'Cartonașe cu litere și cartonașe cu desene sau forme: copilul le încercuiește pe cele scrise (grădiniță).'],
-              ] as const).map(([kind, text]) => ({ title: `Comunicare: ${CLR_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: clrShortLabel })),
+              ] as const).map(([kind, text]) => ({ title: `Comunicare: ${CLR_KIND_TITLES[kind].toLocaleLowerCase('ro')}`, text, items: allItems.filter((i) => i.startsWith(`${kind}:`)), cols: 'grid-cols-2 sm:grid-cols-3', show: clrShortLabel, fold: true })),
               // Matematică și explorare: termeni, numere, figuri, regularități, date, experimente (mem-pages.ts)
               ...([
                 ['terms', 'Sumă, diferență, total, semnele; la clasa I termenii; la clasa a II-a descăzut, scăzător, produs, cât.'],
@@ -313,12 +324,19 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
             ]
               // clasa a III-a / a IV-a chosen: their sheets first, the long list of the younger classes after them
               .sort((a, b) => (upper ? Number(UPPER_GROUP.test(b.title)) - Number(UPPER_GROUP.test(a.title)) : 0))
-              .map((group) => (
+              .map((group) => {
+                // a long group: the free sets and the chosen ones stay in sight, with the first sets, six in all; the rest after „Arată toate”
+                const folds = 'fold' in group && group.items.length > 9;
+                const open = !folds || openGroups.includes(group.title);
+                const kept = group.items.filter((i) => isFree(i) || config.selectedItems.includes(i));
+                const lead = group.items.filter((i) => !kept.includes(i)).slice(0, Math.max(0, 6 - kept.length));
+                const shown = open ? group.items : group.items.filter((i) => kept.includes(i) || lead.includes(i));
+                return (
               <div key={group.title}>
                 <div className="font-extrabold text-ink">{group.title}</div>
                 <div className="text-xs text-slate-600 mb-2">{group.text} O pagină pentru fiecare.</div>
                 <div className={`grid gap-1.5 ${group.cols}`}>
-                  {group.items.map((item) => {
+                  {shown.map((item) => {
                     const free = isFree(item);
                     const selected = config.selectedItems.includes(item);
                     return (
@@ -331,8 +349,16 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
                     );
                   })}
                 </div>
+                {folds && (
+                  <button type="button" aria-expanded={open}
+                    onClick={() => setOpenGroups((g) => (open ? g.filter((t) => t !== group.title) : [...g, group.title]))}
+                    className="mt-1.5 min-h-[2.5rem] px-2 text-sm font-bold text-blue-700 underline underline-offset-2 hover:text-blue-900">
+                    {open ? 'Arată mai puține' : `Arată toate cele ${group.items.length}${group.items.length % 100 >= 20 ? ' de' : ''} seturi`}
+                  </button>
+                )}
               </div>
-            ))}
+                );
+              })}
           </div>
         ) : (
         <div className={`grid gap-1.5 p-2 bg-slate-50 rounded-lg border border-slate-200 ${config.category === 'prewrite' || config.category === 'shapes' ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-6 sm:grid-cols-7 lg:grid-cols-8'}`}>
@@ -425,6 +451,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
           <label htmlFor="custom-word" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Cuvinte de trasat</label>
           <div className="flex gap-2">
             <input
+              ref={wordRef}
               id="custom-word"
               type="text"
               value={wordInput}

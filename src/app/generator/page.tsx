@@ -40,6 +40,9 @@ export default function GeneratorPage() {
   const router = useRouter();
   const toast = useToast();
   const [mac, setMac] = useState(false);
+  // set once React has taken over the page: the browser tests wait for it before pressing keys
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
   useEffect(() => setMac(/Mac|iPhone|iPad/.test(navigator.platform)), []);
 
   // Saving needs an account and a paid plan; the child's name is never stored
@@ -237,7 +240,7 @@ export default function GeneratorPage() {
   );
 
   return (
-    <div className="min-h-screen pb-24 lg:pb-0 bg-paper">
+    <div className="min-h-screen pb-24 lg:pb-0 bg-paper" data-ready={ready || undefined}>
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
       <Navbar />
 
