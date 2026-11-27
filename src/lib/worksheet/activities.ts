@@ -24,14 +24,15 @@ import { buildM34Page, m34Label } from './m34-pages';
 import { isM34Item } from './m34';
 import { buildR34Pages, r34Label } from './r34-pages';
 import { isR34Item } from './r34';
+import { currentVariant, vkey } from './variant';
 
 /**
  * Full-page activities ("Jocuri"): find the letter, count and write, connect the dots.
  * Each selected item is one page. Items are strings so they live in WorksheetConfig
  * like everything else: "find:A", "count:5", "dots:star".
  *
- * Random layouts are seeded by the item itself, so the preview and the PDF are identical
- * and the same sheet comes out every time.
+ * Random layouts are seeded by the item itself and by the variant of the sheet („Altă variantă”,
+ * variant.ts), so the preview and the PDF are identical and the same sheet comes out every time.
  */
 
 export const DOT_SHAPES = ['star', 'heart', 'house', 'fish', 'boat', 'tree'] as const;
@@ -134,19 +135,34 @@ const OTHERS = 'ABCDEFGHIJKLMNOPRSTUVZ'.split('');
 /** Height of the band between the instruction and the grid that holds the model letter (mm). */
 export const FIND_MODEL_BAND = 38;
 
+/** The letters that differ only by their diacritic: the same sign with a mark, hard to tell apart at five. */
+const TWINS = ['AĂÂ', 'IÎ', 'SȘ', 'TȚ'];
+
+/** The other letters of a letter's family (A: Ă, Â; Ș: S), capitals. */
+export function diacriticTwins(target: string): string[] {
+  const t = target.toLocaleUpperCase('ro');
+  const family = TWINS.find((f) => [...f].includes(t));
+  return family ? [...family].filter((x) => x !== t) : [];
+}
+
 /**
  * The 42 letters of a „Găsește litera” grid, in reading order: 12 times the letter, the rest
  * mostly look-alikes. The page draws them and the answers page counts the letter in them.
+ *
+ * `preschool` (the sheet is for grădiniță): the diacritic twins of the letter are left out (no Ă or Â
+ * among the letters around A, no Î for I, no Ș for S, no Ț for T, and the other way round): a child
+ * of five who colours Ă for A has not made a mistake of looking. The other classes keep them.
  */
-export function findGrid(target: string, lower: boolean): string[] {
+export function findGrid(target: string, lower: boolean, preschool = false, variant = currentVariant()): string[] {
   const t = lower ? target.toLowerCase() : target;
-  const rand = rng(seedOf(`find:${t}`));
+  const rand = rng(seedOf(vkey(`find:${t}`, variant)));
   const cells = 6 * 7;
   const targets = 12;
-  const pool = lower
+  const twins = preschool ? diacriticTwins(target).flatMap((x) => [x, x.toLocaleLowerCase('ro')]) : [];
+  const pool = (lower
     ? LOWER_LOOKALIKES[t] ?? (LOOKALIKES[target] ?? []).map((x) => x.toLowerCase())
-    : LOOKALIKES[target] ?? [];
-  const others = OTHERS.filter((x) => x !== target).map((x) => (lower ? x.toLowerCase() : x));
+    : LOOKALIKES[target] ?? []).filter((x) => !twins.includes(x));
+  const others = OTHERS.filter((x) => x !== target).map((x) => (lower ? x.toLowerCase() : x)).filter((x) => !twins.includes(x));
   const letters: string[] = [];
   for (let i = 0; i < cells - targets; i++) {
     // two thirds look-alikes (the point of the exercise), the rest any other letter
@@ -179,7 +195,7 @@ function findPage(config: WorksheetConfig, target: string, tier: Tier): PageOps 
 
   const cols = 6;
   const rows = 7;
-  const grid = findGrid(target, lower);
+  const grid = findGrid(target, lower, config.curriculumLevel === 'presc');
 
   const gx = M;
   const cw = (W - 2 * M) / cols;
@@ -218,8 +234,8 @@ function findPage(config: WorksheetConfig, target: string, tier: Tier): PageOps 
 const COUNT_PICTURES = ['🍎', '🍐', '🎈', '🐱', '🐻', '🦋', '🐟', '🚗', '🌷', '🍓', '🐝', '⭐', '🥕', '🐶', '🦆', '☀️'];
 
 /** The five rows of „Numără și scrie”, top to bottom: how many pictures, and the pictures (row r: pictures[r]). */
-export function countSet(max: number): { pictures: string[]; numbers: number[] } {
-  const rand = rng(seedOf(`count:${max}`));
+export function countSet(max: number, variant = currentVariant()): { pictures: string[]; numbers: number[] } {
+  const rand = rng(seedOf(vkey(`count:${max}`, variant)));
   const pictures = shuffle(COUNT_PICTURES.filter(hasIcon), rand);
   const numbers = shuffle(Array.from({ length: max }, (_, i) => i + 1), rand).slice(0, 5);
   return { pictures, numbers };
@@ -271,7 +287,22 @@ const OUTLINES: Partial<Record<DotShape, Pt[]>> = {
   tree: [[50, 4], [72, 30], [60, 30], [82, 55], [64, 55], [88, 80], [56, 80], [56, 96], [44, 96], [44, 80], [12, 80], [36, 55], [18, 55], [40, 30], [28, 30]].map(([x, y]) => ({ x, y })),
 };
 
-export function dotPoints(shape: DotShape): Pt[] {
+/**
+ * The dots of a shape, in the order they are joined. The outline is a closed line, so another variant
+ * starts it from another dot and may go round the other way: the same drawing, other numbers.
+ */
+export function dotPoints(shape: DotShape, variant = currentVariant()): Pt[] {
+  const pts = outlinePoints(shape);
+  if (variant === 1 || pts.length < 3) return pts;
+  const rand = rng(seedOf(vkey(`dots:${shape}`, variant)));
+  // never the first variant again: another start, or the same start the other way round
+  const start = Math.floor(rand() * pts.length);
+  const back = start === 0 || rand() < 0.5;
+  const turned = [...pts.slice(start), ...pts.slice(0, start)];
+  return back ? [turned[0], ...turned.slice(1).reverse()] : turned;
+}
+
+function outlinePoints(shape: DotShape): Pt[] {
   const fixed = OUTLINES[shape];
   if (fixed) return fixed;
   const g = getGlyph(`shape:${shape}`);

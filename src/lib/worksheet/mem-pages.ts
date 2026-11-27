@@ -7,15 +7,18 @@ import { BOTTOM, CELL_STROKE, H, M, SOFT, W, adultNote, derangement, exampleLine
 import { numberWords } from './number-words';
 import { textW } from './reading-pages';
 import {
-  AROUND_LABELS, AROUND_ROWS, AROUND_SHAPES, CAUSE_SETS, COORD_COLS, COORD_ROWS, MEM_KINDS, MEM_SETS, MORE_ROWS, PICT_KINDS, PICT_MAX, PLACE_SETS,
-  PLANE_FACTS, PLAN_SETS, REGULAR_SETS, SHOWN_NUMBERS, SIDES_ROWS, SOLIDS, SOLID_FACTS, SOLID_OBJECTS, SORT2_SETS, SYMMETRY_TILES, cellName, coordSet,
-  growingCount, isMemItem, MINUS, nextPicture, numberRow, pictCounts, ruleOf, termsSet, TIMES, type MemKind, type PlaneShape, type Solid, type TermSentence,
+  AROUND_LABELS, AROUND_ROWS, AROUND_SHAPES, CAUSE_SETS, COORD_COLS, COORD_ROWS, MEM_KINDS, MEM_SETS, MORE_ROWS, PICT_KINDS, PICT_MAX,
+  PLANE_FACTS, PLAN_SETS, REGULAR_SETS, SHOWN_NUMBERS, SIDES_ROWS, SOLIDS, SOLID_FACTS, SOLID_OBJECTS, SYMMETRY_TILES, aroundRows, cellName, coordSet,
+  growingCount, isMemItem, MINUS, moreRows, nextPicture, numberRow, pictCounts, placeSet, regularSet, ruleOf, sidesSet, sort2Set, termsSet, TIMES,
+  type MemKind, type PlaneShape, type Solid, type TermSentence,
 } from './mem';
+import { currentVariant, vkey } from './variant';
 
 /**
  * The „Matematică și explorarea mediului” sheets that fill the gaps of the programme, and three
  * preschool sheets of domain E: full pages in the „Jocuri” category (see activities.ts), seeded by the
- * item. The layouts are computed by exported functions, which the tests and the answers page read.
+ * item and by the variant of the sheet („Altă variantă”, variant.ts; the sets of each variant: mem.ts).
+ * The layouts are computed by exported functions, which the tests and the answers page read.
  */
 
 export const MEM_KIND_TITLES: Record<MemKind, string> = {
@@ -126,8 +129,8 @@ const LABEL_BOX_W = 34;
 /** The centres of the five tokens of a labelled operation: three columns of 40 mm for the numbers. */
 const LABEL_XS = [49, 77, 105, 133, 161];
 
-export function termsLayout(n: number, top: number): TermsLayout {
-  const set = termsSet(n);
+export function termsLayout(n: number, top: number, variant = currentVariant()): TermsLayout {
+  const set = termsSet(n, variant);
   let y = top + 2;
   const bank: TermsLayout['bank'] = [];
   const labels: TermsLayout['labels'] = [];
@@ -276,8 +279,8 @@ export function blocksOps(n: number, x: number, y: number): { ops: DrawOp[]; wid
 
 export interface PlaceLayout { blocksTop: number; rows: { y: number; boxes: { x: number; y: number; w: number; h: number }[] }[]; digitsTop: number; digits: number[]; wordsTop: number; words: number[] }
 
-export function placeLayout(n: number, top: number): PlaceLayout {
-  const set = PLACE_SETS[n - 1];
+export function placeLayout(n: number, top: number, variant = currentVariant()): PlaceLayout {
+  const set = placeSet(n, variant);
   const blocksTop = top + 13;
   const rows = set.blocks.map((_, i) => {
     const y = blocksTop + 6 + i * 36;
@@ -294,7 +297,7 @@ export function placeLayout(n: number, top: number): PlaceLayout {
 
 function placePage(config: WorksheetConfig, n: number, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
-  const set = PLACE_SETS[n - 1];
+  const set = placeSet(n);
   const top = frame(ops, config, MEM_KIND_TITLES.place, 'Scrie câte sute, zeci și unități are fiecare număr, apoi numărul.', 'Numerele scrise cu litere: scrie-le cu cifre. Numerele scrise cu cifre: scrie-le cu litere.');
   const lay = placeLayout(n, top);
   heading(ops, top + 7, '1. Privește și scrie.');
@@ -543,6 +546,7 @@ export function sidesLayout(top: number): SidesLayout {
 
 function sidesPage(config: WorksheetConfig, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
+  const set = sidesSet();
   const top = frame(ops, config, MEM_KIND_TITLES.sides, 'Numără laturile și vârfurile fiecărei figuri.', 'Apoi spune dacă linia roșie punctată este o axă de simetrie: încercuiește DA sau NU.');
   const lay = sidesLayout(top);
   heading(ops, top + 6, '1. Câte laturi și câte vârfuri are figura?');
@@ -550,7 +554,7 @@ function sidesPage(config: WorksheetConfig, tier: Tier): PageOps {
   ops.push({ t: 'text', x: lay.cols.name, y: headY, text: 'Figura', size: 4, fill: LIGHT, weight: 'bold' });
   ops.push({ t: 'text', x: lay.cols.sides, y: headY, text: 'Laturi', size: 4, fill: LIGHT, weight: 'bold' });
   ops.push({ t: 'text', x: lay.cols.corners, y: headY, text: 'Vârfuri', size: 4, fill: LIGHT, weight: 'bold' });
-  SIDES_ROWS.forEach((r, i) => {
+  set.rows.forEach((r, i) => {
     const row = lay.rows[i];
     const cy = row.y + row.h / 2;
     ops.push({ t: 'line', x1: M, y1: row.y, x2: W - M, y2: row.y, stroke: CELL_STROKE, strokeWidth: 0.4 });
@@ -564,7 +568,7 @@ function sidesPage(config: WorksheetConfig, tier: Tier): PageOps {
     }
   });
   heading(ops, lay.tilesTop + 4, '2. Este linia roșie punctată o axă de simetrie?');
-  SYMMETRY_TILES.forEach((t, i) => {
+  set.tiles.forEach((t, i) => {
     const b = lay.tiles[i];
     ops.push({ t: 'rect', x: b.x, y: b.y, w: b.w, h: b.h, rx: 3, fill: PAPER, stroke: CELL_STROKE, strokeWidth: 0.5 });
     const size = Math.min(b.w - 14, b.h - 20);
@@ -595,8 +599,8 @@ export interface SolidLayout {
   colW: number;
 }
 
-export function solidLayout(top: number): SolidLayout {
-  const rand = rng(seedOf('solid:1'));
+export function solidLayout(top: number, variant = currentVariant()): SolidLayout {
+  const rand = rng(seedOf(vkey('solid:1', variant)));
   const order = shuffle(SOLIDS, rand);
   let objects = shuffle(SOLIDS, rand);
   while (objects.some((s, i) => s === order[i])) objects = shuffle(SOLIDS, rand);
@@ -648,8 +652,8 @@ export interface RegularLayout {
   problemTop: number;
 }
 
-export function regularLayout(n: number, top: number): RegularLayout {
-  const set = REGULAR_SETS[n - 1];
+export function regularLayout(n: number, top: number, variant = currentVariant()): RegularLayout {
+  const set = regularSet(n, variant);
   let y = top + 2;
   const pictureRows: RegularLayout['pictureRows'] = [];
   if (set.pictures.length) {
@@ -698,7 +702,7 @@ function growingOps(kind: 'stairs' | 'sticks', k: number, x: number, bottom: num
 
 function regularPage(config: WorksheetConfig, n: number, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
-  const set = REGULAR_SETS[n - 1];
+  const set = regularSet(n);
   const top = frame(ops, config, MEM_KIND_TITLES.regular, set.level === 'I' ? 'Descoperă regula și continuă.' : 'Descoperă regula, scrie-o și continuă.', 'Primul răspuns este exemplul.');
   const lay = regularLayout(n, top);
   if (set.pictures.length) {
@@ -804,9 +808,9 @@ export interface Sort2Layout {
   table: { x: number; y: number; firstW: number; colW: number; headH: number; rowH: number };
 }
 
-export function sort2Layout(n: number, top: number): Sort2Layout {
-  const set = SORT2_SETS[n - 1];
-  const order = shuffle(set.items.map((_, i) => i), rng(seedOf(`sort2:${n}`)));
+export function sort2Layout(n: number, top: number, variant = currentVariant()): Sort2Layout {
+  const set = sort2Set(n, variant);
+  const order = shuffle(set.items.map((_, i) => i), rng(seedOf(vkey(`sort2:${n}`, variant))));
   const perRow = 5;
   const cw = (W - 2 * M) / perRow;
   const pictures = order.map((_, i) => ({ cx: M + (i % perRow + 0.5) * cw, cy: top + 18 + Math.floor(i / perRow) * 30, s: 20 }));
@@ -820,7 +824,7 @@ export function sort2Layout(n: number, top: number): Sort2Layout {
 
 function sort2Page(config: WorksheetConfig, n: number, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
-  const set = SORT2_SETS[n - 1];
+  const set = sort2Set(n);
   const top = frame(ops, config, MEM_KIND_TITLES.sort2, `Scrie numărul fiecărei imagini în căsuța potrivită: după ${set.colTitle} și după ${set.rowTitle}.`, 'Fiecare imagine merge într-o singură căsuță. Primul număr este exemplul.');
   const lay = sort2Layout(n, top);
   lay.order.forEach((k, i) => {
@@ -1001,10 +1005,11 @@ export function aroundLayout(top: number): { rows: { cy: number; pic: number; bo
 
 function aroundPage(config: WorksheetConfig, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
+  const rows = aroundRows();
   const top = frame(ops, config, MEM_KIND_TITLES.around, 'Ce formă are fiecare obiect? Încercuiește forma.', 'Spune numele obiectului și al formei. Primul rând este exemplul.');
   const lay = aroundLayout(top + 1);
   const labelSize = Math.min(...AROUND_LABELS.map((l) => fitSize(l, 3.6, lay.rows[0].boxes[0].w - 4)));
-  AROUND_ROWS.forEach(([picture, , answer], i) => {
+  rows.forEach(([picture, , answer], i) => {
     const row = lay.rows[i];
     ops.push({ t: 'circle', cx: M + 4.5, cy: row.cy, r: 4, fill: SOFT, stroke: CELL_STROKE, strokeWidth: 0.5 });
     ops.push({ t: 'text', x: M + 4.5, y: row.cy + 1.5, text: String(i + 1), size: 4.2, fill: INK, weight: 'bold', align: 'center' });
@@ -1019,7 +1024,7 @@ function aroundPage(config: WorksheetConfig, tier: Tier): PageOps {
       if (i === 0 && k === answer) ops.push(exampleRing(b.x - 1.2, b.y - 1.2, b.w + 2.4, b.h + 2.4));
     });
   });
-  adultNote(ops, `Obiectele, de sus în jos: ${AROUND_ROWS.map((r) => r[1]).join(', ')}.`);
+  adultNote(ops, `Obiectele, de sus în jos: ${rows.map((r) => r[1]).join(', ')}.`);
   footer(ops, tier);
   return { width: W, height: H, ops };
 }
@@ -1034,9 +1039,9 @@ export interface PictLayout {
   questionsTop: number;
 }
 
-export function pictLayout(n: number, top: number): PictLayout {
-  const counts = pictCounts(n);
-  const rand = rng(seedOf(`pict-scene:${n}`));
+export function pictLayout(n: number, top: number, variant = currentVariant()): PictLayout {
+  const counts = pictCounts(n, variant);
+  const rand = rng(seedOf(vkey(`pict-scene:${n}`, variant)));
   const scene = { x: M, y: top + 2, w: W - 2 * M, h: 70 };
   const cols = 8;
   const rows = 3;
@@ -1102,9 +1107,10 @@ export function moreLayout(top: number): { rows: { y: number; h: number; boxes: 
 
 function morePage(config: WorksheetConfig, tier: Tier): PageOps {
   const ops: DrawOp[] = [];
+  const rows = moreRows();
   const top = frame(ops, config, MEM_KIND_TITLES.more, 'Ascultă întrebarea și încercuiește imaginea potrivită.', 'Un adult citește întrebările. Primul rând este exemplul.');
   const lay = moreLayout(top + 1);
-  MORE_ROWS.forEach(([q, a, b, answer], i) => {
+  rows.forEach(([q, a, b, answer], i) => {
     const row = lay.rows[i];
     const cy = row.y + row.h / 2;
     ops.push({ t: 'circle', cx: M + 4.5, cy, r: 4, fill: SOFT, stroke: CELL_STROKE, strokeWidth: 0.5 });
@@ -1126,13 +1132,13 @@ function morePage(config: WorksheetConfig, tier: Tier): PageOps {
 const LETTER_OF = (lay: SolidLayout, s: Solid) => LETTERS5[lay.order.indexOf(s)];
 
 /** The answers of a „Matematică și explorarea mediului” item. */
-export function memKeySection(item: string): KeySection | null {
+export function memKeySection(item: string, variant = currentVariant()): KeySection | null {
   if (!isMemItem(item)) return null;
   const [kind, n] = parts(item);
   const title = memLabel(item);
   switch (kind) {
     case 'terms': {
-      const set = termsSet(n);
+      const set = termsSet(n, variant);
       return {
         title,
         entries: [
@@ -1146,7 +1152,7 @@ export function memKeySection(item: string): KeySection | null {
       };
     }
     case 'place': {
-      const set = PLACE_SETS[n - 1];
+      const set = placeSet(n, variant);
       return {
         title,
         entries: [
@@ -1159,7 +1165,7 @@ export function memKeySection(item: string): KeySection | null {
       };
     }
     case 'coord': {
-      const set = coordSet(n);
+      const set = coordSet(n, variant);
       return {
         title,
         entries: [
@@ -1171,18 +1177,20 @@ export function memKeySection(item: string): KeySection | null {
         numbered: true,
       };
     }
-    case 'sides':
+    case 'sides': {
+      const set = sidesSet(variant);
       return {
         title,
         entries: [
-          ...SIDES_ROWS.map((r) => `${PLANE_FACTS[r.shape][0]}: ${PLANE_FACTS[r.shape][1]} laturi, ${PLANE_FACTS[r.shape][2]} vârfuri`),
-          ...SYMMETRY_TILES.map((t, i) => `figura ${i + 1}: ${t.answer ? 'DA' : 'NU'}`),
+          ...set.rows.map((r) => `${PLANE_FACTS[r.shape][0]}: ${PLANE_FACTS[r.shape][1]} laturi, ${PLANE_FACTS[r.shape][2]} vârfuri`),
+          ...set.tiles.map((t, i) => `figura ${i + 1}: ${t.answer ? 'DA' : 'NU'}`),
         ],
         perLine: 2,
         numbered: true,
       };
+    }
     case 'solid': {
-      const lay = solidLayout(0);
+      const lay = solidLayout(0, variant);
       return {
         title,
         entries: [
@@ -1195,7 +1203,7 @@ export function memKeySection(item: string): KeySection | null {
       };
     }
     case 'regular': {
-      const set = REGULAR_SETS[n - 1];
+      const set = regularSet(n, variant);
       const pr = set.problem;
       return {
         title,
@@ -1213,8 +1221,8 @@ export function memKeySection(item: string): KeySection | null {
       };
     }
     case 'sort2': {
-      const set = SORT2_SETS[n - 1];
-      const lay = sort2Layout(n, 0);
+      const set = sort2Set(n, variant);
+      const lay = sort2Layout(n, 0, variant);
       const entries: string[] = [];
       set.rows.forEach((r, ri) => set.cols.forEach((c, ci) => {
         const nums = lay.order.map((k, i) => ({ it: set.items[k], at: i + 1 })).filter(({ it }) => it.col === ci && it.row === ri);
@@ -1240,16 +1248,16 @@ export function memKeySection(item: string): KeySection | null {
       return { title, entries: [...set.pairs.map(([, a, b]) => `${a} ${b}`), ...set.complete.map((s) => s.text.replace('{}', s.answer))], perLine: 1, numbered: true };
     }
     case 'around':
-      return { title, entries: AROUND_ROWS.map(([, name, k]) => `${name} – ${AROUND_LABELS[k].toLocaleLowerCase('ro')}`), perLine: 2, numbered: true };
+      return { title, entries: aroundRows(variant).map(([, name, k]) => `${name} – ${AROUND_LABELS[k].toLocaleLowerCase('ro')}`), perLine: 2, numbered: true };
     case 'pict': {
       const kinds = PICT_KINDS[n - 1];
-      const counts = pictCounts(n);
+      const counts = pictCounts(n, variant);
       const most = counts.indexOf(Math.max(...counts));
       const least = counts.indexOf(Math.min(...counts));
       return { title, entries: [kinds.map(([, name], k) => `${name}: ${counts[k]}`).join(', '), `cele mai multe: ${kinds[most][1]}; cele mai puține: ${kinds[least][1]}`], perLine: 1 };
     }
     case 'more':
-      return { title, entries: MORE_ROWS.map(([, a, b, k]) => (k === 0 ? a : b)[1]), perLine: 4, numbered: true };
+      return { title, entries: moreRows(variant).map(([, a, b, k]) => (k === 0 ? a : b)[1]), perLine: 4, numbered: true };
   }
 }
 

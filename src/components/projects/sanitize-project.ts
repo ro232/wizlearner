@@ -83,6 +83,8 @@ export interface GroupProject {
   script: Script;
   difficulty: Difficulty;
   withFind: boolean;
+  /** „Altă variantă” of the „Găsește litera” pages: a whole number above 1, or absent (the first variant). */
+  variantSeed?: number;
 }
 
 export function sanitizeGroupProject(raw: unknown): GroupProject | null {
@@ -95,5 +97,6 @@ export function sanitizeGroupProject(raw: unknown): GroupProject | null {
     script: oneOf(r.script, SCRIPTS, 'print'),
     difficulty: oneOf(r.difficulty, DIFFICULTIES, 'beginner'),
     withFind: r.withFind !== false,
+    ...(typeof r.variantSeed === 'number' && Number.isFinite(r.variantSeed) && Math.round(r.variantSeed) > 1 ? { variantSeed: Math.min(999_999, Math.round(r.variantSeed)) } : {}),
   };
 }

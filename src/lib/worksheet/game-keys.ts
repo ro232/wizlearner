@@ -14,6 +14,7 @@ import { clrKeySection } from './clr-pages';
 import { memKeySection } from './mem-pages';
 import { m34KeySection } from './m34-pages';
 import { r34KeySection } from './r34-pages';
+import { variantOf, withVariant } from './variant';
 
 /**
  * The answers of the game pages („Jocuri”) for the answers page: read from the same functions
@@ -26,8 +27,12 @@ import { r34KeySection } from './r34-pages';
 
 const list = (xs: string[]) => xs.join(', ');
 
-/** The section of one game item, or null when the item has nothing to check. */
+/** The section of one game item, or null when the item has nothing to check: the answers of the sheet's variant (variant.ts). */
 export function gameKeySection(config: WorksheetConfig, item: string): KeySection | null {
+  return withVariant(variantOf(config), () => keySection(config, item));
+}
+
+function keySection(config: WorksheetConfig, item: string): KeySection | null {
   const [kind, arg = ''] = item.split(':');
   const n = Number(arg);
   switch (kind) {
@@ -36,7 +41,7 @@ export function gameKeySection(config: WorksheetConfig, item: string): KeySectio
       if (!getGlyph(target)) return null;
       const lower = config.letterMode === 'lowercase';
       const t = lower ? target.toLowerCase() : target;
-      const found = findGrid(target, lower).filter((l) => l === t).length;
+      const found = findGrid(target, lower, config.curriculumLevel === 'presc').filter((l) => l === t).length;
       return { title: `Găsește litera ${t}`, entries: [`Litera ${t} apare de ${found} ori.`], perLine: 1 };
     }
     case 'count': {
@@ -103,6 +108,6 @@ export function gameAnswerPages(config: WorksheetConfig, tier: Tier) {
   // the mazes with their path and the scenes with the differences circled, under the answers
   const drawn = config.selectedItems.filter((item) => isActivityItem(item) && isItemAllowed(item, 'games', tier));
   // … and the finished symmetric drawings (subjects-pages.ts)
-  const extras = [...funKeyExtras(drawn), ...subjectKeyExtras(drawn)];
+  const extras = [...funKeyExtras(drawn, variantOf(config)), ...subjectKeyExtras(drawn)];
   return sections.length ? answerKeyPages(config, sections, extras) : [];
 }

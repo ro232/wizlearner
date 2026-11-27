@@ -157,6 +157,8 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
   if (r.traceDensity === 'sparse' || r.traceDensity === 'normal' || r.traceDensity === 'dense') config.traceDensity = r.traceDensity;
   if (typeof r.mathRange === 'number' && MATH_RANGES.includes(r.mathRange)) config.mathRange = r.mathRange;
   if (typeof r.mathSeed === 'number' && Number.isFinite(r.mathSeed)) config.mathSeed = int(r.mathSeed, 0, 1_000_000_000, 1);
+  // „Altă variantă” (worksheet/variant.ts): a whole number in 2…999 999; anything else is the first variant, which is not written
+  if (typeof r.variantSeed === 'number' && Number.isFinite(r.variantSeed) && int(r.variantSeed, 1, 999_999, 1) > 1) config.variantSeed = int(r.variantSeed, 1, 999_999, 1);
   if (typeof r.mathAnswers === 'boolean') config.mathAnswers = r.mathAnswers;
   if (typeof r.evaluation === 'boolean' && (category === 'math' || category === 'games')) config.evaluation = r.evaluation;
   // only „without the answers page” is kept, and only on an evaluation (unset: the answers page is printed)

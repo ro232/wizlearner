@@ -918,8 +918,8 @@ exports[`how every kind of sheet looks > matematica-calendar 1`] = `
 [
   "15ec37a4c98acd97",
   "083c568fb2e62f16",
-  "b902c1f38a628110",
-  "0026b26beb20accd",
+  "504f32f7f39c69b7",
+  "639215378e6a7913",
 ]
 `;
 
@@ -966,11 +966,11 @@ exports[`how every kind of sheet looks > matematica-inmultire 1`] = `
 
 exports[`how every kind of sheet looks > matematica-masurari 1`] = `
 [
-  "416ebd08a2be3572",
-  "a8476a7f438863fc",
+  "144537fa200dbff5",
+  "d1239df290f7e9b7",
   "48a531df815ce3e2",
   "1ace86f98eac6690",
-  "da3271c8f88339f7",
+  "937666885b80cdfe",
 ]
 `;
 
@@ -1194,6 +1194,58 @@ exports[`how every kind of sheet looks > sunete-silabe 1`] = `
   "60c833ee48c81cf2",
   "e8285a12ecb9e5f6",
   "e1297fe9d5c7eb52",
+]
+`;
+
+exports[`how every kind of sheet looks > varianta-3-evaluare 1`] = `
+[
+  "9c8a9fa7830faf3a",
+  "607ee64c909cb2f2",
+  "f812158ddef47e3b",
+]
+`;
+
+exports[`how every kind of sheet looks > varianta-7-gradinita 1`] = `
+[
+  "50178efae3a55ac1",
+  "a2c377efca08098d",
+  "79f9cf03cc143640",
+  "6b87d0943420eb82",
+  "6e7548cc47e06208",
+  "909524af29f2beae",
+  "6a729afe43936270",
+  "10199552cae12262",
+  "0e65a1246524ad1e",
+  "580e24804f0622b0",
+  "25cc245f7c44e4f9",
+  "0265c3dbe0a8fd7d",
+  "4fc094d9f7c8b273",
+  "8746050b025227be",
+  "5023d78e2c1caaa1",
+  "4b4ab33252f82222",
+  "9481d9668b6f245c",
+  "0f3fcf38dd0c546b",
+]
+`;
+
+exports[`how every kind of sheet looks > varianta-12-scoala 1`] = `
+[
+  "786e8c1c24591c44",
+  "c6a0e29c74e74b03",
+  "91f8ac0df248eb5f",
+  "fb36699576ff551b",
+  "c6c01449f96b316c",
+  "1183ded4fc7394e8",
+  "d9d6b27fe383655d",
+  "a000aca9c65c3563",
+  "353e243ae76418f8",
+  "ec6cf554ef88d435",
+  "e9fad9de89b52635",
+  "eef92e7037d25029",
+  "83b85b7656417052",
+  "f418013137ad4b1f",
+  "33a9ba49df4adf7b",
+  "c1e179b4dd431b12",
 ]
 `;
 

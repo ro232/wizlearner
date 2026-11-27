@@ -7,6 +7,7 @@ import { madeWith } from '@/lib/brand';
 import { textWidthMm } from '@/lib/book/text';
 import { INK, ACCENT, PAPER, MUTED, itemOps, itemWidth } from './rows';
 import { PHONO_WORDS, type PhonoWord } from './phonology';
+import { currentVariant, vkey } from './variant';
 
 /**
  * „Sunete și silabe”: full-page phonological-awareness activities, one page per item, in the
@@ -18,7 +19,8 @@ import { PHONO_WORDS, type PhonoWord } from './phonology';
  * - "split:1"  Desparte în silabe — trace the syllables in their boxes, then write them alone.
  *
  * Set 1 of each kind (and the sounds A–E) uses only words starting with the free letters A–E.
- * Layouts are seeded by the item, so the preview and the PDF are the same sheet every time.
+ * Layouts are seeded by the item and the variant of the sheet („Altă variantă”, variant.ts), so the
+ * preview and the PDF are the same sheet every time; every variant draws from the same words by the same rules.
  */
 
 /** Sounds with enough pictures (at least four) for a page. */
@@ -96,17 +98,17 @@ function roundRobin(words: PhonoWord[], seed: string): PhonoWord[] {
 }
 
 /** The pictures of a sound page: up to five that start with the sound, the rest with other sounds. */
-export function soundSet(letter: string): { words: PhonoWord[]; targets: number } {
-  const rand = rng(seedOf(`sound:${letter}`));
+export function soundSet(letter: string, variant = currentVariant()): { words: PhonoWord[]; targets: number } {
+  const rand = rng(seedOf(vkey(`sound:${letter}`, variant)));
   const targets = shuffle(PHONO_WORDS.filter((w) => w.initial === letter), rand).slice(0, 5);
   const others = shuffle(PHONO_WORDS.filter((w) => w.initial !== letter), rand).slice(0, 12 - targets.length);
   return { words: shuffle([...targets, ...others], rand), targets: targets.length };
 }
 
 /** Twelve pictures for „Primul sunet”: set 1 from A–E, the others from the other sounds. */
-export function firstSet(n: number): PhonoWord[] {
-  if (n === 1) return roundRobin(PHONO_WORDS.filter(isFreeWord), 'first').slice(0, 12);
-  const pool = roundRobin(PHONO_WORDS.filter((w) => !isFreeWord(w)), 'first');
+export function firstSet(n: number, variant = currentVariant()): PhonoWord[] {
+  if (n === 1) return roundRobin(PHONO_WORDS.filter(isFreeWord), vkey('first', variant)).slice(0, 12);
+  const pool = roundRobin(PHONO_WORDS.filter((w) => !isFreeWord(w)), vkey('first', variant));
   return Array.from({ length: 12 }, (_, i) => pool[((n - 2) * 12 + i) % pool.length]);
 }
 
@@ -119,15 +121,15 @@ function pick(pool: PhonoWord[], n: number, per: number, seed: string): PhonoWor
 }
 
 /** Eight words for „Câte silabe?”: two each of 1, 2, 3 and 4 syllables. */
-export function sylSet(n: number): PhonoWord[] {
-  const words = [1, 2, 3, 4].flatMap((c) => pick(PHONO_WORDS.filter((w) => w.syllables.length === c), n, 2, `syl${c}`));
-  return shuffle(words, rng(seedOf(`syl:${n}`)));
+export function sylSet(n: number, variant = currentVariant()): PhonoWord[] {
+  const words = [1, 2, 3, 4].flatMap((c) => pick(PHONO_WORDS.filter((w) => w.syllables.length === c), n, 2, vkey(`syl${c}`, variant)));
+  return shuffle(words, rng(seedOf(vkey(`syl:${n}`, variant))));
 }
 
 /** Five words for „Desparte în silabe”: three of two syllables, two of three (room to write them large). */
-export function splitSet(n: number): PhonoWord[] {
-  const words = [2, 3].flatMap((c) => pick(PHONO_WORDS.filter((w) => w.syllables.length === c), n, c === 2 ? 3 : 2, `split${c}`));
-  return shuffle(words, rng(seedOf(`split:${n}`)));
+export function splitSet(n: number, variant = currentVariant()): PhonoWord[] {
+  const words = [2, 3].flatMap((c) => pick(PHONO_WORDS.filter((w) => w.syllables.length === c), n, c === 2 ? 3 : 2, vkey(`split${c}`, variant)));
+  return shuffle(words, rng(seedOf(vkey(`split:${n}`, variant))));
 }
 
 // ───────────────────────── page frame ─────────────────────────

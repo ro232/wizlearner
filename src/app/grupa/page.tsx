@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Download, Users, Check, ChevronLeft, ChevronRight, CalendarDays, Save, Trash2, Loader2, Eraser } from 'lucide-react';
+import { Download, Users, Check, ChevronLeft, ChevronRight, CalendarDays, Save, Trash2, Loader2, Eraser, Shuffle } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { useToast } from '@/components/ui/toast';
@@ -53,6 +53,8 @@ export default function GroupPage() {
   const [script, setScript] = useState<Script>('print');
   const [difficulty, setDifficulty] = useState<Difficulty>('beginner');
   const [withFind, setWithFind] = useState(true);
+  // „Altă variantă” of the „Găsește litera” pages (1: the first)
+  const [variantSeed, setVariantSeed] = useState(1);
   const [curriculumLevel, setCurriculumLevel] = useState<SchoolLevel | undefined>(undefined);
   const { busy: busyWith, error, run } = useDownload();
   const busy = busyWith !== null;
@@ -100,6 +102,7 @@ export default function GroupPage() {
       setScript(project.script);
       setDifficulty(project.difficulty);
       setWithFind(project.withFind);
+      setVariantSeed(project.variantSeed ?? 1);
     } else if (draft && draft.writtenInWeek === now) {
       setWeek(draft.week && SCHOOL_YEAR[draft.week - 1] ? draft.week : null);
       setThemeId(draft.themeId && themeById(draft.themeId) ? draft.themeId : undefined);
@@ -127,9 +130,9 @@ export default function GroupPage() {
   const previewNames = names.length ? names.slice(0, limit) : ['Ana'];
   const previewKeys = names.length ? list.keys.slice(0, limit) : ['Ana'];
   const { pages } = useMemo(
-    () => buildGroupPages({ names: previewNames, keys: previewKeys, themeId, letters, letterMode, script, difficulty, levels, withFindPages: withFind, curriculumLevel }),
+    () => buildGroupPages({ names: previewNames, keys: previewKeys, themeId, letters, letterMode, script, difficulty, levels, withFindPages: withFind, curriculumLevel, variantSeed }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [previewKeys.join('\n'), themeId, letters, letterMode, script, difficulty, levels, withFind, curriculumLevel],
+    [previewKeys.join('\n'), themeId, letters, letterMode, script, difficulty, levels, withFind, curriculumLevel, variantSeed],
   );
 
   function applyWeek(w: number) {
@@ -203,7 +206,7 @@ export default function GroupPage() {
       const planPart = week ? `-sapt-${week}` : '';
       await downloadPagesPdf(pages, `fise-grupa${planPart}-${themeId ?? 'litere'}.pdf`);
       // history keeps the settings only, never the children's names
-      void logDownload('group', `Grupă: ${copii(count)}${themeId ? ` · ${themeById(themeId)?.title ?? themeId}` : ''}`, { themeId, letters, letterMode, script, difficulty, withFind }, pages.length);
+      void logDownload('group', `Grupă: ${copii(count)}${themeId ? ` · ${themeById(themeId)?.title ?? themeId}` : ''}`, { themeId, letters, letterMode, script, difficulty, withFind, ...(variantSeed > 1 ? { variantSeed } : {}) }, pages.length);
       setLeftOut(overFree ? names.length - count : 0);
       return overFree
         ? `Gata: fișele primilor ${count} copii.`
@@ -428,6 +431,15 @@ export default function GroupPage() {
                 </span>
               </span>
             </label>
+            {withFind && letters.length > 0 && (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <button type="button" onClick={() => setVariantSeed((v) => (v >= 999_999 ? 1 : v + 1))} data-variant-button
+                  className="inline-flex items-center gap-1.5 h-11 px-4 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper">
+                  <Shuffle className="w-4 h-4" aria-hidden /> Altă variantă
+                </button>
+                <span className="text-sm text-slate-600" aria-live="polite">Jocul „Găsește litera”: varianta {variantSeed}.</span>
+              </div>
+            )}
 
             <DownloadError message={error} />
             <button type="button" onClick={download} disabled={busy || names.length === 0} data-btn="primary"
@@ -440,7 +452,7 @@ export default function GroupPage() {
             </button>
             {/* The same sheet for the parents: no list of names goes along, each parent types their own child's name. */}
             <HomeworkButton
-              build={() => ({ kind: 'group', group: { themeId, letters, letterMode, script, difficulty, withFind, ...(curriculumLevel ? { curriculumLevel } : {}) } })}
+              build={() => ({ kind: 'group', group: { themeId, letters, letterMode, script, difficulty, withFind, ...(curriculumLevel ? { curriculumLevel } : {}), ...(variantSeed > 1 ? { variantSeed } : {}) } })}
               level={curriculumLevel}
               category="letters"
               disabled={busy}

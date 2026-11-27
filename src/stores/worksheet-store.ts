@@ -23,6 +23,8 @@ interface WorksheetState {
   setMathClock: (step: 'hour' | 'half' | 'quarter' | 'five') => void;
   setTraceDensity: (density: 'sparse' | 'normal' | 'dense') => void;
   newMathSet: () => void;
+  /** „Altă variantă”: the next variant of the games on the sheet (worksheet/variant.ts); `first` goes back to the first one. */
+  newVariant: (first?: boolean) => void;
   toggleMathAnswers: () => void;
   toggleEvaluation: () => void;
   /** An evaluation with or without its answers page (the class set is printed without it). */
@@ -107,6 +109,13 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   setMathClock: (mathClock) => set((state) => ({ config: { ...state.config, mathClock } })),
   setTraceDensity: (traceDensity) => set((state) => ({ config: { ...state.config, traceDensity } })),
   newMathSet: () => set((state) => ({ config: { ...state.config, mathSeed: (state.config.mathSeed ?? 1) + 1 } })),
+  newVariant: (first) => set((state) => {
+    const config = { ...state.config };
+    const next = first ? 1 : (typeof config.variantSeed === 'number' && config.variantSeed >= 1 && config.variantSeed < 999_999 ? Math.round(config.variantSeed) : 1) + 1;
+    if (next > 1) config.variantSeed = next;
+    else delete config.variantSeed;
+    return { config };
+  }),
   toggleMathAnswers: () => set((state) => ({ config: { ...state.config, mathAnswers: !state.config.mathAnswers } })),
   toggleEvaluation: () => set((state) => ({ config: { ...state.config, evaluation: !state.config.evaluation } })),
   toggleEvaluationAnswers: () =>

@@ -1,4 +1,5 @@
 import { countOf } from '@/components/worksheet/plural';
+import { currentVariant, vkey } from './variant';
 
 /**
  * Data of the „Matematică și explorarea mediului” sheets that fill the gaps of the programme
@@ -21,6 +22,11 @@ import { countOf } from '@/components/worksheet/plural';
  *
  * The exercises with numbers are made from the item by a seeded generator: the same sheet every time.
  * Pictures are Twemoji, quoted here so that scripts/build-hint-icons.mjs draws them into icons.json.
+ *
+ * „Altă variantă” (variant.ts): the first variant of every item is the sheet as it was written (the
+ * constants below); the others are drawn by the `…Set(n, variant)` functions from the pools next to
+ * them, under the rules their comments give. „Plan de lucru” and „Ce se întâmplă dacă…?” are each one
+ * authored experiment: they have no other variant.
  */
 
 export type MemKind = 'terms' | 'place' | 'coord' | 'sides' | 'solid' | 'regular' | 'sort2' | 'plan' | 'cause' | 'around' | 'pict' | 'more';
@@ -66,6 +72,15 @@ export function memSeed(text: string): () => number {
 }
 
 const int = (rand: () => number, lo: number, hi: number) => lo + Math.floor(rand() * (hi - lo + 1));
+const pick = <T,>(rand: () => number, xs: readonly T[]): T => xs[Math.floor(rand() * xs.length)];
+function mixed<T>(rand: () => number, xs: readonly T[]): T[] {
+  const a = [...xs];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 // ───────────────────────── Termenii operațiilor ─────────────────────────
 
@@ -113,8 +128,8 @@ function noBorrow(rand: () => number): [number, number] {
   return [a[0] * 100 + a[1] * 10 + a[2], b[0] * 100 + b[1] * 10 + b[2]];
 }
 
-export function termsSet(n: number): TermsSet {
-  const rand = memSeed(`terms:${n}`);
+export function termsSet(n: number, variant = currentVariant()): TermsSet {
+  const rand = memSeed(vkey(`terms:${n}`, variant));
   if (n <= 2) {
     // clasa pregătitoare, 0–10: one term is 1–5 (CP 1.4 „…adăugarea /extragerea a 1-5 elemente”)
     const add = () => { const b = int(rand, 1, 5); const a = int(rand, 1, 10 - b); return [a, b]; };
@@ -245,6 +260,40 @@ export const PLACE_SETS: PlaceSet[] = [
   { blocks: [125, 402, 231], toDigits: [1000, 216, 350], toWords: [119, 862] },
 ];
 
+/**
+ * The numbers of a „Formează numărul” sheet. Every variant keeps the mix of the written sets: the
+ * drawn numbers have at most 4 hundreds, 5 tens and 6 units, one of them with no tens or no units; in
+ * words, a number with every digit, one with a zero and one that ends in 11–19; in digits, a number
+ * with no tens and another one. No number comes twice on the sheet.
+ */
+export function placeSet(n: number, variant = currentVariant()): PlaceSet {
+  if (variant === 1) return PLACE_SETS[n - 1];
+  const rand = memSeed(vkey(`place:${n}`, variant));
+  const seen = new Set<number>();
+  const fresh = (make: () => number): number => {
+    for (;;) {
+      const v = make();
+      if (seen.has(v)) continue;
+      seen.add(v);
+      return v;
+    }
+  };
+  const drawn = (zero: boolean) => fresh(() => {
+    const h = int(rand, 1, 4);
+    if (!zero) return h * 100 + int(rand, 1, 5) * 10 + int(rand, 1, 6);
+    return rand() < 0.5 ? h * 100 + int(rand, 1, 6) : h * 100 + int(rand, 1, 5) * 10;
+  });
+  const full = () => fresh(() => int(rand, 1, 9) * 100 + int(rand, 2, 9) * 10 + int(rand, 1, 9));
+  const teen = () => fresh(() => int(rand, 1, 9) * 100 + int(rand, 11, 19));
+  const noTens = () => fresh(() => int(rand, 1, 9) * 100 + int(rand, 1, 9));
+  const round = () => fresh(() => int(rand, 1, 9) * 100 + int(rand, 1, 9) * 10);
+  // the first drawn number is the example: one with hundreds, tens and units
+  const blocks = [drawn(false), ...mixed(rand, [drawn(false), drawn(true)])];
+  const toDigits = mixed(rand, [full(), rand() < 0.5 ? noTens() : round(), teen()]);
+  const toWords = mixed(rand, [noTens(), rand() < 0.5 ? full() : teen()]);
+  return { blocks, toDigits, toWords };
+}
+
 // ───────────────────────── Coordonate (clasa a II-a) ─────────────────────────
 
 export const COORD_COLS = ['A', 'B', 'C', 'D', 'E'];
@@ -270,8 +319,8 @@ export interface CoordSet {
 
 export const cellName = (col: number, row: number) => `${COORD_COLS[col]}${row}`;
 
-export function coordSet(n: number): CoordSet {
-  const rand = memSeed(`coord:${n}`);
+export function coordSet(n: number, variant = currentVariant()): CoordSet {
+  const rand = memSeed(vkey(`coord:${n}`, variant));
   const cells = Array.from({ length: 25 }, (_, i) => ({ col: i % 5, row: Math.floor(i / 5) + 1 }));
   const shuffle = <T,>(xs: T[]) => {
     const a = [...xs];
@@ -311,6 +360,48 @@ export const SYMMETRY_TILES: { shape: PlaneShape; line: 'vertical' | 'horizontal
   { shape: 'right-triangle', line: 'vertical', answer: false },
   { shape: 'semicircle', line: 'vertical', answer: true },
 ];
+
+/** Every way a shape of the first exercise can be drawn (`look` 1: turned, or tall). */
+const SIDES_POOL: (typeof SIDES_ROWS)[number][] = [
+  { shape: 'triangle', look: 0 }, { shape: 'triangle', look: 1 }, { shape: 'rectangle', look: 0 }, { shape: 'rectangle', look: 1 },
+  { shape: 'square', look: 0 }, { shape: 'square', look: 1 }, { shape: 'circle', look: 0 },
+];
+/**
+ * Every line the sheet can draw through a shape, with the answer read from the drawing (planeOps, axisLine
+ * in mem-pages.ts): the square and the circle are symmetric about all three lines, the rectangle about the
+ * vertical and the horizontal but not about its diagonal, the triangle (its two slanted sides equal) and the
+ * semicircle only about the vertical, the right triangle about none of them.
+ */
+export const SYMMETRY_POOL: typeof SYMMETRY_TILES = [
+  { shape: 'square', line: 'vertical', answer: true }, { shape: 'square', line: 'horizontal', answer: true }, { shape: 'square', line: 'diagonal', answer: true },
+  { shape: 'rectangle', line: 'vertical', answer: true }, { shape: 'rectangle', line: 'horizontal', answer: true }, { shape: 'rectangle', line: 'diagonal', answer: false },
+  { shape: 'triangle', line: 'vertical', answer: true }, { shape: 'triangle', line: 'horizontal', answer: false },
+  { shape: 'circle', line: 'vertical', answer: true }, { shape: 'circle', line: 'horizontal', answer: true }, { shape: 'circle', line: 'diagonal', answer: true },
+  { shape: 'right-triangle', line: 'vertical', answer: false }, { shape: 'right-triangle', line: 'horizontal', answer: false },
+  { shape: 'semicircle', line: 'vertical', answer: true }, { shape: 'semicircle', line: 'horizontal', answer: false },
+];
+
+export interface SidesSet { rows: typeof SIDES_ROWS; tiles: typeof SYMMETRY_TILES }
+
+/**
+ * The shapes of „Laturi, vârfuri, axa de simetrie”. Another variant: five shapes to count on, every kind
+ * of shape among them (the first, the example, never the circle, which has nothing to count), and six
+ * lines to judge, no shape more than twice, at least two that are axes and at least two that are not.
+ */
+export function sidesSet(variant = currentVariant()): SidesSet {
+  if (variant === 1) return { rows: SIDES_ROWS, tiles: SYMMETRY_TILES };
+  const rand = memSeed(vkey('sides:1', variant));
+  const one = (shape: string) => pick(rand, SIDES_POOL.filter((r) => r.shape === shape));
+  let rows = [one('triangle'), one('rectangle'), one('square'), one('circle')];
+  rows.push(pick(rand, SIDES_POOL.filter((r) => r.shape !== 'circle' && !rows.includes(r))));
+  do rows = mixed(rand, rows); while (rows[0].shape === 'circle');
+  for (;;) {
+    const tiles = mixed(rand, SYMMETRY_POOL).slice(0, 6);
+    const yes = tiles.filter((t) => t.answer).length;
+    const most = Math.max(...tiles.map((t) => tiles.filter((x) => x.shape === t.shape).length));
+    if (yes >= 2 && yes <= 4 && most <= 2) return { rows, tiles };
+  }
+}
 
 export type Solid = 'cub' | 'cuboid' | 'cilindru' | 'sferă' | 'con';
 export const SOLIDS: Solid[] = ['cub', 'cuboid', 'cilindru', 'sferă', 'con'];
@@ -386,6 +477,92 @@ export const REGULAR_SETS: RegularSet[] = [
   },
 ];
 
+/** Pictures that go together in a row, to draw the units of a variant from. */
+const PATTERN_THEMES: string[][] = [
+  ['🍎', '🍐', '🍓', '🍒', '🍌'],
+  ['🌷', '🌼', '🌸', '🌻'],
+  ['🐱', '🐶', '🐭', '🐰', '🐻'],
+  ['🚗', '🚌', '🚲', '🚂', '🚁'],
+  ['⭐', '🌙', '☀️', '☁️'],
+  ['⚽', '🎈', '🧸', '🎲'],
+];
+/** The units of a picture row, as places in the theme: AB, AAB, ABB, ABC, AABB. */
+const PATTERN_UNITS: number[][] = [[0, 1], [0, 0, 1], [0, 1, 1], [0, 1, 2], [0, 0, 1, 1]];
+/** „a zecea mărgea”, „al zecelea cartonaș”: written out, never derived. */
+const ORDINAL_F: Record<number, string> = { 5: 'a cincea', 6: 'a șasea', 7: 'a șaptea', 8: 'a opta', 9: 'a noua', 10: 'a zecea', 11: 'a unsprezecea', 12: 'a douăsprezecea' };
+const ORDINAL_M: Record<number, string> = { 8: 'al optulea', 9: 'al nouălea', 10: 'al zecelea', 11: 'al unsprezecelea', 12: 'al doisprezecelea' };
+/** The rows of things of the clasa I problem: the two pictures, and the question for the k-th. */
+const ROW_PROBLEMS: { pictures: string[]; text: (k: number) => string }[] = [
+  { pictures: ['🔴', '🔵'], text: (k) => `Mărgelele sunt înșirate mereu așa. Ce culoare are ${ORDINAL_F[k]} mărgea?` },
+  { pictures: ['🌷', '🌼', '🌻', '🌸'], text: (k) => `Florile din grădină sunt plantate mereu așa. Ce floare este ${ORDINAL_F[k]}?` },
+  { pictures: ['🟥', '🟨', '🟦', '🟩'], text: (k) => `Cartonașele sunt așezate mereu așa. Ce culoare are ${ORDINAL_M[k]} cartonaș?` },
+];
+
+/**
+ * The patterns of a „Modele și regularități” sheet. Another variant keeps the shape of the set's class:
+ * - clasa I: three picture rows (three different units, each shown at least twice, the next picture
+ *   once among three choices), four number rows in 0–100 (a small step, by fives or tens, one going
+ *   down, one more), a row of things and its k-th;
+ * - clasa a II-a: five number rows in 0–1000 with the rule to write (by hundreds, by 20, 25 or 50, one
+ *   going down, a small step, one doubling), the figures that grow, a problem with a rule.
+ */
+export function regularSet(n: number, variant = currentVariant()): RegularSet {
+  const base = REGULAR_SETS[n - 1];
+  if (variant === 1) return base;
+  const rand = memSeed(vkey(`regular:${n}`, variant));
+  if (base.level === 'I') {
+    const themes = mixed(rand, PATTERN_THEMES).slice(0, 3);
+    const units = mixed(rand, PATTERN_UNITS).slice(0, 3);
+    const pictures: PicturePattern[] = themes.map((theme, i) => {
+      const t = mixed(rand, theme);
+      const unit = units[i].map((k) => t[k]);
+      const kinds = [...new Set(unit)];
+      // the three choices: the pictures of the unit, and one more of the theme when the unit has two
+      const options = mixed(rand, kinds.length === 3 ? kinds : [...kinds, t[2]]) as [string, string, string];
+      return { unit, shown: unit.length === 4 ? 8 : 7, options };
+    });
+    const small = mixed(rand, [2, 3, 4]);
+    const by = pick(rand, [5, 10]);
+    const down = pick(rand, [-10, -5, -2]);
+    const numbers: NumberPattern[] = [
+      { start: int(rand, 1, 12), step: small[0] },
+      { start: by * int(rand, 1, 3), step: by },
+      { start: down === -10 ? pick(rand, [70, 80, 90, 100]) : down === -5 ? pick(rand, [40, 45, 50, 60]) : pick(rand, [20, 24, 30]), step: down },
+      rand() < 0.3 ? { start: 11, step: 11 } : { start: int(rand, 10, 40), step: small[1] },
+    ];
+    const row = pick(rand, ROW_PROBLEMS);
+    const two = mixed(rand, row.pictures).slice(0, 2);
+    const unit = pick(rand, [[0, 1], [0, 0, 1], [0, 1, 1]]).map((k) => two[k]);
+    const ask = int(rand, 8, 12);
+    return { level: 'I', withRule: false, pictures, numbers, problem: { text: row.text(ask), unit, ask, options: [two[0], two[1]] } };
+  }
+  const mid = pick(rand, [20, 25, 50]);
+  const down = pick(rand, [-100, -50, -20]);
+  const rows: NumberPattern[] = [
+    { start: pick(rand, [50, 100, 150, 200, 300, 400]), step: 100 },
+    { start: mid * int(rand, 2, 12), step: mid },
+    { start: down === -100 ? pick(rand, [800, 900, 950, 1000]) : down === -50 ? pick(rand, [650, 800, 1000]) : pick(rand, [380, 500, 640]), step: down },
+    { start: int(rand, 2, 12), step: pick(rand, [3, 4, 6, 7, 8, 9]) },
+    { start: int(rand, 1, 5), step: 2, times: true },
+  ];
+  // the first row is the example, with its rule written: never the doubling
+  let numbers = mixed(rand, rows);
+  while (numbers[0].times) numbers = mixed(rand, rows);
+  const growing: Growing = { kind: base.growing?.kind ?? 'stairs', ask: [4, pick(rand, [5, 6, 7, 8, 10])] };
+  let problem: RegularSet['problem'];
+  if (rand() < 0.5) {
+    const d = int(rand, 2, 4);
+    const s = int(rand, 1, 4);
+    const k = int(rand, 5, 7);
+    problem = { text: `Ana merge la înot o dată la ${d} zile: pe ${s}, pe ${s + d} și pe ${s + 2 * d} ale lunii. În ce zi a lunii merge ${ORDINAL_F[k]} oară? {}`, answer: String(s + (k - 1) * d) };
+  } else {
+    const first = pick(rand, [9, 12, 15, 18]);
+    const green = rand() < 0.5;
+    problem = { text: `Pe raft, cărțile sunt așezate mereu așa: una roșie, două verzi, una roșie, două verzi… Câte cărți ${green ? 'verzi' : 'roșii'} sunt printre primele ${first}? {}`, answer: String(green ? (2 * first) / 3 : first / 3) };
+  }
+  return { level: 'II', withRule: true, pictures: [], numbers, growing, problem };
+}
+
 /** The numbers of a number row: the `count` first ones. */
 export function numberRow(p: NumberPattern, count: number): number[] {
   return Array.from({ length: count }, (_, i) => (p.times ? p.start * p.step ** i : p.start + i * p.step));
@@ -430,6 +607,33 @@ export const SORT2_SETS: Sort2Set[] = [
     ],
   },
 ];
+
+/** More means of transport for the second table, each in its one cell (none that could be argued: no scooter, no steam engine). */
+const SORT2_VEHICLES: Sort2Item[] = [
+  ...SORT2_SETS[1].items,
+  { picture: '🚜', name: 'tractorul', col: 0, row: 0 }, { picture: '🚑', name: 'ambulanța', col: 0, row: 0 },
+  { picture: '🚢', name: 'vaporul', col: 1, row: 0 }, { picture: '🚀', name: 'racheta', col: 2, row: 0 }, { picture: '🪁', name: 'zmeul', col: 2, row: 1 },
+];
+
+/**
+ * The nine things of a „Sortează după două criterii” sheet. Another variant: nine again, at least one for
+ * every cell of the table (shapes: one of each shape and size, and three more; transport: drawn from
+ * the pool above), no picture twice.
+ */
+export function sort2Set(n: number, variant = currentVariant()): Sort2Set {
+  const base = SORT2_SETS[n - 1];
+  if (variant === 1) return base;
+  const rand = memSeed(vkey(`sort2-set:${n}`, variant));
+  const cells = base.rows.flatMap((_, row) => base.cols.map((__, col) => ({ col, row })));
+  if (n === 1) {
+    const all = cells.map((c) => shapeItem((['circle', 'square', 'triangle'] as const)[c.col], c.row === 0));
+    return { ...base, items: [...all, ...mixed(rand, all).slice(0, 3)] };
+  }
+  const pool = mixed(rand, SORT2_VEHICLES);
+  const items = cells.map((c) => pool.find((i) => i.col === c.col && i.row === c.row)!);
+  for (const i of pool) if (items.length < 9 && !items.includes(i)) items.push(i);
+  return { ...base, items };
+}
 
 // ───────────────────────── Plan de lucru; Ce se întâmplă dacă…? (clasa a II-a) ─────────────────────────
 
@@ -529,6 +733,23 @@ export const AROUND_ROWS: [string, string, number][] = [
   ['🍪', 'biscuitul', 0], ['⚠️', 'semnul de atenție', 2], ['📱', 'telefonul', 3], ['📐', 'echerul', 2],
 ];
 
+/** More things with a plain shape, to draw the rows of a variant from (the window is the only square: it is always there). */
+const AROUND_POOL: [string, string, number][] = [...AROUND_ROWS, ['🧭', 'busola', 0], ['☀️', 'soarele', 0], ['✉️', 'plicul', 3], ['📕', 'cartea', 3]];
+
+/**
+ * The eight things of „Forme în jurul nostru”. Another variant: eight of the pool, every shape among
+ * them and none more than three times.
+ */
+export function aroundRows(variant = currentVariant()): [string, string, number][] {
+  if (variant === 1) return AROUND_ROWS;
+  const rand = memSeed(vkey('around:1', variant));
+  for (;;) {
+    const rows = mixed(rand, AROUND_POOL).slice(0, AROUND_ROWS.length);
+    const of = AROUND_SHAPES.map((_, k) => rows.filter((r) => r[2] === k).length);
+    if (of.every((c) => c >= 1 && c <= 3)) return rows;
+  }
+}
+
 /** The three kinds of a pictogram, with their names (plural, as in „Din care sunt cele mai multe?”). */
 export const PICT_KINDS: [string, string][][] = [
   [['🍎', 'mere'], ['🍐', 'pere'], ['🍓', 'căpșuni']],
@@ -537,8 +758,8 @@ export const PICT_KINDS: [string, string][][] = [
 export const PICT_MAX = 6;
 
 /** How many of each kind (all different, 2–6). */
-export function pictCounts(n: number): number[] {
-  const rand = memSeed(`pict:${n}`);
+export function pictCounts(n: number, variant = currentVariant()): number[] {
+  const rand = memSeed(vkey(`pict:${n}`, variant));
   const pool = [2, 3, 4, 5, 6];
   const out: number[] = [];
   while (out.length < 3) {
@@ -559,3 +780,35 @@ export const MORE_ROWS: [string, [string, string], [string, string], number][] =
   ['Ce este mai rece?', ['🍦', 'înghețata'], ['☕', 'ceaiul fierbinte'], 0],
   ['Ce se topește mai repede la soare?', ['⛄', 'omul de zăpadă'], ['🪨', 'piatra'], 0],
 ];
+
+/** More comparisons nobody argues about, to draw the rows of a variant from. */
+const MORE_POOL: typeof MORE_ROWS = [
+  ...MORE_ROWS,
+  ['Cine este mai mare?', ['🐘', 'elefantul'], ['🐭', 'șoarecele'], 0],
+  ['Cine este mai înalt?', ['🐕', 'câinele'], ['🦒', 'girafa'], 1],
+  ['Ce este mai greu?', ['🎈', 'balonul'], ['🪨', 'piatra'], 1],
+  ['Cine merge mai încet?', ['🐌', 'melcul'], ['🐎', 'calul'], 0],
+  ['Ce este mai dulce?', ['🍋', 'lămâia'], ['🍯', 'mierea'], 1],
+  ['Ce luminează mai tare?', ['🕯️', 'lumânarea'], ['☀️', 'soarele'], 1],
+  ['Ce este mai lung?', ['🚂', 'trenul'], ['🚗', 'mașina'], 0],
+  ['Ce este mai moale?', ['🧸', 'ursulețul de pluș'], ['🪨', 'piatra'], 0],
+];
+
+/**
+ * The eight questions of „Mai repede, mai cald…”. Another variant: eight of the pool, no picture twice on
+ * the page, the two pictures of a row in either order, and the answer on the left in three to five rows
+ * (so „always the second one” is never a way to answer).
+ */
+export function moreRows(variant = currentVariant()): typeof MORE_ROWS {
+  if (variant === 1) return MORE_ROWS;
+  const rand = memSeed(vkey('more:1', variant));
+  for (;;) {
+    const rows: typeof MORE_ROWS = [];
+    for (const r of mixed(rand, MORE_POOL)) {
+      const seen = rows.flatMap((x) => [x[1][0], x[2][0]]);
+      if (rows.length < MORE_ROWS.length && !seen.includes(r[1][0]) && !seen.includes(r[2][0])) rows.push(rand() < 0.5 ? r : [r[0], r[2], r[1], 1 - r[3]]);
+    }
+    const left = rows.filter((r) => r[3] === 0).length;
+    if (rows.length === MORE_ROWS.length && left >= 3 && left <= 5) return rows;
+  }
+}

@@ -59,6 +59,8 @@ export interface WorksheetConfig {
   mathRange?: number;
   /** Math sheets: which random set of exercises (changed by „Alte exerciții”). */
   mathSeed?: number;
+  /** Games: which variant of the picture and logic sheets (changed by „Altă variantă”); unset = 1, the sheet as it always was. */
+  variantSeed?: number;
   /**
    * „Pagină cu răspunsuri la final”: a page with the answers, for the math sheets and the games that
    * have answers (the name stays from when only math had it, so saved sheets keep the setting).
