@@ -25,6 +25,7 @@ import { texts, type TextOp } from './drawn';
 const games = (items: string[], extra: Partial<WorksheetConfig> = {}): WorksheetConfig => ({ ...DEFAULT_CONFIG, category: 'games', selectedItems: items, ...extra });
 const ITEMS = readingItems();
 const item = (kind: ReadKind, n: number) => `read:${kind}:${n}`;
+const SETS = (kind: ReadKind) => READING_LEVELS[kind].map((_, i) => i + 1);
 const setsOf = (kind: ReadKind, level: ReadLevel) => READING_LEVELS[kind].map((l, i) => (l === level ? i + 1 : 0)).filter(Boolean);
 const page = (it: string, extra: Partial<WorksheetConfig> = {}) => buildWorksheetPages(games([it], extra), 'full')[0];
 const W_ROW = 210 - 12 - 23; // the writing rows start right of the item number
@@ -99,6 +100,23 @@ describe('the words, sentences and texts', () => {
     }
   });
 
+  it('the sets have the sizes the pages are laid out for, and no word twice in a set', () => {
+    for (const set of MATCH_SETS) expect(new Set(set).size).toBe(6);
+    for (const set of GAP_SETS) expect(new Set(set.map((g) => g.word)).size).toBe(8);
+    for (const set of DRAW_SETS) expect(new Set(set).size).toBe(6);
+    for (const set of FILL_SETS) expect(new Set(set.map((f) => f.text)).size).toBe(6);
+    for (const set of ORDER_SETS) expect(new Set(set).size).toBe(5);
+    COPY_SETS.forEach((set, i) => expect(new Set(set).size, String(i)).toBe({ CP: 6, I: 5, II: 4 }[READING_LEVELS.copy[i]]));
+    // no sentence is written twice in a kind
+    for (const all of [FILL_SETS.flat().map((f) => f.text), ORDER_SETS.flat(), COPY_SETS.flat().filter((s) => s.includes(' '))]) expect(new Set(all).size).toBe(all.length);
+    // copying: at most 30 words in clasa I, 50 in clasa a II-a (the contents of the programme)
+    COPY_SETS.forEach((set, i) => {
+      const level = READING_LEVELS.copy[i];
+      if (level !== 'CP') expect(set.flatMap(words).length, String(i)).toBeLessThanOrEqual(level === 'I' ? 30 : 50);
+      if (level !== 'CP') for (const s of set) expect(s, s).toMatch(/^\p{Lu}.*\.$/u);
+    });
+  });
+
   it('„Ce literă lipsește?”: one letter goes in the gap, the others make no name of the picture', () => {
     GAP_SETS.forEach((set, i) => {
       const level = READING_LEVELS.gap[i];
@@ -143,11 +161,16 @@ describe('the words, sentences and texts', () => {
       const level = READING_LEVELS.text[i];
       const all = t.sentences.join(' ');
       const tokens = words(all);
-      expect(t.sentences.length).toBeGreaterThanOrEqual(3);
-      expect(t.sentences.length).toBeLessThanOrEqual(5);
+      // clasa I: very short texts of 3–5 sentences; clasa a II-a: 5–8 sentences
+      expect(t.sentences.length, t.title).toBeGreaterThanOrEqual(level === 'I' ? 3 : 5);
+      expect(t.sentences.length, t.title).toBeLessThanOrEqual(level === 'I' ? 5 : 8);
+      for (const s of t.sentences) expect(s, t.title).toMatch(/^[\p{Lu}„].*[.!?”]$/u);
       // the programme: texts of at most 75 words in clasa I, 120 in clasa a II-a
       expect(tokens.length, t.title).toBeLessThanOrEqual(level === 'I' ? 75 : 120);
-      expect(t.questions).toHaveLength(3);
+      expect(t.questions.length, t.title).toBeGreaterThanOrEqual(3);
+      expect(t.questions.length, t.title).toBeLessThanOrEqual(4);
+      expect(t.questions.some((q) => q.options), t.title).toBe(true);
+      for (const q of t.questions) expect(q.q, t.title).toMatch(q.options ? /^\p{Lu}.*\?$/u : /^\p{Lu}.*\.$/u);
       const has = (phrase: string) => {
         const p = words(phrase);
         return tokens.some((_, k) => p.every((x, j) => tokens[k + j] === x));
@@ -158,8 +181,13 @@ describe('the words, sentences and texts', () => {
           q.options.forEach((o, k) => expect(has(o), `${t.title}: ${o}`).toBe(k === q.answer));
         } else expect([0, 1]).toContain(q.answer);
       }
-      // both kinds of answer among the Da / Nu questions of a class
+      // the right answer is not always in the same place
+      if (i >= 6) expect(new Set(t.questions.filter((q) => q.options).map((q) => q.answer)).size, t.title).toBe(3);
     });
+    // at least ten texts for each class, no title twice
+    for (const level of ['I', 'II'] as const) expect(setsOf('text', level).length, level).toBeGreaterThanOrEqual(10);
+    expect(new Set(TEXT_SETS.map((t) => t.title)).size).toBe(TEXT_SETS.length);
+    // both kinds of answer among the Da / Nu questions of a class
     for (const level of ['I', 'II'] as const) {
       const yn = TEXT_SETS.filter((_, i) => READING_LEVELS.text[i] === level).flatMap((t) => t.questions.filter((q) => !q.options).map((q) => q.answer));
       expect(new Set(yn).size, level).toBe(2);
@@ -169,7 +197,12 @@ describe('the words, sentences and texts', () => {
 
 describe('the items', () => {
   it('are activities with a label, and the store keeps exactly these', () => {
-    expect(ITEMS).toHaveLength(READ_KINDS.length * 6);
+    expect(ITEMS).toHaveLength(READ_KINDS.reduce((n, k) => n + READING_LEVELS[k].length, 0));
+    expect(ITEMS).toHaveLength(132);
+    expect(new Set(ITEMS).size).toBe(ITEMS.length);
+    // every kind has at least eight sets for each of its classes (the texts: ten)
+    for (const kind of READ_KINDS) for (const level of new Set(READING_LEVELS[kind])) expect(setsOf(kind, level).length, `${kind} ${level}`).toBeGreaterThanOrEqual(kind === 'text' ? 10 : 8);
+    expect([MATCH_SETS, GAP_SETS, DRAW_SETS, FILL_SETS, ORDER_SETS, COPY_SETS, TEXT_SETS].map((x) => x.length)).toEqual(READ_KINDS.map((k) => READING_LEVELS[k].length));
     for (const i of ITEMS) {
       expect(isReadingItem(i), i).toBe(true);
       expect(isActivityItem(i), i).toBe(true);
@@ -179,12 +212,18 @@ describe('the items', () => {
     }
     expect(readingLabel('read:gap:4')).toBe('Ce literă lipsește? (clasa I, 2)');
     expect(readingLabel('read:match:1')).toBe('Unește cuvântul cu imaginea (clasa pregătitoare, 1)');
-    expect(ITEMS.filter((i) => i.startsWith('read:copy:')).map(readingShortLabel)).toEqual(['CP 1', 'CP 2', 'I 1', 'I 2', 'II 1', 'II 2']);
-    for (const no of ['read:gap:0', 'read:gap:7', 'read:copy', 'read:x:1', 'read::1', 'reads:gap:1', 'read:gap:1:2', 'gap:1']) {
+    // the picker shows the sets class by class, numbered within the class
+    expect(ITEMS.filter((i) => i.startsWith('read:copy:')).map(readingShortLabel)).toEqual(['CP', 'I', 'II'].flatMap((l) => [1, 2, 3, 4, 5, 6, 7, 8].map((k) => `${l} ${k}`)));
+    expect(ITEMS.filter((i) => i.startsWith('read:copy:')).slice(0, 4)).toEqual(['read:copy:1', 'read:copy:2', 'read:copy:7', 'read:copy:8']);
+    expect(readingLabel('read:text:7')).toBe('Citește și răspunde (clasa I, 4)');
+    expect(readingLabel('read:gap:24')).toBe('Ce literă lipsește? (clasa a II-a, 8)');
+    // the store's own copy of the ids (sanitize-config.ts) matches the builders exactly
+    for (const kind of READ_KINDS) for (let n = 0; n <= 30; n++) expect(itemFitsCategory(`read:${kind}:${n}`, 'games'), `${kind} ${n}`).toBe(n >= 1 && n <= READING_LEVELS[kind].length);
+    for (const no of ['read:gap:0', 'read:gap:25', 'read:match:17', 'read:text:21', 'read:gap:07', 'read:copy', 'read:x:1', 'read::1', 'reads:gap:1', 'read:gap:1:2', 'gap:1']) {
       expect(isReadingItem(no), no).toBe(false);
       expect(itemFitsCategory(no, 'games'), no).toBe(isActivityItem(no));
     }
-    expect(sanitizeConfig(games(['read:gap:1', 'read:text:6', 'read:text:7', 'read:x:1'])).selectedItems).toEqual(['read:gap:1', 'read:text:6']);
+    expect(sanitizeConfig(games(['read:gap:1', 'read:text:6', 'read:text:20', 'read:text:21', 'read:x:1'])).selectedItems).toEqual(['read:gap:1', 'read:text:6', 'read:text:20']);
   });
 
   it('free plan: the first set of each class of each kind; the rest in the paid plan', () => {
@@ -246,7 +285,7 @@ describe('the items', () => {
           expect(b.maxX, `${it}: ${t.text}`).toBeLessThanOrEqual(198.5);
         }
       }
-  });
+  }, 60_000);
 
   it('the instruction at the top says what to do, in Romanian', () => {
     const top = (it: string, c: Partial<WorksheetConfig> = {}) => texts(page(it, c)).map((t) => t.text);
@@ -266,7 +305,7 @@ describe('what the child sees and the answers page agree', () => {
   const key = (it: string, c: Partial<WorksheetConfig> = {}) => gameKeySection(games([it], c), it)!;
 
   it('„Unește cuvântul cu imaginea”: six words, their six pictures, never a picture next to its word', () => {
-    for (let n = 1; n <= 6; n++) {
+    for (const n of SETS('match')) {
       const { words: w, pictures: pics } = matchLayout(n);
       expect([...w].sort()).toEqual([...MATCH_SETS[n - 1]].sort());
       expect([...pics].sort()).toEqual([...w].sort());
@@ -285,7 +324,7 @@ describe('what the child sees and the answers page agree', () => {
   });
 
   it('„Ce literă lipsește?”: the word around the box, the three letters, the key', () => {
-    for (let n = 1; n <= 6; n++) {
+    for (const n of SETS('gap')) {
       const items = gapLayout(n);
       const p = page(item('gap', n));
       expect(pictures(p).map((x) => x.word)).toEqual(items.map((g) => g.word));
@@ -305,7 +344,7 @@ describe('what the child sees and the answers page agree', () => {
   });
 
   it('„Completează propoziția”: the sentence, its three words, the key with the right word in place', () => {
-    for (let n = 1; n <= 6; n++) {
+    for (const n of SETS('fill')) {
       const items = fillLayout(n);
       const t = texts(page(item('fill', n))).map((x) => x.text);
       items.forEach((f, i) => {
@@ -316,7 +355,7 @@ describe('what the child sees and the answers page agree', () => {
   });
 
   it('„Ordonează cuvintele”: the cards are the words of the sentence, none in its place; the key is the sentence', () => {
-    for (let n = 1; n <= 6; n++) {
+    for (const n of SETS('order')) {
       const items = orderLayout(n);
       const t = texts(page(item('order', n))).map((x) => x.text);
       items.forEach((o, i) => {
@@ -330,7 +369,7 @@ describe('what the child sees and the answers page agree', () => {
   });
 
   it('„Citește și răspunde”: the text and the questions are printed, the key names the right option', () => {
-    for (let n = 1; n <= 6; n++) {
+    for (const n of SETS('text')) {
       const tx = TEXT_SETS[n - 1];
       const t = texts(page(item('text', n))).map((x) => x.text);
       expect(t).toContain(tx.title);
@@ -345,7 +384,7 @@ describe('what the child sees and the answers page agree', () => {
   });
 
   it('„Citește și desenează” and „Copiază” have nothing to check: no answers section', () => {
-    for (let n = 1; n <= 6; n++) for (const k of ['draw', 'copy'] as const) expect(gameKeySection(games([item(k, n)]), item(k, n))).toBeNull();
+    for (const k of ['draw', 'copy'] as const) for (const n of SETS(k)) expect(gameKeySection(games([item(k, n)]), item(k, n))).toBeNull();
     const pages = buildWorksheetPages(games(['read:draw:1', 'read:copy:1'], { mathAnswers: true }), 'full');
     expect(pages).toHaveLength(2);
     const withKey = buildWorksheetPages(games(['read:gap:1', 'read:copy:1'], { mathAnswers: true }), 'full');
@@ -467,7 +506,11 @@ describe('the competences', () => {
 
 describe('the evaluation', () => {
   it('match, gap, fill, order and text have a short form; draw and copy do not', () => {
-    for (const it of ITEMS) expect(isEvaluationItem(it), it).toBe(!/^read:(draw|copy):/.test(it));
+    // (the sets added after the first six have no short form yet: evaluation.ts names the sets 1–6)
+    for (const it of ITEMS) {
+      if (/^read:(draw|copy):/.test(it)) expect(isEvaluationItem(it), it).toBe(false);
+      else if (Number(it.split(':')[2]) <= 6) expect(isEvaluationItem(it), it).toBe(true);
+    }
   });
 
   it('the answers of the evaluation are those of the sheets', () => {

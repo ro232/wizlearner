@@ -11,8 +11,27 @@ import { stripe } from '@/lib/stripe';
 export const metadata: Metadata = { title: 'Prețuri · WorksheetWiz' };
 export const revalidate = 3600; // prices come from Stripe; refresh hourly
 
-const FREE = ['Literele A–E (și Ă, Â), cifrele 0–5', 'Trei forme și trei exerciții grafice', 'Matematică până la 10: comparații, adunări, scăderi, șiruri', 'Jocuri: găsește litera A–E, numără până la 5, steaua cu puncte', 'Fișa cu numele copilului', 'Fișe pentru grupă: încearcă cu 3 copii', 'Caietul KDP, cu filigran'];
-const FULL = ['Fișe pentru toată grupa, până la 40 de copii, pe teme', 'Tot alfabetul românesc și englez, mari și mici', 'Cifre și numere 0–20, toate formele și exercițiile', 'Matematică până la 20 și 100, cu exerciții noi oricând', 'Toate jocurile și pachetul săptămânii pentru grupă', 'Orice cuvânt de trasat', 'Caietul cu numele copilului', 'Fișele salvate în cont', 'Caietul KDP fără filigran, pe care îl poți vinde'];
+const FREE = [
+  'Literele A–E (și Ă, Â), cifrele 0–5, trei forme și trei exerciții grafice',
+  'Matematică până la 10: operații, probleme cu imagini, bani, ceasul la ore fixe',
+  'Prima fișă din fiecare tip: sunete, silabe, citire, sortare, labirint, mediu',
+  'Codul competenței din programă, tipărit pe fișă',
+  'Planificarea calendaristică: o vezi toată și descarci PDF-ul pentru modulul 1',
+  'Planșe și cartonașe pentru literele A–E, o diplomă',
+  'Fișe pentru grupă: încearcă cu 3 copii',
+  'Fișa cu numele copilului și calendarul de Advent',
+];
+const FULL = [
+  'Toate fișele, de la grădiniță la clasa a IV-a, cu toate variantele',
+  'Tot alfabetul, de tipar și de mână, și orice cuvânt de trasat',
+  'Matematică până la 1 000 000, cu exerciții noi oricând',
+  'Evaluări pe clasă, cu pagină de răspunsuri și calificative orientative',
+  'Planificarea calendaristică pe tot anul, în Word și PDF',
+  'Fișe pentru toată grupa, până la 40 de copii, cu numele fiecăruia',
+  'Tema trimisă părinților ca link sau cod QR',
+  'Planșe, cartonașe, jetoane și diplome pentru toată grupa',
+  'Fișele salvate în cont și caietul cu numele copilului',
+];
 
 function formatPrice(amount: number | null, currency: string): string {
   if (amount === null) return '';
@@ -52,7 +71,7 @@ export default async function PricingPage() {
       <CheckoutCancelTracker />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 text-center">Prețuri</h1>
-        <p className="mt-3 text-center text-slate-600">Începi gratuit. Treci la varianta completă când ai nevoie de fișe pentru toată grupa.</p>
+        <p className="mt-3 text-center text-slate-600">Începi gratuit. Treci la varianta completă când vrei toate fișele, planificarea pe tot anul și temele pentru părinți.</p>
 
         <div className="mt-10 grid md:grid-cols-2 gap-6">
           <div className="rounded-2xl bg-white p-6 border-2 border-slate-200 flex flex-col">

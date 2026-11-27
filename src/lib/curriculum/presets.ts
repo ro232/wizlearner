@@ -103,6 +103,10 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'ce-iei-cu-tine', title: 'Ce iei cu tine?', text: 'Dacă plouă, iei umbrela: unește vremea cu ce îți trebuie.', config: { category: 'games', selectedItems: ['wear:1'] }, levels: ['presc', 'CP'] },
   { id: 'apa-solida-lichida', title: 'Apa: solidă sau lichidă?', text: 'Gheață, zăpadă, ploaie, valuri: încercuiește cum este apa.', config: { category: 'games', selectedItems: ['water:1'] }, levels: ['I'] },
   { id: 'ce-se-intampla-cu-apa', title: 'Ce se întâmplă cu apa?', text: 'Se topește, îngheață, fierbe sau se evaporă: citește și încercuiește.', config: { category: 'games', selectedItems: ['melt:1'] }, levels: ['I'] },
+  // „Explorarea mediului”, the kinds added later: only the three that cover a behaviour no other sheet covers (the others are in the generator)
+  { id: 'calendarul-vremii', title: 'Calendarul vremii', text: 'O săptămână de observații: în fiecare zi, copilul desenează semnul vremii, apoi numără zilele cu soare, cu ploaie, cu vânt.', config: { category: 'games', selectedItems: ['obs:1'] }, levels: ['presc'] },
+  { id: 'pamant-soare-luna', title: 'Pământul, Soarele și Luna', text: 'Soarele este fierbinte, Pământul are forma unei mingi: copilul ascultă propoziția, încercuiește cuvântul potrivit și o spune întreagă.', config: { category: 'games', selectedItems: ['space:1'] }, levels: ['presc'] },
+  { id: 'ce-este-viu', title: 'Ce este viu?', text: 'Copilul, câinele, copacul, peștele: încercuiește tot ce este viu, printre obiecte.', config: { category: 'games', selectedItems: ['alive:1'] }, levels: ['presc'] },
   // The sheets that fill the gaps of the programme (clr-pages.ts, mem-pages.ts): the free set of each class
   { id: 'povestea-in-imagini', title: 'Povestea în imagini', text: 'Patru imagini de pus în ordine, titlul potrivit de încercuit, sfârșitul de desenat.', config: { category: 'games', selectedItems: ['story:1'] }, levels: ['CP'] },
   {
@@ -111,6 +115,15 @@ export const SHEET_PRESETS: SheetPreset[] = [
   },
   { id: 'scriu-un-mesaj', title: 'Felicitarea, biletul, invitația', text: 'Un mesaj de completat cu litere de tipar: numele prietenului, locul, semnătura.', config: { category: 'games', selectedItems: ['note:1'] }, levels: ['CP'] },
   { id: 'citeste-mesajul', title: 'Citește mesajul', text: 'O invitație, un afiș, un bilet și patru întrebări despre fiecare.', config: { category: 'games', selectedItems: ['msg:1'] }, levels: ['II'] },
+  // „Ascultă și răspunde” and „Fișa cărții” (clr-pages.ts): the free set of each class
+  {
+    id: 'ascult-si-raspund', title: 'Ascultă și răspunde', text: 'Un text scurt citit de adult (pagina lui e separată): copilul încercuiește imaginea potrivită; la clasa I și a II-a, litera răspunsului.',
+    config: { category: 'games', selectedItems: ['listen:1'] }, byLevel: { I: { selectedItems: ['listen:7'] }, II: { selectedItems: ['listen:13'] } }, levels: ['CP', 'I', 'II'],
+  },
+  {
+    id: 'fisa-cartii', title: 'Fișa cărții', text: 'Titlul cărții, personajul preferat de desenat, stelele de colorat; la clasa a II-a și o propoziție despre carte.',
+    config: { category: 'games', selectedItems: ['book:1'] }, byLevel: { I: { selectedItems: ['book:2'] }, II: { selectedItems: ['book:3'] } }, levels: ['CP', 'I', 'II'],
+  },
   { id: 'unde-este-scris', title: 'Unde este ceva scris?', text: 'Douăsprezece cartonașe: încercuiește-le pe cele cu litere, nu pe cele cu desene sau forme.', config: { category: 'games', selectedItems: ['written:1'] }, levels: ['presc'] },
   {
     id: 'termenii-operatiilor', title: 'Termenii operațiilor', text: 'Suma, diferența, totalul și semnele +, −, =; la clasa I termenii, < și >; la clasa a II-a descăzutul, scăzătorul, produsul, câtul.',

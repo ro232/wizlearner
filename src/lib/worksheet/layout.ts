@@ -13,6 +13,7 @@ import { buildMathPages, isMathType } from './math';
 import { buildEvaluationPages } from './evaluation';
 import { gameAnswerPages } from './game-keys';
 import { variantOf, withVariant } from './variant';
+import { clrTeacherPages } from './clr-pages';
 import type { SheetPage } from './answer-key';
 import { textWidthMm } from '@/lib/book/text';
 import {
@@ -231,6 +232,8 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
   }
   if (config.category === 'games') {
     const pages: SheetPage[] = buildActivityPages(config, tier, (item) => isItemAllowed(item, 'games', tier));
+    // „Ascultă și răspunde”: the texts the adult reads aloud, after the pupils' pages (clr-pages.ts)
+    if (pages.length) pages.push(...clrTeacherPages(config, tier, (item) => isItemAllowed(item, 'games', tier)));
     // „Pagină cu răspunsuri”: the answers of the games that have some (game-keys.ts)
     if (pages.length && config.mathAnswers) for (const ops of gameAnswerPages(config, tier)) pages.push({ width: 210, height: 297, ops, answerKey: true });
     if (pages.length) return pages;

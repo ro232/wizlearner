@@ -7,6 +7,7 @@ test.describe('generator', () => {
   test('a ready-made start, then the PDF', async ({ page }) => {
     const errors = watchErrors(page);
     await page.goto('/generator');
+    await page.locator('[data-ready]').waitFor();
     await page.getByRole('button', { name: 'Litera săptămânii' }).click();
     await expect(page.getByText('Pe fișă')).toBeVisible();
     await expectPdfDownload(page, () => download(page).click());
@@ -17,6 +18,7 @@ test.describe('generator', () => {
   test('letters, levels and trace styles change the sheet without errors', async ({ page }) => {
     const errors = watchErrors(page);
     await page.goto('/generator');
+    await page.locator('[data-ready]').waitFor();
     await page.getByRole('button', { name: 'A', exact: true }).first().click();
     for (const level of ['Mijlociu', 'Avansat', 'Început']) await page.getByRole('button', { name: new RegExp(`^${level}`) }).click();
     await page.getByRole('button', { name: /Literele de trasat: Puncte/ }).click();
@@ -29,6 +31,7 @@ test.describe('generator', () => {
 
   test('a locked letter opens the plans, not a broken sheet', async ({ page }) => {
     await page.goto('/generator');
+    await page.locator('[data-ready]').waitFor();
     const locked = page.getByRole('button', { name: 'M (varianta completă)' });
     await locked.click();
     const dialog = page.getByRole('dialog');
@@ -53,6 +56,7 @@ test.describe('generator', () => {
 
   test('the name can be corrected after „Trasează-l” without emptying the sheet', async ({ page }) => {
     await page.goto('/generator');
+    await page.locator('[data-ready]').waitFor();
     await page.getByLabel('Numele copilului').fill('Stefanut');
     await page.getByRole('button', { name: 'Trasează-l' }).click();
     await page.getByLabel('Numele copilului').fill('Ștefănuț');
@@ -63,6 +67,8 @@ test.describe('generator', () => {
 
   test('the example word in the box can be traced for free; math has no „Trasează-l”', async ({ page }) => {
     await page.goto('/generator');
+    // Enter does nothing until React has taken over the page
+    await page.locator('[data-ready]').waitFor();
     const box = page.getByLabel('Cuvinte de trasat');
     const example = ((await box.getAttribute('placeholder')) ?? '').replace(/^ex\.\s*/, '').split(',')[0].trim();
     await box.fill(example);
@@ -80,6 +86,7 @@ test.describe('generator', () => {
     test.skip(info.project.name !== 'pc-chrome', 'layout check for a laptop screen');
     await page.setViewportSize({ width: 1366, height: 768 });
     await page.goto('/generator');
+    await page.locator('[data-ready]').waitFor();
     await page.getByRole('button', { name: 'A', exact: true }).first().click();
     await expect(page.getByText('Pe fișă')).toBeVisible();
     await expect.poll(async () => (await download(page).boundingBox())!.y + (await download(page).boundingBox())!.height).toBeLessThanOrEqual(768);
@@ -89,6 +96,7 @@ test.describe('generator', () => {
   test('on a phone, „Vezi fișa” leads to the sheet that just changed', async ({ page }) => {
     test.skip(!isPhone(page), 'phones only');
     await page.goto('/generator');
+    await page.locator('[data-ready]').waitFor();
     const letter = page.getByRole('button', { name: 'A', exact: true }).first();
     await letter.scrollIntoViewIfNeeded();
     await letter.click();
@@ -105,6 +113,7 @@ test.describe('generator', () => {
     await page.goto('/preturi');
     await page.evaluate(() => localStorage.setItem('wizlearner-last-sheet', JSON.stringify({ state: { config: { customWords: null, selectedItems: null, childName: null } }, version: 1 })));
     await page.goto('/generator');
+    await page.locator('[data-ready]').waitFor();
     await expect(page.getByRole('heading', { name: 'Fișa ta' })).toBeVisible();
     await page.getByRole('button', { name: 'Litera săptămânii' }).click();
     await expect(page.getByText('Pe fișă')).toBeVisible();
@@ -115,6 +124,7 @@ test.describe('generator', () => {
   test('without the font no broken PDF is made: a clear message instead', async ({ page }) => {
     await page.route('**/fonts/*.ttf', (r) => r.abort());
     await page.goto('/generator');
+    await page.locator('[data-ready]').waitFor();
     await page.getByRole('button', { name: /Matematică/ }).first().click();
     await page.getByRole('button', { name: /^Scăderi/ }).click();
     let downloaded = false;
@@ -128,6 +138,7 @@ test.describe('generator', () => {
   test('math: every exercise type, a new set, answers, the PDF', async ({ page }) => {
     const errors = watchErrors(page);
     await page.goto('/generator');
+    await page.locator('[data-ready]').waitFor();
     await page.getByRole('button', { name: /Matematică/ }).first().click();
     for (const t of [/^Compară numerele/, /^Adunări 3/, /^Scăderi/, /^Completează șirul/]) await page.getByRole('button', { name: t }).click();
     await page.getByRole('button', { name: /Alte exerciții/ }).click();
