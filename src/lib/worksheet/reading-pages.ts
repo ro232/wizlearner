@@ -7,7 +7,7 @@ import { SLANT, cursiveWord } from '@/lib/glyphs/cursive';
 import { INK, ACCENT, PAPER, MUTED, guideOps, itemOps } from './rows';
 import { caseOf, glyphText, glyphTextWidth, inkExtent } from './phonology-pages';
 import {
-  COPY_SETS, DRAW_SETS, FILL_SETS, GAP_SETS, MATCH_SETS, ORDER_SETS, READING_LEVELS, READ_KINDS, READ_PICTURES, READ_SETS, TEXT_SETS,
+  COPY_SETS, DRAW_SETS, FILL_SETS, GAP_SETS, MATCH_SETS, ORDER_SETS, READING_LEVELS, READ_KINDS, READ_PICTURES, TEXT_SETS,
   isReadingItem, readingParts, type FillSentence, type GapWord, type ReadKind, type ReadLevel, type ReadingText,
 } from './reading';
 
@@ -23,7 +23,7 @@ import {
  * - copy   Copiază — words (clasa pregătitoare, print letters on the three-line ruling) or sentences
  *          (clasa I on ruling like the tip I notebook, clasa a II-a without the slanted lines), the model
  *          in print or, with „de mână” (config.script), in joined handwriting;
- * - text   Citește și răspunde — a short original text and three questions (circle the answer, Da / Nu).
+ * - text   Citește și răspunde — a short original text and three or four questions (circle the answer, Da / Nu).
  *
  * The class of a set (reading.ts READING_LEVELS) sets the letters: capitals or small letters as the
  * letter mode says in clasa pregătitoare, small letters and sentences from clasa I. Shuffles are seeded
@@ -44,9 +44,11 @@ export const READ_KIND_TITLES: Record<ReadKind, string> = {
 const LEVEL_SHORT: Record<ReadLevel, string> = { CP: 'CP', I: 'I', II: 'II' };
 const LEVEL_LONG: Record<ReadLevel, string> = { CP: 'clasa pregătitoare', I: 'clasa I', II: 'clasa a II-a' };
 
-/** Every reading item, in picker order. */
+const LEVEL_ORDER: ReadLevel[] = ['CP', 'I', 'II'];
+
+/** Every reading item, in picker order: kind by kind, the sets of clasa pregătitoare, then of clasa I, then of clasa a II-a. */
 export function readingItems(): string[] {
-  return READ_KINDS.flatMap((k) => Array.from({ length: READ_SETS }, (_, i) => `read:${k}:${i + 1}`));
+  return READ_KINDS.flatMap((k) => LEVEL_ORDER.flatMap((level) => READING_LEVELS[k].flatMap((l, i) => (l === level ? [`read:${k}:${i + 1}`] : []))));
 }
 
 /** The class of a set and its number among the sets of that class: "read:gap:4" → I, 2. */
