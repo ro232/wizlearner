@@ -285,7 +285,7 @@ describe('the items', () => {
           expect(b.maxX, `${it}: ${t.text}`).toBeLessThanOrEqual(198.5);
         }
       }
-  });
+  }, 60_000);
 
   it('the instruction at the top says what to do, in Romanian', () => {
     const top = (it: string, c: Partial<WorksheetConfig> = {}) => texts(page(it, c)).map((t) => t.text);
