@@ -8,6 +8,7 @@ import { track } from '@/lib/analytics';
 import type { SchoolLevel } from '@/lib/curriculum/sheet';
 import { CLASSES, KINDS, SUBJECTS, entryHref, filtersFromQuery, filtersToQuery, openLevel, prepare, resultBand, search, type CatalogEntry, type Filters } from '@/lib/catalog/search';
 import { fise } from '@/components/worksheet/plural';
+import { OPEN_ACCESS } from '@/lib/open-access';
 
 /** The sheet builder is heavy: it is fetched only when a result is on screen (sheet-thumb.tsx). */
 const SheetThumb = dynamic(() => import('./sheet-thumb'), { ssr: false });
@@ -95,7 +96,7 @@ function Card({ entry, level }: { entry: CatalogEntry; level?: SchoolLevel }) {
               </span>
             )}
             {entry.kind === 'evaluare' && <span className="rounded-md bg-ink px-2 py-1 text-white">Evaluare</span>}
-            {entry.free ? (
+            {OPEN_ACCESS ? null : entry.free ? (
               <span className="rounded-md bg-emerald-100 px-2 py-1 text-emerald-900">Gratuit</span>
             ) : (
               <span className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-2 py-1 text-amber-900"><Lock className="w-3 h-3" aria-hidden /> Varianta completă</span>
@@ -206,7 +207,7 @@ export function CatalogSearch({ entries }: { entries: CatalogEntry[] }) {
         </ChipRow>
         <ChipRow label="Arată">
           {KINDS.map((k) => <Chip key={k.id} active={filters.kind === k.id} onClick={() => toggle('kind', k.id)}>{k.id === 'fisa' ? 'Fișe' : 'Evaluări'}</Chip>)}
-          <Chip active={!!filters.free} onClick={() => toggle('free', true)}>Doar gratuite</Chip>
+          {!OPEN_ACCESS && <Chip active={!!filters.free} onClick={() => toggle('free', true)}>Doar gratuite</Chip>}
           <Chip active={!!filters.answers} onClick={() => toggle('answers', true)}>Cu răspunsuri</Chip>
         </ChipRow>
       </div>
