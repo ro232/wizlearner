@@ -556,7 +556,7 @@ describe('curriculum codes of the topics', () => {
     mul: { II: ['1.5'] }, div: { II: ['1.5'] }, mulmiss: { II: ['1.5'] },
     clock: { I: ['6.2'], II: ['6.2'] }, clockdraw: { I: ['6.2'], II: ['6.2'] },
     week: { CP: ['6.2'], I: ['6.2'], II: ['6.2'] }, months: { I: ['6.2'], II: ['6.2'] }, calmonth: { II: ['6.2'] },
-    length: { presc: ['E.2.2', 'E.2.4'], CP: ['6.1'], I: ['6.1'], II: ['6.1'] }, mass: { presc: ['E.2.2'], II: ['6.1'] },
+    length: { presc: ['E.2.2', 'E.2.4'], CP: ['6.1'], I: ['6.1'], II: ['6.1'] }, mass: { presc: ['E.2.2'], II: ['6.4'] },
     ruler: { I: ['6.4'], II: ['6.4'] }, units: { II: ['6.4'] }, frac: {}, figures: { presc: ['E.2.2'], CP: ['2.2'], I: ['2.2'] },
   };
 
@@ -576,7 +576,8 @@ describe('curriculum codes of the topics', () => {
     expect(text('clock', 'I', { mathClock: 'half' })).toEqual(['Utilizarea unor unități de măsură pentru determinarea și compararea duratelor unor activități cotidiene']);
     expect(text('week', 'CP')).toEqual(['Utilizarea unor unități de măsură pentru determinarea/ estimarea duratelor unor evenimente familiare']);
     expect(text('length', 'CP')).toEqual(['Utilizarea unor măsuri neconvenționale pentru determinarea și compararea lungimilor']);
-    expect(text('mass', 'II')).toEqual(['Utilizarea unor măsuri neconvenționale pentru determinarea și compararea maselor, lungimilor și capacităților']);
+    expect(text('mass', 'II')).toEqual(['Identificarea și utilizarea unităților de măsură uzuale pentru lungime, capacitate, masă (metrul, centimetrul, litrul, mililitrul, kilogramul, gramul) și a unor instrumente adecvate']);
+    expect(text('length', 'II')).toEqual(['Utilizarea unor măsuri neconvenționale pentru determinarea și compararea maselor, lungimilor și capacităților']);
     expect(text('ruler', 'I')[0]).toMatch(/^Identificarea unităților de măsură uzuale pentru lungime, capacitate \(centimetrul, litrul\)/);
     expect(text('figures', 'I')[0]).toMatch(/^Recunoașterea unor figuri și corpuri geometrice în mediul apropiat și în reprezentări plane accesibile/);
   });
@@ -612,7 +613,9 @@ describe('curriculum codes of the topics', () => {
     expect(i.codes('6.2')).toEqual(['mate-ceas', 'mate-ceas-acele', 'mate-saptamana', 'mate-luni']);
     expect(i.codes('6.4')).toEqual(['mate-rigla']);
     expect(ii.codes('1.5')).toEqual(['mate-grupe', 'mate-inmultiri', 'mate-impartiri', 'mate-factor-lipsa']);
-    expect(ii.codes('6.4')).toEqual(['mate-rigla', 'mate-unitati']);
+    // the balance of clasa a II-a weighs in kilograms and grams (measure.ts massSheetII): 6.4, not the unconventional measures of 6.1
+    expect(ii.codes('6.4')).toEqual(['mate-balanta', 'mate-rigla', 'mate-unitati']);
+    expect(ii.codes('6.1')).toEqual(['mate-lungimi']);
     expect(presetConfig(presetById('mate-ceas')!, 'I').mathClock).toBe('half');
     expect(presetConfig(presetById('mate-ceas')!, 'II').mathClock).toBe('five');
   });

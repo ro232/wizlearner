@@ -687,7 +687,11 @@ function diffKeyDrawing(n: number, variant: number): KeyDrawing {
       ops.push(...sceneOps(scene, 'b', x, y, s));
       diffSpots(scene).forEach((d, i) => {
         ops.push({ t: 'circle', cx: x + d.x * s, cy: y + d.y * s, r: d.r * s, stroke: '#DC2626', strokeWidth: 0.7 });
-        ops.push({ t: 'text', x: x + (d.x + d.r * 0.75) * s, y: y + (d.y - d.r * 0.75) * s, text: String(i + 1), size: 3, fill: '#DC2626', weight: 'bold', align: 'center' });
+        // a picture circled at the very top: its number stays under the title (in the first variant only where it would sit on it)
+        const nx = x + (d.x + d.r * 0.75) * s;
+        const ny = y + (d.y - d.r * 0.75) * s;
+        const clear = variant === 1 && (ny > y || nx > x0 + textWidthMm(`${FUN_KIND_TITLES.diff}: ${scene.title}`, 4) * 1.1 + 3);
+        ops.push({ t: 'text', x: nx, y: clear ? ny : Math.max(y + 3.6, ny), text: String(i + 1), size: 3, fill: '#DC2626', weight: 'bold', align: 'center' });
       });
     },
   };
