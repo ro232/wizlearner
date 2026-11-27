@@ -10,12 +10,12 @@ export const metadata: Metadata = pageMetadata({ title: LANDING_INDEX.title, abs
 
 export default function LandingIndexPage() {
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <main>
-        <section className="ruled border-b-2 border-ink">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight text-ink max-w-3xl">Fișe de lucru pe clase și teme</h1>
+        <section className="bg-white border-b border-line">
+          <div className="max-w-[1120px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
+            <h1 className="text-4xl sm:text-6xl font-bold leading-tight text-ink max-w-3xl">Fișe de lucru pe clase și teme</h1>
             <p className="mt-4 text-lg sm:text-xl text-slate-700 max-w-2xl">
               Alegi clasa și tema, citești ce exersează copilul și deschizi fișa în generator. Pe fiecare fișă se tipărește competența
               din programă, ca s-o pui direct în portofoliu.
@@ -28,21 +28,21 @@ export default function LandingIndexPage() {
         </section>
 
         {LANDING_CLASSES.map((c) => (
-          <section key={c.cls.slug} className="py-10 border-b-2 border-ink/10" aria-labelledby={`clasa-${c.cls.slug}`}>
-            <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <section key={c.cls.slug} className="py-10 border-b border-line" aria-labelledby={`clasa-${c.cls.slug}`}>
+            <div className="max-w-[1120px] mx-auto px-4 sm:px-6">
               <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-                <h2 id={`clasa-${c.cls.slug}`} className="text-2xl sm:text-3xl font-extrabold text-ink">{c.cls.title}</h2>
-                <Link href={c.path} className="inline-flex items-center font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">
+                <h2 id={`clasa-${c.cls.slug}`} className="text-2xl sm:text-3xl font-bold text-ink">{c.cls.title}</h2>
+                <Link href={c.path} className="inline-flex items-center font-bold text-brand underline decoration-brand/30 underline-offset-4 hover:text-brand">
                   {c.h1} <ArrowRight className="w-4 h-4 ml-1" aria-hidden />
                 </Link>
               </div>
               {c.groups.map((g) => (
                 <div key={g.area} className="mt-5">
-                  <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-600">{g.title}</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-600">{g.title}</h3>
                   <ul className="mt-2 flex flex-wrap gap-2">
                     {g.pages.map((p) => (
                       <li key={p.path}>
-                        <Link href={p.path} prefetch={false} className="inline-flex items-center min-h-10 rounded-lg border-2 border-ink bg-white px-3 text-sm font-bold text-ink hover:bg-pencil">
+                        <Link href={p.path} prefetch={false} className="inline-flex items-center min-h-10 rounded-lg border border-line-strong bg-white px-3 text-sm font-semibold text-ink hover:bg-pencil">
                           {p.topic.label}
                         </Link>
                       </li>

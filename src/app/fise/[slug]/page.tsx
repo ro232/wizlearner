@@ -38,19 +38,19 @@ export default function SeoSheetPage({ params }: { params: { slug: string } }) {
   };
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <main>
-        <section className="ruled border-b-2 border-ink">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14 grid lg:grid-cols-[1fr_auto] gap-10 items-start">
+        <section className="bg-white border-b border-line">
+          <div className="max-w-[1120px] mx-auto px-4 sm:px-6 py-10 sm:py-14 grid lg:grid-cols-[1fr_auto] gap-10 items-start">
             <div className="space-y-6">
               <nav aria-label="Unde ești" className="text-sm font-bold text-slate-600">
-                <Link href="/fise" className="hover:text-pen underline underline-offset-4">Fișe gratuite</Link>
+                <Link href="/fise" className="hover:text-brand underline underline-offset-4">Fișe gratuite</Link>
                 <span aria-hidden> / </span>
                 <span>{KIND_TITLES[s.kind]}</span>
               </nav>
-              <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight text-ink">{s.h1}</h1>
+              <h1 className="text-4xl sm:text-5xl font-bold leading-tight text-ink">{s.h1}</h1>
               {s.intro.map((p) => (
                 <p key={p} className="text-lg leading-relaxed text-slate-700 max-w-xl">{p}</p>
               ))}
@@ -64,7 +64,7 @@ export default function SeoSheetPage({ params }: { params: { slug: string } }) {
               <SheetActions slug={s.slug} />
               <p className="text-sm text-slate-600">Fără cont, fără card. În generator poți pune numele copilului și alte litere.</p>
             </div>
-            <div className="desk rounded-2xl border-2 border-ink p-5 sm:p-7 flex justify-center">
+            <div className="desk rounded-2xl border border-line p-5 sm:p-7 flex justify-center">
               <div className="rotate-1">
                 <WorksheetPreview config={s.config} tier="full" width={340} />
               </div>
@@ -73,18 +73,18 @@ export default function SeoSheetPage({ params }: { params: { slug: string } }) {
         </section>
 
         <section className="py-14">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <h2 className="text-3xl font-extrabold text-ink">Alte fișe gratuite</h2>
+          <div className="max-w-[1120px] mx-auto px-4 sm:px-6">
+            <h2 className="text-3xl font-bold text-ink">Alte fișe gratuite</h2>
             <ul className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {related.map((r) => (
                 <li key={r.slug}>
-                  <Link href={`/fise/${r.slug}`} prefetch={false} className="block h-full rounded-xl bg-white border-2 border-ink px-4 py-3 font-extrabold text-ink hover:-translate-y-0.5 hover:shadow-md transition-transform">
+                  <Link href={`/fise/${r.slug}`} prefetch={false} className="block h-full rounded-xl bg-white border border-line px-4 py-3 font-bold text-ink hover:-translate-y-0.5 hover:shadow-md transition-transform">
                     {r.label}
                   </Link>
                 </li>
               ))}
             </ul>
-            <Link href="/fise" className="mt-6 inline-flex items-center font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">
+            <Link href="/fise" className="mt-6 inline-flex items-center font-bold text-brand underline decoration-brand/30 underline-offset-4 hover:text-brand">
               Toate fișele <ArrowRight className="w-4 h-4 ml-1" aria-hidden />
             </Link>
           </div>

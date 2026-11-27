@@ -4,66 +4,63 @@
 
 @layer base {
   :root {
-    /* Caiet de școală: paper, navy ink, red pen */
-    --background: 43 64% 96%;
-    --foreground: 222 37% 19%;
+    /* Minimal alb: white pages, navy text (#14213D), one blue accent (#2448E8), thin grey borders */
+    --background: 0 0% 100%;
+    --foreground: 221 51% 16%;
     --card: 0 0% 100%;
-    --card-foreground: 222 37% 19%;
-    --primary: 222 37% 19%;
+    --card-foreground: 221 51% 16%;
+    --primary: 229 81% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 41 45% 92%;
-    --secondary-foreground: 222 37% 19%;
-    --muted: 41 45% 92%;
-    --muted-foreground: 40 11% 38%;
-    --accent: 41 45% 92%;
-    --accent-foreground: 222 37% 19%;
-    --destructive: 351 85% 42%;
+    --secondary: 225 25% 97%;
+    --secondary-foreground: 221 51% 16%;
+    --muted: 225 25% 97%;
+    --muted-foreground: 221 16% 39%;
+    --accent: 225 25% 97%;
+    --accent-foreground: 221 51% 16%;
+    --destructive: 0 72% 42%;
     --destructive-foreground: 0 0% 100%;
-    --border: 39 31% 85%;
-    --input: 222 20% 70%;
-    --ring: 40 88% 57%;
-    --radius: 0.75rem;
+    --border: 220 22% 92%;
+    --input: 219 21% 86%;
+    --ring: 229 81% 53%;
+    --radius: 0.625rem;
   }
 }
 
 @layer base {
   * { @apply border-border; }
   body { @apply bg-background text-foreground; }
-  h1, h2, h3 { font-family: var(--font-fraunces), Georgia, serif; letter-spacing: -0.02em; }
-  :focus-visible { outline: 3px solid #F2B632; outline-offset: 2px; }
-  input[type='checkbox'], input[type='range'] { accent-color: #1F2A44; }
-  ::selection { background: #F2B632; color: #1F2A44; }
+  h1, h2, h3 { font-family: var(--font-inter), Inter, system-ui, sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+  h1 { letter-spacing: -0.03em; }
+  /* one focus ring everywhere: 2px accent, offset from the element (6.6:1 on white) */
+  :focus-visible { outline: 2px solid #2448E8; outline-offset: 2px; }
+  input[type='checkbox'], input[type='radio'], input[type='range'] { accent-color: #2448E8; }
+  ::selection { background: #DCE4FC; color: #14213D; }
+  a { text-underline-offset: 3px; }
 }
 
-/* ── Caiet de școală ───────────────────────────────────────── */
+/* ── Minimal alb ───────────────────────────────────────────── */
 
-/* Notebook ruling, for hero areas. */
-.ruled {
-  background-color: #FBF7EE;
-  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 39px, #DCE6F2 39px, #DCE6F2 40px);
-}
+/* Former notebook ruling: now a plain white area (kept so older markup stays in the same style). */
+.ruled { background-color: #FFFFFF; }
 
-/* Buttons: data-btn="primary" (navy, red offset) and data-btn="ink" (navy, navy offset). */
+/* Buttons: data-btn="primary" (and the former data-btn="ink") are the one solid accent button. */
 [data-btn] {
-  background: #1F2A44 !important;
+  background: #2448E8 !important;
   color: #FFFFFF !important;
-  border: 2px solid #1F2A44;
-  font-weight: 800;
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  border: 1px solid #2448E8;
+  border-radius: 10px;
+  font-weight: 600;
+  min-height: 44px;
+  box-shadow: none !important;
+  transition: background-color 120ms ease, border-color 120ms ease;
 }
-[data-btn='primary'] { box-shadow: 4px 4px 0 #C8102E !important; }
-[data-btn='ink'] { box-shadow: 4px 4px 0 #F2B632 !important; }
-[data-btn]:hover:not(:disabled) { transform: translate(-1px, -1px); }
-[data-btn='primary']:hover:not(:disabled) { box-shadow: 6px 6px 0 #C8102E !important; }
-[data-btn='ink']:hover:not(:disabled) { box-shadow: 6px 6px 0 #F2B632 !important; }
-[data-btn]:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #1F2A44 !important; }
+[data-btn]:hover:not(:disabled) { background: #1A36B8 !important; border-color: #1A36B8; }
+[data-btn]:disabled { opacity: 0.55; }
+/* the small round account button in the menu keeps its own size */
+[data-btn][data-btn-round] { min-height: 0; border-radius: 9999px; }
 
-/* A sheet of paper on the desk, used around previews. */
-.desk {
-  background-color: #EFE7D6;
-  background-image: radial-gradient(#E3D8C2 1px, transparent 1px);
-  background-size: 14px 14px;
-}
+/* The area a sheet preview sits on: a quiet grey surface. */
+.desk { background-color: #F6F7FA; }
 
 /* Small entrance for the preview when the sheet changes. */
 @keyframes sheet-in {
@@ -80,59 +77,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .sheet-in, .toast-in, .animate-fade-up, [data-btn] { animation: none !important; transition: none !important; }
-}
-
-/* Premium effects */
-.glass {
-  backdrop-filter: blur(16px) saturate(1.8);
-  -webkit-backdrop-filter: blur(16px) saturate(1.8);
-}
-
-.glass-card {
-  backdrop-filter: blur(12px);
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-.gradient-text { color: #C8102E; }
-.gradient-text-blue { color: #C8102E; }
-
-.hover-lift {
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
-}
-.hover-lift:hover {
-  transform: translateY(-6px) scale(1.01);
-  box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.15);
-}
-
-.hover-3d {
-  transition: transform 0.5s ease, box-shadow 0.5s ease;
-  transform-style: preserve-3d;
-  perspective: 800px;
-}
-.hover-3d:hover {
-  transform: perspective(800px) rotateY(-2deg) rotateX(2deg) translateY(-4px);
-  box-shadow: 8px 16px 40px -12px rgba(0, 0, 0, 0.12);
-}
-
-.btn-premium {
-  position: relative;
-  overflow: hidden;
-}
-
-
-.noise-bg {
-  position: relative;
-}
-
-.scroll-reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-.scroll-reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* Dashboard grid */
@@ -168,10 +112,11 @@
 }
 
 /*
- * Nunito – the text font of the site and of the worksheets. One family, one download: the page
- * text and the canvas preview both use the name "Nunito". A single variable file carries latin
- * and latin-ext (Ă Â Î Ș Ț); the site uses weights 400–800. The PDF embeds its own TTF copies
- * (/fonts/Nunito-Regular.ttf, /fonts/Nunito-Bold.ttf), fetched only when a PDF is made.
+ * Nunito – the font of the worksheets. The canvas preview draws with the family "Nunito" and
+ * waits for it (document.fonts.load), so the browser downloads it only on pages that draw a sheet.
+ * A single variable file carries latin and latin-ext (Ă Â Î Ș Ț). The PDF embeds its own TTF
+ * copies (/fonts/Nunito-Regular.ttf, /fonts/Nunito-Bold.ttf), fetched only when a PDF is made.
+ * The site text itself uses Inter (src/app/layout.tsx).
  */
 @font-face {
   font-family: 'Nunito';
@@ -180,16 +125,6 @@
   font-style: normal;
   font-display: swap;
 }
-/* Arial resized to Nunito's proportions, so the text does not jump when the font arrives. */
-@font-face {
-  font-family: 'Nunito Fallback';
-  src: local('Arial');
-  ascent-override: 99.71%;
-  descent-override: 34.82%;
-  line-gap-override: 0%;
-  size-adjust: 101.39%;
-}
-:root { --font-nunito: 'Nunito', 'Nunito Fallback'; }
 
 /* Under lg the generator has a fixed download bar at the bottom: keep anything scrolled or focused into
    view (keyboard, „find”, scrollIntoView) above it instead of underneath it. */

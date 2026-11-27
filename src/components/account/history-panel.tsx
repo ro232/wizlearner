@@ -45,7 +45,7 @@ export function HistoryPanel({ userId }: { userId: string }) {
               <span className="block font-medium text-slate-800 truncate">{r.title}</span>
               <span className="text-xs text-slate-500">{PROJECT_LABELS[r.kind]} · {when(r.created_at)}{r.pages ? ` · ${r.pages} ${r.pages === 1 ? 'pagină' : 'pagini'}` : ''}</span>
             </span>
-            <button type="button" onClick={() => open(r.kind, r.configuration)} className="shrink-0 inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border-2 border-ink text-sm font-bold text-ink hover:bg-paper">
+            <button type="button" onClick={() => open(r.kind, r.configuration)} className="shrink-0 inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-line text-sm font-bold text-ink hover:bg-paper">
               <RotateCcw className="w-4 h-4" aria-hidden /> Refă
             </button>
           </li>

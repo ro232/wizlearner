@@ -23,12 +23,12 @@ const KIND_TEXT: Record<SeoKind, string> = {
 export default function SheetsIndexPage() {
   const kinds = Object.keys(KIND_TITLES) as SeoKind[];
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <main>
-        <section className="ruled border-b-2 border-ink">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight text-ink max-w-3xl">Fișe gratuite, gata de printat</h1>
+        <section className="bg-white border-b border-line">
+          <div className="max-w-[1120px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
+            <h1 className="text-4xl sm:text-6xl font-bold leading-tight text-ink max-w-3xl">Fișe gratuite, gata de printat</h1>
             <p className="mt-4 text-lg sm:text-xl text-slate-700 max-w-2xl">
               Alege o fișă, descarc-o ca PDF și printeaz-o. Toate au liniatură de caiet, ordinea liniilor și diacriticele corecte.
             </p>
@@ -39,9 +39,9 @@ export default function SheetsIndexPage() {
           </div>
         </section>
         {kinds.map((k) => (
-          <section key={k} className="py-12 border-b-2 border-ink/10">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6">
-              <h2 className="text-3xl font-extrabold text-ink">{KIND_TITLES[k]}</h2>
+          <section key={k} className="py-12 border-b border-line">
+            <div className="max-w-[1120px] mx-auto px-4 sm:px-6">
+              <h2 className="text-3xl font-bold text-ink">{KIND_TITLES[k]}</h2>
               <p className="mt-1 text-slate-700">{KIND_TEXT[k]}</p>
               <ul className={`mt-6 grid gap-3 ${['litere', 'mana', 'cifre'].includes(k) ? 'grid-cols-4 sm:grid-cols-6 lg:grid-cols-11' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}>
                 {SEO_SHEETS.filter((s) => s.kind === k).map((s) => (
@@ -50,7 +50,7 @@ export default function SheetsIndexPage() {
                       href={`/fise/${s.slug}`}
                       prefetch={false}
                       aria-label={s.label}
-                      className={`flex items-center justify-center h-full rounded-xl bg-white border-2 border-ink font-extrabold text-ink hover:bg-pencil hover:-translate-y-0.5 transition-transform ${['litere', 'mana', 'cifre'].includes(k) ? `aspect-square text-2xl font-display ${k === 'mana' ? 'italic' : ''}` : 'px-4 py-3 justify-start'}`}
+                      className={`flex items-center justify-center h-full rounded-xl bg-white border border-line font-bold text-ink hover:bg-pencil hover:-translate-y-0.5 transition-transform ${['litere', 'mana', 'cifre'].includes(k) ? `aspect-square text-2xl ${k === 'mana' ? 'italic' : ''}` : 'px-4 py-3 justify-start'}`}
                     >
                       {k === 'litere' ? s.label.replace('Litera ', '') : k === 'mana' ? s.label.replace(/^Litera (.+) de mână$/, '$1') : k === 'cifre' ? s.label.replace(/^(Cifra|Numărul) /, '') : s.label}
                     </Link>
@@ -62,11 +62,11 @@ export default function SheetsIndexPage() {
         ))}
         <section className="py-14">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-            <h2 className="text-3xl font-extrabold text-ink">Vrei fișa cu numele copilului?</h2>
+            <h2 className="text-3xl font-bold text-ink">Vrei fișa cu numele copilului?</h2>
             <p className="mt-2 text-slate-700">În generator alegi literele, cuvintele și numele, iar fișa se face pe loc.</p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/nume" data-btn="primary" className="inline-flex items-center justify-center h-12 px-6 rounded-xl">Fișa cu numele</Link>
-              <Link href="/generator" className="inline-flex items-center justify-center h-12 px-6 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper">Deschide generatorul</Link>
+              <Link href="/generator" prefetch={false} className="inline-flex items-center justify-center h-12 px-6 rounded-xl border border-line-strong bg-white font-semibold text-ink hover:bg-paper">Deschide generatorul</Link>
             </div>
           </div>
         </section>

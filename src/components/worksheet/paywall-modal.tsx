@@ -107,16 +107,16 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
           <X className="w-5 h-5" aria-hidden />
         </button>
 
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style={{ background: '#FDF3D7' }}>
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style={{ background: '#EEF2FE' }}>
           <Crown className="w-7 h-7 text-pen" aria-hidden />
         </div>
 
-        <h2 id="paywall-title" className="text-xl font-extrabold text-center text-slate-900 mb-2 px-6">Acest conținut este în varianta completă</h2>
+        <h2 id="paywall-title" className="text-xl font-bold text-center text-slate-900 mb-2 px-6">Acest conținut este în varianta completă</h2>
         <p className="text-sm text-center text-slate-500 mb-5">Varianta gratuită include literele A–E, cifrele 0–5, trei forme, trei exerciții grafice și matematica până la 10.</p>
 
         <ul className="space-y-1.5 mb-6 text-sm text-slate-700">
           {['Fișe pentru toată grupa, până la 40 de copii', 'Tot alfabetul românesc și englez, mari și mici', 'Cifrele și numerele 0–20', 'Matematică până la 20 și 100', 'Toate formele și exercițiile grafice', 'Caietul KDP fără filigran'].map((f) => (
-            <li key={f} className="flex items-center gap-2"><Check className="w-4 h-4 text-green-600 flex-shrink-0" aria-hidden />{f}</li>
+            <li key={f} className="flex items-center gap-2"><Check className="w-4 h-4 text-brand flex-shrink-0" aria-hidden />{f}</li>
           ))}
         </ul>
 
@@ -144,7 +144,7 @@ export function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
           </Link>
         )}
 
-        <Link href="/preturi" className="block mt-4 py-2 text-center text-sm font-semibold text-orange-600 hover:underline">Vezi prețurile și abonează-te</Link>
+        <Link href="/preturi" className="block mt-4 py-2 text-center text-sm font-semibold text-brand hover:underline">Vezi prețurile și abonează-te</Link>
       </div>
     </div>
   );

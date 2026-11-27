@@ -33,11 +33,11 @@ export function QrCode({ text, size = 200, label }: { text: string; size?: numbe
 
   if (failed) return null;
   return (
-    <div className="mx-auto bg-white rounded-xl border-2 border-ink p-1" style={{ width: size, height: size }}>
+    <div className="mx-auto bg-white rounded-xl border border-line p-1" style={{ width: size, height: size }}>
       {svg ? (
         <svg viewBox={`0 0 ${svg.n} ${svg.n}`} width="100%" height="100%" role="img" aria-label={label} shapeRendering="crispEdges" data-qr>
           <rect width={svg.n} height={svg.n} fill="#fff" />
-          <path d={svg.d} fill="#1F2A44" />
+          <path d={svg.d} fill="#14213D" />
         </svg>
       ) : (
         <div className="w-full h-full rounded-lg bg-slate-100 animate-pulse" aria-hidden />

@@ -65,7 +65,7 @@ export function ProjectsPanel({ projects, onUpdate, onDelete }: {
         <div className="flex flex-wrap gap-2" role="group" aria-label="Arată">
           {(['all', ...kinds] as const).map((k) => (
             <button key={k} type="button" onClick={() => setFilter(k)} aria-pressed={filter === k}
-              className={`h-9 px-3 rounded-full border-2 text-sm font-bold ${filter === k ? 'border-ink bg-ink text-white' : 'border-slate-300 bg-white text-ink hover:border-ink'}`}>
+              className={`h-9 px-3 rounded-full border text-sm font-bold ${filter === k ? 'border-brand bg-brand text-white' : 'border-slate-300 bg-white text-ink hover:border-brand'}`}>
               {k === 'all' ? `Toate (${projects.length})` : PROJECT_LABELS[k]}
             </button>
           ))}
@@ -75,7 +75,7 @@ export function ProjectsPanel({ projects, onUpdate, onDelete }: {
       {groups.map(([folder, items]) => (
         <div key={folder || '-'}>
           {(folder || groups.length > 1) && (
-            <h3 className="flex items-center gap-1.5 text-sm font-extrabold text-slate-700 mb-1">
+            <h3 className="flex items-center gap-1.5 text-sm font-bold text-slate-700 mb-1">
               <Folder className="w-4 h-4" aria-hidden /> {folder || 'Fără dosar'}
             </h3>
           )}
@@ -100,7 +100,7 @@ export function ProjectsPanel({ projects, onUpdate, onDelete }: {
                         placeholder={editing.field === 'folder' ? 'ex. Grupa mare – octombrie' : 'Numele'}
                         aria-label={editing.field === 'folder' ? 'Dosarul' : 'Numele'}
                         className="h-9 px-3 rounded-lg border border-slate-300 text-sm flex-1 min-w-0" />
-                      <button type="submit" className="h-9 px-3 rounded-lg bg-ink text-white text-sm font-bold">OK</button>
+                      <button type="submit" className="h-9 px-3 rounded-lg bg-brand text-white text-sm font-bold">OK</button>
                       <button type="button" onClick={() => setEditing(null)} className="h-9 px-3 rounded-lg border border-slate-300 text-sm">Renunță</button>
                     </form>
                   ) : confirm === p.id ? (
@@ -111,7 +111,7 @@ export function ProjectsPanel({ projects, onUpdate, onDelete }: {
                     </span>
                   ) : (
                     <span className="flex items-center gap-1">
-                      <button type="button" onClick={() => open(kind, p.configuration)} className="h-9 px-3 rounded-lg border-2 border-ink text-sm font-bold text-ink hover:bg-paper">Deschide</button>
+                      <button type="button" onClick={() => open(kind, p.configuration)} className="h-9 px-3 rounded-lg border border-line text-sm font-bold text-ink hover:bg-paper">Deschide</button>
                       <button type="button" onClick={() => setEditing({ id: p.id, field: 'name', value: p.name })} aria-label={`Redenumește ${p.name}`} title="Redenumește" className="h-9 w-9 grid place-items-center rounded-lg hover:bg-slate-100"><Pencil className="w-4 h-4 text-slate-500" /></button>
                       <button type="button" onClick={() => setEditing({ id: p.id, field: 'folder', value: p.folder ?? '' })} aria-label={`Mută ${p.name} într-un dosar`} title="Mută într-un dosar" className="h-9 w-9 grid place-items-center rounded-lg hover:bg-slate-100"><FolderInput className="w-4 h-4 text-slate-500" /></button>
                       <button type="button" onClick={() => setConfirm(p.id)} aria-label={`Șterge ${p.name}`} title="Șterge" className="h-9 w-9 grid place-items-center rounded-lg hover:bg-slate-100"><Trash2 className="w-4 h-4 text-slate-400" /></button>

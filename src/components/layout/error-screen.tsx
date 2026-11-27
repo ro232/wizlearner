@@ -26,16 +26,16 @@ export function ErrorScreen({ error, reset }: { error: Error & { digest?: string
   }, [error]);
 
   return (
-    <main className="ruled min-h-screen flex items-center justify-center px-4 py-16" style={{ minHeight: '100vh', background: '#FBF7EE', color: '#1F2A44' }}>
+    <main className="bg-white min-h-screen flex items-center justify-center px-4 py-16" style={{ minHeight: '100vh', background: '#FFFFFF', color: '#14213D', fontFamily: 'var(--font-inter), Inter, system-ui, sans-serif' }}>
       <div className="max-w-xl text-center" style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
-        <p className="font-extrabold text-[13px] tracking-[0.12em] uppercase text-pen">Ceva nu a mers</p>
-        <h1 className="mt-2 text-4xl sm:text-5xl font-extrabold leading-tight text-ink">Pagina s-a împiedicat</h1>
-        <p className="mt-4 text-lg text-slate-700">
+        <p className="text-sm font-semibold text-brand">Ceva nu a mers</p>
+        <h1 className="mt-2 text-4xl sm:text-5xl font-bold leading-tight text-ink">Pagina s-a împiedicat</h1>
+        <p className="mt-4 text-lg leading-relaxed text-slate-600">
           Nu e vina ta. Încearcă din nou; dacă tot nu merge, resetează setările salvate în acest browser (ultima fișă la care ai lucrat).
           Grupele salvate și contul tău rămân neatinse.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-          <button type="button" onClick={() => reset()} data-btn="primary" className="inline-flex items-center justify-center h-14 px-7 rounded-xl text-base" style={{ cursor: 'pointer' }}>
+          <button type="button" onClick={() => reset()} data-btn="primary" className="inline-flex items-center justify-center min-h-12 px-6 text-base" style={{ cursor: 'pointer' }}>
             Încearcă din nou
           </button>
           <button
@@ -44,7 +44,7 @@ export function ErrorScreen({ error, reset }: { error: Error & { digest?: string
               clearSavedSettings();
               window.location.reload();
             }}
-            className="inline-flex items-center justify-center h-14 px-6 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper"
+            className="inline-flex min-h-12 items-center justify-center px-6 rounded-xl border border-line-strong bg-white font-semibold text-ink hover:bg-paper"
             style={{ cursor: 'pointer' }}
           >
             Resetează setările salvate
@@ -53,7 +53,7 @@ export function ErrorScreen({ error, reset }: { error: Error & { digest?: string
         <p className="mt-6">
           {/* A full page load on purpose: the app's state may be what is broken. */}
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/" className="font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">Înapoi la prima pagină</a>
+          <a href="/" className="inline-flex min-h-11 items-center font-semibold text-brand hover:text-brand-hover hover:underline">Înapoi la prima pagină</a>
         </p>
         {error.digest && <p className="mt-6 text-xs text-slate-500">Cod eroare: {error.digest}</p>}
       </div>

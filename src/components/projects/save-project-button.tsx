@@ -47,7 +47,7 @@ export function SaveProjectButton({ kind, name, configuration, onPaywall, back, 
 
   return (
     <button type="button" onClick={save} disabled={busy} title="Salvează în cont, ca să-l refaci oricând" aria-label="Salvează în cont"
-      className={`inline-flex items-center justify-center gap-1.5 h-12 px-4 rounded-2xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper disabled:opacity-50 ${className}`}>
+      className={`inline-flex items-center justify-center gap-1.5 h-12 px-4 rounded-2xl border border-line-strong bg-white font-semibold text-ink hover:bg-paper disabled:opacity-50 ${className}`}>
       <Save className="w-5 h-5" aria-hidden /> <span className="hidden sm:inline">Salvează</span>
     </button>
   );

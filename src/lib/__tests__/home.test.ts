@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
-import { CLASS_PAGES } from '@/lib/curriculum/presets';
 import { landingPage } from '@/lib/seo/landing';
-import { CLASS_TOPICS } from '@/components/home/class-picker';
-import { HERO_CODE } from '@/components/home/hero-sheets';
+import { HERO_SHEET, POPULAR_SHEETS, sheetPage, sheetSvg } from '@/components/home/home-sheets';
 import { ALL_TOOLS, CADRU_NAV, NAV_ITEMS, PARINTE_NAV, navHrefs, navItemsFor } from '@/components/layout/nav-items';
 import { CHILD_STAGES } from '@/stores/role-store';
 import { HEAVY_ROUTES, STAGE_TOPICS, linkPrefetch } from '@/lib/role-links';
@@ -11,20 +9,29 @@ import { LANDING_CLASSES } from '@/lib/seo/landing';
 import { ROUTE_META } from '@/lib/seo/metadata';
 
 describe('home page', () => {
-  it('every class card shows four topics that have a page', () => {
-    expect(Object.keys(CLASS_TOPICS).sort()).toEqual(CLASS_PAGES.map((c) => c.slug).sort());
-    for (const [clasa, topics] of Object.entries(CLASS_TOPICS)) {
-      expect(topics, clasa).toHaveLength(4);
-      for (const t of topics) expect(landingPage(clasa, t), `${clasa}/${t}`).toBeDefined();
+  const home = () => readFileSync('src/app/page.tsx', 'utf8');
+
+  it('the sheets it shows are real: each one has its page and its static SVG', () => {
+    const sheets = [HERO_SHEET, ...POPULAR_SHEETS];
+    expect(POPULAR_SHEETS).toHaveLength(4);
+    expect(new Set(sheets.map(sheetPage)).size).toBe(sheets.length);
+    for (const s of sheets) {
+      expect(landingPage(s.clasa, s.subiect), sheetPage(s)).toBeDefined();
+      expect(sheetSvg(s)).toBe(`${sheetPage(s)}/fisa.svg`);
+      expect(s.alt.length, sheetPage(s)).toBeGreaterThan(20);
     }
   });
 
-  it('the sheets in the hero exist, and the code under them is the one the front sheet prints', () => {
-    const src = readFileSync('src/components/home/hero-sheets.tsx', 'utf8');
-    const paths = [...src.matchAll(/'\/fise-de-lucru\/([^/]+)\/([^/]+)\/fisa\.svg'/g)];
-    expect(paths).toHaveLength(3);
-    for (const [, clasa, subiect] of paths) expect(landingPage(clasa, subiect), `${clasa}/${subiect}`).toBeDefined();
-    expect(landingPage('clasa-pregatitoare', 'despartirea-in-silabe')?.sheetLabel).toBe(HERO_CODE);
+  it('has one h1, the two calls to action and the role cards, and loads no sheet engine', () => {
+    const src = home();
+    expect(src.match(/<h1[\s>]/g)).toHaveLength(1);
+    expect(src).toMatch(/<Link href="\/generator" prefetch=\{false\}[^>]*>Fă o fișă<\/Link>/);
+    expect(src).toContain('href="/cauta"');
+    expect(src).toContain('<RoleCards />');
+    expect(readFileSync('src/components/home/role-cards.tsx', 'utf8')).toContain('data-role-card={c.role}');
+    for (const f of ['src/app/page.tsx', 'src/components/home/home-sheets.ts', 'src/components/home/advent-banner.tsx']) {
+      expect(readFileSync(f, 'utf8'), f).not.toMatch(/from '@\/(lib\/(worksheet|glyphs|pdf)|components\/worksheet)\//);
+    }
   });
 });
 
@@ -39,7 +46,7 @@ describe('main menu', () => {
 
   it('„Temă pentru părinți” points to a section the home page has', () => {
     expect(navHrefs()).toContain('/#tema');
-    expect(readFileSync('src/app/page.tsx', 'utf8')).toContain('id="tema"');
+    expect(readFileSync('src/app/page.tsx', 'utf8')).toMatch(/\bid: 'tema'/);
   });
 
   it('keeps the owner’s KDP tool out of the menu (it is in the footer)', () => {

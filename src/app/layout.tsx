@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { StoreHydration } from "@/components/store-hydration";
@@ -8,27 +8,18 @@ import { SITE_URL } from "@/lib/seo/site";
 import { SITE_NAME, DEFAULT_DESCRIPTION, DEFAULT_TITLE, OG_IMAGE } from "@/lib/seo/metadata";
 
 /**
- * Fonts, each downloaded once (latin + latin-ext in one variable file, so Ă Â Î Ș Ț are covered).
+ * Inter, the one font of the site UI (400 text, 500/600 labels and buttons, 700 headings), served by
+ * next/font from the site itself, with latin-ext for Ă Â Î Ș Ț.
  *
- * Fraunces (headings): next/font, from src/app/fonts. The site uses 600 and 800; both come from
- * the same file.
- *
- * Nunito (text): declared once in globals.css under its real name, because the worksheet preview
- * draws on a canvas with the family "Nunito" and next/font would give it a generated name — which
- * is how it ended up downloaded twice. The file lives in /public/fonts next to the TTFs embedded
- * in the PDFs; it is preloaded here.
+ * The sheets keep their own font: the canvas preview draws with "Nunito" (declared in globals.css and
+ * fetched only by the pages that draw a sheet) and the PDFs embed their TTF copies.
  */
-const fraunces = localFont({
-  src: [
-    { path: "./fonts/fraunces-latin-ext-wght.woff2", weight: "600", style: "normal" },
-    { path: "./fonts/fraunces-latin-ext-wght.woff2", weight: "800", style: "normal" },
-  ],
-  variable: "--font-fraunces",
+const inter = Inter({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
   display: "swap",
-  adjustFontFallback: "Times New Roman",
 });
-
-const NUNITO_WOFF2 = "/fonts/nunito-v3602-latin-ext-wght.woff2";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -49,7 +40,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION, images: [OG_IMAGE.url] },
 };
 
-export const viewport: Viewport = { themeColor: "#1F2A44" };
+export const viewport: Viewport = { themeColor: "#2448E8" };
 
 export default function RootLayout({
   children,
@@ -57,11 +48,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ro">
-      <head>
-        <link rel="preload" href={NUNITO_WOFF2} as="font" type="font/woff2" crossOrigin="anonymous" />
-      </head>
-      <body className={`${fraunces.variable} font-sans antialiased`}>
+    <html lang="ro" className={inter.variable}>
+      <body className="font-sans antialiased">
         <StoreHydration />
         <Analytics />
         <ToastProvider>{children}</ToastProvider>

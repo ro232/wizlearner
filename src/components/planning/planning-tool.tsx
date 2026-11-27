@@ -32,11 +32,11 @@ import { FEBRUARY_OPTIONS, PROGRAMS, SCHOOL_YEAR_LABEL, courseIntervals, vacatio
 import { MAX_HOURS_PER_WEEK, PLAN_LEVELS, PLAN_SUBJECTS, planLevel, planSubject, type PlanLevel, type SubjectId } from '@/lib/planning/subjects';
 import { BRAND_NAME } from '@/lib/brand';
 
-const label = 'block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2';
+const label = 'block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2';
 const pill = (active: boolean) =>
-  `min-h-11 px-3 rounded-lg border-2 font-bold text-sm transition-colors ${active ? 'border-ink bg-ink text-white' : 'border-slate-300 bg-white text-ink hover:border-ink'}`;
-const input = 'w-full min-h-11 px-3 border-2 border-slate-300 rounded-lg bg-white text-sm text-ink focus:outline-none focus:border-ink';
-const cellInput = 'w-full px-2 py-1.5 border border-slate-300 rounded-md bg-white text-sm text-ink focus:outline-none focus:border-ink';
+  `min-h-11 px-3 rounded-lg border font-bold text-sm transition-colors ${active ? 'border-brand bg-brand text-white' : 'border-slate-300 bg-white text-ink hover:border-brand'}`;
+const input = 'w-full min-h-11 px-3 border border-slate-300 rounded-lg bg-white text-sm text-ink focus:outline-none focus:border-line';
+const cellInput = 'w-full px-2 py-1.5 border border-slate-300 rounded-md bg-white text-sm text-ink focus:outline-none focus:border-line';
 
 /** Enough rows to show the whole text of a cell (about `perLine` characters per line). */
 const rowsFor = (text: string, perLine: number, min = 2, max = 14) =>
@@ -140,10 +140,10 @@ export function PlanningTool() {
     <>
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
 
-      <section className="py-8 sm:py-10 border-b-2 border-ink/10" aria-labelledby="setari">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 grid gap-6 lg:grid-cols-[1fr_340px] [&>*]:min-w-0">
-          <div className="rounded-2xl border-2 border-ink bg-white p-5 sm:p-6 shadow-[4px_4px_0_#1F2A44] space-y-5">
-            <h2 id="setari" className="text-xl font-extrabold text-ink">1. Clasa și disciplina</h2>
+      <section className="py-8 sm:py-10 border-b border-line" aria-labelledby="setari">
+        <div className="max-w-[1120px] mx-auto px-4 sm:px-6 grid gap-6 lg:grid-cols-[1fr_340px] [&>*]:min-w-0">
+          <div className="rounded-2xl border border-line bg-white p-5 sm:p-6 space-y-5">
+            <h2 id="setari" className="text-xl font-bold text-ink">1. Clasa și disciplina</h2>
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
                 <span className={label}>Clasa</span>
@@ -211,15 +211,15 @@ export function PlanningTool() {
               Cele două programe au câte 5 zile, între 7 septembrie 2026 și 23 aprilie 2027, în module diferite; fiecare școală își alege săptămânile.
             </p>
             {plan.ignored.length > 0 && (
-              <p role="status" className="flex items-start gap-2 rounded-lg border-2 border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+              <p role="status" className="flex items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
                 <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" aria-hidden />
                 Săptămâna aleasă pentru {plan.ignored.map((id) => `„${PROGRAMS.find((p) => p.id === id)?.title}”`).join(' și ')} nu mai e o săptămână de cursuri cu vacanța aleasă (sau e în același modul cu celălalt program). Alege alta.
               </p>
             )}
           </div>
 
-          <aside className="rounded-2xl border-2 border-ink bg-white p-5 sm:p-6 shadow-[4px_4px_0_#1F2A44] space-y-4 self-start" aria-labelledby="document">
-            <h2 id="document" className="text-xl font-extrabold text-ink">2. Documentul</h2>
+          <aside className="rounded-2xl border border-line bg-white p-5 sm:p-6 space-y-4 self-start" aria-labelledby="document">
+            <h2 id="document" className="text-xl font-bold text-ink">2. Documentul</h2>
             <div>
               <label htmlFor="scoala" className={label}>Unitatea de învățământ</label>
               <input id="scoala" value={school} onChange={(e) => setSchool(e.target.value)} maxLength={200} placeholder="opțional" className={input} />
@@ -248,7 +248,7 @@ export function PlanningTool() {
                   <button type="button" data-btn="ink" disabled={busy !== null} onClick={() => download('pdf', false)} className="w-full min-h-12 px-4 rounded-xl inline-flex items-center justify-center gap-2">
                     {busy === 'pdf' ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> : <Download className="w-4 h-4" aria-hidden />} PDF gratuit: modulul 1
                   </button>
-                  <button type="button" onClick={() => download('docx', true)} className="w-full min-h-12 px-4 rounded-xl border-2 border-ink bg-paper font-extrabold text-ink inline-flex items-center justify-center gap-2 hover:bg-pencil/40">
+                  <button type="button" onClick={() => download('docx', true)} className="w-full min-h-12 px-4 rounded-xl border border-line bg-paper font-bold text-ink inline-flex items-center justify-center gap-2 hover:bg-pencil/40">
                     <Lock className="w-4 h-4" aria-hidden /> Tot anul: Word și PDF
                   </button>
                   <p className="text-xs text-slate-600">
@@ -263,16 +263,16 @@ export function PlanningTool() {
       </section>
 
       <section className="py-8 sm:py-10" aria-labelledby="plan">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="max-w-[1120px] mx-auto px-4 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 id="plan" className="text-2xl sm:text-3xl font-extrabold text-ink">3. Planificarea propusă</h2>
+              <h2 id="plan" className="text-2xl sm:text-3xl font-bold text-ink">3. Planificarea propusă</h2>
               <p className="mt-1 text-slate-700">
                 {subject.title}, clasa {planLevel(plan.level).name} · {plan.weeks.length} săptămâni de cursuri, {teachingWeeks} în planificare · {totalHours} ore
               </p>
             </div>
             <button type="button" onClick={() => { clearDraft(); rebuild({}); toast('Am refăcut propunerea de la zero.'); }}
-              className="inline-flex items-center gap-1.5 min-h-10 px-3 rounded-lg border-2 border-slate-300 bg-white text-sm font-bold text-ink hover:border-ink">
+              className="inline-flex items-center gap-1.5 min-h-10 px-3 rounded-lg border border-slate-300 bg-white text-sm font-bold text-ink hover:border-brand">
               <RotateCcw className="w-4 h-4" aria-hidden /> Refă propunerea
             </button>
           </div>
@@ -286,11 +286,11 @@ export function PlanningTool() {
               const rows = plan.rows.filter((r) => r.module === iv.module);
               const weeks = plan.weeks.filter((w) => w.module === iv.module).length;
               return (
-                <div key={iv.module} className="rounded-2xl border-2 border-ink bg-white overflow-hidden">
-                  <h3 className="px-4 py-3 bg-ink text-white font-extrabold">
+                <div key={iv.module} className="rounded-2xl border border-line bg-white overflow-hidden">
+                  <h3 className="px-4 py-3 bg-brand text-white font-bold">
                     Modulul {iv.module} <span className="font-semibold text-white/80">· {rangeLabel(iv.start, iv.end, true)} · {weeks} săptămâni</span>
                   </h3>
-                  <div className="hidden lg:grid grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)_minmax(0,2.4fr)_5rem_8.5rem_minmax(0,1.4fr)] gap-3 px-4 py-2 bg-slate-100 text-xs font-extrabold uppercase tracking-wider text-slate-700" aria-hidden>
+                  <div className="hidden lg:grid grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)_minmax(0,2.4fr)_5rem_8.5rem_minmax(0,1.4fr)] gap-3 px-4 py-2 bg-slate-100 text-xs font-bold uppercase tracking-wider text-slate-700" aria-hidden>
                     <span>Unitatea de învățare</span><span>Competențe</span><span>Conținuturi</span><span>Ore</span><span>Săptămâna</span><span>Observații</span>
                   </div>
                   <ul className="divide-y-2 divide-slate-100">
@@ -299,13 +299,13 @@ export function PlanningTool() {
                         onShift={(d) => setPlan((p) => shiftWeek(p, r.id, d))} onReset={() => setPlan((p) => resetRow(p, r.id))} />
                     ))}
                   </ul>
-                  <p className="px-4 py-2 text-sm text-slate-600 bg-paper border-t-2 border-slate-100">{vacationAfter(iv.module, plan.february)}</p>
+                  <p className="px-4 py-2 text-sm text-slate-600 bg-paper border-t border-slate-100">{vacationAfter(iv.module, plan.february)}</p>
                 </div>
               );
             })}
           </div>
 
-          <div className="mt-8 rounded-xl border-2 border-amber-300 bg-amber-50 p-4 text-sm text-amber-950 space-y-1.5">
+          <div className="mt-8 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950 space-y-1.5">
             {noteLines(plan).map((n) => <p key={n}>{n}</p>)}
           </div>
           <p className="mt-4 text-sm text-slate-600">
@@ -329,13 +329,13 @@ function PlanRowEditor({ row, plan, onEdit, onShift, onReset }: {
   const [codesText, setCodesText] = useState(row.codes.join(', '));
   const [contentsText, setContentsText] = useState(row.contents.join('\n'));
   const program = row.kind === 'program';
-  const fieldLabel = 'lg:hidden block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 mb-1';
+  const fieldLabel = 'lg:hidden block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1';
   const period = `${weekNumbers(row.weeks)} · ${periodLabel(row.weeks, plan.weeks)}`;
 
   if (program) {
     return (
       <li className="px-4 py-3 bg-pencil/10 lg:grid lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)_minmax(0,2.4fr)_5rem_8.5rem_minmax(0,1.4fr)] gap-3 text-sm">
-        <p className="font-extrabold text-ink">{row.title}</p>
+        <p className="font-bold text-ink">{row.title}</p>
         <p className="hidden lg:block text-slate-500">–</p>
         <p className="text-slate-700">{row.contents.join(' ')}</p>
         <p className="hidden lg:block text-slate-500">–</p>
@@ -352,7 +352,7 @@ function PlanRowEditor({ row, plan, onEdit, onShift, onReset }: {
         <textarea id={`t-${row.id}`} rows={rowsFor(row.title, 22)} value={row.title} aria-label="Unitatea de învățare" onChange={(e) => onEdit(row.id, { title: e.target.value })} className={`${cellInput} font-bold resize-y`} />
         {row.sheets.length > 0 && (
           <div className="mt-2">
-            <span className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">Fișe</span>
+            <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">Fișe</span>
             <ul className="mt-1 flex flex-wrap gap-1.5">
               {row.sheets.map((id) => {
                 const p = presetById(id);
@@ -360,7 +360,7 @@ function PlanRowEditor({ row, plan, onEdit, onShift, onReset }: {
                 return (
                   <li key={id}>
                     <Link href={presetHref(p, plan.level)} prefetch={false} target="_blank" rel="noopener" title={p.text}
-                      className="inline-flex items-center gap-1 min-h-8 rounded-md border border-ink/60 bg-paper px-2 text-xs font-bold text-ink hover:bg-pencil">
+                      className="inline-flex items-center gap-1 min-h-8 rounded-md border border-line bg-paper px-2 text-xs font-bold text-ink hover:bg-pencil">
                       {p.title} <ArrowRight className="w-3 h-3" aria-hidden />
                     </Link>
                   </li>
@@ -396,9 +396,9 @@ function PlanRowEditor({ row, plan, onEdit, onShift, onReset }: {
         <p className="text-xs text-slate-600">{periodLabel(row.weeks, plan.weeks)}</p>
         <div className="mt-1.5 flex gap-1.5">
           <button type="button" onClick={() => onShift(-1)} disabled={row.weeks.length <= 1} aria-label={`O săptămână mai puțin pentru ${row.title}`}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-md border-2 border-slate-300 bg-white text-ink hover:border-ink disabled:opacity-40"><Minus className="w-4 h-4" aria-hidden /></button>
+            className="w-9 h-9 inline-flex items-center justify-center rounded-md border border-slate-300 bg-white text-ink hover:border-brand disabled:opacity-40"><Minus className="w-4 h-4" aria-hidden /></button>
           <button type="button" onClick={() => onShift(1)} aria-label={`O săptămână în plus pentru ${row.title}`}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-md border-2 border-slate-300 bg-white text-ink hover:border-ink"><Plus className="w-4 h-4" aria-hidden /></button>
+            className="w-9 h-9 inline-flex items-center justify-center rounded-md border border-slate-300 bg-white text-ink hover:border-brand"><Plus className="w-4 h-4" aria-hidden /></button>
         </div>
       </div>
       <div>

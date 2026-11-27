@@ -22,7 +22,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       <div aria-live={message?.error ? 'assertive' : 'polite'} className="fixed inset-x-0 bottom-24 lg:bottom-6 z-[60] flex justify-center pointer-events-none px-4">
         {message && (
           <div key={message.id} role={message.error ? 'alert' : 'status'}
-            className={`toast-in pointer-events-auto flex items-center gap-2 rounded-xl px-4 py-3 font-bold ${message.error ? 'bg-red-700 text-white shadow-[4px_4px_0_#1F2A44]' : 'bg-ink text-white shadow-[4px_4px_0_#F2B632]'}`}>
+            className={`toast-in pointer-events-auto flex items-center gap-2 rounded-xl px-4 py-3 font-bold ${message.error ? 'bg-red-700 text-white' : 'bg-ink text-white'}`}>
             {message.error ? <AlertCircle className="w-5 h-5 shrink-0" aria-hidden /> : <CheckCircle2 className="w-5 h-5 shrink-0 text-pencil" aria-hidden />} {message.text}
           </div>
         )}

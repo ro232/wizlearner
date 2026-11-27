@@ -9,7 +9,7 @@ export function LandingCrumbs({ items }: { items: { name: string; path?: string 
           <li key={c.name} className="flex items-center gap-1.5">
             {i > 0 && <span aria-hidden>/</span>}
             {c.path ? (
-              <Link href={c.path} className="underline underline-offset-4 hover:text-pen">{c.name}</Link>
+              <Link href={c.path} className="underline underline-offset-4 hover:text-brand">{c.name}</Link>
             ) : (
               <span aria-current="page">{c.name}</span>
             )}

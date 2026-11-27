@@ -20,7 +20,7 @@ export function VariantButton({ className = '' }: { className?: string }) {
     <div className={`flex flex-wrap items-center gap-x-3 gap-y-1.5 ${className}`} data-variant>
       <button type="button" onClick={() => newVariant()} data-variant-button
         aria-label={`Altă variantă a fișei (acum: varianta ${variant})`}
-        className="inline-flex items-center gap-1.5 h-11 px-4 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+        className="inline-flex items-center gap-1.5 h-11 px-4 rounded-xl border border-line-strong bg-white font-semibold text-ink hover:bg-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
         <Shuffle className="w-4 h-4" aria-hidden /> Altă variantă
       </button>
       <span className="text-xs text-slate-600" aria-live="polite" data-variant-note>

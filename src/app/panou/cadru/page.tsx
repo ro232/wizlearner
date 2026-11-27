@@ -20,11 +20,11 @@ const RecentSheets = dynamic(() => import('@/components/dashboard/teacher-accoun
 
 const TIER = { free: 'Gratuit', starter: 'Starter', full: 'Complet' } as const;
 
-const wrap = 'max-w-6xl mx-auto px-4 sm:px-6';
-const h2 = 'text-2xl sm:text-[28px] font-extrabold leading-tight text-ink';
-const panel = 'rounded-2xl border-2 border-ink bg-white p-5 sm:p-6';
-const textLink = 'font-bold text-ink underline decoration-pen underline-offset-2 focus-visible:outline-ink';
-const button = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border-2 border-ink bg-white px-4 font-extrabold text-ink hover:bg-paper focus-visible:outline-ink';
+const wrap = 'max-w-[1120px] mx-auto px-4 sm:px-6';
+const h2 = 'text-2xl sm:text-[28px] font-bold leading-tight text-ink';
+const panel = 'rounded-2xl border border-line bg-white p-5 sm:p-6';
+const textLink = 'font-bold text-brand underline decoration-brand/30 underline-offset-2';
+const button = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-line-strong bg-white px-4 font-semibold text-ink hover:bg-paper';
 
 /** How many children a saved list holds: one per filled line, as it was pasted. */
 const listSize = (g: SavedGroup) => g.namesText.split('\n').filter((line) => line.trim()).length;
@@ -45,12 +45,12 @@ export default function TeacherDashboard() {
   const summary = user ? subscriptionSummary(profile?.subscription_status, profile?.subscription_period_end, tier) : null;
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <main>
-        <section className="ruled border-b-2 border-ink">
+        <section className="bg-white border-b border-line">
           <div className={`${wrap} py-9 sm:py-12`}>
-            <h1 className="text-[34px] sm:text-5xl font-extrabold leading-[1.05] text-ink">Panoul cadrului didactic</h1>
+            <h1 className="text-[34px] sm:text-5xl font-bold leading-[1.05] text-ink">Panoul cadrului didactic</h1>
             <p className="mt-3 max-w-2xl text-lg text-slate-700">Uneltele pentru grupă sau clasă, la un click: fișe cu numele fiecărui copil, fișe pe programă, planificare.</p>
           </div>
         </section>
@@ -76,7 +76,7 @@ export default function TeacherDashboard() {
               <p className="mt-3 min-h-[72px] text-sm text-slate-600">Se încarcă…</p>
             ) : groups.length > 0 ? (
               <>
-                <ul className="mt-3 divide-y divide-ink/10" data-groups>
+                <ul className="mt-3 divide-y divide-line" data-groups>
                   {groups.map((g) => (
                     <li key={g.id} className="flex items-center justify-between gap-3 py-2">
                       <span className="min-w-0">
@@ -100,8 +100,8 @@ export default function TeacherDashboard() {
               </div>
             )}
             {user && (
-              <div className="mt-6 border-t-2 border-ink/10 pt-5">
-                <h3 className="font-sans text-sm font-extrabold tracking-normal text-pen">Copiii salvați în cont</h3>
+              <div className="mt-6 border-t border-line pt-5">
+                <h3 className="font-sans text-sm font-bold tracking-normal text-pen">Copiii salvați în cont</h3>
                 <div className="mt-2">
                   <SavedChildren userId={user.id} />
                 </div>
@@ -123,7 +123,7 @@ export default function TeacherDashboard() {
                     <Link href="/generator" prefetch={false} className={button}>
                       Continuă ultima fișă <ArrowRight className="w-4 h-4" aria-hidden />
                     </Link>
-                    <Link href="/auth/login?next=/panou/cadru" className={`${button} border-ink/40`}>Intră în cont</Link>
+                    <Link href="/auth/login?next=/panou/cadru" className={`${button} border-line`}>Intră în cont</Link>
                   </div>
                 </>
               )}
@@ -134,8 +134,8 @@ export default function TeacherDashboard() {
         {/* Test period (OPEN_ACCESS): everything is open, so no plan and no offer are shown. */}
         {!OPEN_ACCESS && !loading && (
           <section className={`${wrap} pb-12`} aria-labelledby="abonament-titlu" data-plan>
-            <div className="rounded-xl border border-ink/25 bg-white/70 px-5 py-4 text-slate-700">
-              <h2 id="abonament-titlu" className="font-sans text-sm font-extrabold tracking-normal text-ink">Varianta ta: {TIER[tier]}</h2>
+            <div className="rounded-xl border border-line bg-white/70 px-5 py-4 text-slate-700">
+              <h2 id="abonament-titlu" className="font-sans text-sm font-bold tracking-normal text-ink">Varianta ta: {TIER[tier]}</h2>
               <p className="mt-1 text-sm">
                 {summary ? summary.text : tier === 'free' ? (user ? 'Ai varianta gratuită.' : 'Folosești varianta gratuită, fără cont.') : 'Ai acces la toate fișele și uneltele.'}
                 {tier === 'free' && (

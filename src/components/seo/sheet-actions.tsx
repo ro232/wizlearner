@@ -34,14 +34,14 @@ export function SheetActions({ slug }: { slug: string }) {
   return (
     <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
       <DownloadError message={error} className="sm:basis-full" />
-      <button type="button" onClick={download} disabled={busy} data-btn="primary" className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-14 px-7 rounded-xl text-base disabled:opacity-60">
+      <button type="button" onClick={download} disabled={busy} data-btn="primary" className="inline-flex items-center justify-center gap-2 whitespace-nowrap min-h-12 px-7 rounded-xl text-base disabled:opacity-60">
         <Download className="w-5 h-5" aria-hidden /> {busy ? 'Se pregătește…' : 'Descarcă PDF gratuit'}
       </button>
-      <button type="button" onClick={edit} className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-14 px-6 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper">
+      <button type="button" onClick={edit} className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-14 px-6 rounded-xl border border-line-strong bg-white font-semibold text-ink hover:bg-paper">
         <PencilLine className="w-5 h-5" aria-hidden /> Modifică în generator
       </button>
       {sheet.kind === 'litere' && (
-        <a href="/nume" className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-14 px-4 font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">
+        <a href="/nume" className="inline-flex items-center justify-center gap-2 whitespace-nowrap h-14 px-4 font-bold text-brand underline decoration-brand/30 underline-offset-4 hover:text-brand">
           <UserRound className="w-5 h-5" aria-hidden /> Cu numele copilului
         </a>
       )}

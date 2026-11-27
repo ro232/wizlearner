@@ -22,19 +22,19 @@ export default function SearchPage() {
   const entries = catalog();
   const rounded = Math.floor(entries.length / 50) * 50;
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <main>
-        <section className="ruled border-b-2 border-ink">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-2">
-            <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight text-ink">Caută fișe</h1>
+        <section className="bg-white border-b border-line">
+          <div className="max-w-[1120px] mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-2">
+            <h1 className="text-4xl sm:text-6xl font-bold leading-tight text-ink">Caută fișe</h1>
             <p className="mt-3 text-lg sm:text-xl text-slate-700 max-w-2xl">
               Peste {rounded} de fișe, de la grădiniță la clasa a IV-a. Scrie ce cauți (o temă, un cuvânt de pe fișă, codul unei
               competențe) sau alege clasa și materia.
             </p>
           </div>
         </section>
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <section className="max-w-[1120px] mx-auto px-4 sm:px-6 py-8 sm:py-10">
           <CatalogSearch entries={entries} />
           <p className="mt-12 text-slate-700">
             Vrei să vezi fișele pe competențe? Mergi la <Link href="/programa" className="font-bold underline">fișe pe programă</Link>. Pe teme, cu explicații:{' '}

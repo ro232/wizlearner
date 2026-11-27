@@ -125,8 +125,8 @@ export default function LoginPage() {
 
   if (magicLinkSent) {
     return (
-      <main className="min-h-screen flex items-center justify-center ruled p-4">
-        <Card className="w-full max-w-md border-blue-200 shadow-xl">
+      <main className="min-h-screen flex items-center justify-center bg-white p-4">
+        <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <h1 className="text-2xl font-semibold leading-none tracking-tight text-blue-600">Verifică emailul</h1>
             <CardDescription className="mt-2">
@@ -155,13 +155,13 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center ruled p-4">
+    <main className="min-h-screen flex items-center justify-center bg-white p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2">
             <Sparkles className="w-8 h-8 text-blue-600" />
-            <h1 className="text-3xl font-extrabold text-ink">
+            <h1 className="text-3xl font-bold text-ink">
               {BRAND_NAME}
             </h1>
           </div>
@@ -169,7 +169,7 @@ export default function LoginPage() {
         </div>
 
         {/* Main Card */}
-        <Card className="border-blue-200 shadow-xl overflow-hidden">
+        <Card className="overflow-hidden">
           
           <div className="relative">
             <CardHeader className="pb-3">
