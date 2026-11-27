@@ -308,7 +308,7 @@ describe('the other sheets', () => {
     const cx = (xs[0].x1 + xs[0].x2) / 2;
     expect(Math.floor((cx - t.x - t.firstW) / t.colW)).toBe(HABITAT_SET.rows[0].answer);
     expect(new Set(HABITAT_SET.rows.map((r) => r.answer)).size).toBe(HABITAT_SET.choices.length);
-    expect(exploreKeySection('habitat:1')?.entries).toContain('pinguinul – polul sud');
+    expect(exploreKeySection('habitat:1')?.entries).toContain('pinguinul – Polul Sud');
     // the three tables: five columns of the programme's list, eight animals, every column used, the X of the example in its column
     expect(HABITAT_SETS[0]).toBe(HABITAT_SET);
     const programme = ['BALTA', 'PĂDUREA', 'DELTA DUNĂRII', 'MAREA NEAGRĂ', 'DEȘERTUL', 'POLUL NORD', 'POLUL SUD'];

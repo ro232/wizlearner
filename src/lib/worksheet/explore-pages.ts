@@ -1144,8 +1144,7 @@ export function exploreKeySection(item: string): KeySection | null {
   if (isMatchItem(kind, n)) return { title, entries: matchSet(item).set.names, perLine: 2, numbered: true };
   if (kind === 'habitat') {
     const set = HABITAT_SETS[n - 1];
-    // the first table keeps the answers as it has always printed them
-    const word = n === 1 ? lower : proper;
+    const word = proper;
     return { title, entries: set.rows.map((r) => `${r.name} – ${word(set.choices[r.answer].label)}`), perLine: 2, numbered: true };
   }
   if (kind === 'season' && isSeasonGrid(n)) {
