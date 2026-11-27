@@ -4,8 +4,13 @@ import type { DrawOp, PageOps } from '@/lib/glyphs/types';
 import { flattenOps } from '@/lib/glyphs/geometry';
 import { hasIcon, iconOps } from '@/lib/hints/icons';
 import { numberWords } from '@/lib/worksheet/number-words';
-import { CLR_KINDS, CLR_SETS, DRAWN_SIGNS, MESSAGE_SETS, NOTE_SETS, SIGN_CONTEXT, SIGN_MATCH_SETS, STORIES, WRITTEN_SETS, isClrItem } from '@/lib/worksheet/clr';
-import { clrItems, clrKeySection, clrLabel, signMatchLayout, storyLayout, writtenAnswers } from '@/lib/worksheet/clr-pages';
+import {
+  BOOK_FORMS, BOOK_LEVELS, CLR_KINDS, CLR_SETS, COMPOSED_SIGNS, DRAWN_SIGNS, LISTEN_LEVELS, LISTEN_SETS, MESSAGE_SETS, NOTE_SETS, SIGN_CONTEXT, SIGN_CONTEXT_SETS, SIGN_MATCH,
+  SIGN_MATCH_SETS, SIGN_SET_LEVELS, STORIES, STORY_NAMES, WRITTEN_SETS, clrSetLevel, isClrItem,
+} from '@/lib/worksheet/clr';
+import {
+  bookCardLayout, clrItems, clrKeySection, clrLabel, clrShortLabel, clrTeacherPages, listenAnswer, listenPictureLayout, signMatchLayout, storyLayout, writtenAnswers,
+} from '@/lib/worksheet/clr-pages';
 import {
   AROUND_ROWS, CAUSE_SETS, COORD_PICTURES, MEM_KINDS, MEM_SETS, MINUS, MORE_ROWS, PICT_KINDS, PLACE_SETS, PLAN_SETS, REGULAR_SETS, SOLIDS, SOLID_OBJECTS,
   SORT2_SETS, TIMES, cellName, cmpSign, coordSet, growingCount, isMemItem, memSetLevel, nextPicture, numberRow, opsThatFit, pictCounts, ruleOf, termsSet,
@@ -29,6 +34,8 @@ const FRAME = 51;
 const CLR = clrItems();
 const MEMS = memItems();
 const ALL = [...CLR, ...MEMS];
+const LISTEN = CLR.filter((i) => i.startsWith('listen:'));
+const words = (s: string) => s.toLocaleLowerCase('ro').split(/[^\p{L}-]+/u).filter(Boolean);
 const LEVELS: SchoolLevel[] = ['presc', 'CP', 'I', 'II'];
 
 /** Where a picture is drawn on a page (its top-level icon groups), found by its own shapes. */
@@ -43,7 +50,17 @@ describe('the items', () => {
   it('are activities with a label, the store keeps exactly these', () => {
     expect(CLR).toHaveLength(Object.values(CLR_SETS).reduce((a, b) => a + b, 0));
     expect(MEMS).toHaveLength(Object.values(MEM_SETS).reduce((a, b) => a + b, 0));
-    expect(ALL).toHaveLength(43);
+    expect(CLR).toHaveLength(66);
+    expect(ALL).toHaveLength(94);
+    expect(new Set(ALL).size).toBe(ALL.length);
+    // at least twelve stories, eight sets of signs, eight messages to write and eight to read, six texts to listen to for each class
+    expect([CLR_SETS.story, CLR_SETS.sign, CLR_SETS.note, CLR_SETS.msg]).toEqual([12, 9, 10, 9]);
+    expect([STORIES.length, STORY_NAMES.length, NOTE_SETS.length, MESSAGE_SETS.length, LISTEN_SETS.length, BOOK_FORMS.length]).toEqual([12, 12, 10, 9, 18, 6]);
+    for (const level of ['CP', 'I', 'II'] as const) {
+      expect(LISTEN_LEVELS.filter((l) => l === level)).toHaveLength(6);
+      expect(SIGN_SET_LEVELS.filter((l) => l === level)).toHaveLength(3);
+      expect(BOOK_LEVELS.filter((l) => l === level)).toHaveLength(2);
+    }
     for (const i of ALL) {
       expect(isActivityItem(i), i).toBe(true);
       expect(itemFitsCategory(i, 'games'), i).toBe(true);
@@ -52,17 +69,30 @@ describe('the items', () => {
     // the store's own copy of the ids (sanitize-config.ts) matches the builders exactly
     const tries = [...CLR_KINDS, ...MEM_KINDS].flatMap((k) => Array.from({ length: 9 }, (_, n) => `${k}:${n}`).concat([`${k}:`, k, `${k}:1x`, `${k}:10`]));
     for (const t of tries) expect(itemFitsCategory(t, 'games'), t).toBe(isActivityItem(t));
-    for (const no of ['story:5', 'sign:4', 'note:0', 'written:3', 'terms:7', 'sides:2', 'regular:5', 'sort2:3', 'more:2', 'pict:3']) {
+    for (const k of CLR_KINDS) for (let n = 0; n <= 30; n++) {
+      expect(isClrItem(`${k}:${n}`), `${k}:${n}`).toBe(n >= 1 && n <= CLR_SETS[k]);
+      expect(itemFitsCategory(`${k}:${n}`, 'games'), `${k}:${n}`).toBe(n >= 1 && n <= CLR_SETS[k]);
+    }
+    for (const no of ['story:13', 'sign:10', 'note:0', 'note:11', 'msg:10', 'written:3', 'listen:19', 'listen:01', 'book:7', 'terms:7', 'sides:2', 'regular:5', 'sort2:3', 'more:2', 'pict:3']) {
       expect(isClrItem(no) || isMemItem(no), no).toBe(false);
       expect(itemFitsCategory(no, 'games'), no).toBe(false);
     }
-    expect(sanitizeConfig(games(['story:1', 'story:9', 'terms:6', 'terms:7'])).selectedItems).toEqual(['story:1', 'terms:6']);
+    expect(sanitizeConfig(games(['story:1', 'story:12', 'story:13', 'listen:18', 'listen:19', 'terms:6', 'terms:7'])).selectedItems).toEqual(['story:1', 'story:12', 'listen:18', 'terms:6']);
+    // the names in the picker and in the lists
+    expect(CLR.filter((i) => i.startsWith('sign:'))).toEqual(['sign:1', 'sign:4', 'sign:5', 'sign:2', 'sign:6', 'sign:7', 'sign:3', 'sign:8', 'sign:9']);
+    expect(new Set(CLR.map(clrLabel)).size).toBe(CLR.length);
+    for (const kind of CLR_KINDS) expect(new Set(CLR.filter((i) => i.startsWith(`${kind}:`)).map(clrShortLabel)).size, kind).toBe(CLR_SETS[kind]);
+    expect([clrLabel('listen:8'), clrShortLabel('listen:8'), clrLabel('book:2'), clrLabel('book:6'), clrShortLabel('sign:7'), clrLabel('msg:5')]).toEqual([
+      'Ascultă și răspunde (clasa I, 2)', 'I 2', 'Fișa cărții (clasa I)', 'Jurnal de lectură (clasa a II-a)', 'I: reciclare', 'Citește mesajul: biletul de mulțumire',
+    ]);
+    expect([clrSetLevel('listen:6'), clrSetLevel('listen:7'), clrSetLevel('sign:9'), clrSetLevel('book:4'), clrSetLevel('story:2')]).toEqual(['CP', 'I', 'II', 'CP', null]);
   });
 
   it('every picture is in the icon set; the drawn signs are the only ones that are not pictures', () => {
     const emojis = [
       ...STORIES.flatMap((s) => s.panels.flatMap((p) => p.pics.map((x) => x.e))),
-      ...SIGN_MATCH_SETS.flat().map(([s]) => s), ...SIGN_CONTEXT.map((q) => q.sign),
+      ...Object.values(SIGN_MATCH).flat().map(([s]) => s), ...Object.values(SIGN_CONTEXT_SETS).flat().map((q) => q.sign), ...Object.values(COMPOSED_SIGNS).map((c) => c.e),
+      ...LISTEN_SETS.flatMap((l) => l.questions.flatMap((q) => q.options.flatMap((o) => (typeof o === 'string' ? [] : [o[0]])))),
       ...NOTE_SETS.flatMap((n) => [...n.pictures, ...n.bank.map((b) => b[1])]), ...MESSAGE_SETS.map((m) => m.picture),
       ...WRITTEN_SETS.flat().flatMap((c) => (c.picture ? [c.picture] : [])),
       ...COORD_PICTURES.map((c) => c[0]), ...SOLIDS.map((s) => SOLID_OBJECTS[s][0]),
@@ -70,17 +100,20 @@ describe('the items', () => {
       ...SORT2_SETS.flatMap((s) => s.items.flatMap((i) => (i.picture ? [i.picture] : []))), ...PLAN_SETS.flatMap((p) => p.steps.map((s) => s[0])),
       ...CAUSE_SETS.flatMap((c) => c.pairs.map((p) => p[0])), ...AROUND_ROWS.map((r) => r[0]), ...PICT_KINDS.flat().map((k) => k[0]),
       ...MORE_ROWS.flatMap((r) => [r[1][0], r[2][0]]),
-    ].filter((e) => !(DRAWN_SIGNS as readonly string[]).includes(e));
+    ].filter((e) => !(DRAWN_SIGNS as readonly string[]).includes(e) && !(e in COMPOSED_SIGNS));
     for (const e of emojis) expect(hasIcon(e), e).toBe(true);
+    expect(emojis.length).toBeGreaterThan(400);
   });
 
   it('one page per item, everything on the A4 paper (with the competence line), no texts on each other', () => {
     for (const level of LEVELS) {
       const pages = buildWorksheetPages(games(ALL, { curriculumLevel: level, childName: 'Ana-Maria Ștefănescu' }), 'full');
-      expect(pages).toHaveLength(ALL.length);
+      // … and, after them, the page of the adult for each „Ascultă și răspunde”
+      expect(pages).toHaveLength(ALL.length + LISTEN.length);
       pages.forEach((p, i) => {
-        expect(opsOutside(p, { minX: 5, minY: 5, maxX: p.width - 5, maxY: p.height - 5 }), `${level} ${ALL[i]}`).toEqual([]);
-        expect(textOverlaps(p), `${level} ${ALL[i]}`).toEqual([]);
+        const name = ALL[i] ?? `adult ${LISTEN[i - ALL.length]}`;
+        expect(opsOutside(p, { minX: 5, minY: 5, maxX: p.width - 5, maxY: p.height - 5 }), `${level} ${name}`).toEqual([]);
+        expect(textOverlaps(p), `${level} ${name}`).toEqual([]);
       });
     }
   });
@@ -90,6 +123,7 @@ describe('the items', () => {
       const p = page(item);
       expect(opsOutside(p, { minX: 11.5, minY: 11.5, maxX: 210 - 11.5, maxY: 297 - 12 }), item).toEqual([]);
     }
+    for (const p of clrTeacherPages(games(LISTEN), 'full', () => true)) expect(opsOutside({ width: 210, height: 297, ops: p.ops }, { minX: 11.5, minY: 11.5, maxX: 210 - 11.5, maxY: 297 - 12 })).toEqual([]);
   });
 
   it('are the same every time (preview = PDF)', () => {
@@ -106,10 +140,13 @@ describe('the items', () => {
 
   it('free plan: set 1 of each kind and the first set of each class; the rest is the full plan', () => {
     expect(ALL.filter((i) => isItemAllowed(i, 'games', 'free'))).toEqual([
-      'story:1', 'sign:1', 'sign:2', 'sign:3', 'note:1', 'msg:1', 'written:1',
+      'story:1', 'sign:1', 'sign:2', 'sign:3', 'note:1', 'msg:1', 'written:1', 'listen:1', 'listen:7', 'listen:13', 'book:1', 'book:2', 'book:3',
       'terms:1', 'terms:3', 'terms:5', 'place:1', 'coord:1', 'sides:1', 'solid:1', 'regular:1', 'regular:3', 'sort2:1', 'plan:1', 'cause:1', 'around:1', 'pict:1', 'more:1',
     ]);
-    expect(hasContent(games(['story:2', 'terms:2', 'place:3']), 'free')).toBe(false);
+    expect(hasContent(games(['story:2', 'sign:4', 'listen:2', 'book:4', 'terms:2', 'place:3']), 'free')).toBe(false);
+    // the page of the adult only for a text the plan can draw
+    expect(buildWorksheetPages(games(['listen:1', 'listen:2']), 'free')).toHaveLength(2);
+    expect(buildWorksheetPages(games(['listen:1', 'listen:2']), 'full')).toHaveLength(4);
     expect(memSetLevel('terms:4')).toBe('I');
     expect(memSetLevel('regular:3')).toBe('II');
   });
@@ -118,7 +155,9 @@ describe('the items', () => {
     const answers = gameAnswerPages(games(ALL, { mathAnswers: true }), 'full');
     const t = answers.flatMap((ops) => texts({ width: 210, height: 297, ops }));
     for (const i of ALL) {
-      if (i.startsWith('note:')) expect(clrKeySection(i), i).toBeNull();
+      if (i.startsWith('note:') || i.startsWith('book:')) expect(clrKeySection(i), i).toBeNull();
+      // the texts to listen to are named with their title
+      else if (i.startsWith('listen:')) expect(t, i).toContain(`${activityLabel(i)}: „${LISTEN_SETS[Number(i.split(':')[1]) - 1].title}”`);
       else expect(t, i).toContain(activityLabel(i));
     }
   });
@@ -189,7 +228,16 @@ describe('Romanian number words, 0–1000', () => {
 
 describe('„Comunicare”', () => {
   it('the story: four panels in another order, the example on panel 1, the right title among three', () => {
-    for (let n = 1; n <= 4; n++) {
+    // every story has its own title; a wrong title is never the right one of the same page
+    expect(new Set(STORIES.map((s) => s.titles[0])).size).toBe(STORIES.length);
+    for (const story of STORIES) {
+      expect(story.panels).toHaveLength(4);
+      expect(new Set(story.panels.map((p) => p.caption)).size).toBe(4);
+      for (const p of story.panels) expect(p.caption, p.caption).toMatch(/^\p{Lu}.*\.$/u);
+      // nothing is drawn under the box for the number, in the top left corner (the ground and the sky apart)
+      for (const p of story.panels) for (const x of p.pics) expect(x.x - x.s / 2 >= 17 || x.y - x.s / 2 >= 17, `${story.titles[0]} ${x.e}`).toBe(true);
+    }
+    for (let n = 1; n <= STORIES.length; n++) {
       const lay = storyLayout(n, FRAME);
       expect([...lay.order].sort()).toEqual([0, 1, 2, 3]);
       lay.order.forEach((k, i) => expect(k, `story ${n}`).not.toBe(i));
@@ -209,8 +257,16 @@ describe('„Comunicare”', () => {
   });
 
   it('the signs: each meaning once, never on the row of its sign; the context questions have one answer each', () => {
-    for (const n of [1, 2]) {
-      const set = SIGN_MATCH_SETS[n - 1];
+    expect(SIGN_MATCH[1]).toBe(SIGN_MATCH_SETS[0]);
+    expect(SIGN_CONTEXT_SETS[3]).toBe(SIGN_CONTEXT);
+    expect([...Object.keys(SIGN_MATCH), ...Object.keys(SIGN_CONTEXT_SETS)].map(Number).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    for (const n of Object.keys(SIGN_MATCH).map(Number)) {
+      const set = SIGN_MATCH[n];
+      expect(set).toHaveLength(6);
+      // clasa pregătitoare reads capitals
+      if (SIGN_SET_LEVELS[n - 1] === 'CP') for (const [, w] of set) expect(w, w).toBe(w.toLocaleUpperCase('ro'));
+      // the answers name every sign in words (never its id)
+      for (const e of clrKeySection(`sign:${n}`)!.entries) expect(e, e).toMatch(/^\p{L}[\p{L} ,]* – \S/u);
       const lay = signMatchLayout(n, FRAME);
       lay.order.forEach((k, i) => expect(k).not.toBe(i));
       expect(new Set(set.map((s) => s[1])).size).toBe(set.length);
@@ -220,21 +276,41 @@ describe('„Comunicare”', () => {
     }
     // the meaning is never written on the sign itself (STOP is joined with „OPREȘTE!”)
     expect(SIGN_MATCH_SETS[0].find(([s]) => s === 'stop')?.[1]).toBe('OPREȘTE!');
-    for (const q of SIGN_CONTEXT) {
-      expect(q.answer >= 0 && q.answer < 3).toBe(true);
-      expect(new Set(q.options).size).toBe(3);
+    for (const [n, set] of Object.entries(SIGN_CONTEXT_SETS)) {
+      expect(set).toHaveLength(6);
+      for (const q of set) {
+        expect(q.answer >= 0 && q.answer < 3).toBe(true);
+        expect(new Set(q.options).size).toBe(3);
+        expect(q.q, q.q).toMatch(/^\p{Lu}.*\?$/u);
+      }
+      expect(new Set(set.map((q) => q.answer)).size).toBe(3);
+      const t = texts(page(`sign:${n}`));
+      for (const q of set) for (const o of q.options) expect(t, o).toContain(o);
+      expect(clrKeySection(`sign:${n}`)!.entries).toEqual(set.map((q) => `${'abc'[q.answer]}) ${q.options[q.answer]}`));
     }
-    expect(new Set(SIGN_CONTEXT.map((q) => q.answer)).size).toBe(3);
+    // no sign twice in a set; a composed sign frames a picture of the icon set
+    for (const set of [...Object.values(SIGN_MATCH).map((s) => s.map((x) => x[0])), ...Object.values(SIGN_CONTEXT_SETS).map((s) => s.map((q) => q.sign))]) expect(new Set(set).size).toBe(set.length);
+    for (const c of Object.values(COMPOSED_SIGNS)) expect(hasIcon(c.e), c.e).toBe(true);
     expect(clrKeySection('sign:3')!.entries[0]).toBe('a) Închid telefonul.');
   });
 
   it('the messages: questions with one answer among three, all on the page; the answers name them', () => {
-    for (let n = 1; n <= 3; n++) {
+    expect(new Set(MESSAGE_SETS.map((m) => m.title)).size).toBe(MESSAGE_SETS.length);
+    for (let n = 1; n <= MESSAGE_SETS.length; n++) {
       const set = MESSAGE_SETS[n - 1];
       const t = texts(page(`msg:${n}`));
+      expect(set.questions).toHaveLength(4);
       for (const q of set.questions) {
         expect(new Set(q.options).size).toBe(3);
         for (const o of q.options) expect(t, o).toContain(o);
+      }
+      // the whole message is printed (a long line wrapped)
+      const printed = t.join(' ').replace(/\s+/g, ' ');
+      for (const l of set.lines) for (const w of l.split(' ')) expect(printed, `${set.title}: ${w}`).toContain(w);
+      // a number asked for is written in the message; the right answer is not always in the same place
+      if (n > 3) {
+        for (const q of set.questions) for (const d of q.options[q.answer].match(/\d+/g) ?? []) expect(set.lines.join(' '), `${set.title}: ${d}`).toContain(d);
+        expect(new Set(set.questions.map((q) => q.answer)).size, set.title).toBe(3);
       }
       expect(clrKeySection(`msg:${n}`)!.entries).toEqual(set.questions.map((q) => `${'abc'[q.answer]}) ${q.options[q.answer]}`));
     }
@@ -246,7 +322,14 @@ describe('„Comunicare”', () => {
   });
 
   it('the cards to complete print their words and blanks; the written cards are counted from the data', () => {
-    for (let n = 1; n <= 3; n++) {
+    expect(new Set(NOTE_SETS.map((m) => m.title)).size).toBe(NOTE_SETS.length);
+    for (let n = 1; n <= NOTE_SETS.length; n++) {
+      // capitals, as clasa pregătitoare writes; a blank to write in; at most three words to choose from
+      const set = NOTE_SETS[n - 1];
+      for (const line of set.lines) for (const p of line) if (typeof p === 'string') expect(p, p).toBe(p.toLocaleUpperCase('ro'));
+      expect(set.lines.flat().some((p) => typeof p !== 'string')).toBe(true);
+      expect(set.bank.length).toBeLessThanOrEqual(3);
+      for (const [w] of set.bank) expect(w, w).toBe(w.toLocaleUpperCase('ro'));
       const t = texts(page(`note:${n}`));
       for (const line of NOTE_SETS[n - 1].lines) for (const p of line) if (typeof p === 'string') expect(t).toContain(p);
       for (const [w] of NOTE_SETS[n - 1].bank) expect(t).toContain(w);
@@ -257,6 +340,96 @@ describe('„Comunicare”', () => {
       expect(yes[0]).toBe(1);
       expect(WRITTEN_SETS[n - 1].filter((c) => !c.word).every((c) => c.picture)).toBe(true);
       expect(clrKeySection(`written:${n}`)!.entries[0]).toContain(yes.join(', '));
+    }
+  });
+});
+
+describe('„Ascultă și răspunde” and „Fișa cărții”', () => {
+  it('the texts: short, original, within the length of the class; the first question asks what the text is about', () => {
+    expect(new Set(LISTEN_SETS.map((l) => l.title)).size).toBe(18);
+    LISTEN_SETS.forEach((set, i) => {
+      const level = LISTEN_LEVELS[i];
+      const n = set.sentences.length;
+      expect(n >= { CP: 4, I: 5, II: 6 }[level] && n <= { CP: 5, I: 6, II: 8 }[level], set.title).toBe(true);
+      // spoken clearly and slowly: far shorter than the texts the class reads (75 words in clasa I, 120 in clasa a II-a)
+      expect(set.sentences.flatMap(words).length, set.title).toBeLessThanOrEqual({ CP: 40, I: 60, II: 110 }[level]);
+      for (const s of set.sentences) expect(s, s).toMatch(/^\p{Lu}.*\.$/u);
+      expect(set.questions).toHaveLength(level === 'II' ? 5 : 4);
+      expect(set.questions[0].q, set.title).toMatch(/^(Despre c(e|ine) este|Care este titlul potrivit)/);
+      for (const q of set.questions) {
+        expect(q.q, q.q).toMatch(/^\p{Lu}.*\?$/u);
+        expect(q.answer >= 0 && q.answer < 3).toBe(true);
+        // pictures in clasa pregătitoare (with their names for the adult), words later
+        for (const o of q.options) expect(typeof o === 'string', `${set.title}: ${q.q}`).toBe(level !== 'CP');
+        expect(new Set(q.options.map((o) => (typeof o === 'string' ? o : o[0]))).size, q.q).toBe(3);
+        expect(new Set(q.options.map((o) => (typeof o === 'string' ? o : o[1]))).size, q.q).toBe(3);
+      }
+      // the right answer is not always in the same place
+      expect(new Set(set.questions.map((q) => q.answer)).size, set.title).toBe(3);
+    });
+  });
+
+  it('the pupil has only the pictures or the questions; the adult has the text, the questions and the answers', () => {
+    LISTEN_SETS.forEach((set, i) => {
+      const item = `listen:${i + 1}`;
+      const pages = buildWorksheetPages(games([item]), 'full');
+      expect(pages).toHaveLength(2);
+      const [pupil, adult] = pages.map(texts);
+      // nothing of the text on the pupil's page, not even its title (unless the title is what the first question asks for)
+      if (!set.questions[0].q.startsWith('Care este titlul')) expect(pupil).not.toContain(set.title);
+      for (const s of set.sentences) expect(pupil.join(' ')).not.toContain(s);
+      expect(adult).toContain(set.title);
+      expect(adult.join(' ').replace(/\s+/g, ' ')).toContain(set.sentences.join(' '));
+      set.questions.forEach((q, k) => {
+        expect(adult).toContain(`${k + 1}. ${q.q}`);
+        expect(adult).toContain(`Răspuns: ${listenAnswer(q)}`);
+        if (LISTEN_LEVELS[i] === 'CP') expect(pupil).not.toContain(`${k + 1}. ${q.q}`);
+        else {
+          expect(pupil).toContain(`${k + 1}. ${q.q}`);
+          for (const o of q.options) expect(pupil).toContain(o as string);
+        }
+      });
+      expect(clrKeySection(item)!.entries).toEqual(set.questions.map(listenAnswer));
+      if (LISTEN_LEVELS[i] === 'CP') {
+        // each picture in its box, in the order of the data
+        const lay = listenPictureLayout(i + 1, FRAME);
+        set.questions.forEach((q, k) => q.options.forEach((o, j) => {
+          const b = lay[k].boxes[j];
+          expect(drawnAt(pages[0], (o as [string, string])[0]).some((a) => Math.abs(a.cx - (b.x + b.w / 2)) < 0.01 && Math.abs(a.cy - (b.y + b.h / 2)) < 0.01), `${set.title} ${k} ${j}`).toBe(true);
+        }));
+      }
+    });
+    expect(listenAnswer(LISTEN_SETS[0].questions[1])).toBe('pe scaun (imaginea 2)');
+    expect(listenAnswer(LISTEN_SETS[6].questions[1])).toBe('b) în iarbă');
+    // the pages of the adult come after all the pupils' pages, in the order of the items, before the answers
+    const sheet = buildWorksheetPages(games(['listen:7', 'story:1', 'listen:1'], { mathAnswers: true }), 'full').map((p) => texts(p)[0]);
+    expect(sheet).toEqual(['Ascultă și răspunde', 'Povestea în imagini', 'Ascultă și răspunde', 'Pentru cadrul didactic: Ascultă și răspunde (clasa I, 1)', 'Pentru cadrul didactic: Ascultă și răspunde (clasa pregătitoare, 1)', 'Răspunsuri']);
+    expect(clrTeacherPages(games(['story:1', 'msg:2']), 'full', () => true)).toEqual([]);
+  });
+
+  it('the book card and the reading log: the title, the drawing, five stars; a sentence in clasa a II-a', () => {
+    for (let n = 1; n <= 6; n++) {
+      const p = page(`book:${n}`);
+      const t = texts(p);
+      const level = BOOK_LEVELS[n - 1];
+      if (BOOK_FORMS[n - 1] === 'card') {
+        expect(t[0]).toBe('Fișa cărții');
+        expect(t).toContain('Titlul cărții:');
+        expect(t.includes('Autorul:')).toBe(level !== 'CP');
+        expect(t.includes('Scrie o propoziție despre carte.')).toBe(level === 'II');
+        expect(t).toContain('Cât de mult ți-a plăcut cartea? Colorează stelele.');
+        expect(p.ops.filter((o) => o.t === 'polygon' && o.points.length === 10)).toHaveLength(5);
+        const lay = bookCardLayout(n, FRAME);
+        expect(lay.boxes).toHaveLength(2);
+        for (const b of lay.boxes) expect(b.h, `book:${n}`).toBeGreaterThan(60);
+        expect(t).toContain('Desenează personajul care ți-a plăcut.');
+      } else {
+        expect(t[0]).toBe('Jurnalul meu de lectură');
+        expect(t).toContain('Mi-a plăcut?');
+        // three faces on every row
+        const faces = p.ops.filter((o) => o.t === 'circle' && o.stroke === '#1e3a5f' && o.fill === '#ffffff').length;
+        expect(faces).toBe(3 * { CP: 4, I: 6, II: 5 }[level]);
+      }
     }
   });
 });
@@ -420,9 +593,14 @@ describe('the competences', () => {
 
   it('each sheet prints the codes of its class only', () => {
     const table: Record<string, Partial<Record<SchoolLevel, string[]>>> = {
-      'story:1': { CP: ['3.2'] }, 'story:4': { CP: ['3.2'] },
+      'story:1': { CP: ['3.2'] }, 'story:4': { CP: ['3.2'] }, 'story:12': { CP: ['3.2'] },
       'sign:1': { CP: ['3.3'], I: ['3.3'] }, 'sign:2': { I: ['3.3'] }, 'sign:3': { II: ['3.3'] },
-      'note:2': { CP: ['4.2'] }, 'msg:3': { II: ['3.1'] }, 'written:2': { presc: ['D.3.3'] },
+      'sign:4': { CP: ['3.3'] }, 'sign:5': { CP: ['3.3'] }, 'sign:6': { I: ['3.3'] }, 'sign:7': { I: ['3.3'] }, 'sign:8': { II: ['3.3'] }, 'sign:9': { II: ['3.3'] },
+      'note:2': { CP: ['4.2'] }, 'note:10': { CP: ['4.2'] }, 'msg:3': { II: ['3.1'] }, 'msg:9': { II: ['3.1'] }, 'written:2': { presc: ['D.3.3'] },
+      // listening: the meaning of the message and its details, in the class of the set; the book card: interest in books
+      'listen:1': { CP: ['1.1', '1.2'] }, 'listen:6': { CP: ['1.1', '1.2'] }, 'listen:7': { I: ['1.1', '1.2'] }, 'listen:12': { I: ['1.1', '1.2'] },
+      'listen:13': { II: ['1.1', '1.2'] }, 'listen:18': { II: ['1.1', '1.2'] },
+      'book:1': { CP: ['3.4'] }, 'book:2': { I: ['3.4'] }, 'book:3': { II: ['3.4'] }, 'book:4': { CP: ['3.4'] }, 'book:5': { I: ['3.4'] }, 'book:6': { II: ['3.4'] },
       'terms:1': { CP: ['1.6'] }, 'terms:2': { CP: ['1.6'] }, 'terms:3': { I: ['1.6'] }, 'terms:4': { I: ['1.6'] }, 'terms:5': { II: ['1.6'] }, 'terms:6': { II: ['1.6'] },
       'place:2': { II: ['1.1'] }, 'coord:3': { II: ['2.1'] }, 'sides:1': { II: ['2.2'] }, 'solid:1': { II: ['2.2'] },
       'regular:1': { I: ['3.1'] }, 'regular:2': { I: ['3.1'] }, 'regular:3': { II: ['3.1'] }, 'regular:4': { II: ['3.1'] },
@@ -432,6 +610,12 @@ describe('the competences', () => {
     for (const item of ALL) expect(Object.keys(table).some((k) => k.split(':')[0] === item.split(':')[0]), item).toBe(true);
     for (const [item, byLevel] of Object.entries(table)) for (const level of LEVELS) expect(codes(item, level), `${item} ${level}`).toEqual(byLevel[level] ?? []);
     expect(sheetCompetenceLabel(games(['msg:1']), 'II')).toBe('Competența specifică 3.1 · Comunicare în limba română, clasa a II-a');
+    expect(sheetCompetenceLabel(games(['listen:1']), 'CP')).toBe('Competențele specifice 1.1, 1.2 · Comunicare în limba română, clasa pregătitoare');
+    // every set that has a class prints a code there and nowhere else
+    for (const item of CLR) {
+      const own = clrSetLevel(item);
+      if (own && item !== 'sign:1') for (const level of LEVELS) expect(codes(item, level).length > 0, `${item} ${level}`).toBe(level === own);
+    }
     expect(sheetCompetenceLabel(games(['pict:1']), 'presc')).toBe('Comportament vizat E.2.5 · Curriculum pentru educație timpurie, nivel preșcolar');
     // the sign sets 2 and 3 and the terms sets keep their own class
     expect(codes('sign:2', 'CP')).toEqual([]);
@@ -444,6 +628,15 @@ describe('the competences', () => {
     expect(text('clr-p-ii', 'CP', '3.2')).toBe('Identificarea semnificației unei/ unor imagini care prezintă întâmplări, fenomene, evenimente familiare');
     expect(text('clr-p-ii', 'CP', '3.3')).toBe('Identificarea semnificației unor simboluri care transmit mesaje de necesitate imediată, din universul familiar');
     expect(text('clr-p-ii', 'II', '3.1')).toBe('Citirea unor mesaje scrise, întâlnite în mediul cunoscut');
+    expect(text('clr-p-ii', 'CP', '1.1')).toBe('Identificarea semnificației unui mesaj scurt, pe teme familiare, rostit clar și rar');
+    expect(text('clr-p-ii', 'CP', '1.2')).toBe('Identificarea unor informații variate dintr-un mesaj scurt, rostit clar și rar');
+    expect(text('clr-p-ii', 'I', '1.1')).toBe('Identificarea semnificației unui mesaj oral, pe teme accesibile, rostit cu claritate');
+    expect(text('clr-p-ii', 'I', '1.2')).toBe('Identificarea unor informații variate dintr-un mesaj rostit cu claritate');
+    expect(text('clr-p-ii', 'II', '1.1')).toBe('Identificarea semnificației unui mesaj oral din texte accesibile variate');
+    expect(text('clr-p-ii', 'II', '1.2')).toBe('Identificarea unor informații variate dintr-un text audiat');
+    expect(text('clr-p-ii', 'CP', '3.4')).toBe('Exprimarea în cuvinte proprii a mesajelor redate pe suport vizual sau auditiv, manifestând interes pentru lucrul cu cartea');
+    expect(text('clr-p-ii', 'I', '3.4')).toBe('Exprimarea interesului pentru lectura unor texte simple, susținute de suport imagistic');
+    expect(text('clr-p-ii', 'II', '3.4')).toBe('Exprimarea interesului pentru lectura unor cărți adecvate vârstei');
     expect(text('mem-p-ii', 'II', '2.1')).toBe('Localizarea unor obiecte prin stabilirea unor coordonate în raport cu un sistem de referință dat, folosind sintagmele învățate');
     expect(text('mem-p-ii', 'I', '5.1')).toBe('Sortarea și clasificarea unor date din mediul apropiat pe baza a două criterii');
     expect(findCompetence({ programme: 'et-presc', level: '3-6', domain: 'D', code: '3.3' })?.text).toBe('Identifică prezența mesajului scris, apreciază și valorifică mesajul scris în activitățile curente');
@@ -451,7 +644,7 @@ describe('the competences', () => {
 
   it('the class pages list the presets, which open free sheets that print the code', () => {
     const presets = SHEET_PRESETS.filter((p) => p.config.selectedItems?.some((i) => isClrItem(i) || isMemItem(i)));
-    expect(presets).toHaveLength(17);
+    expect(presets).toHaveLength(19);
     for (const preset of presets) {
       for (const level of preset.levels!) {
         const cfg = presetConfig(preset, level);
@@ -471,6 +664,11 @@ describe('the competences', () => {
     expect(listed('clasa-pregatitoare', '4.2', 'clr-p-ii')).toEqual(['scriu-un-mesaj']);
     expect(listed('clasa-pregatitoare', '1.6', 'mem-p-ii')).toEqual(['termenii-operatiilor']);
     expect(listed('clasa-1', '3.3', 'clr-p-ii')).toEqual(['semne-simboluri']);
+    for (const slug of ['clasa-pregatitoare', 'clasa-1', 'clasa-2']) {
+      expect(listed(slug, '1.1', 'clr-p-ii'), slug).toEqual(['ascult-si-raspund']);
+      expect(listed(slug, '1.2', 'clr-p-ii'), slug).toEqual(['ascult-si-raspund']);
+      expect(listed(slug, '3.4', 'clr-p-ii'), slug).toEqual(['fisa-cartii']);
+    }
     expect(listed('clasa-1', '1.6', 'mem-p-ii')).toEqual(['termenii-operatiilor']);
     expect(listed('clasa-1', '3.1', 'mem-p-ii')).toEqual(['modele-regularitati']);
     expect(listed('clasa-1', '5.1', 'mem-p-ii')).toEqual(['sortare-doua-criterii']);
@@ -486,11 +684,11 @@ describe('the competences', () => {
     }
   });
 
-  it('„Avem fișe pentru X din Y”: grădiniță 13 din 23, CP 22 din 32, I 23 din 33, II 23 din 33', () => {
+  it('„Avem fișe pentru X din Y”: grădiniță 13 din 23, CP 25 din 32, I 26 din 33, II 26 din 33', () => {
     const at = (slug: string) => {
       const items = headlineItems(CLASS_PAGES.find((c) => c.slug === slug)!);
       return [items.filter((i) => i.presets.length).length, items.length];
     };
-    expect(['gradinita', 'clasa-pregatitoare', 'clasa-1', 'clasa-2'].map(at)).toEqual([[13, 23], [22, 32], [23, 33], [23, 33]]);
+    expect(['gradinita', 'clasa-pregatitoare', 'clasa-1', 'clasa-2'].map(at)).toEqual([[13, 23], [25, 32], [26, 33], [26, 33]]);
   });
 });

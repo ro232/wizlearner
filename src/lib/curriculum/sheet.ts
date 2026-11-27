@@ -11,6 +11,7 @@ import { findCompetence, type CompetenceRef, type Level, type ProgrammeId } from
 import { readingSetLevel } from '@/lib/worksheet/reading';
 import { isM34Item, m34SetLevel } from '@/lib/worksheet/m34';
 import { isR34Item, r34SetLevel } from '@/lib/worksheet/r34';
+import { BOOK_LEVELS, LISTEN_LEVELS, SIGN_SET_LEVELS } from '@/lib/worksheet/clr';
 
 /** The class picked in the generator. "presc" = grădiniță. */
 export type SchoolLevel = 'presc' | 'CP' | 'I' | 'II' | 'III' | 'IV';
@@ -391,6 +392,30 @@ const RULES: Record<string, Rule> = {
   // înconjurător”): it asks for real objects observed in the room, not pictures.
   more: { presc: presc('E', '1.2') },
 };
+
+// ── The „Comunicare” sets added later (clr.ts): each set is written for one class and prints its code only there.
+// „Semne și simboluri” 4–9 (the street, public places; rules, recycling; weather warnings, packages): 3.3 of the class
+// of the set, as sets 1–3 above (CP „…simboluri care transmit mesaje de necesitate imediată, din universul familiar”,
+// I „…simboluri din universul familiar, care transmit mesaje simple”, II „…simboluri, în contexte cunoscute”).
+SIGN_SET_LEVELS.forEach((level, i) => {
+  if (i >= 3) RULES[`sign:${i + 1}`] = { [level]: school(CLR, level, '3.3') };
+});
+// „Ascultă și răspunde”: the adult reads a short text aloud; the first question asks what it is about, the others ask
+// for details. CP 1.1 „Identificarea semnificației unui mesaj scurt, pe teme familiare, rostit clar și rar”, CP 1.2
+// „Identificarea unor informații variate dintr-un mesaj scurt, rostit clar și rar”; I 1.1 „Identificarea semnificației
+// unui mesaj oral, pe teme accesibile, rostit cu claritate”, I 1.2 „Identificarea unor informații variate dintr-un mesaj
+// rostit cu claritate”; II 1.1 „Identificarea semnificației unui mesaj oral din texte accesibile variate”, II 1.2
+// „Identificarea unor informații variate dintr-un text audiat”.
+LISTEN_LEVELS.forEach((level, i) => {
+  RULES[`listen:${i + 1}`] = { [level]: [school(CLR, level, '1.1'), school(CLR, level, '1.2')] };
+});
+// „Fișa cărții” and „Jurnalul de lectură”: CP 3.4 „Exprimarea în cuvinte proprii a mesajelor redate pe suport vizual sau
+// auditiv, manifestând interes pentru lucrul cu cartea” (the child draws the cover and a character, then tells the
+// story; contents „Cartea. Coperte, foaie, pagină, text, ilustrații”); I 3.4 „Exprimarea interesului pentru lectura unor
+// texte simple, susținute de suport imagistic”; II 3.4 „Exprimarea interesului pentru lectura unor cărți adecvate vârstei”.
+BOOK_LEVELS.forEach((level, i) => {
+  RULES[`book:${i + 1}`] = { [level]: school(CLR, level, '3.4') };
+});
 
 /**
  * ── Clasa a III-a și a IV-a: the Matematică sheets (m34.ts) and the Limba și literatura română sheets (r34.ts). Each set is

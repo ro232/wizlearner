@@ -111,6 +111,15 @@ export const SHEET_PRESETS: SheetPreset[] = [
   },
   { id: 'scriu-un-mesaj', title: 'Felicitarea, biletul, invitația', text: 'Un mesaj de completat cu litere de tipar: numele prietenului, locul, semnătura.', config: { category: 'games', selectedItems: ['note:1'] }, levels: ['CP'] },
   { id: 'citeste-mesajul', title: 'Citește mesajul', text: 'O invitație, un afiș, un bilet și patru întrebări despre fiecare.', config: { category: 'games', selectedItems: ['msg:1'] }, levels: ['II'] },
+  // „Ascultă și răspunde” and „Fișa cărții” (clr-pages.ts): the free set of each class
+  {
+    id: 'ascult-si-raspund', title: 'Ascultă și răspunde', text: 'Un text scurt citit de adult (pagina lui e separată): copilul încercuiește imaginea potrivită; la clasa I și a II-a, litera răspunsului.',
+    config: { category: 'games', selectedItems: ['listen:1'] }, byLevel: { I: { selectedItems: ['listen:7'] }, II: { selectedItems: ['listen:13'] } }, levels: ['CP', 'I', 'II'],
+  },
+  {
+    id: 'fisa-cartii', title: 'Fișa cărții', text: 'Titlul cărții, personajul preferat de desenat, stelele de colorat; la clasa a II-a și o propoziție despre carte.',
+    config: { category: 'games', selectedItems: ['book:1'] }, byLevel: { I: { selectedItems: ['book:2'] }, II: { selectedItems: ['book:3'] } }, levels: ['CP', 'I', 'II'],
+  },
   { id: 'unde-este-scris', title: 'Unde este ceva scris?', text: 'Douăsprezece cartonașe: încercuiește-le pe cele cu litere, nu pe cele cu desene sau forme.', config: { category: 'games', selectedItems: ['written:1'] }, levels: ['presc'] },
   {
     id: 'termenii-operatiilor', title: 'Termenii operațiilor', text: 'Suma, diferența, totalul și semnele +, −, =; la clasa I termenii, < și >; la clasa a II-a descăzutul, scăzătorul, produsul, câtul.',

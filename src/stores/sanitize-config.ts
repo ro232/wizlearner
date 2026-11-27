@@ -29,14 +29,14 @@ const PHONO_ITEM = /^(sound:(A|B|C|D|F|L|M|P|R|S|T|U|V)|(first|syl|split):[1-6])
 // sorting, grouping and spatial orientation (sorting-pages.ts: isSortingItem)
 const SORTING_ITEM = /^(sort|odd|group|pos):[1-6]$/;
 // „Citire și scriere” (reading.ts: isReadingItem)
-const READING_ITEM = /^read:(match|gap|draw|fill|order|copy|text):[1-6]$/;
+const READING_ITEM = /^read:((match|draw|fill|order):([1-9]|1[0-6])|(gap|copy):([1-9]|1\d|2[0-4])|text:([1-9]|1\d|20))$/;
 // the fun preschool sheets (fun.ts: isFunItem) and „Explorarea mediului” (explore.ts: isExploreItem)
 const FUN_ITEM = /^(color|colsum|maze|diff|trace|shadow):[1-6]$/;
 const EXPLORE_ITEM = /^((plant|body|senses|habitat|move|weather|wear|water|melt):1|(home|baby):[12]|season:[1-5])$/;
 // Arte vizuale, Dezvoltare personală, limba engleză (subjects.ts: isSubjectItem)
 const SUBJECT_ITEM = /^((sym|model|en):[1-3]|(cut|lines|feel):[12]|(me|hyg|habit|job|jobuse|rules):1)$/;
 // the sheets that fill the gaps of the programme (clr.ts: isClrItem, mem.ts: isMemItem)
-const CLR_ITEM = /^(story:[1-4]|(sign|note|msg):[1-3]|written:[12])$/;
+const CLR_ITEM = /^(story:([1-9]|1[0-2])|(sign|msg):[1-9]|note:([1-9]|10)|written:[12]|listen:([1-9]|1[0-8])|book:[1-6])$/;
 const MEM_ITEM = /^(terms:[1-6]|(place|coord):[1-3]|regular:[1-4]|(sort2|plan|cause|pict):[12]|(sides|solid|around|more):1)$/;
 // clasa a III-a și a IV-a: Matematică (m34.ts: isM34Item)
 const M34_ITEM = /^((nr|rom|rot|ops|inm|prob|fr|mas):[1-4]|(per|geo|date|sir):[12])$/;
