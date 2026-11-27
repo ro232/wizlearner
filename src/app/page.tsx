@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, QrCode, UserRound, Library, FileDown, Check } from 'lucide-react';
+import { ArrowRight, QrCode, UserRound, Library, FileDown, Check, Search } from 'lucide-react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { HeroSheets } from '@/components/home/hero-sheets';
@@ -58,6 +58,15 @@ function Classes() {
           Pentru fiecare competență din programă vezi fișele care o lucrează. Numărul de pe card arată pentru câte competențe avem
           deja fișe.
         </p>
+        {/* straight to a sheet: /cauta reads ?q= (a plain form, no script needed) */}
+        <form action="/cauta" method="get" role="search" aria-label="Caută fișe" className="mt-6 flex max-w-xl gap-2">
+          <label htmlFor="acasa-cauta" className="sr-only">Caută o fișă</label>
+          <input id="acasa-cauta" type="search" name="q" placeholder="Sau caută direct: adunări, silabe, toamnă…" autoComplete="off" enterKeyHint="search"
+            className="min-w-0 flex-1 h-12 rounded-xl border-2 border-ink bg-white px-4 font-semibold text-ink placeholder:font-normal placeholder:text-slate-500" />
+          <button type="submit" className="shrink-0 inline-flex items-center gap-2 h-12 px-4 sm:px-5 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper">
+            <Search className="w-4 h-4" aria-hidden /> Caută
+          </button>
+        </form>
         <div className="mt-10">
           <ClassPicker />
         </div>

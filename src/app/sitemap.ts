@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('', 1, 'weekly'),
     page('/generator', 0.9, 'weekly'),
     page('/fise', 0.9, 'weekly'),
+    page('/cauta', 0.8, 'weekly'),
     page('/grupa', 0.9),
     page('/nume', 0.8),
     page('/caiete', 0.8),

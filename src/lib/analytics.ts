@@ -46,12 +46,19 @@
  *   subject   the subject of a „Planificare calendaristică”: clr | mem
  *   days      how long a homework link works: 7 | 30 | 90
  *   named     true/false: the parent typed a name (never the name itself)
+ *   results   „Caută fișe”: how many sheets were found, as a band: 0 | 1-5 | 6-20 | 21-100 | 100plus
+ *   typed     „Caută fișe”: true/false, words were typed (never the words themselves)
+ *   free      „Caută fișe”: true/false, the filter „doar gratuite” / the opened sheet is a free one
+ *   answers   „Caută fișe”: true/false, the filter „cu răspunsuri”
+ *
+ * „Caută fișe” also reuses level (the class filter), subject (the subject filter: romana | matematica |
+ * mediu …) and kind (fisa | evaluare).
  *
  * Homework links (/tema/<link>): the link is replaced by "/tema/_" in every URL PostHog reports
  * (current page, referrer, …), so the settings and the teacher's title in it never reach analytics.
  */
 export const ALLOWED_PROPS: ReadonlySet<string> = new Set([
-  'plan', 'tier', 'category', 'book', 'level', 'preset', 'kind', 'format', 'script', 'theme', 'source', 'result', 'status', 'pages', 'count', 'words', 'subject', 'days', 'named',
+  'plan', 'tier', 'category', 'book', 'level', 'preset', 'kind', 'format', 'script', 'theme', 'source', 'result', 'status', 'pages', 'count', 'words', 'subject', 'days', 'named', 'results', 'typed', 'free', 'answers',
 ]);
 
 type PostHog = typeof import('posthog-js').default;
