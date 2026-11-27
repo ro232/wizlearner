@@ -2,17 +2,18 @@ import type { Metadata } from 'next';
 import { LegalPage, LEGAL_UPDATED } from '@/components/layout/legal-page';
 import { OPERATOR, operatorSentence } from '@/lib/legal';
 import { pageMetadata } from '@/lib/seo/metadata';
+import { BRAND_NAME } from '@/lib/brand';
 
 export const metadata: Metadata = pageMetadata({
   title: 'Termeni și condiții',
-  description: 'Termenii de folosire WorksheetWiz: ce poți face cu fișele și caietele, licența imaginilor, codurile de acces și datele de contact.',
+  description: `Termenii de folosire ${BRAND_NAME}: ce poți face cu fișele și caietele, licența imaginilor, codurile de acces și datele de contact.`,
   path: '/termeni',
 });
 
 export default function TermsPage() {
   return (
     <LegalPage title="Termeni și condiții" updated={LEGAL_UPDATED}>
-      <p>{operatorSentence()} Folosind WorksheetWiz, accepți termenii de mai jos.</p>
+      <p>{operatorSentence()} Folosind {BRAND_NAME}, accepți termenii de mai jos.</p>
 
       <h2>Ce poți face cu fișele</h2>
       <ul>

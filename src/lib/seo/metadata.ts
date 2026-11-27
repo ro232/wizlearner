@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { BRAND_NAME } from '@/lib/brand';
 
 /**
  * Titles, descriptions and canonical addresses of the pages that cannot export `metadata`
@@ -6,7 +7,7 @@ import type { Metadata } from 'next';
  * Addresses are relative: the root layout's `metadataBase` (SITE_URL) makes them absolute.
  */
 
-export const SITE_NAME = 'WorksheetWiz';
+export const SITE_NAME = BRAND_NAME;
 export const TITLE_MAX = 60;
 export const DESCRIPTION_MAX = 155;
 
@@ -15,10 +16,10 @@ export const DEFAULT_DESCRIPTION =
   'Fișe PDF de la grădiniță la clasa a IV-a, cu codul competenței pe pagină. Evaluări, planificare și fișe cu numele fiecărui copil.';
 
 /** The shared preview image for links sent on WhatsApp, Facebook etc. (src/app/opengraph-image.tsx). */
-export const OG_IMAGE = { url: '/opengraph-image', width: 1200, height: 630, alt: 'WorksheetWiz – fișe de lucru pe programă, de la grădiniță la clasa a IV-a' };
+export const OG_IMAGE = { url: '/opengraph-image', width: 1200, height: 630, alt: `${BRAND_NAME} – fișe de lucru pe programă, de la grădiniță la clasa a IV-a` };
 
 interface PageMeta {
-  /** Full <title> when `absolute`, otherwise the part before „ · WorksheetWiz”. */
+  /** Full <title> when `absolute`, otherwise the part before „ · <brand>”. */
   title: string;
   description: string;
   path: string;
@@ -76,8 +77,8 @@ export const ROUTE_META = {
     title: 'Prețuri: gratuit sau varianta completă',
     description: 'Ce primești gratuit și ce aduce varianta completă: tot alfabetul, fișe pentru toată grupa, orice cuvânt de trasat și caietul KDP fără filigran.',
   },
-  '/cont': { title: 'Contul tău', description: 'Fișele salvate, copiii tăi, istoricul descărcărilor și abonamentul WorksheetWiz.', noindex: true },
-  '/auth/login': { title: 'Intră în cont', description: 'Intră în contul WorksheetWiz sau creează unul, cu Google sau cu adresa de e-mail.', noindex: true },
+  '/cont': { title: 'Contul tău', description: 'Fișele salvate, copiii tăi, istoricul descărcărilor și abonamentul ' + BRAND_NAME + '.', noindex: true },
+  '/auth/login': { title: 'Intră în cont', description: 'Intră în contul ' + BRAND_NAME + ' sau creează unul, cu Google sau cu adresa de e-mail.', noindex: true },
 } satisfies Record<string, Omit<PageMeta, 'path'>>;
 
 export type StaticRoute = keyof typeof ROUTE_META;

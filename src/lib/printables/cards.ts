@@ -11,6 +11,7 @@ import {
   type Grid,
 } from './common';
 import { POSTER_LETTERS, posterLetters, posterWord } from './alphabet';
+import { BRAND_NAME } from '@/lib/brand';
 
 /**
  * „Cartonașe”: cards to cut out, 8 or 12 on an A4 sheet, with one dashed cut line between two
@@ -247,7 +248,7 @@ function cardBack(ops: DrawOp[], card: Card, x: number, y: number, w: number, h:
   const size = fitText(card.label, 10, w - 20);
   ops.push({ t: 'text', x: x + w / 2, y: y + h / 2 + (card.sub ? 0 : size * 0.35), text: card.label, size, fill: INK, weight: 'bold', align: 'center' });
   if (card.sub) ops.push({ t: 'text', x: x + w / 2, y: y + h / 2 + 8.5, text: card.sub, size: fitText(card.sub, 4.6, w - 20), fill: MUTED, align: 'center' });
-  ops.push({ t: 'text', x: x + w / 2, y: y + h - 7, text: 'WorksheetWiz', size: 2.4, fill: '#B8A770', weight: 'bold', align: 'center' });
+  ops.push({ t: 'text', x: x + w / 2, y: y + h - 7, text: BRAND_NAME, size: 2.4, fill: '#B8A770', weight: 'bold', align: 'center' });
 }
 
 export function buildCardPages(o: CardOptions, tier: Tier): PageOps[] {

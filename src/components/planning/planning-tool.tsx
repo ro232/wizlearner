@@ -30,6 +30,7 @@ import { downloadPlanDocx, downloadPlanPdf } from '@/lib/planning/actions';
 import { clearDraft, loadDraft, storeDraft } from '@/lib/planning/draft';
 import { FEBRUARY_OPTIONS, PROGRAMS, SCHOOL_YEAR_LABEL, courseIntervals, vacationAfter, type FebruaryOption, type ProgramId } from '@/lib/planning/school-year-2026-2027';
 import { MAX_HOURS_PER_WEEK, PLAN_LEVELS, PLAN_SUBJECTS, planLevel, planSubject, type PlanLevel, type SubjectId } from '@/lib/planning/subjects';
+import { BRAND_NAME } from '@/lib/brand';
 
 const label = 'block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2';
 const pill = (active: boolean) =>
@@ -230,7 +231,7 @@ export function PlanningTool() {
             </div>
             <label className="flex items-start gap-2 text-sm text-ink">
               <input type="checkbox" checked={withSheets} onChange={(e) => setWithSheets(e.target.checked)} className="mt-1 w-4 h-4 accent-ink" />
-              Adaugă în document coloana „Fișe WorksheetWiz”
+              Adaugă în document coloana „Fișe {BRAND_NAME}”
             </label>
             <div className="space-y-3 pt-1">
               {paid ? (

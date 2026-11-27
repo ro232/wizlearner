@@ -25,6 +25,7 @@ import {
 } from 'docx';
 import { planDocument, type DocCell, type PlanMeta } from './document';
 import type { Plan } from './plan';
+import { BRAND_NAME } from '@/lib/brand';
 
 const FONT = 'Times New Roman';
 /** A4 in twentieths of a point (portrait numbers: the library turns them for landscape) */
@@ -124,7 +125,7 @@ export function buildPlanDocx(plan: Plan, meta: PlanMeta = {}): Document {
   for (const n of doc.note) children.push(new Paragraph({ spacing: { before: 120 }, children: [run(n, { size: 18, color: '475569' })] }));
 
   return new Document({
-    creator: 'WorksheetWiz',
+    creator: BRAND_NAME,
     title: `${doc.title} – ${doc.fields.find((f) => f.label === 'Disciplina')?.value}`,
     styles: { default: { document: { run: { font: FONT, size: SIZE } } } },
     sections: [

@@ -144,7 +144,7 @@ describe('„Cartonașe”', () => {
         expect(pages).toHaveLength(2 * Math.ceil(all.length / per));
         for (let sheet = 0; sheet * 2 < pages.length; sheet++) {
           const back = pages[sheet * 2 + 1];
-          const labels = texts(back).filter((t) => t.weight === 'bold' && t.text !== 'WorksheetWiz');
+          const labels = texts(back).filter((t) => t.weight === 'bold' && t.text !== 'Liniatura');
           const chunk = all.slice(sheet * per, (sheet + 1) * per);
           expect(labels.map((t) => t.text).sort()).toEqual(chunk.map((c) => c.label).sort());
           chunk.forEach((c, i) => {

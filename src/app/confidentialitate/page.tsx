@@ -2,10 +2,11 @@ import type { Metadata } from 'next';
 import { LegalPage, LEGAL_UPDATED } from '@/components/layout/legal-page';
 import { OPERATOR, operatorSentence } from '@/lib/legal';
 import { pageMetadata } from '@/lib/seo/metadata';
+import { BRAND_NAME } from '@/lib/brand';
 
 export const metadata: Metadata = pageMetadata({
   title: 'Politica de confidențialitate',
-  description: 'Ce date folosește WorksheetWiz, de ce, cât timp, cu ce furnizori lucrăm și ce drepturi ai. Numele scrise pe fișe rămân în browserul tău.',
+  description: `Ce date folosește ${BRAND_NAME}, de ce, cât timp, cu ce furnizori lucrăm și ce drepturi ai. Numele scrise pe fișe rămân în browserul tău.`,
   path: '/confidentialitate',
 });
 

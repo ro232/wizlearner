@@ -17,6 +17,7 @@ import {
   ArrowRight,
   Loader2,
 } from 'lucide-react';
+import { BRAND_NAME } from '@/lib/brand';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -161,7 +162,7 @@ export default function LoginPage() {
           <div className="flex items-center justify-center gap-2">
             <Sparkles className="w-8 h-8 text-blue-600" />
             <h1 className="text-3xl font-extrabold text-ink">
-              WorksheetWiz
+              {BRAND_NAME}
             </h1>
           </div>
           <p className="text-slate-600">{isSignUp && !useMagicLink ? 'Creează-ți un cont' : 'Intră în contul tău'}</p>

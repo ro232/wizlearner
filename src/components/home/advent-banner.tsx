@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CalendarDays } from 'lucide-react';
-import { adventBannerVisible } from '@/lib/worksheet/advent';
+import { adventBannerVisible } from '@/lib/advent-season';
 
 /**
  * SEASONAL (Advent 2026): the home page card that points to /advent. It hides itself from

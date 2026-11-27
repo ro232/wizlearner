@@ -13,6 +13,7 @@ import { defaultSheetName } from '@/lib/worksheet/saved';
 import { themeById } from '@/lib/themes';
 import { HOMEWORK_NAME_MAX, homeworkChildName, homeworkPages } from '@/lib/homework/pages';
 import { LEVEL_LABEL, type Homework } from '@/lib/homework/shared';
+import { BRAND_NAME } from '@/lib/brand';
 
 const DATE = new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Bucharest' });
 
@@ -41,7 +42,7 @@ export function HomeworkDownload({ homework }: { homework: Homework }) {
       const childName = homeworkChildName(name);
       const all = homeworkPages(homework, childName);
       track('homework_download', { kind: homework.kind, category, level: homework.level?.toLowerCase(), pages: all.length, named: !!childName });
-      await downloadPagesPdf(all, `Tema${childName ? `-${childName}` : ''}-WorksheetWiz.pdf`);
+      await downloadPagesPdf(all, `Tema${childName ? `-${childName}` : ''}-${BRAND_NAME}.pdf`);
       return childName ? `Fișa lui ${childName} e descărcată. Spor la lucru!` : 'Fișa e descărcată. Spor la lucru!';
     });
 
@@ -99,7 +100,7 @@ export function HomeworkDownload({ homework }: { homework: Homework }) {
       </form>
 
       <p className="mt-10 pt-5 border-t border-slate-300 text-center text-sm text-slate-600">
-        Fișă trimisă de cadrul didactic prin WorksheetWiz.{' '}
+        Fișă trimisă de cadrul didactic prin {BRAND_NAME}.{' '}
         <Link href="/generator" className="font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">Fă și tu o fișă</Link>
       </p>
     </div>

@@ -5,7 +5,7 @@ import { normalizeKey } from '@/lib/glyphs/data';
 import type { PatternId } from '@/lib/glyphs/patterns';
 import { iconOps } from '@/lib/hints/icons';
 import { textWidthMm } from '@/lib/book/text';
-import { madeWith } from '@/lib/brand';
+import { madeWith, BRAND_NAME } from '@/lib/brand';
 import { themeById } from '@/lib/themes';
 import type { MathRange, MathType } from './math';
 import { buildWorksheetPages, glyphsForWord, wordInCase } from './layout';
@@ -112,12 +112,8 @@ const STYLE: Record<AdventLevel, LevelStyle> = {
   I: { letterMode: 'paired', script: 'cursive', find: 'lowercase', count: 'count:10' },
 };
 
-/** SEASONAL: the home page card for the calendar shows until this moment (26 December 2026, local time). */
-export const ADVENT_BANNER_END = new Date(2026, 11, 26);
-
-export function adventBannerVisible(now: Date = new Date()): boolean {
-  return now.getTime() < ADVENT_BANNER_END.getTime();
-}
+/** SEASONAL: the home page card for the calendar shows until 26 December 2026 (see src/lib/advent-season.ts). */
+export { ADVENT_BANNER_END, adventBannerVisible } from '@/lib/advent-season';
 
 export function adventDateTitle(day: number): string {
   return `${day} decembrie`;
@@ -286,7 +282,7 @@ export function adventCover(name: string, level: AdventLevel): PageOps {
     const icon = COVER_ICONS[day];
     if (icon) ops.push(...iconOps(icon, x + cw - 5, by + 5, 6));
   }
-  ops.push({ t: 'text', x: W / 2, y: H - 21, text: 'WorksheetWiz', size: 3.2, fill: MUTED, weight: 'bold', align: 'center' });
+  ops.push({ t: 'text', x: W / 2, y: H - 21, text: BRAND_NAME, size: 3.2, fill: MUTED, weight: 'bold', align: 'center' });
   return { width: W, height: H, ops };
 }
 

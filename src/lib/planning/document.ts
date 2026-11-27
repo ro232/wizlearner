@@ -11,11 +11,12 @@ import { rangeLabel } from './calendar';
 import { periodLabel, weekNumbers, type Plan, type PlanRow } from './plan';
 import { SCHOOL_YEAR_LABEL, SCHOOL_YEAR_ORDER, courseIntervals, vacationAfter } from './school-year-2026-2027';
 import { HOURS_SOURCE, planLevel, planSubject } from './subjects';
+import { BRAND_NAME } from '@/lib/brand';
 
 export interface PlanMeta {
   school?: string;
   teacher?: string;
-  /** add the „Fișe WorksheetWiz” column */
+  /** add the „Fișe <brand>” column */
   withSheets?: boolean;
   /** the free download: only these modules, with a line saying so */
   modules?: number[];
@@ -60,12 +61,12 @@ const COLUMNS = [
   { title: 'Săptămâna', width: 34, align: 'center' as const },
   { title: 'Observații', width: 58 },
 ];
-const SHEETS_COLUMN = { title: 'Fișe WorksheetWiz', width: 40 };
+const SHEETS_COLUMN = { title: `Fișe ${BRAND_NAME}`, width: 40 };
 
 export function noteLines(plan: Pick<Plan, 'subject'>): string[] {
   const p = PROGRAMMES[planSubject(plan.subject).programme];
   return [
-    `Propunere orientativă, generată cu WorksheetWiz pe baza programei școlare pentru disciplina ${p.subject} (${p.order.replace(/^Anexa nr\. 2 la ordinul ministrului educației naționale nr\. /, 'OMEN nr. ')}), a planului-cadru (${HOURS_SOURCE.replace(/^.*, /, '')}) și a structurii anului școlar ${SCHOOL_YEAR_LABEL} (${SCHOOL_YEAR_ORDER}).`,
+    `Propunere orientativă, generată cu ${BRAND_NAME} pe baza programei școlare pentru disciplina ${p.subject} (${p.order.replace(/^Anexa nr\. 2 la ordinul ministrului educației naționale nr\. /, 'OMEN nr. ')}), a planului-cadru (${HOURS_SOURCE.replace(/^.*, /, '')}) și a structurii anului școlar ${SCHOOL_YEAR_LABEL} (${SCHOOL_YEAR_ORDER}).`,
     'Nu este un document aprobat de Ministerul Educației. Cadrul didactic o adaptează clasei: ordinea și durata unităților, competențele și conținuturile, săptămânile „Școala altfel” și „Săptămâna verde” din graficul școlii, vacanța din februarie stabilită de inspectoratul școlar județean și numărul de ore.',
   ];
 }
@@ -124,7 +125,7 @@ export function planDocument(plan: Plan, meta: PlanMeta = {}): PlanDocument {
     sections,
     note: noteLines(plan),
     footer: `Propunere orientativă pe baza programei școlare; se adaptează de cadrul didactic · ${subject.title}, clasa ${level.name}, ${SCHOOL_YEAR_LABEL}`,
-    partial: meta.modules && meta.modules.length < 5 ? 'Varianta gratuită: primul modul. Planificarea pe tot anul, în PDF și Word, este în varianta completă WorksheetWiz.' : undefined,
+    partial: meta.modules && meta.modules.length < 5 ? `Varianta gratuită: primul modul. Planificarea pe tot anul, în PDF și Word, este în varianta completă ${BRAND_NAME}.` : undefined,
   };
 }
 

@@ -1,6 +1,7 @@
+import { BRAND_NAME } from '@/lib/brand';
 const translations = {
   en: {
-    app: { name: 'WorksheetWiz', tagline: 'Create perfect practice sheets in seconds' },
+    app: { name: BRAND_NAME, tagline: 'Create perfect practice sheets in seconds' },
     nav: { generator: 'Generator', dashboard: 'Dashboard', community: 'Community', pricing: 'Pricing', login: 'Log in', startFree: 'Start Free' },
     generator: {
       title: 'Worksheet Generator',
@@ -24,7 +25,7 @@ const translations = {
     footer: { madeWith: 'Made with', forLearners: 'for little learners' },
   },
   ro: {
-    app: { name: 'WorksheetWiz', tagline: 'Creează fișe de lucru perfecte în câteva secunde' },
+    app: { name: BRAND_NAME, tagline: 'Creează fișe de lucru perfecte în câteva secunde' },
     nav: { generator: 'Generator', dashboard: 'Panou', community: 'Comunitate', pricing: 'Prețuri', login: 'Autentificare', startFree: 'Începe Gratuit' },
     generator: {
       title: 'Generator de Fișe',

@@ -1,7 +1,7 @@
 import type { DrawOp, Subpath } from '@/lib/glyphs/types';
 import type { Tier, WorksheetConfig } from '@/types';
 import { iconOps } from '@/lib/hints/icons';
-import { madeWith } from '@/lib/brand';
+import { madeWith, BRAND_NAME } from '@/lib/brand';
 import { textWidthMm, wrapText } from '@/lib/book/text';
 import { isItemAllowed } from '@/lib/access';
 import { countOf } from '@/components/worksheet/plural';
@@ -123,7 +123,7 @@ function header(ops: DrawOp[], config: WorksheetConfig, title: string): void {
   const fields = [`Nume: ${config.childName?.trim() || '______________'}`, 'Data: ____________'];
   if (config.schoolName?.trim()) fields.push(config.schoolName.trim());
   ops.push({ t: 'text', x: M, y: M + 14.5, text: fields.join('     '), size: 3.6, fill: '#334155' });
-  ops.push({ t: 'text', x: W - M, y: M + 6, text: 'WorksheetWiz', size: 3.2, fill: MUTED, weight: 'bold', align: 'right' });
+  ops.push({ t: 'text', x: W - M, y: M + 6, text: BRAND_NAME, size: 3.2, fill: MUTED, weight: 'bold', align: 'right' });
   ops.push({ t: 'line', x1: M, y1: M + 18.5, x2: W - M, y2: M + 18.5, stroke: ACCENT, strokeWidth: 0.6 });
 }
 

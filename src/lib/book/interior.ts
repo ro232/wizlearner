@@ -22,6 +22,7 @@ import {
 } from '@/lib/worksheet/rows';
 import { interiorMargins, interiorPageSize, type TrimKey, type PaperKey } from './spec';
 import { paragraph, bulletList } from './text';
+import { BRAND_NAME } from '@/lib/brand';
 
 /**
  * Composes a complete, print-ready workbook interior for Amazon KDP:
@@ -77,7 +78,7 @@ const T = {
     belongsTo: 'Acest caiet este al lui / al ei:',
     rights: 'Toate drepturile rezervate. Nicio parte a acestei cărți nu poate fi reprodusă fără acordul autorului.',
     fonts: 'Literele de trasat sunt desenate vectorial. Textul este cules cu fontul Nunito (SIL Open Font License).',
-    made: 'Realizat cu WorksheetWiz.',
+    made: `Realizat cu ${BRAND_NAME}.`,
     howTitle: 'Cum folosim caietul',
     howIntro: 'Fiecare literă are un model mare cu cerculețe numerotate și săgeți. Copilul urmărește ordinea și direcția liniilor, trasează peste literele punctate, apoi scrie singur în căsuțele goale.',
     howBullets: [
@@ -115,14 +116,14 @@ const T = {
     signature: 'Semnătura',
     notes: 'Pagină pentru exersat',
     starsHint: 'Colorează o stea când ai terminat pagina.',
-    preview: 'PREVIEW · WorksheetWiz',
+    preview: `PREVIEW · ${BRAND_NAME}`,
     numberWords: ['zero', 'unu', 'doi', 'trei', 'patru', 'cinci', 'șase', 'șapte', 'opt', 'nouă', 'zece', 'unsprezece', 'doisprezece', 'treisprezece', 'paisprezece', 'cincisprezece', 'șaisprezece', 'șaptesprezece', 'optsprezece', 'nouăsprezece', 'douăzeci'],
   },
   en: {
     belongsTo: 'This book belongs to:',
     rights: 'All rights reserved. No part of this book may be reproduced without permission from the author.',
     fonts: 'The tracing letters are drawn as vector strokes. Text is set in Nunito (SIL Open Font License).',
-    made: 'Made with WorksheetWiz.',
+    made: `Made with ${BRAND_NAME}.`,
     howTitle: 'How to use this book',
     howIntro: 'Every letter has a big model with numbered dots and arrows. Your child follows the order and direction of the strokes, traces the dotted letters, then writes alone in the empty boxes.',
     howBullets: [
@@ -160,7 +161,7 @@ const T = {
     signature: 'Signature',
     notes: 'Practice page',
     starsHint: 'Colour a star when you finish the page.',
-    preview: 'PREVIEW · WorksheetWiz',
+    preview: `PREVIEW · ${BRAND_NAME}`,
     numberWords: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'],
   },
 };
