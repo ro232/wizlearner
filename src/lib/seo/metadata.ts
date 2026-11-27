@@ -77,6 +77,17 @@ export const ROUTE_META = {
     title: 'Prețuri: gratuit sau varianta completă',
     description: 'Ce primești gratuit și ce aduce varianta completă: tot alfabetul, fișe pentru toată grupa, orice cuvânt de trasat și caietul KDP fără filigran.',
   },
+  // The two dashboards: personal start pages, not for search engines.
+  '/panou/cadru': {
+    title: 'Panoul cadrului didactic',
+    description: 'Fișe pentru toată grupa, fișe pe programă, planificare, caiete și planșe: uneltele de zi cu zi ale educatoarei și ale învățătoarei.',
+    noindex: true,
+  },
+  '/panou/parinte': {
+    title: 'Fișe pentru copilul tău',
+    description: 'Alegi vârsta sau clasa copilului și printezi acasă fișa cu numele lui, caiete de lucru și fișe pe teme. Fără cont.',
+    noindex: true,
+  },
   '/cont': { title: 'Contul tău', description: 'Fișele salvate, copiii tăi, istoricul descărcărilor și abonamentul ' + BRAND_NAME + '.', noindex: true },
   '/auth/login': { title: 'Intră în cont', description: 'Intră în contul ' + BRAND_NAME + ' sau creează unul, cu Google sau cu adresa de e-mail.', noindex: true },
 } satisfies Record<string, Omit<PageMeta, 'path'>>;

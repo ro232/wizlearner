@@ -2,18 +2,25 @@
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LogIn, LogOut, User, Menu, X, ChevronDown, Search } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { LogIn, LogOut, User, Menu, X, ChevronDown, Search, GraduationCap, House, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from './logo';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { useAuth } from '@/hooks/use-auth';
-import { adventBannerVisible } from '@/lib/worksheet/advent';
-import { NAV_ITEMS, type NavGroup, type NavLink } from './nav-items';
+import { useRoleStore, ROLE_HOME, type Role } from '@/stores/role-store';
+import { adventBannerVisible } from '@/lib/advent-season';
+import { linkPrefetch } from '@/lib/role-links';
+import { navItemsFor, type NavGroup, type NavLink } from './nav-items';
 
 const TIER_LABEL = { free: 'Gratuit', starter: 'Starter', full: 'Complet' } as const;
+
+
+const ROLE_LABEL: Record<Role, string> = { cadru: 'Cadru didactic', parinte: 'Părinte' };
+const ROLE_ICON = { cadru: GraduationCap, parinte: House } as const;
+export const ROLE_SWITCH_TITLE = 'Schimbă: cadru didactic / părinte';
 
 const isCurrent = (pathname: string, href: string) => !href.includes('#') && (pathname === href || pathname.startsWith(`${href}/`));
 
@@ -44,6 +51,8 @@ function NavDropdown({ group, links, open, onOpenChange, pathname }: {
   const button = useRef<HTMLButtonElement>(null);
   const focusFirst = useRef(false);
   const panelId = `nav-${group.id}`;
+  // a long list („Toate uneltele”) opens in two columns, from the right edge of its button
+  const wide = links.length > 6;
 
   const items = () => Array.from(root.current?.querySelectorAll<HTMLAnchorElement>('[data-nav-item]') ?? []);
 
@@ -119,13 +128,14 @@ function NavDropdown({ group, links, open, onOpenChange, pathname }: {
         id={panelId}
         hidden={!open}
         onKeyDown={onPanelKey}
-        className="absolute left-0 top-full mt-2 w-[330px] rounded-xl border-2 border-ink bg-white p-1.5 shadow-lg"
+        className={cn('absolute top-full mt-2 rounded-xl border-2 border-ink bg-white p-1.5 shadow-lg max-h-[calc(100dvh-5.5rem)] overflow-y-auto', wide ? 'right-0 w-[640px]' : 'left-0 w-[330px]')}
       >
-        <ul>
+        <ul className={wide ? 'grid grid-cols-2 gap-x-1' : undefined}>
           {links.map((l) => (
             <li key={l.href}>
               <Link
                 href={l.href}
+                prefetch={linkPrefetch(l.href)}
                 data-nav-item
                 onClick={() => onOpenChange(false)}
                 aria-current={isCurrent(pathname, l.href) ? 'page' : undefined}
@@ -147,14 +157,118 @@ function NavDropdown({ group, links, open, onOpenChange, pathname }: {
   );
 }
 
+/**
+ * „Schimbă: cadru didactic / părinte”, on the computer: a button with the current role that opens
+ * the two choices (and „Fără rol”, the full menu). Shown only once a role is chosen.
+ */
+function RoleSwitch({ role, open, onOpenChange, onPick }: {
+  role: Role;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onPick: (role: Role | null) => void;
+}) {
+  const root = useRef<HTMLDivElement>(null);
+  const button = useRef<HTMLButtonElement>(null);
+  const Icon = ROLE_ICON[role];
+
+  useEffect(() => {
+    if (!open) return;
+    const outside = (e: PointerEvent) => {
+      if (!root.current?.contains(e.target as Node)) onOpenChange(false);
+    };
+    const escape = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      onOpenChange(false);
+      button.current?.focus();
+    };
+    document.addEventListener('pointerdown', outside);
+    document.addEventListener('keydown', escape);
+    return () => {
+      document.removeEventListener('pointerdown', outside);
+      document.removeEventListener('keydown', escape);
+    };
+  }, [open, onOpenChange]);
+
+  return (
+    <div
+      ref={root}
+      className="relative hidden lg:block"
+      onBlur={(e) => {
+        if (open && !root.current?.contains(e.relatedTarget as Node | null)) onOpenChange(false);
+      }}
+    >
+      <button
+        ref={button}
+        type="button"
+        data-role-switch
+        aria-expanded={open}
+        aria-controls="rol-menu"
+        aria-label={`${ROLE_SWITCH_TITLE}. Acum: ${ROLE_LABEL[role].toLocaleLowerCase('ro')}`}
+        title={ROLE_SWITCH_TITLE}
+        onClick={() => onOpenChange(!open)}
+        className={cn(topItem, 'border-2 border-ink/25 bg-white/60 focus-visible:outline-ink', open && topCurrent)}
+      >
+        <Icon className="w-4 h-4" aria-hidden />
+        <span className="hidden xl:inline">{ROLE_LABEL[role]}</span>
+        <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', open && 'rotate-180')} aria-hidden />
+      </button>
+      <div id="rol-menu" hidden={!open} role="group" aria-label={ROLE_SWITCH_TITLE} className="absolute right-0 top-full mt-2 w-[270px] rounded-xl border-2 border-ink bg-white p-1.5 shadow-lg">
+        <p className="px-3 pt-1.5 pb-1 text-[13px] font-extrabold text-pen">{ROLE_SWITCH_TITLE}</p>
+        <RoleOptions role={role} onPick={onPick} />
+      </div>
+    </div>
+  );
+}
+
+/** The choices of the role switch, the same in the computer menu and the phone menu. */
+function RoleOptions({ role, onPick }: { role: Role; onPick: (role: Role | null) => void }) {
+  return (
+    <ul>
+      {(['cadru', 'parinte'] as const).map((r) => {
+        const Icon = ROLE_ICON[r];
+        return (
+          <li key={r}>
+            <button type="button" data-role-option={r} aria-pressed={role === r} onClick={() => onPick(r)}
+              className={cn('flex w-full items-center gap-3 rounded-lg px-3 min-h-11 text-left text-[15px] font-extrabold text-ink hover:bg-paper focus-visible:outline-ink', role === r && 'bg-paper')}>
+              <Icon className="w-4 h-4 shrink-0" aria-hidden />
+              <span className="flex-1">{ROLE_LABEL[r]}</span>
+              {role === r && <Check className="w-4 h-4 text-pen" aria-hidden />}
+            </button>
+          </li>
+        );
+      })}
+      <li className="mt-1 border-t border-ink/15 pt-1">
+        <button type="button" data-role-option="none" onClick={() => onPick(null)}
+          className="flex w-full items-center rounded-lg px-3 min-h-11 text-left text-sm font-bold text-slate-700 hover:bg-paper focus-visible:outline-ink">
+          Fără rol: meniul complet
+        </button>
+      </li>
+    </ul>
+  );
+}
+
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  // null on the server and on the first render in the browser (the role is read after it): no mismatch
+  const role = useRoleStore((s) => s.role);
   const tier = useWorksheetStore((s) => s.tier);
   const { user, profile, loading, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState<string | null>(null);
   const visible = useVisibleLinks();
   const toggle = useRef<HTMLButtonElement>(null);
+  // the menu of the role (teacher, parent) or, with none, the menu everyone has always seen
+  const items = navItemsFor(role).filter((i) => i.kind === 'group' || visible([i]).length > 0);
+
+  const pickRole = (next: Role | null) => {
+    useRoleStore.getState().setRole(next);
+    setOpen(false);
+    setMenu(null);
+    // on a dashboard the page follows the role; anywhere else only the menu changes
+    if (pathname.startsWith('/panou')) router.push(next ? ROLE_HOME[next] : '/');
+  };
 
   useEffect(() => {
     setOpen(false);
@@ -184,10 +298,11 @@ export function Navbar() {
         <Logo />
 
         <div className="hidden lg:flex items-center gap-0.5 xl:gap-1">
-          {NAV_ITEMS.map((item) =>
+          {items.map((item) =>
             item.kind === 'link' ? (
-              <Link key={item.href} href={item.href} className={cn(topItem, isCurrent(pathname, item.href) && topCurrent)} aria-current={isCurrent(pathname, item.href) ? 'page' : undefined}>
-                <item.icon className="hidden xl:block w-3.5 h-3.5" aria-hidden />
+              <Link key={item.href} href={item.href} prefetch={linkPrefetch(item.href)} className={cn(topItem, isCurrent(pathname, item.href) && topCurrent)} aria-current={isCurrent(pathname, item.href) ? 'page' : undefined}>
+                {/* the role menus have six items and the role switch: no room for icons in the bar */}
+                {!role && <item.icon className="hidden xl:block w-3.5 h-3.5" aria-hidden />}
                 {item.label}
               </Link>
             ) : (
@@ -210,6 +325,7 @@ export function Navbar() {
             <Search className="w-[18px] h-[18px] lg:w-4 lg:h-4" aria-hidden />
             <span className="hidden xl:inline">Caută</span>
           </Link>
+          {role && <RoleSwitch role={role} open={menu === 'rol'} onOpenChange={(o) => setMenu(o ? 'rol' : null)} onPick={pickRole} />}
           {user && (
             <Badge variant="outline" className={cn('hidden sm:inline-flex text-xs font-medium', tier === 'free' && 'border-blue-200 text-blue-700 bg-blue-50/50', tier === 'starter' && 'border-green-200 text-green-700 bg-green-50/50', tier === 'full' && 'border-orange-200 text-orange-700 bg-orange-50/50')}>
               {TIER_LABEL[tier]}
@@ -273,10 +389,10 @@ export function Navbar() {
               </button>
             </form>
             <ul className="sm:col-span-2 grid grid-cols-2 gap-2 pb-3 border-b border-ink/15">
-              {NAV_ITEMS.filter((i) => i.kind === 'link' && i.href !== '/preturi').map((i) =>
+              {items.filter((i) => i.kind === 'link' && i.href !== '/preturi').map((i) =>
                 i.kind === 'link' ? (
                   <li key={i.href}>
-                    <Link href={i.href} onClick={closeAll} aria-current={isCurrent(pathname, i.href) ? 'page' : undefined}
+                    <Link href={i.href} prefetch={linkPrefetch(i.href)} onClick={closeAll} aria-current={isCurrent(pathname, i.href) ? 'page' : undefined}
                       className={cn('flex items-center gap-2 rounded-xl border-2 border-ink bg-white px-3 min-h-12 text-[15px] font-extrabold text-ink', isCurrent(pathname, i.href) && 'shadow-md')}>
                       <i.icon className="w-4 h-4 shrink-0" aria-hidden /> {i.label}
                     </Link>
@@ -284,14 +400,14 @@ export function Navbar() {
                 ) : null,
               )}
             </ul>
-            {NAV_ITEMS.map((g) =>
+            {items.map((g) =>
               g.kind === 'group' ? (
                 <section key={g.id} aria-labelledby={`mm-${g.id}`} className="pt-3">
                   <h2 id={`mm-${g.id}`} className="px-3 text-sm font-sans font-extrabold text-pen tracking-normal">{g.label}</h2>
                   <ul className="mt-1">
                     {visible(g.links).map((l) => (
                       <li key={l.href}>
-                        <Link href={l.href} onClick={closeAll} aria-current={isCurrent(pathname, l.href) ? 'page' : undefined}
+                        <Link href={l.href} prefetch={linkPrefetch(l.href)} onClick={closeAll} aria-current={isCurrent(pathname, l.href) ? 'page' : undefined}
                           className={cn('flex items-center gap-3 rounded-xl px-3 py-2.5 text-ink hover:bg-white', isCurrent(pathname, l.href) && 'bg-white')}>
                           <l.icon className="w-4 h-4 shrink-0" aria-hidden />
                           <span className="min-w-0">
@@ -304,6 +420,14 @@ export function Navbar() {
                   </ul>
                 </section>
               ) : null,
+            )}
+            {role && (
+              <section aria-labelledby="mm-rol" className="sm:col-span-2 mt-3 pt-3 border-t border-ink/15" data-role-switch-mobile>
+                <h2 id="mm-rol" className="px-3 text-sm font-sans font-extrabold text-pen tracking-normal">{ROLE_SWITCH_TITLE}</h2>
+                <div className="mt-1">
+                  <RoleOptions role={role} onPick={pickRole} />
+                </div>
+              </section>
             )}
             <ul className="sm:col-span-2 mt-3 pt-3 border-t border-ink/15 grid grid-cols-2 gap-2">
               <li>

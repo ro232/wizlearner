@@ -29,9 +29,9 @@ export function Footer() {
             <Link href="/fise-de-lucru" className="hover:text-pen">Fișe de lucru pe clase</Link>
             <Link href="/programa" className="hover:text-pen">Fișe pe programă</Link>
             <Link href="/planificare" className="hover:text-pen">Planificare calendaristică</Link>
-            <Link href="/advent" className="hover:text-pen">Calendar de Advent</Link>
+            <Link href="/advent" prefetch={false} className="hover:text-pen">Calendar de Advent</Link>
             <Link href="/planse" className="hover:text-pen">Planșe și diplome</Link>
-            <Link href="/book" className="hover:text-pen">Caiet KDP</Link>
+            <Link href="/book" prefetch={false} className="hover:text-pen">Caiet KDP</Link>
             <Link href="/preturi" className="hover:text-pen">Prețuri</Link>
             <Link href="/confidentialitate" className="hover:text-pen">Confidențialitate</Link>
             <Link href="/termeni" className="hover:text-pen">Termeni</Link>

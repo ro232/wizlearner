@@ -4,6 +4,7 @@ import { useEffect, useSyncExternalStore } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { useWorksheetStore } from '@/stores/worksheet-store';
+import { cleanRole, useRoleStore, type Role } from '@/stores/role-store';
 import { safeNextPath } from '@/lib/safe-redirect';
 import type { Tier } from '@/types';
 
@@ -21,6 +22,8 @@ export interface UserProfile {
   subscription_status?: string | null;
   subscription_period_end?: string | null;
   stripe_customer_id?: string | null;
+  /** Teacher or parent. Absent until the migration 20261127000000_rol.sql is run. */
+  role?: string | null;
   children: Array<{ name: string; age: number; avatar_url?: string }>;
   preferences: Record<string, unknown>;
 }
@@ -43,6 +46,51 @@ const SERVER_STATE: AuthState = state;
 const listeners = new Set<() => void>();
 let started = false;
 let profileRequest = 0;
+
+/**
+ * The role (teacher or parent) lives in this browser (role-store) and, for a signed-in person, on
+ * the profile too, so it follows them to another device. The browser wins: the profile's role is
+ * taken only when none is chosen here, and every change made here is saved to the profile.
+ * Everything is best effort: before the `role` column exists (or when a request fails) the role
+ * simply stays in the browser.
+ */
+function saveRole(userId: string, role: Role): void {
+  try {
+    void createClient()
+      .from('users_profile')
+      .update({ role })
+      .eq('id', userId)
+      .then(
+        ({ error }) => {
+          if (!error && state.profile?.id === userId) state = { ...state, profile: { ...state.profile, role } };
+        },
+        () => undefined,
+      );
+  } catch {
+    /* not configured or offline: the role stays in this browser */
+  }
+}
+
+function syncRole(profile: UserProfile): void {
+  // `select('*')` returns the column only once the migration is run; until then nothing is read or written
+  if (!('role' in profile)) return;
+  const apply = () => {
+    const local = useRoleStore.getState().role;
+    const remote = cleanRole(profile.role);
+    if (local === null) {
+      if (remote) useRoleStore.getState().setRole(remote);
+    } else if (remote === null) saveRole(profile.id, local);
+  };
+  // never before the browser's own role is read: it would look like "none chosen here"
+  if (useRoleStore.getState().hydrated) apply();
+  else {
+    const stop = useRoleStore.subscribe((s) => {
+      if (!s.hydrated) return;
+      stop();
+      apply();
+    });
+  }
+}
 
 function setState(patch: Partial<AuthState>) {
   state = { ...state, ...patch };
@@ -77,6 +125,7 @@ async function fetchProfile(userId: string, attempt = 0): Promise<void> {
     const profile = data as UserProfile;
     setState({ profile, profileError: false });
     useWorksheetStore.getState().setTier(profile.tier);
+    syncRole(profile);
     return;
   }
   if (attempt < 1) {
@@ -97,6 +146,12 @@ function start() {
   if (started || typeof window === 'undefined') return;
   started = true;
   const supabase = createClient();
+
+  // a role chosen or changed while signed in is saved to the profile (when the profile has the column)
+  useRoleStore.subscribe((s, prev) => {
+    const profile = state.profile;
+    if (s.role && s.role !== prev.role && s.hydrated && prev.hydrated && profile && 'role' in profile && cleanRole(profile.role) !== s.role) saveRole(profile.id, s.role);
+  });
 
   supabase.auth
     .getUser()

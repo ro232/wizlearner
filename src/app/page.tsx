@@ -8,6 +8,7 @@ import { ClassPicker } from '@/components/home/class-picker';
 import { PlanExcerpt } from '@/components/home/plan-excerpt';
 import { SheetGallery } from '@/components/home/sheet-gallery';
 import { AdventBanner } from '@/components/home/advent-banner';
+import { RoleCards } from '@/components/home/role-cards';
 import { homeworkShareText } from '@/lib/homework/shared';
 import { SITE_URL } from '@/lib/seo/site';
 import { routeMetadata } from '@/lib/seo/metadata';
@@ -32,7 +33,7 @@ function Hero() {
             competenței, ca în planificare.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="/generator" data-btn="primary" className="inline-flex items-center justify-center gap-2 h-14 px-7 rounded-xl text-base">
+            <Link href="/generator" prefetch={false} data-btn="primary" className="inline-flex items-center justify-center gap-2 h-14 px-7 rounded-xl text-base">
               Fă o fișă gratuit <ArrowRight className="w-4 h-4" aria-hidden />
             </Link>
             <Link href="/programa" className={secondaryBtn}>Alege clasa</Link>
@@ -98,7 +99,7 @@ function Programme() {
               calificative (FB, B, S, I). La grădiniță, cu fișă de observare. Le găsești pe pagina fiecărei clase.
             </p>
           </div>
-          <Link href="/generator" data-btn="primary" className="mt-8 inline-flex items-center justify-center gap-2 h-14 px-7 rounded-xl text-base">
+          <Link href="/generator" prefetch={false} data-btn="primary" className="mt-8 inline-flex items-center justify-center gap-2 h-14 px-7 rounded-xl text-base">
             Deschide generatorul <ArrowRight className="w-4 h-4" aria-hidden />
           </Link>
         </div>
@@ -182,7 +183,7 @@ function ClassTools() {
           </p>
           <GroupSketch />
           <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
-            <Link href="/grupa" data-btn="primary" className="inline-flex items-center justify-center gap-2 h-14 px-7 rounded-xl text-base">
+            <Link href="/grupa" prefetch={false} data-btn="primary" className="inline-flex items-center justify-center gap-2 h-14 px-7 rounded-xl text-base">
               Fă fișele pentru grupă <ArrowRight className="w-4 h-4" aria-hidden />
             </Link>
             <span className="text-sm text-slate-600">Gratuit încerci cu 3 copii.</span>
@@ -209,7 +210,7 @@ function ClassTools() {
           <p className="mt-6 text-slate-700">
             Linkul merge o săptămână, 30 de zile sau 3 luni, cum alegi. Trimiterea temelor e inclusă în abonament.
           </p>
-          <Link href="/generator" className={`${secondaryBtn} mt-6 self-start`}>
+          <Link href="/generator" prefetch={false} className={`${secondaryBtn} mt-6 self-start`}>
             Fă o fișă și trimite-o
           </Link>
         </div>
@@ -301,6 +302,8 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        {/* teacher or parent: one click to the right dashboard and menu */}
+        <RoleCards />
         {/* SEZONIER: Calendarul de Advent, se ascunde singur din 26.12.2026; de scos după Crăciun */}
         <AdventBanner />
         <Classes />
