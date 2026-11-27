@@ -14,6 +14,8 @@ const securityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  // Test period: everything open on the live site (src/lib/open-access.ts). Tests and local builds stay closed.
+  env: { NEXT_PUBLIC_OPEN_ACCESS: process.env.NEXT_PUBLIC_OPEN_ACCESS ?? (process.env.VERCEL_ENV === 'production' ? '1' : '0') },
   async redirects() {
     // The name sheet moved to a Romanian address.
     return [{ source: '/custom-name', destination: '/nume', permanent: true }];
