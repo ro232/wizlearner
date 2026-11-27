@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { OPEN_ACCESS } from '@/lib/open-access';
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, Script, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
 import { ALPHABETS, normalizeKey } from '@/lib/glyphs/data';
@@ -87,7 +88,7 @@ const safeStorage: StateStorage = {
 
 export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   config: { ...DEFAULT_CONFIG },
-  tier: 'free',
+  tier: OPEN_ACCESS ? 'full' : 'free',
   language: 'en',
   nameSlot: null,
 
@@ -223,7 +224,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   setCustomTitle: (customTitle) => set((state) => ({ config: { ...state.config, customTitle } })),
   setSchoolName: (schoolName) => set((state) => ({ config: { ...state.config, schoolName } })),
   resetConfig: () => set({ nameSlot: null, config: { ...DEFAULT_CONFIG } }),
-  setTier: (tier) => set({ tier }),
+  setTier: (tier) => set({ tier: OPEN_ACCESS ? 'full' : tier }),
   setLanguage: (language) => set({ language }),
 }), {
   name: 'wizlearner-last-sheet',
