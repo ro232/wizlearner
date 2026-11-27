@@ -70,7 +70,7 @@ export function ChildrenPanel({ userId }: { userId: string }) {
   const workbook = (c: Child) =>
     router.push(stashProject('workbook', { book: c.script === 'cursive' ? 'cursive' : c.letter_mode === 'uppercase' ? 'upper' : c.letter_mode === 'lowercase' ? 'lower' : 'paired', level: c.level, withWords: true, name: c.name }));
 
-  const pill = (on: boolean) => `h-9 px-3 rounded-lg border-2 text-sm font-bold ${on ? 'border-ink bg-ink text-white' : 'border-slate-300 bg-white text-ink hover:border-ink'}`;
+  const pill = (on: boolean) => `h-9 px-3 rounded-lg border text-sm font-bold ${on ? 'border-brand bg-brand text-white' : 'border-slate-300 bg-white text-ink hover:border-brand'}`;
 
   return (
     <div className="space-y-4">
@@ -81,10 +81,10 @@ export function ChildrenPanel({ userId }: { userId: string }) {
       ) : (
         <ul className="grid sm:grid-cols-2 gap-3">
           {children.map((c) => (
-            <li key={c.id} className="rounded-xl border-2 border-slate-200 p-4">
+            <li key={c.id} className="rounded-xl border border-slate-200 p-4">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <div className="text-lg font-extrabold text-ink">{c.name}</div>
+                  <div className="text-lg font-bold text-ink">{c.name}</div>
                   <div className="text-xs text-slate-500">{LEVELS[c.level]} · {c.script === 'cursive' ? 'de mână' : `de tipar, ${MODES[c.letter_mode]}`}</div>
                 </div>
                 {confirm === c.id ? (
@@ -100,9 +100,9 @@ export function ChildrenPanel({ userId }: { userId: string }) {
                 )}
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                <button type="button" onClick={() => sheet(c)} className="h-9 px-3 rounded-lg border-2 border-ink text-sm font-bold text-ink hover:bg-paper">Fișă nouă</button>
-                <button type="button" onClick={() => nameBook(c)} className="inline-flex items-center gap-1 h-9 px-3 rounded-lg border-2 border-slate-300 text-sm font-bold text-ink hover:border-ink"><UserRound className="w-4 h-4" aria-hidden /> Caietul cu numele</button>
-                <button type="button" onClick={() => workbook(c)} className="inline-flex items-center gap-1 h-9 px-3 rounded-lg border-2 border-slate-300 text-sm font-bold text-ink hover:border-ink"><Library className="w-4 h-4" aria-hidden /> Caiet de litere</button>
+                <button type="button" onClick={() => sheet(c)} className="h-9 px-3 rounded-lg border border-line text-sm font-bold text-ink hover:bg-paper">Fișă nouă</button>
+                <button type="button" onClick={() => nameBook(c)} className="inline-flex items-center gap-1 h-9 px-3 rounded-lg border border-slate-300 text-sm font-bold text-ink hover:border-brand"><UserRound className="w-4 h-4" aria-hidden /> Caietul cu numele</button>
+                <button type="button" onClick={() => workbook(c)} className="inline-flex items-center gap-1 h-9 px-3 rounded-lg border border-slate-300 text-sm font-bold text-ink hover:border-brand"><Library className="w-4 h-4" aria-hidden /> Caiet de litere</button>
               </div>
             </li>
           ))}
@@ -110,7 +110,7 @@ export function ChildrenPanel({ userId }: { userId: string }) {
       )}
 
       {form ? (
-        <form className="rounded-xl border-2 border-ink p-4 space-y-3" onSubmit={(e) => { e.preventDefault(); void save(); }}>
+        <form className="rounded-xl border border-line p-4 space-y-3" onSubmit={(e) => { e.preventDefault(); void save(); }}>
           <div>
             <label htmlFor="child-name" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Prenumele</label>
             <input id="child-name" autoFocus value={form.name} maxLength={40} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="ex. Ana" autoComplete="off"
@@ -130,14 +130,14 @@ export function ChildrenPanel({ userId }: { userId: string }) {
           )}
           {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-2">
-            <button type="submit" disabled={!form.name.trim()} className="h-10 px-4 rounded-xl bg-ink text-white font-bold disabled:opacity-50">Salvează</button>
+            <button type="submit" disabled={!form.name.trim()} className="h-10 px-4 rounded-xl bg-brand text-white font-bold disabled:opacity-50">Salvează</button>
             <button type="button" onClick={() => setForm(null)} className="h-10 px-4 rounded-xl border border-slate-300">Renunță</button>
           </div>
           <p className="text-xs text-slate-500">Păstrăm doar prenumele și nivelul, ca să faci fișele mai repede. Le poți șterge oricând.</p>
         </form>
       ) : (
         <button type="button" onClick={() => setForm({ name: '', level: 'beginner', script: 'print', letter_mode: 'uppercase' })}
-          className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl border-2 border-dashed border-slate-400 font-bold text-ink hover:border-ink">
+          className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl border border-dashed border-slate-400 font-bold text-ink hover:border-brand">
           <Plus className="w-4 h-4" aria-hidden /> Adaugă un copil
         </button>
       )}

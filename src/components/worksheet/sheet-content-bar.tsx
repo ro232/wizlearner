@@ -52,7 +52,7 @@ export const SheetContentBar = () => {
         })}
         {words.map((word) => (
           <button key={`w-${word}`} type="button" onClick={() => removeCustomWord(word)} aria-label={`Scoate ${word}`}
-            className="group inline-flex items-center gap-1.5 px-3 py-1 bg-orange-50 border border-orange-200 rounded-full text-sm font-semibold text-slate-700 hover:border-red-400 hover:bg-red-50 transition-colors">
+            className="group inline-flex items-center gap-1.5 px-3 py-1 bg-brand-soft border border-line rounded-full text-sm font-semibold text-slate-700 hover:border-red-400 hover:bg-red-50 transition-colors">
             <span aria-hidden>✍️</span>
             <span>{word}</span>
             <span className="text-slate-400 group-hover:text-red-500" aria-hidden>×</span>

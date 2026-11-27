@@ -36,12 +36,12 @@ export function LockedNotice() {
   const label = (i: string) => (isPatternId(i) ? PATTERN_LABELS.ro[i] : isActivityItem(i) ? activityLabel(i) : i);
   const list = [...items.map(label), ...words].slice(0, 6).join(', ');
   return (
-    <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-4 text-sm text-amber-900" role="status">
-      <p className="flex items-center gap-2 font-extrabold"><Lock className="w-4 h-4" aria-hidden /> Nu apar pe fișă: {list}</p>
+    <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900" role="status">
+      <p className="flex items-center gap-2 font-bold"><Lock className="w-4 h-4" aria-hidden /> Nu apar pe fișă: {list}</p>
       <p className="mt-1">Fac parte din varianta completă. Gratuit poți folosi literele A–E, cifrele 0–5, matematica până la 10 și numele copilului.</p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <Link href="/preturi" className="inline-flex items-center h-10 px-4 rounded-xl bg-ink text-white font-bold">Vezi varianta completă</Link>
-        <button type="button" onClick={removeLocked} className="h-10 px-4 rounded-xl border-2 border-amber-400 bg-white font-bold">Scoate-le de pe fișă</button>
+        <Link href="/preturi" className="inline-flex items-center h-10 px-4 rounded-xl bg-brand text-white font-bold">Vezi varianta completă</Link>
+        <button type="button" onClick={removeLocked} className="h-10 px-4 rounded-xl border border-amber-400 bg-white font-bold">Scoate-le de pe fișă</button>
       </div>
     </div>
   );

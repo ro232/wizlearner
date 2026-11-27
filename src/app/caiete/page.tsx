@@ -105,27 +105,27 @@ export default function WorkbooksPage() {
       return tier === 'free' ? `Paginile gratuite sunt descărcate: ${mine.length}.` : `Caietul e gata: ${pagini(mine.length)}.`;
     });
 
-  const pill = (on: boolean) => `p-2 rounded-lg border-2 text-center ${on ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`;
+  const pill = (on: boolean) => `p-2 rounded-lg border text-center ${on ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`;
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 [&>*]:min-w-0">
+      <main className="max-w-[1120px] mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 [&>*]:min-w-0">
         <section className="space-y-6">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Caiete gata făcute</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">Caiete gata făcute</h1>
             <p className="mt-2 text-slate-600">Tot alfabetul sau toate cifrele, câte o pagină pentru fiecare, la nivelul copilului. Alegi, te uiți, descarci.</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6 space-y-5">
+          <div className="bg-white rounded-2xl border border-line p-5 sm:p-6 space-y-5">
             <div>
               <span className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Caietul</span>
               <div className="grid grid-cols-2 gap-2">
                 {BOOKS.map((b) => (
                   <button key={b.id} type="button" onClick={() => setBook(b.id)} aria-pressed={book === b.id}
-                    className={`p-3 rounded-xl border-2 text-left ${book === b.id ? 'border-ink bg-white shadow-md' : 'border-slate-300 bg-white hover:border-ink'}`}>
-                    <div className={`text-lg font-extrabold text-pen ${b.italic ? 'italic' : ''}`} aria-hidden>{b.sample}</div>
-                    <div className="font-extrabold text-ink leading-tight">{b.title}</div>
+                    className={`p-3 rounded-xl border text-left ${book === b.id ? 'border-brand bg-brand-soft' : 'border-slate-300 bg-white hover:border-brand'}`}>
+                    <div className={`text-lg font-bold text-pen ${b.italic ? 'italic' : ''}`} aria-hidden>{b.sample}</div>
+                    <div className="font-bold text-ink leading-tight">{b.title}</div>
                     <div className="text-xs text-slate-600">{b.text}</div>
                   </button>
                 ))}
@@ -181,7 +181,7 @@ export default function WorkbooksPage() {
 
         <section aria-label="Previzualizare" className="lg:sticky lg:top-24 lg:self-start space-y-2">
           <p className="text-sm font-semibold text-slate-700">{title}: {pagini(all.length)}</p>
-          <div className="desk rounded-2xl border-2 border-ink p-4 sm:p-8 flex justify-center">
+          <div className="desk rounded-2xl border border-line p-4 sm:p-8 flex justify-center">
             <PagesPreview pages={all} width={420} pageLabel="Pagina" />
           </div>
         </section>

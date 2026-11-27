@@ -34,7 +34,7 @@ export function MathPicker({ onShowPaywall }: { onShowPaywall: () => void }) {
   const tables = config.selectedItems.some((t) => (MUL_TYPES as readonly string[]).includes(t));
   const clocks = config.selectedItems.includes('clock') || config.selectedItems.includes('clockdraw');
   const pill = (on: boolean) =>
-    `rounded-lg border-2 font-bold transition-all ${on ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-300 bg-white text-slate-700 hover:border-blue-300'}`;
+    `rounded-lg border font-bold transition-all ${on ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-300 bg-white text-slate-700 hover:border-blue-300'}`;
 
   return (
     <div className="space-y-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
@@ -164,7 +164,7 @@ export function MathPicker({ onShowPaywall }: { onShowPaywall: () => void }) {
       )}
 
       <div className="flex flex-wrap items-center gap-3">
-        <button type="button" onClick={newMathSet} className="inline-flex items-center gap-1.5 h-11 px-4 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper">
+        <button type="button" onClick={newMathSet} className="inline-flex items-center gap-1.5 h-11 px-4 rounded-xl border border-line-strong bg-white font-semibold text-ink hover:bg-paper">
           <Shuffle className="w-4 h-4" aria-hidden /> Alte exerciții
         </button>
       </div>

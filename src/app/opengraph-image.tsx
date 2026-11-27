@@ -15,10 +15,11 @@ export const alt = `${BRAND_NAME} – fișe de lucru pe programă, de la grădin
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-const INK = '#1F2A44';
-const PAPER = '#FBF7EE';
-const PEN = '#C8102E';
-const PENCIL = '#F2B632';
+// Minimal alb: white, navy text, one blue accent, thin grey borders.
+const INK = '#14213D';
+const MUTED = '#545E73';
+const ACCENT = '#2448E8';
+const LINE = '#E6E9EF';
 
 const SAMPLE: WorksheetConfig = { ...DEFAULT_CONFIG, alphabet: 'ro', letterMode: 'uppercase', selectedItems: ['A', 'Ă', 'Ș'], rowsPerPage: 5 };
 /** The part of the A4 page (in mm) that holds the letter rows. */
@@ -33,41 +34,34 @@ function sheetStrip(): string {
 }
 
 export default async function OpengraphImage() {
-  const [display, text] = await Promise.all([
-    readFile(join(process.cwd(), 'src/app/fonts/fraunces-extrabold-og.ttf')),
-    readFile(join(process.cwd(), 'public/fonts/Nunito-Bold.ttf')),
+  const [bold, medium] = await Promise.all([
+    readFile(join(process.cwd(), 'src/app/fonts/inter-bold-og.ttf')),
+    readFile(join(process.cwd(), 'src/app/fonts/inter-medium-og.ttf')),
   ]);
   const stripW = 500;
   const stripH = Math.round((stripW * CROP.h) / CROP.w);
 
   return new ImageResponse(
     (
-      <div style={{ width: '100%', height: '100%', display: 'flex', background: PAPER, border: `10px solid ${INK}`, fontFamily: 'Nunito', color: INK }}>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: 520, padding: '0 0 0 60px' }}>
+      <div style={{ width: '100%', height: '100%', display: 'flex', background: '#FFFFFF', fontFamily: 'Inter', color: INK }}>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: 580, padding: '0 0 0 72px' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <svg width="76" height="76" viewBox="0 0 34 34">
-              <g transform="rotate(35 17 17)">
-                <rect x="13" y="1.5" width="8" height="22" rx="1.5" fill={PENCIL} stroke={INK} strokeWidth="2" />
-                <rect x="13" y="1.5" width="8" height="5" fill={PEN} stroke={INK} strokeWidth="2" />
-                <path d="M13 23.5 L17 32 L21 23.5 Z" fill="#F4D9B0" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
-                <path d="M15.6 29 L17 32 L18.4 29 Z" fill={INK} />
-              </g>
+            <svg width="64" height="64" viewBox="0 0 28 28">
+              <rect x="1" y="1" width="26" height="26" rx="7" fill={ACCENT} />
+              <path d="M7 10h14M7 15h14M7 20h9" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" fill="none" />
             </svg>
-            <div style={{ display: 'flex', marginLeft: 14, fontFamily: 'Fraunces', fontSize: 54, letterSpacing: -1 }}>
-              <span>{BRAND_WORDMARK[0]}</span>
-              <span style={{ color: PEN }}>{BRAND_WORDMARK[1]}</span>
-            </div>
+            <div style={{ display: 'flex', marginLeft: 18, fontSize: 48, fontWeight: 700, letterSpacing: -1 }}>{BRAND_WORDMARK}</div>
           </div>
-          <div style={{ display: 'flex', marginTop: 34, fontFamily: 'Fraunces', fontSize: 58, lineHeight: 1.08, letterSpacing: -1.5 }}>
+          <div style={{ display: 'flex', marginTop: 40, fontSize: 58, fontWeight: 700, lineHeight: 1.06, letterSpacing: -1.8 }}>
             Fișe pe programă, de la grădiniță la clasa a IV-a
           </div>
-          <div style={{ display: 'flex', marginTop: 26, fontSize: 28, color: '#3F3B35' }}>Codul competenței pe fișă. PDF gata de printat.</div>
-          <div style={{ display: 'flex', marginTop: 30, alignSelf: 'flex-start', fontSize: 21, color: PEN, borderBottom: `4px solid ${PEN}`, paddingBottom: 4, letterSpacing: 1.5, whiteSpace: 'nowrap' }}>
-            ALFABETUL ROMÂNESC · Ă Â Î Ș Ț
+          <div style={{ display: 'flex', marginTop: 26, fontSize: 28, fontWeight: 500, color: MUTED }}>Codul competenței pe fișă. PDF gata de printat.</div>
+          <div style={{ display: 'flex', marginTop: 30, alignSelf: 'flex-start', fontSize: 22, fontWeight: 700, color: ACCENT, whiteSpace: 'nowrap' }}>
+            Alfabetul românesc · Ă Â Î Ș Ț
           </div>
         </div>
-        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', transform: 'rotate(3deg)', background: '#ffffff', border: `4px solid ${INK}`, boxShadow: `14px 14px 0 ${INK}`, padding: 14 }}>
+        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', background: '#F6F7FA', borderLeft: `1px solid ${LINE}` }}>
+          <div style={{ display: 'flex', background: '#FFFFFF', border: `2px solid ${LINE}`, borderRadius: 16, padding: 16 }}>
             {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
             <img src={sheetStrip()} width={stripW} height={stripH} />
           </div>
@@ -77,8 +71,8 @@ export default async function OpengraphImage() {
     {
       ...size,
       fonts: [
-        { name: 'Fraunces', data: display, weight: 800, style: 'normal' },
-        { name: 'Nunito', data: text, weight: 700, style: 'normal' },
+        { name: 'Inter', data: bold, weight: 700, style: 'normal' },
+        { name: 'Inter', data: medium, weight: 500, style: 'normal' },
       ],
     },
   );

@@ -10,7 +10,7 @@ import { STAGE_TOPICS } from '@/lib/role-links';
 import { adventBannerVisible } from '@/lib/advent-season';
 
 const wrap = 'max-w-4xl mx-auto px-4 sm:px-6';
-const h2 = 'text-2xl sm:text-[28px] font-extrabold leading-tight text-ink';
+const h2 = 'text-2xl sm:text-[28px] font-bold leading-tight text-ink';
 
 /**
  * The parent's dashboard. First the child's age or class (remembered in this browser, never a
@@ -41,12 +41,12 @@ export default function ParentDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <main>
-        <section className="ruled border-b-2 border-ink">
+        <section className="bg-white border-b border-line">
           <div className={`${wrap} py-9 sm:py-12`}>
-            <h1 className="text-[34px] sm:text-5xl font-extrabold leading-[1.05] text-ink">Fișe pentru copilul tău</h1>
+            <h1 className="text-[34px] sm:text-5xl font-bold leading-[1.05] text-ink">Fișe pentru copilul tău</h1>
             <p className="mt-3 max-w-2xl text-lg text-slate-700">Alegi vârsta sau clasa, apoi fișa. O printezi acasă în câteva minute, fără cont.</p>
           </div>
         </section>
@@ -64,7 +64,7 @@ export default function ParentDashboard() {
                     <div role="group" aria-labelledby="varsta-titlu" className="mt-5 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-3">
                       {CHILD_STAGES.map((s) => (
                         <button key={s.id} type="button" data-stage={s.id} aria-pressed={stage === s.id} onClick={() => pick(s.id)}
-                          className={`flex min-h-14 items-center justify-between gap-2 rounded-xl border-2 border-ink px-4 text-left text-lg font-extrabold text-ink hover:bg-white focus-visible:outline-ink ${stage === s.id ? 'bg-pencil' : 'bg-white/70'}`}>
+                          className={`flex min-h-14 items-center justify-between gap-2 rounded-xl border border-line px-4 text-left text-lg font-bold text-ink hover:bg-white ${stage === s.id ? 'bg-pencil' : 'bg-white/70'}`}>
                           {s.label}
                           {stage === s.id && <Check className="w-5 h-5 shrink-0" aria-hidden />}
                         </button>
@@ -73,12 +73,12 @@ export default function ParentDashboard() {
                     <p className="mt-4 text-sm text-slate-600" data-note="clase-mari">Clasele a III-a și a IV-a: în lucru</p>
                   </>
                 ) : (
-                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-ink bg-white px-4 py-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-white px-4 py-3">
                     <h2 id="varsta-titlu" className="font-sans text-base font-bold tracking-normal text-slate-700">
-                      Fișe pentru: <span className="font-extrabold text-ink" data-chosen-stage>{chosen.label}</span>
+                      Fișe pentru: <span className="font-bold text-ink" data-chosen-stage>{chosen.label}</span>
                     </h2>
                     <button type="button" onClick={() => setChanging(true)}
-                      className="inline-flex min-h-11 items-center rounded-lg border-2 border-ink bg-white px-3 text-sm font-extrabold text-ink hover:bg-paper focus-visible:outline-ink">
+                      className="inline-flex min-h-11 items-center rounded-lg border border-line-strong bg-white px-3 text-sm font-semibold text-ink hover:bg-paper">
                       Schimbă vârsta
                     </button>
                   </div>

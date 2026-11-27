@@ -38,14 +38,14 @@ export default function LandingClassPage({ params }: { params: { clasa: string }
   const jsonLd = JSON.stringify(breadcrumbJsonLd([{ name: 'Fișe de lucru', path: LANDING_ROOT }, { name: c.cls.title, path: c.path }])).replace(/</g, '\\u003c');
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <main>
-        <section className="ruled border-b-2 border-ink">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-4">
+        <section className="bg-white border-b border-line">
+          <div className="max-w-[1120px] mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-4">
             <LandingCrumbs items={[{ name: 'Fișe de lucru', path: LANDING_ROOT }, { name: c.cls.title }]} />
-            <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight text-ink max-w-3xl">{c.h1}</h1>
+            <h1 className="text-4xl sm:text-5xl font-bold leading-tight text-ink max-w-3xl">{c.h1}</h1>
             <p className="text-lg text-slate-700 max-w-2xl">{INTRO[c.cls.level]}</p>
             <p className="text-sm text-slate-700">
               <Link href={`/programa/${c.cls.slug}`} className="font-bold underline">Fișele pe {school ? 'competențe' : 'comportamente'}</Link>
@@ -60,14 +60,14 @@ export default function LandingClassPage({ params }: { params: { clasa: string }
         </section>
 
         {c.groups.map((g) => (
-          <section key={g.area} className="py-10 border-b-2 border-ink/10">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-ink">{g.title}</h2>
+          <section key={g.area} className="py-10 border-b border-line">
+            <div className="max-w-[1120px] mx-auto px-4 sm:px-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-ink">{g.title}</h2>
               <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {g.pages.map((p) => (
                   <li key={p.path}>
-                    <Link href={p.path} className="group flex h-full flex-col rounded-xl border-2 border-ink bg-white p-4 hover:-translate-y-0.5 hover:shadow-md transition-transform">
-                      <span className="font-extrabold text-ink group-hover:underline">{p.topic.label}</span>
+                    <Link href={p.path} className="group flex h-full flex-col rounded-xl border border-line bg-white p-4 hover:-translate-y-0.5 hover:shadow-md transition-transform">
+                      <span className="font-bold text-ink group-hover:underline">{p.topic.label}</span>
                       <span className="mt-1 text-sm text-slate-700 flex-1">{p.lead}</span>
                       <span className="mt-3 text-xs font-bold text-slate-500">{countOf(p.variants.length, 'fișă', 'fișe')}</span>
                     </Link>
@@ -79,7 +79,7 @@ export default function LandingClassPage({ params }: { params: { clasa: string }
         ))}
 
         <section className="py-10">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 text-sm text-slate-600">
+          <div className="max-w-[1120px] mx-auto px-4 sm:px-6 text-sm text-slate-600">
             <p>
               Alte clase:{' '}
               {LANDING_CLASSES.filter((o) => o.cls.slug !== c.cls.slug).map((o, i, all) => (
@@ -89,7 +89,7 @@ export default function LandingClassPage({ params }: { params: { clasa: string }
                 </span>
               ))}
             </p>
-            <Link href={`${LANDING_ROOT}`} className="mt-4 inline-flex items-center font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">
+            <Link href={`${LANDING_ROOT}`} className="mt-4 inline-flex items-center font-bold text-brand underline decoration-brand/30 underline-offset-4 hover:text-brand">
               Toate fișele de lucru, pe clase <ArrowRight className="w-4 h-4 ml-1" aria-hidden />
             </Link>
             <p className="mt-2">Fișele pentru {CLASS_NAME[c.cls.level]} se deschid în generator, unde pui numele copilului și descarci PDF-ul.</p>

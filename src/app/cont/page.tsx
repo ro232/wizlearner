@@ -112,7 +112,7 @@ export default function AccountPage() {
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-6">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900">Contul tău</h1>
+            <h1 className="text-3xl font-bold text-slate-900">Contul tău</h1>
             <p className="text-slate-600">{user.email}</p>
           </div>
           <Button variant="outline" onClick={signOut} className="gap-1.5"><LogOut className="w-4 h-4" aria-hidden /> Ieși</Button>
@@ -125,7 +125,7 @@ export default function AccountPage() {
         )}
 
         <section className="rounded-2xl bg-white shadow p-6 space-y-4">
-          <div className="flex items-center gap-2"><Crown className="w-5 h-5 text-orange-500" aria-hidden /><h2 className="text-lg font-bold text-slate-900">Varianta ta: {TIER[tier]}</h2></div>
+          <div className="flex items-center gap-2"><Crown className="w-5 h-5 text-brand" aria-hidden /><h2 className="text-lg font-bold text-slate-900">Varianta ta: {TIER[tier]}</h2></div>
           {summary ? (
             <p className="text-slate-700">
               {summary.text}

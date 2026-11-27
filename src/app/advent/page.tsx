@@ -44,23 +44,23 @@ export default function AdventPage() {
       return `Calendarul de Advent e gata: ${pagini(pages.length)}.`;
     });
 
-  const pill = (on: boolean) => `p-2 rounded-lg border-2 text-center ${on ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`;
+  const pill = (on: boolean) => `p-2 rounded-lg border text-center ${on ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`;
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 [&>*]:min-w-0">
+      <main className="max-w-[1120px] mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 [&>*]:min-w-0">
         <section className="space-y-6">
           <div>
-            <p className="inline-block font-extrabold text-[13px] tracking-[0.12em] uppercase text-pen border-b-2 border-pen pb-1">Gratuit · fără cont</p>
-            <h1 className="mt-3 text-3xl sm:text-4xl font-extrabold text-slate-900">Calendarul de Advent cu fișe de lucru</h1>
+            <p className="inline-block font-bold text-[13px] tracking-[0.12em] uppercase text-pen border-b border-brand pb-1">Gratuit · fără cont</p>
+            <h1 className="mt-3 text-3xl sm:text-4xl font-bold text-slate-900">Calendarul de Advent cu fișe de lucru</h1>
             <p className="mt-2 text-slate-600">
               O fișă scurtă pentru fiecare zi, de la 1 la 24 decembrie, și o copertă pe care cel mic colorează câte o căsuță pe zi. Pui numele
               copilului, alegi clasa și printezi tot calendarul.
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6 space-y-5">
+          <div className="bg-white rounded-2xl border border-line p-5 sm:p-6 space-y-5">
             <div>
               <label htmlFor="advent-name" className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                 <UserRound className="w-3.5 h-3.5" aria-hidden /> Numele copilului (opțional)
@@ -89,14 +89,14 @@ export default function AdventPage() {
               <Button onClick={() => go('download')} disabled={busy} className="flex-1 basis-48 min-w-0 min-h-12 h-auto py-2 whitespace-normal rounded-2xl text-white font-bold disabled:opacity-50" data-btn="primary">
                 <Download className="w-5 h-5 mr-2 shrink-0" aria-hidden /> {busyWith === 'download' ? 'Se pregătește…' : `Descarcă calendarul (${pagini(pages.length)})`}
               </Button>
-              <Button variant="outline" onClick={() => go('print')} disabled={busy} className="h-12 px-4 rounded-2xl border-2" aria-label="Printează calendarul">
+              <Button variant="outline" onClick={() => go('print')} disabled={busy} className="h-12 px-4 rounded-2xl border" aria-label="Printează calendarul">
                 <Printer className="w-5 h-5" aria-hidden />
               </Button>
             </div>
           </div>
 
           <div className="space-y-2 text-sm text-slate-700">
-            <h2 className="font-extrabold text-ink text-base">Ce e în calendar</h2>
+            <h2 className="font-bold text-ink text-base">Ce e în calendar</h2>
             <ul className="list-disc pl-5 space-y-1">
               <li>Câte o activitate de 10–15 minute pe zi: cuvinte de iarnă de scris, numele copilului, exerciții grafice, găsește litera, numără, unește punctele, mici exerciții de matematică.</li>
               <li><strong>1 decembrie</strong> – România, <strong>6 decembrie</strong> – Moș Nicolae, <strong>24 decembrie</strong> – o diplomă de Crăciun cu numele lui.</li>
@@ -119,7 +119,7 @@ export default function AdventPage() {
               </select>
             </label>
           </div>
-          <div className="desk rounded-2xl border-2 border-ink p-4 sm:p-8 flex justify-center">
+          <div className="desk rounded-2xl border border-line p-4 sm:p-8 flex justify-center">
             <PagesPreview pages={pages} width={420} pageLabel="Pagina" pageIndex={pageIndex} onPageChange={setPageIndex} />
           </div>
         </section>

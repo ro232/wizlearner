@@ -48,8 +48,8 @@ export function HomeworkDownload({ homework }: { homework: Homework }) {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-6 sm:py-10">
-      <p className="font-extrabold text-[12px] tracking-[0.12em] uppercase text-pen">Temă pentru acasă</p>
-      <h1 className="mt-1 text-[28px] sm:text-4xl font-extrabold leading-tight text-ink break-words">{homework.title || 'Fișa de lucru de azi'}</h1>
+      <p className="font-bold text-[12px] tracking-[0.12em] uppercase text-pen">Temă pentru acasă</p>
+      <h1 className="mt-1 text-[28px] sm:text-4xl font-bold leading-tight text-ink break-words">{homework.title || 'Fișa de lucru de azi'}</h1>
       <dl className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-700">
         {homework.level && (
           <div className="flex gap-1"><dt className="sr-only">Clasa</dt><dd className="font-bold text-ink">{LEVEL_LABEL[homework.level]}</dd></div>
@@ -58,7 +58,7 @@ export function HomeworkDownload({ homework }: { homework: Homework }) {
         <div className="flex gap-1"><dt className="sr-only">Pagini</dt><dd>{pagini(pages.length)}</dd></div>
       </dl>
 
-      <div className="mt-5 rounded-2xl border-2 border-ink desk p-4 flex justify-center">
+      <div className="mt-5 rounded-2xl border border-line desk p-4 flex justify-center">
         <PagesPreview pages={pages} width={300} pageLabel="Pagina" />
       </div>
 
@@ -70,7 +70,7 @@ export function HomeworkDownload({ homework }: { homework: Homework }) {
         }}
       >
         <div>
-          <label htmlFor="child-name" className="block text-sm font-extrabold text-ink">
+          <label htmlFor="child-name" className="block text-sm font-bold text-ink">
             Numele copilului <span className="font-semibold text-slate-600">(opțional, rămâne doar pe telefonul tău)</span>
           </label>
           <input
@@ -83,7 +83,7 @@ export function HomeworkDownload({ homework }: { homework: Homework }) {
             spellCheck={false}
             enterKeyHint="done"
             placeholder="ex. Ana"
-            className="mt-2 w-full h-14 px-4 rounded-xl border-2 border-ink bg-white text-lg font-bold text-ink placeholder:text-slate-400 placeholder:font-semibold focus:outline-none focus:ring-4 focus:ring-pencil/60"
+            className="mt-2 w-full h-14 px-4 rounded-xl border border-line-strong bg-white text-lg font-semibold text-ink placeholder:text-slate-400 placeholder:font-semibold focus:outline-none focus:ring-4 focus:ring-brand/30"
           />
           <p className="mt-2 flex items-start gap-1.5 text-xs text-slate-600">
             <Lock className="w-3.5 h-3.5 mt-px shrink-0" aria-hidden />
@@ -101,7 +101,7 @@ export function HomeworkDownload({ homework }: { homework: Homework }) {
 
       <p className="mt-10 pt-5 border-t border-slate-300 text-center text-sm text-slate-600">
         Fișă trimisă de cadrul didactic prin {BRAND_NAME}.{' '}
-        <Link href="/generator" className="font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">Fă și tu o fișă</Link>
+        <Link href="/generator" prefetch={false} className="font-bold text-brand underline decoration-brand/30 underline-offset-4 hover:text-brand">Fă și tu o fișă</Link>
       </p>
     </div>
   );

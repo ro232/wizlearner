@@ -255,7 +255,7 @@ export default function GeneratorPage() {
         variant="outline"
         onClick={() => run('print')}
         disabled={empty || busy !== null}
-        className="h-12 sm:h-14 px-4 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper"
+        className="h-12 sm:h-14 px-4 rounded-xl border border-line-strong bg-white font-semibold text-ink hover:bg-paper"
         aria-label="Printează"
         title="Printează fișa"
       >
@@ -266,7 +266,7 @@ export default function GeneratorPage() {
         variant="outline"
         onClick={save}
         disabled={empty}
-        className="h-12 sm:h-14 px-4 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper"
+        className="h-12 sm:h-14 px-4 rounded-xl border border-line-strong bg-white font-semibold text-ink hover:bg-paper"
         aria-label="Salvează în cont"
         title="Salvează fișa în cont"
       >
@@ -293,7 +293,7 @@ export default function GeneratorPage() {
             <LockedNotice />
             {empty ? <QuickStart /> : isExample ? <QuickStart example /> : <SheetContentBar />}
             {/* phones: no big blank page while the sheet is empty, the choices come first */}
-            <div ref={deskRef} className={`rounded-2xl overflow-hidden desk border-2 border-ink p-4 sm:p-8 lg:p-4 xl:p-5 justify-center ${empty ? 'hidden lg:flex' : 'flex'}`}>
+            <div ref={deskRef} className={`rounded-2xl overflow-hidden desk border border-line p-4 sm:p-8 lg:p-4 xl:p-5 justify-center ${empty ? 'hidden lg:flex' : 'flex'}`}>
               <WorksheetPreview config={config} tier={tier} />
             </div>
             {/* phones: sending the sheet to the parents, right under it (the action bar has no room left) */}
@@ -317,12 +317,12 @@ export default function GeneratorPage() {
       </main>
 
       {/* Phones: actions always within reach */}
-      <div data-sticky-actions className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-paper/95 backdrop-blur border-t-2 border-ink p-3">
+      <div data-sticky-actions className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-paper/95 backdrop-blur border-t border-line p-3">
         {!empty && !previewInView && (
           <button
             type="button"
             onClick={seeSheet}
-            className={`absolute right-3 -top-14 h-11 pl-3 pr-4 rounded-full border-2 border-ink font-extrabold text-sm inline-flex items-center gap-2 shadow-[3px_3px_0_#1B2A4A] ${changed ? 'bg-pencil text-ink' : 'bg-white text-ink'}`}
+            className={`absolute right-3 -top-14 h-11 pl-3 pr-4 rounded-full border border-line font-bold text-sm inline-flex items-center gap-2 ${changed ? 'bg-pencil text-ink' : 'bg-white text-ink'}`}
           >
             <Eye className="w-5 h-5" aria-hidden />
             <span aria-live="polite">{changed ? 'Fișa s-a schimbat · Vezi fișa' : 'Vezi fișa'}</span>

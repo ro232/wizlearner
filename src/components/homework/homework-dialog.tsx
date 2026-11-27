@@ -51,7 +51,7 @@ export function HomeworkButton({ build, level, category, disabled, onShowPaywall
         type="button"
         disabled={disabled}
         onClick={() => (tier === 'free' ? onShowPaywall() : setRequest(build()))}
-        className={`inline-flex items-center justify-center gap-2 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper disabled:opacity-50 ${className ?? ''}`}
+        className={`inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-white font-bold text-ink hover:bg-paper disabled:opacity-50 ${className ?? ''}`}
       >
         <Send className="w-4 h-4" aria-hidden /> {label}
       </button>
@@ -168,8 +168,8 @@ function HomeworkDialog({ request, level: initialLevel, category, onClose, onSho
   };
 
   const shareText = result ? homeworkShareText(result.url, sanitizeHomeworkTitle(title)) : '';
-  const field = 'mt-1.5 w-full h-12 px-3 rounded-xl border-2 border-slate-300 bg-white text-base text-ink focus:outline-none focus:border-ink';
-  const chip = (active: boolean) => `h-11 px-3 rounded-lg border-2 text-sm font-bold ${active ? 'border-ink bg-ink text-white' : 'border-slate-300 bg-white text-ink hover:border-ink'}`;
+  const field = 'mt-1.5 w-full h-12 px-3 rounded-xl border border-slate-300 bg-white text-base text-ink focus:outline-none focus:border-line';
+  const chip = (active: boolean) => `h-11 px-3 rounded-lg border text-sm font-bold ${active ? 'border-brand bg-brand text-white' : 'border-slate-300 bg-white text-ink hover:border-brand'}`;
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4">
@@ -185,7 +185,7 @@ function HomeworkDialog({ request, level: initialLevel, category, onClose, onSho
         <button type="button" onClick={onClose} aria-label="Închide" className="absolute top-2 right-2 w-11 h-11 rounded-full flex items-center justify-center text-slate-600 hover:text-ink hover:bg-slate-100">
           <X className="w-5 h-5" aria-hidden />
         </button>
-        <h2 id="homework-title" className="text-xl font-extrabold text-ink pr-10">{result ? 'Linkul pentru părinți e gata' : 'Trimite fișa ca temă'}</h2>
+        <h2 id="homework-title" className="text-xl font-bold text-ink pr-10">{result ? 'Linkul pentru părinți e gata' : 'Trimite fișa ca temă'}</h2>
 
         {!result ? (
           <form onSubmit={create} className="mt-2 space-y-4">
@@ -193,19 +193,19 @@ function HomeworkDialog({ request, level: initialLevel, category, onClose, onSho
               Părinții deschid linkul pe telefon, scriu numele copilului dacă vor și descarcă fișa. Gratuit pentru ei, fără cont. Numele copiilor nu ajung la noi.
             </p>
             <div>
-              <label htmlFor="homework-name" className="block text-sm font-extrabold text-ink">Titlu (opțional)</label>
+              <label htmlFor="homework-name" className="block text-sm font-bold text-ink">Titlu (opțional)</label>
               <input id="homework-name" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={HOMEWORK_TITLE_MAX} placeholder="ex. Tema de weekend: litera M" autoComplete="off" className={field} />
               <p className="mt-1 text-xs text-slate-500">Fără numele copiilor și fără linkuri.</p>
             </div>
             <div>
-              <label htmlFor="homework-level" className="block text-sm font-extrabold text-ink">Clasa</label>
+              <label htmlFor="homework-level" className="block text-sm font-bold text-ink">Clasa</label>
               <select id="homework-level" value={level} onChange={(e) => setLevel(e.target.value as SchoolLevel | '')} className={field}>
                 <option value="">Nu o afișa</option>
                 {SCHOOL_LEVELS.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
               </select>
             </div>
             <fieldset>
-              <legend className="block text-sm font-extrabold text-ink">Linkul funcționează</legend>
+              <legend className="block text-sm font-bold text-ink">Linkul funcționează</legend>
               <div className="mt-1.5 flex flex-wrap gap-2">
                 {HOMEWORK_DAYS.map((d) => (
                   <button key={d} type="button" aria-pressed={days === d} onClick={() => setDays(d)} className={chip(days === d)}>{DAYS_LABEL[d]}</button>
@@ -216,7 +216,7 @@ function HomeworkDialog({ request, level: initialLevel, category, onClose, onSho
               <label className="flex items-start gap-3 cursor-pointer" data-homework-answers>
                 <input type="checkbox" checked={withAnswers} onChange={(e) => setWithAnswers(e.target.checked)} className="mt-0.5 w-5 h-5 shrink-0 accent-blue-600" />
                 <span className="min-w-0">
-                  <span className="block text-sm font-extrabold text-ink">Trimite și pagina de răspunsuri</span>
+                  <span className="block text-sm font-bold text-ink">Trimite și pagina de răspunsuri</span>
                   <span className="block text-xs text-slate-600">Evaluarea ajunge la părinți fără răspunsuri și calificative. Bifează dacă vrei să le primească și ei.</span>
                 </span>
               </label>
@@ -237,7 +237,7 @@ function HomeworkDialog({ request, level: initialLevel, category, onClose, onSho
             <div>
               <label htmlFor="homework-url" className="sr-only">Linkul temei</label>
               <div className="flex gap-2">
-                <input id="homework-url" readOnly value={result.url} onFocus={(e) => e.currentTarget.select()} className="flex-1 min-w-0 h-12 px-3 rounded-xl border-2 border-slate-300 bg-slate-50 text-sm text-ink font-mono" />
+                <input id="homework-url" readOnly value={result.url} onFocus={(e) => e.currentTarget.select()} className="flex-1 min-w-0 h-12 px-3 rounded-xl border border-slate-300 bg-slate-50 text-sm text-ink font-mono" />
                 <button type="button" onClick={() => copy('link', result.url)} data-btn="ink" className="h-12 px-3 rounded-xl text-white text-sm font-bold inline-flex items-center gap-1.5 shrink-0">
                   {copied === 'link' ? <Check className="w-4 h-4" aria-hidden /> : <Copy className="w-4 h-4" aria-hidden />}
                   {copied === 'link' ? 'Copiat' : 'Copiază'}
@@ -252,10 +252,10 @@ function HomeworkDialog({ request, level: initialLevel, category, onClose, onSho
             ) : (
               <p className="text-xs text-slate-600">Fișa are multe setări, așa că linkul e prea lung pentru un cod QR. Trimiteți-l ca link.</p>
             )}
-            <a href={whatsappLink(shareText)} target="_blank" rel="noopener noreferrer" className="w-full h-12 rounded-xl inline-flex items-center justify-center gap-2 font-extrabold text-white bg-[#128C4B] hover:bg-[#0F7A41]">
+            <a href={whatsappLink(shareText)} target="_blank" rel="noopener noreferrer" className="w-full h-12 rounded-xl inline-flex items-center justify-center gap-2 font-bold text-white bg-[#128C4B] hover:bg-[#0F7A41]">
               <MessageCircle className="w-5 h-5" aria-hidden /> Trimite pe WhatsApp
             </a>
-            <button type="button" onClick={() => copy('text', shareText)} className="w-full h-11 rounded-xl border-2 border-ink bg-white font-extrabold text-ink text-sm inline-flex items-center justify-center gap-2 hover:bg-paper">
+            <button type="button" onClick={() => copy('text', shareText)} className="w-full h-11 rounded-xl border border-line-strong bg-white font-semibold text-ink text-sm inline-flex items-center justify-center gap-2 hover:bg-paper">
               {copied === 'text' ? <Check className="w-4 h-4" aria-hidden /> : <Copy className="w-4 h-4" aria-hidden />}
               {copied === 'text' ? 'Mesajul e copiat' : 'Copiază mesajul pentru părinți'}
             </button>

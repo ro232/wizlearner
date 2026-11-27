@@ -45,7 +45,7 @@ export function TraceStylePicker() {
   const density: Density = config.traceDensity ?? 'normal';
   const style: FontStyle = config.fontStyle === 'cursive' ? 'dashed' : config.fontStyle;
   const btn = (on: boolean) =>
-    `flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all ${on ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`;
+    `flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${on ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`;
 
   return (
     <div className="space-y-3">

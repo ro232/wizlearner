@@ -91,26 +91,26 @@ export default function NameSheetPage() {
   };
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 [&>*]:min-w-0">
+      <main className="max-w-[1120px] mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8 [&>*]:min-w-0">
         <section className="space-y-6">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Fișa cu numele copilului</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">Fișa cu numele copilului</h1>
             <p className="mt-2 text-slate-600">Scrie numele și descarcă o pagină de exersat, gratuit, sau un caiet întreg cu numele lui: copertă, câte o pagină pentru fiecare literă, numele în trei feluri, un joc și diplomă.</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6 space-y-5">
+          <div className="bg-white rounded-2xl border border-line p-5 sm:p-6 space-y-5">
             <div className="grid grid-cols-2 gap-2" role="group" aria-label="Ce descarci">
               {([
                 ['sheet', FileText, 'O fișă', 'gratuit'],
                 ['book', BookOpen, 'Caietul cu numele', 'copertă, fiecare literă, diplomă'],
               ] as const).map(([k, Icon, title, sub]) => (
                 <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k}
-                  className={`p-3 rounded-xl border-2 text-left ${kind === k ? 'border-ink bg-white shadow-md' : 'border-slate-300 bg-white hover:border-ink'}`}>
+                  className={`p-3 rounded-xl border text-left ${kind === k ? 'border-brand bg-brand-soft' : 'border-slate-300 bg-white hover:border-brand'}`}>
                   <Icon className="w-5 h-5 text-pen" aria-hidden />
-                  <div className="mt-1 font-extrabold text-ink">{title}</div>
+                  <div className="mt-1 font-bold text-ink">{title}</div>
                   <div className="text-xs text-slate-600">{sub}</div>
                 </button>
               ))}
@@ -128,7 +128,7 @@ export default function NameSheetPage() {
               <div className="grid grid-cols-3 gap-2">
                 {([['uppercase', 'ȘTEFAN', 'litere mari'], ['paired', 'Ștefan', 'prima mare'], ['lowercase', 'ștefan', 'litere mici']] as const).map(([m, sample, sub]) => (
                   <button key={m} type="button" onClick={() => setMode(m)} aria-pressed={mode === m}
-                    className={`p-2 rounded-lg border-2 text-center ${mode === m ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`}>
+                    className={`p-2 rounded-lg border text-center ${mode === m ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`}>
                     <div className="text-sm font-bold">{sample}</div>
                     <div className="text-[11px] text-slate-500">{sub}</div>
                   </button>
@@ -141,7 +141,7 @@ export default function NameSheetPage() {
                 <div className="grid grid-cols-2 gap-2">
                   {([['print', 'de tipar', 'grădiniță, pregătitoare'], ['cursive', 'de mână', 'clasa I, scris legat']] as const).map(([v, label, sub]) => (
                     <button key={v} type="button" onClick={() => setScript(v)} aria-pressed={script === v}
-                      className={`p-2 rounded-lg border-2 text-center ${script === v ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`}>
+                      className={`p-2 rounded-lg border text-center ${script === v ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`}>
                       <div className={`text-sm font-bold ${v === 'cursive' ? 'italic' : ''}`}>{label}</div>
                       <div className="text-[11px] text-slate-500">{sub}</div>
                     </button>
@@ -164,7 +164,7 @@ export default function NameSheetPage() {
               {kind === 'book' && !empty && (
                 <SaveProjectButton kind="name-book" name={`Caietul lui ${name.trim()}`} configuration={{ name: name.trim(), mode, script, kind: 'book' }} onPaywall={() => setShowPaywall(true)} back="/nume" />
               )}
-              <Button variant="outline" onClick={() => run('print')} disabled={empty || busy || kind === 'book'} className="h-12 px-4 rounded-2xl border-2" aria-label="Printează">
+              <Button variant="outline" onClick={() => run('print')} disabled={empty || busy || kind === 'book'} className="h-12 px-4 rounded-2xl border" aria-label="Printează">
                 <Printer className="w-5 h-5" aria-hidden />
               </Button>
             </div>
@@ -173,7 +173,7 @@ export default function NameSheetPage() {
         </section>
 
         <section aria-label="Previzualizare" className="lg:sticky lg:top-24 lg:self-start">
-          <div className="desk rounded-2xl border-2 border-ink p-4 sm:p-8 flex justify-center">
+          <div className="desk rounded-2xl border border-line p-4 sm:p-8 flex justify-center">
             {kind === 'book' ? <PagesPreview pages={bookPages} width={420} /> : <WorksheetPreview config={sheet} tier="full" emptyMessage="Scrie numele ca să vezi fișa" />}
           </div>
           {kind === 'book' && tier === 'free' && (

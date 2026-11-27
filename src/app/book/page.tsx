@@ -74,13 +74,13 @@ export default function BookPage() {
   const inch = (v: number) => `${(v / 25.4).toFixed(2)} in`;
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-5">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* LEFT: settings */}
           <div className="lg:w-[42%] min-w-0 space-y-4 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-            <div className="w-full bg-white rounded-2xl shadow-lg p-6 space-y-6">
+            <div className="w-full bg-white rounded-2xl border border-line p-6 space-y-6">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
@@ -120,7 +120,7 @@ export default function BookPage() {
                     <button
                       key={value}
                       onClick={() => set('alphabet', value)}
-                      className={`p-2 rounded-lg border-2 transition-all text-center ${
+                      className={`p-2 rounded-lg border transition-all text-center ${
                         config.alphabet === value ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold' : 'border-slate-200 text-slate-700 hover:border-slate-300'
                       }`}
                     >
@@ -171,7 +171,7 @@ export default function BookPage() {
                             return { ...c, script: v, ...(isDefault ? { title: v === 'cursive' ? CURSIVE_TITLE : DEFAULT_BOOK_CONFIG.title } : {}) };
                           })
                         }
-                        className={`p-2 rounded-lg border-2 transition-all text-center ${active ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`}
+                        className={`p-2 rounded-lg border transition-all text-center ${active ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'}`}
                       >
                         <div className={`text-sm font-bold ${v === 'cursive' ? 'italic' : ''}`}>{l}</div>
                         <div className="text-[11px] text-slate-500">{sub}</div>
@@ -188,7 +188,7 @@ export default function BookPage() {
                     <button
                       key={v}
                       onClick={() => set('variant', v)}
-                      className={`p-2 rounded-lg border-2 transition-all text-center capitalize text-sm font-bold ${
+                      className={`p-2 rounded-lg border transition-all text-center capitalize text-sm font-bold ${
                         config.variant === v ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-slate-200 text-slate-700 hover:border-slate-300'
                       }`}
                     >
@@ -219,7 +219,7 @@ export default function BookPage() {
 
           {/* RIGHT: stats + preview + downloads */}
           <div className="lg:w-[58%] min-w-0 lg:sticky lg:top-20 lg:self-start space-y-4 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-            <Card className="shadow-md bg-white">
+            <Card className="bg-white">
               <div className="p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                 <div>
                   <div className="text-xs text-slate-500">Pagini</div>
@@ -247,11 +247,11 @@ export default function BookPage() {
               </div>
             </Card>
 
-            <Card className="border-0 shadow-xl overflow-hidden rounded-2xl">
+            <Card className="overflow-hidden rounded-2xl">
               <CardHeader className="py-3.5 px-5 border-b" style={{ background: 'rgba(248,250,252,0.8)' }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#EFF6FF', color: '#2E5C8A' }}>
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#EEF2FE', color: '#2448E8' }}>
                       <Eye className="w-4 h-4" />
                     </div>
                     <span className="text-sm font-bold text-slate-900">Previzualizare</span>
@@ -287,7 +287,7 @@ export default function BookPage() {
               <Button
                 onClick={() => run('interior')}
                 disabled={busy !== null}
-                className="min-h-14 h-auto py-3 whitespace-normal rounded-2xl text-white shadow-xl font-bold text-base disabled:opacity-50"
+                className="min-h-14 h-auto py-3 whitespace-normal rounded-xl text-white font-semibold text-base disabled:opacity-50"
                 data-btn="primary"
               >
                 <FileText className="w-5 h-5 mr-2" />
@@ -296,7 +296,7 @@ export default function BookPage() {
               <Button
                 onClick={() => run('cover')}
                 disabled={busy !== null}
-                className="min-h-14 h-auto py-3 whitespace-normal rounded-2xl text-white shadow-xl font-bold text-base disabled:opacity-50"
+                className="min-h-14 h-auto py-3 whitespace-normal rounded-xl text-white font-semibold text-base disabled:opacity-50"
                 data-btn="ink"
               >
                 <ImageIcon className="w-5 h-5 mr-2" />

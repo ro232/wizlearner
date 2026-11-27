@@ -1,29 +1,21 @@
 import Link from 'next/link';
 import { BRAND_NAME, BRAND_WORDMARK } from '@/lib/brand';
 
-/** The pencil mark: yellow body, red eraser band, navy outline. */
-export function PencilMark({ size = 32 }: { size?: number }) {
+/** The mark: a blue rounded square with three white lines, two long and one short (a bg-white page). */
+export function LogoMark({ size = 28 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 34 34" aria-hidden="true">
-      <g transform="rotate(35 17 17)">
-        <rect x="13" y="1.5" width="8" height="22" rx="1.5" fill="#F2B632" stroke="#1F2A44" strokeWidth="2" />
-        <rect x="13" y="1.5" width="8" height="5" fill="#C8102E" stroke="#1F2A44" strokeWidth="2" />
-        <path d="M13 23.5 L17 32 L21 23.5 Z" fill="#F4D9B0" stroke="#1F2A44" strokeWidth="2" strokeLinejoin="round" />
-        <path d="M15.6 29 L17 32 L18.4 29 Z" fill="#1F2A44" />
-      </g>
+    <svg width={size} height={size} viewBox="0 0 28 28" aria-hidden="true" className="shrink-0">
+      <rect x="1" y="1" width="26" height="26" rx="7" fill="#2448E8" />
+      <path d="M7 10h14M7 15h14M7 20h9" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" fill="none" />
     </svg>
   );
 }
 
 export function Logo({ small = false }: { small?: boolean }) {
   return (
-    <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label={`${BRAND_NAME}, prima pagină`}>
-      <span className="transition-transform group-hover:-rotate-6">
-        <PencilMark size={small ? 26 : 32} />
-      </span>
-      <span className={`font-display font-extrabold tracking-tight text-ink ${small ? 'text-lg' : 'text-[22px]'}`}>
-        {BRAND_WORDMARK[0]}<span className="text-pen">{BRAND_WORDMARK[1]}</span>
-      </span>
+    <Link href="/" className="flex items-center gap-2.5 shrink-0 min-h-11 rounded-lg text-ink" aria-label={`${BRAND_NAME}, prima pagină`}>
+      <LogoMark size={small ? 24 : 28} />
+      <span className={`font-bold tracking-[-0.02em] leading-none ${small ? 'text-[17px]' : 'text-xl'}`}>{BRAND_WORDMARK}</span>
     </Link>
   );
 }

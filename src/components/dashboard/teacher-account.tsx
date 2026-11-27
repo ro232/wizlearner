@@ -31,7 +31,7 @@ export function RecentSheets({ userId }: { userId: string }) {
   }
   return (
     <div>
-      <ul className="divide-y divide-ink/10">
+      <ul className="divide-y divide-line">
         {worksheets.slice(0, 5).map((w) => (
           <li key={w.id} className="flex items-center justify-between gap-3 py-2">
             <span className="min-w-0">
@@ -39,13 +39,13 @@ export function RecentSheets({ userId }: { userId: string }) {
               <span className="text-sm text-slate-600">{PROJECT_LABELS[w.kind ?? 'sheet']} · {day(w.updated_at)}</span>
             </span>
             <button type="button" onClick={() => open(w.kind ?? 'sheet', w.configuration)}
-              className="shrink-0 inline-flex items-center gap-1.5 min-h-11 px-3 rounded-lg border-2 border-ink bg-white text-sm font-extrabold text-ink hover:bg-paper focus-visible:outline-ink">
+              className="shrink-0 inline-flex items-center gap-1.5 min-h-11 px-3 rounded-lg border border-line-strong bg-white text-sm font-semibold text-ink hover:bg-paper">
               <FolderOpen className="w-4 h-4" aria-hidden /> Deschide
             </button>
           </li>
         ))}
       </ul>
-      <Link href="/cont" className="mt-3 inline-flex min-h-11 items-center font-bold text-ink underline decoration-pen underline-offset-2 focus-visible:outline-ink">Toate fișele salvate</Link>
+      <Link href="/cont" className="mt-3 inline-flex min-h-11 items-center font-bold text-brand underline decoration-brand/30 underline-offset-2">Toate fișele salvate</Link>
     </div>
   );
 }

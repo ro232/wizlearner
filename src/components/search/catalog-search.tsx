@@ -35,7 +35,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 min-h-10 shrink-0 rounded-full border-2 px-3.5 text-sm font-bold whitespace-nowrap transition-colors ${active ? 'border-ink bg-ink text-white' : 'border-ink/25 bg-white text-ink hover:border-ink'}`}
+      className={`inline-flex items-center gap-1.5 min-h-10 shrink-0 rounded-full border px-3.5 text-sm font-bold whitespace-nowrap transition-colors ${active ? 'border-brand bg-brand text-white' : 'border-line bg-white text-ink hover:border-brand'}`}
     >
       {active && <Check className="w-3.5 h-3.5" aria-hidden />}
       {children}
@@ -46,7 +46,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
 function ChipRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div role="group" aria-label={label} className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-3">
-      <span className="sm:w-20 sm:pt-2.5 shrink-0 text-xs font-extrabold uppercase tracking-wide text-slate-600">{label}</span>
+      <span className="sm:w-20 sm:pt-2.5 shrink-0 text-xs font-bold uppercase tracking-wide text-slate-600">{label}</span>
       {/* phones: one line that scrolls sideways inside itself, so the results stay close to the box */}
       <div className="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">{children}</div>
     </div>
@@ -66,7 +66,7 @@ function Thumb({ entry, level }: { entry: CatalogEntry; level: SchoolLevel }) {
     return () => observer.disconnect();
   }, [near]);
   return (
-    <div ref={box} data-thumb className="relative shrink-0 overflow-hidden rounded-[3px] border border-ink/30 bg-white shadow-sm" style={{ width: THUMB, height: Math.round(THUMB * 1.4142) }} aria-hidden>
+    <div ref={box} data-thumb className="relative shrink-0 overflow-hidden rounded-[3px] border border-line bg-white shadow-sm" style={{ width: THUMB, height: Math.round(THUMB * 1.4142) }} aria-hidden>
       {near && <SheetThumb entry={entry} level={level} width={THUMB} />}
     </div>
   );
@@ -81,29 +81,29 @@ function Card({ entry, level }: { entry: CatalogEntry; level?: SchoolLevel }) {
         href={entryHref(entry, level)}
         data-result={entry.id}
         onClick={() => track('search_open', { kind: entry.kind, level: at.toLowerCase(), subject: entry.subject, free: entry.free })}
-        className="group flex h-full gap-3.5 rounded-2xl border-2 border-ink bg-white p-3.5 shadow-[3px_3px_0_#1F2A44] transition-transform hover:-translate-y-0.5"
+        className="group flex h-full gap-3.5 rounded-2xl border border-line bg-white p-3.5 transition-transform hover:-translate-y-0.5"
       >
         <Thumb entry={entry} level={at} />
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="text-[17px] font-extrabold leading-snug text-ink group-hover:underline decoration-pen decoration-2 underline-offset-2">{entry.title}</span>
+          <span className="text-[17px] font-bold leading-snug text-ink group-hover:underline decoration-brand/40 underline-offset-2">{entry.title}</span>
           <span className="mt-0.5 text-[13px] leading-snug text-slate-600">{entry.family}</span>
           {entry.text && <span className="mt-1.5 text-sm leading-snug text-slate-700 line-clamp-2">{entry.text}</span>}
           <span className="mt-auto flex flex-wrap items-center gap-1.5 pt-2.5 text-xs font-bold">
-            <span className="rounded-md bg-paper px-2 py-1 text-ink border border-ink/15">{classLine(entry.levels)}</span>
+            <span className="rounded-md bg-paper px-2 py-1 text-ink border border-line">{classLine(entry.levels)}</span>
             {codes && (
               <span className="rounded-md bg-rule px-2 py-1 text-ink" title={`${at === 'presc' ? 'Comportamente vizate' : 'Competențe specifice'}, ${CLASSES.find((c) => c.id === at)?.label.toLowerCase()}`}>
                 {at === 'presc' ? '' : 'cod '}{codes.join(', ')}
               </span>
             )}
-            {entry.kind === 'evaluare' && <span className="rounded-md bg-ink px-2 py-1 text-white">Evaluare</span>}
+            {entry.kind === 'evaluare' && <span className="rounded-md bg-brand px-2 py-1 text-white">Evaluare</span>}
             {OPEN_ACCESS ? null : entry.free ? (
               <span className="rounded-md bg-emerald-100 px-2 py-1 text-emerald-900">Gratuit</span>
             ) : (
               <span className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-2 py-1 text-amber-900"><Lock className="w-3 h-3" aria-hidden /> Varianta completă</span>
             )}
-            {entry.answers && <span className="rounded-md border border-ink/20 px-2 py-1 text-slate-700">Cu răspunsuri</span>}
+            {entry.answers && <span className="rounded-md border border-line px-2 py-1 text-slate-700">Cu răspunsuri</span>}
           </span>
-          <span className="mt-2 inline-flex items-center gap-1 text-sm font-extrabold text-ink">
+          <span className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-ink">
             Deschide în generator <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </span>
         </span>
@@ -189,7 +189,7 @@ export function CatalogSearch({ entries }: { entries: CatalogEntry[] }) {
           autoComplete="off"
           enterKeyHint="search"
           aria-controls="cauta-rezultate"
-          className="h-14 w-full rounded-xl border-2 border-ink bg-white pl-12 pr-12 text-lg font-semibold text-ink placeholder:font-normal placeholder:text-slate-500 shadow-[4px_4px_0_#1F2A44] [&::-webkit-search-cancel-button]:hidden"
+          className="h-14 w-full rounded-xl border border-line-strong bg-white pl-12 pr-12 text-lg font-semibold text-ink placeholder:font-normal placeholder:text-slate-500 [&::-webkit-search-cancel-button]:hidden"
         />
         {filters.q && (
           <button type="button" onClick={() => { change({ q: '' }); input.current?.focus(); }} aria-label="Șterge textul" className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg flex items-center justify-center text-ink hover:bg-paper">
@@ -212,12 +212,12 @@ export function CatalogSearch({ entries }: { entries: CatalogEntry[] }) {
         </ChipRow>
       </div>
 
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b-2 border-ink pb-2">
-        <p role="status" aria-live="polite" className="text-lg font-extrabold text-ink" data-count={count}>
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-line pb-2">
+        <p role="status" aria-live="polite" className="text-lg font-bold text-ink" data-count={count}>
           {count === 0 ? 'Nicio fișă găsită' : active ? `${fise(count)} ${count === 1 ? 'găsită' : 'găsite'}` : `Toate cele ${fise(count)}`}
         </p>
         {active && (
-          <button type="button" onClick={reset} className="min-h-10 text-sm font-bold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">
+          <button type="button" onClick={reset} className="min-h-10 text-sm font-bold text-brand underline decoration-brand/30 underline-offset-4 hover:text-brand">
             Șterge căutarea și filtrele
           </button>
         )}
@@ -225,20 +225,20 @@ export function CatalogSearch({ entries }: { entries: CatalogEntry[] }) {
 
       <div id="cauta-rezultate">
         {count === 0 ? (
-          <div className="mt-6 rounded-2xl border-2 border-dashed border-ink/40 bg-white p-6 sm:p-8">
+          <div className="mt-6 rounded-2xl border border-dashed border-line bg-white p-6 sm:p-8">
             <p className="text-lg font-bold text-ink">Nu am găsit nimic pentru căutarea ta.</p>
             <ul className="mt-2 list-disc pl-5 text-slate-700 space-y-1">
               <li>Încearcă un cuvânt mai scurt sau mai general („adunări” în loc de „adunări cu trecere peste ordin”).</li>
               {(filters.level || filters.subject || filters.kind || filters.free || filters.answers) && <li>Scoate un filtru: poate fișa există la altă clasă sau în varianta completă.</li>}
               <li>Diacriticele nu contează: „scadere” găsește „Scăderi”.</li>
             </ul>
-            <p className="mt-4 text-sm font-extrabold uppercase tracking-wide text-slate-600">Căutări des folosite</p>
+            <p className="mt-4 text-sm font-bold uppercase tracking-wide text-slate-600">Căutări des folosite</p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {SUGGESTIONS.map((s) => <Chip key={s} active={false} onClick={() => { setFilters({ q: s }); setShown(PAGE); }}>{s}</Chip>)}
             </div>
             <p className="mt-5 text-slate-700">
-              Sau pornește de la programă: <Link href="/programa" className="font-bold text-ink underline decoration-pen decoration-2 underline-offset-2">fișe pe competențe</Link>,{' '}
-              <Link href="/fise-de-lucru" className="font-bold text-ink underline decoration-pen decoration-2 underline-offset-2">fișe de lucru pe clase</Link>.
+              Sau pornește de la programă: <Link href="/programa" className="font-bold text-brand underline decoration-brand/30 underline-offset-2">fișe pe competențe</Link>,{' '}
+              <Link href="/fise-de-lucru" className="font-bold text-brand underline decoration-brand/30 underline-offset-2">fișe de lucru pe clase</Link>.
             </p>
           </div>
         ) : (
@@ -248,7 +248,7 @@ export function CatalogSearch({ entries }: { entries: CatalogEntry[] }) {
             </ul>
             {count > shown && (
               <div className="mt-8 flex flex-col items-center gap-2">
-                <button type="button" onClick={() => setShown((n) => n + PAGE)} className="inline-flex items-center justify-center h-12 px-6 rounded-xl border-2 border-ink bg-white font-extrabold text-ink hover:bg-paper">
+                <button type="button" onClick={() => setShown((n) => n + PAGE)} className="inline-flex items-center justify-center h-12 px-6 rounded-xl border border-line-strong bg-white font-semibold text-ink hover:bg-paper">
                   Arată încă {Math.min(PAGE, count - shown)}
                 </button>
                 <p className="text-sm text-slate-600">{shown} din {count}</p>

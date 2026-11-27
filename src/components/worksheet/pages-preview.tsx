@@ -79,7 +79,7 @@ export function PagesPreview({ pages, width = 420, className, pageLabel = 'Pagin
             type="button"
             onClick={() => setIndex(Math.max(0, safeIndex - 1))}
             disabled={safeIndex === 0}
-            className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center disabled:opacity-40"
+            className="w-11 h-11 rounded-full bg-white border border-line-strong flex items-center justify-center disabled:opacity-40"
             aria-label="Pagina anterioară"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -91,7 +91,7 @@ export function PagesPreview({ pages, width = 420, className, pageLabel = 'Pagin
             type="button"
             onClick={() => setIndex(Math.min(pages.length - 1, safeIndex + 1))}
             disabled={safeIndex >= pages.length - 1}
-            className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center disabled:opacity-40"
+            className="w-11 h-11 rounded-full bg-white border border-line-strong flex items-center justify-center disabled:opacity-40"
             aria-label="Pagina următoare"
           >
             <ChevronRight className="w-4 h-4" />

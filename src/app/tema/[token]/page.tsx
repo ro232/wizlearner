@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Logo, PencilMark } from '@/components/layout/logo';
+import { Logo, LogoMark } from '@/components/layout/logo';
 import { Footer } from '@/components/layout/footer';
 import { HomeworkDownload } from '@/components/homework/homework-download';
 import { homeworkKeys, verifyHomeworkToken } from '@/lib/homework/token';
@@ -42,9 +42,9 @@ export function generateMetadata({ params }: { params: { token: string } }): Met
 export default function HomeworkPage({ params }: { params: { token: string } }) {
   const res = read(params.token);
   return (
-    <div className="min-h-screen bg-paper flex flex-col">
-      <header className="border-b-2 border-ink bg-paper">
-        <div className="max-w-xl mx-auto px-4 h-14 flex items-center">
+    <div className="min-h-screen bg-white flex flex-col">
+      <header className="border-b border-line bg-white">
+        <div className="max-w-xl mx-auto px-4 h-16 flex items-center">
           <Logo small />
         </div>
       </header>
@@ -59,16 +59,16 @@ export default function HomeworkPage({ params }: { params: { token: string } }) 
 function Unavailable({ expired }: { expired: boolean }) {
   return (
     <div className="max-w-xl mx-auto px-4 py-14 text-center">
-      <div className="inline-flex -rotate-6"><PencilMark size={56} /></div>
-      <h1 className="mt-4 text-3xl font-extrabold leading-tight text-ink">{expired ? 'Tema aceasta a expirat' : 'Linkul nu se deschide'}</h1>
-      <p className="mt-3 text-base text-slate-700">
+      <div className="inline-flex"><LogoMark size={44} /></div>
+      <h1 className="mt-4 text-3xl font-bold leading-tight text-ink">{expired ? 'Tema aceasta a expirat' : 'Linkul nu se deschide'}</h1>
+      <p className="mt-3 text-base leading-relaxed text-slate-600">
         {expired
           ? 'Linkurile pentru teme funcționează doar câteva săptămâni. Cereți cadrului didactic un link nou.'
           : 'Linkul pare incomplet sau a fost schimbat. Deschideți-l încă o dată, întreg, din mesajul primit, sau cereți cadrului didactic un link nou.'}
       </p>
       <div className="mt-8 flex flex-col gap-3 items-center">
-        <Link href="/fise" data-btn="primary" className="inline-flex items-center justify-center h-12 px-6 rounded-xl text-base">Fișe gratuite</Link>
-        <Link href="/" className="font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">Prima pagină {BRAND_NAME}</Link>
+        <Link href="/fise" data-btn="primary" className="inline-flex items-center justify-center min-h-12 px-6 text-base">Fișe gratuite</Link>
+        <Link href="/" className="inline-flex min-h-11 items-center font-semibold text-brand hover:text-brand-hover hover:underline">Prima pagină {BRAND_NAME}</Link>
       </div>
     </div>
   );

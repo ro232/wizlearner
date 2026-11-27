@@ -31,8 +31,8 @@ function useVisibleLinks() {
   return useCallback((links: NavLink[]) => links.filter((l) => l.seasonal !== 'advent' || advent), [advent]);
 }
 
-const topItem = 'inline-flex items-center gap-1.5 h-9 rounded-lg px-2 xl:px-2.5 text-[13px] font-bold text-ink hover:bg-white whitespace-nowrap';
-const topCurrent = 'bg-white shadow-sm underline decoration-pen decoration-2 underline-offset-4';
+const topItem = 'inline-flex items-center gap-1.5 h-11 rounded-lg px-2 xl:px-3 text-[14px] font-medium text-ink hover:bg-paper whitespace-nowrap';
+const topCurrent = 'bg-brand-soft text-brand';
 
 /**
  * A menu group on the computer: a button that opens a list of links (the disclosure pattern).
@@ -128,7 +128,7 @@ function NavDropdown({ group, links, open, onOpenChange, pathname }: {
         id={panelId}
         hidden={!open}
         onKeyDown={onPanelKey}
-        className={cn('absolute top-full mt-2 rounded-xl border-2 border-ink bg-white p-1.5 shadow-lg max-h-[calc(100dvh-5.5rem)] overflow-y-auto', wide ? 'right-0 w-[640px]' : 'left-0 w-[330px]')}
+        className={cn('absolute top-full mt-2 rounded-xl border border-line bg-white p-1.5 shadow-lg max-h-[calc(100dvh-5.5rem)] overflow-y-auto', wide ? 'right-0 w-[640px]' : 'left-0 w-[330px]')}
       >
         <ul className={wide ? 'grid grid-cols-2 gap-x-1' : undefined}>
           {links.map((l) => (
@@ -139,13 +139,13 @@ function NavDropdown({ group, links, open, onOpenChange, pathname }: {
                 data-nav-item
                 onClick={() => onOpenChange(false)}
                 aria-current={isCurrent(pathname, l.href) ? 'page' : undefined}
-                className="flex items-start gap-3 rounded-lg px-3 py-2.5 text-ink hover:bg-paper focus-visible:bg-paper"
+                className="flex items-start gap-3 rounded-lg px-3 py-2.5 text-ink hover:bg-paper focus-visible:bg-paper aria-[current=page]:text-brand"
               >
-                <span className="mt-0.5 shrink-0 w-7 h-7 rounded-md bg-pencil/30 flex items-center justify-center" aria-hidden>
+                <span className="mt-0.5 shrink-0 w-7 h-7 rounded-md bg-brand-soft text-brand flex items-center justify-center" aria-hidden>
                   <l.icon className="w-4 h-4" />
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-sm font-extrabold">{l.label}</span>
+                  <span className="block text-sm font-semibold">{l.label}</span>
                   {l.text && <span className="block text-[13px] leading-snug text-slate-600">{l.text}</span>}
                 </span>
               </Link>
@@ -207,14 +207,14 @@ function RoleSwitch({ role, open, onOpenChange, onPick }: {
         aria-label={`${ROLE_SWITCH_TITLE}. Acum: ${ROLE_LABEL[role].toLocaleLowerCase('ro')}`}
         title={ROLE_SWITCH_TITLE}
         onClick={() => onOpenChange(!open)}
-        className={cn(topItem, 'border-2 border-ink/25 bg-white/60 focus-visible:outline-ink', open && topCurrent)}
+        className={cn(topItem, 'border border-line-strong bg-white', open && topCurrent)}
       >
         <Icon className="w-4 h-4" aria-hidden />
         <span className="hidden xl:inline">{ROLE_LABEL[role]}</span>
         <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', open && 'rotate-180')} aria-hidden />
       </button>
-      <div id="rol-menu" hidden={!open} role="group" aria-label={ROLE_SWITCH_TITLE} className="absolute right-0 top-full mt-2 w-[270px] rounded-xl border-2 border-ink bg-white p-1.5 shadow-lg">
-        <p className="px-3 pt-1.5 pb-1 text-[13px] font-extrabold text-pen">{ROLE_SWITCH_TITLE}</p>
+      <div id="rol-menu" hidden={!open} role="group" aria-label={ROLE_SWITCH_TITLE} className="absolute right-0 top-full mt-2 w-[270px] rounded-xl border border-line bg-white p-1.5 shadow-lg">
+        <p className="px-3 pt-1.5 pb-1 text-[13px] font-semibold text-slate-600">{ROLE_SWITCH_TITLE}</p>
         <RoleOptions role={role} onPick={onPick} />
       </div>
     </div>
@@ -230,17 +230,17 @@ function RoleOptions({ role, onPick }: { role: Role; onPick: (role: Role | null)
         return (
           <li key={r}>
             <button type="button" data-role-option={r} aria-pressed={role === r} onClick={() => onPick(r)}
-              className={cn('flex w-full items-center gap-3 rounded-lg px-3 min-h-11 text-left text-[15px] font-extrabold text-ink hover:bg-paper focus-visible:outline-ink', role === r && 'bg-paper')}>
+              className={cn('flex w-full items-center gap-3 rounded-lg px-3 min-h-11 text-left text-[15px] font-semibold text-ink hover:bg-paper', role === r && 'bg-brand-soft text-brand')}>
               <Icon className="w-4 h-4 shrink-0" aria-hidden />
               <span className="flex-1">{ROLE_LABEL[r]}</span>
-              {role === r && <Check className="w-4 h-4 text-pen" aria-hidden />}
+              {role === r && <Check className="w-4 h-4 text-brand" aria-hidden />}
             </button>
           </li>
         );
       })}
-      <li className="mt-1 border-t border-ink/15 pt-1">
+      <li className="mt-1 border-t border-line pt-1">
         <button type="button" data-role-option="none" onClick={() => onPick(null)}
-          className="flex w-full items-center rounded-lg px-3 min-h-11 text-left text-sm font-bold text-slate-700 hover:bg-paper focus-visible:outline-ink">
+          className="flex w-full items-center rounded-lg px-3 min-h-11 text-left text-sm font-medium text-slate-700 hover:bg-paper">
           Fără rol: meniul complet
         </button>
       </li>
@@ -293,16 +293,14 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b-2 border-ink bg-paper/95 backdrop-blur" aria-label="Navigare principală">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+    <nav className="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur" aria-label="Navigare principală">
+      <div className="max-w-[1120px] mx-auto px-4 sm:px-6 h-[68px] flex items-center justify-between gap-3">
         <Logo />
 
         <div className="hidden lg:flex items-center gap-0.5 xl:gap-1">
           {items.map((item) =>
             item.kind === 'link' ? (
               <Link key={item.href} href={item.href} prefetch={linkPrefetch(item.href)} className={cn(topItem, isCurrent(pathname, item.href) && topCurrent)} aria-current={isCurrent(pathname, item.href) ? 'page' : undefined}>
-                {/* the role menus have six items and the role switch: no room for icons in the bar */}
-                {!role && <item.icon className="hidden xl:block w-3.5 h-3.5" aria-hidden />}
                 {item.label}
               </Link>
             ) : (
@@ -321,13 +319,13 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           {/* „Caută fișe”: every sheet, with search and filters (/cauta) */}
           <Link href="/cauta" aria-label="Caută fișe" title="Caută fișe" aria-current={isCurrent(pathname, '/cauta') ? 'page' : undefined}
-            className={cn('inline-flex items-center justify-center gap-1.5 h-10 lg:h-9 min-w-10 lg:min-w-9 rounded-lg px-2 xl:px-2.5 text-[13px] font-bold text-ink hover:bg-white', isCurrent(pathname, '/cauta') && topCurrent)}>
+            className={cn('inline-flex items-center justify-center gap-1.5 h-11 min-w-11 rounded-lg px-2 xl:px-3 text-[14px] font-medium text-ink hover:bg-paper', isCurrent(pathname, '/cauta') && topCurrent)}>
             <Search className="w-[18px] h-[18px] lg:w-4 lg:h-4" aria-hidden />
             <span className="hidden xl:inline">Caută</span>
           </Link>
           {role && <RoleSwitch role={role} open={menu === 'rol'} onOpenChange={(o) => setMenu(o ? 'rol' : null)} onPick={pickRole} />}
           {user && (
-            <Badge variant="outline" className={cn('hidden sm:inline-flex text-xs font-medium', tier === 'free' && 'border-blue-200 text-blue-700 bg-blue-50/50', tier === 'starter' && 'border-green-200 text-green-700 bg-green-50/50', tier === 'full' && 'border-orange-200 text-orange-700 bg-orange-50/50')}>
+            <Badge variant="outline" className={cn('hidden sm:inline-flex text-xs font-medium', tier === 'free' && 'border-line-strong text-slate-600 bg-white', tier === 'starter' && 'border-green-200 text-green-700 bg-green-50', tier === 'full' && 'border-blue-200 text-brand bg-brand-soft')}>
               {TIER_LABEL[tier]}
             </Badge>
           )}
@@ -346,18 +344,18 @@ export function Navbar() {
           )}
 
           {loading ? (
-            <div className="w-8 h-8 rounded-full bg-slate-100 animate-pulse" />
+            <div className="w-11 h-11 rounded-full bg-slate-100 animate-pulse" />
           ) : user ? (
             <div className="flex items-center gap-1">
-              <Link href="/cont" aria-label="Contul tău" className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" data-btn="ink" title={profile?.display_name ?? 'Contul tău'}>
+              <Link href="/cont" aria-label="Contul tău" className="w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-semibold" data-btn="ink" data-btn-round title={profile?.display_name ?? 'Contul tău'}>
                 {profile?.display_name?.[0]?.toUpperCase() || <User className="w-4 h-4" aria-hidden />}
               </Link>
-              <Button variant="ghost" size="sm" className="text-xs gap-1 text-slate-500" onClick={signOut} aria-label="Ieși din cont">
+              <Button variant="ghost" size="icon" className="text-slate-600" onClick={signOut} aria-label="Ieși din cont">
                 <LogOut className="w-3.5 h-3.5" aria-hidden />
               </Button>
             </div>
           ) : (
-            <Link href="/auth/login" className="hidden sm:inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-white text-ink border-2 border-ink text-[13px] font-extrabold hover:bg-paper whitespace-nowrap">
+            <Link href="/auth/login" className="hidden sm:inline-flex items-center gap-1.5 h-11 px-4 rounded-xl bg-white text-ink border border-line-strong text-[14px] font-semibold hover:bg-paper whitespace-nowrap">
               <LogIn className="w-3.5 h-3.5" aria-hidden /> Intră în cont
             </Link>
           )}
@@ -365,7 +363,7 @@ export function Navbar() {
           <button
             ref={toggle}
             type="button"
-            className="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center text-ink hover:bg-white"
+            className="lg:hidden w-11 h-11 rounded-xl flex items-center justify-center text-ink hover:bg-paper"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-controls="mobile-menu"
@@ -377,23 +375,23 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div id="mobile-menu" className="lg:hidden border-t-2 border-ink bg-paper max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 grid gap-x-6 sm:grid-cols-2">
+        <div id="mobile-menu" className="lg:hidden border-t border-line bg-white max-h-[calc(100dvh-68px)] overflow-y-auto overscroll-contain">
+          <div className="max-w-[1120px] mx-auto px-4 sm:px-6 py-3 grid gap-x-6 sm:grid-cols-2">
             {/* first in the phone menu: the search box (a plain form, so it works from any page, /cauta included) */}
             <form action="/cauta" method="get" role="search" aria-label="Caută fișe" className="sm:col-span-2 mb-3 flex gap-2">
               <label htmlFor="mm-cauta" className="sr-only">Caută fișe</label>
               <input id="mm-cauta" type="search" name="q" placeholder="Caută fișe: adunări, silabe…" autoComplete="off" enterKeyHint="search"
-                className="min-w-0 flex-1 h-12 rounded-xl border-2 border-ink bg-white px-3 text-[15px] font-semibold text-ink placeholder:font-normal placeholder:text-slate-500" />
-              <button type="submit" aria-label="Caută" className="shrink-0 w-12 h-12 rounded-xl border-2 border-ink bg-ink text-white flex items-center justify-center">
+                className="min-w-0 flex-1 h-12 rounded-xl border border-line-strong bg-white px-3 text-[15px] text-ink placeholder:text-slate-500" />
+              <button type="submit" aria-label="Caută" className="shrink-0 w-12 h-12 rounded-xl border border-brand bg-brand text-white flex items-center justify-center">
                 <Search className="w-5 h-5" aria-hidden />
               </button>
             </form>
-            <ul className="sm:col-span-2 grid grid-cols-2 gap-2 pb-3 border-b border-ink/15">
+            <ul className="sm:col-span-2 grid grid-cols-2 gap-2 pb-3 border-b border-line">
               {items.filter((i) => i.kind === 'link' && i.href !== '/preturi').map((i) =>
                 i.kind === 'link' ? (
                   <li key={i.href}>
                     <Link href={i.href} prefetch={linkPrefetch(i.href)} onClick={closeAll} aria-current={isCurrent(pathname, i.href) ? 'page' : undefined}
-                      className={cn('flex items-center gap-2 rounded-xl border-2 border-ink bg-white px-3 min-h-12 text-[15px] font-extrabold text-ink', isCurrent(pathname, i.href) && 'shadow-md')}>
+                      className={cn('flex items-center gap-2 rounded-xl border border-line-strong bg-white px-3 min-h-12 text-[15px] font-semibold text-ink', isCurrent(pathname, i.href) && 'border-brand bg-brand-soft text-brand')}>
                       <i.icon className="w-4 h-4 shrink-0" aria-hidden /> {i.label}
                     </Link>
                   </li>
@@ -403,15 +401,15 @@ export function Navbar() {
             {items.map((g) =>
               g.kind === 'group' ? (
                 <section key={g.id} aria-labelledby={`mm-${g.id}`} className="pt-3">
-                  <h2 id={`mm-${g.id}`} className="px-3 text-sm font-sans font-extrabold text-pen tracking-normal">{g.label}</h2>
+                  <h2 id={`mm-${g.id}`} className="px-3 text-sm font-semibold text-slate-600 tracking-normal">{g.label}</h2>
                   <ul className="mt-1">
                     {visible(g.links).map((l) => (
                       <li key={l.href}>
                         <Link href={l.href} prefetch={linkPrefetch(l.href)} onClick={closeAll} aria-current={isCurrent(pathname, l.href) ? 'page' : undefined}
-                          className={cn('flex items-center gap-3 rounded-xl px-3 py-2.5 text-ink hover:bg-white', isCurrent(pathname, l.href) && 'bg-white')}>
+                          className={cn('flex items-center gap-3 rounded-xl px-3 py-2.5 min-h-11 text-ink hover:bg-paper', isCurrent(pathname, l.href) && 'bg-brand-soft text-brand')}>
                           <l.icon className="w-4 h-4 shrink-0" aria-hidden />
                           <span className="min-w-0">
-                            <span className="block text-[15px] font-bold">{l.label}</span>
+                            <span className="block text-[15px] font-semibold">{l.label}</span>
                             {l.text && <span className="block text-[13px] leading-snug text-slate-600">{l.text}</span>}
                           </span>
                         </Link>
@@ -422,19 +420,19 @@ export function Navbar() {
               ) : null,
             )}
             {role && (
-              <section aria-labelledby="mm-rol" className="sm:col-span-2 mt-3 pt-3 border-t border-ink/15" data-role-switch-mobile>
-                <h2 id="mm-rol" className="px-3 text-sm font-sans font-extrabold text-pen tracking-normal">{ROLE_SWITCH_TITLE}</h2>
+              <section aria-labelledby="mm-rol" className="sm:col-span-2 mt-3 pt-3 border-t border-line" data-role-switch-mobile>
+                <h2 id="mm-rol" className="px-3 text-sm font-semibold text-slate-600 tracking-normal">{ROLE_SWITCH_TITLE}</h2>
                 <div className="mt-1">
                   <RoleOptions role={role} onPick={pickRole} />
                 </div>
               </section>
             )}
-            <ul className="sm:col-span-2 mt-3 pt-3 border-t border-ink/15 grid grid-cols-2 gap-2">
+            <ul className="sm:col-span-2 mt-3 pt-3 border-t border-line grid grid-cols-2 gap-2">
               <li>
-                <Link href="/preturi" onClick={closeAll} className="flex items-center gap-2 rounded-xl px-3 min-h-12 text-[15px] font-bold text-ink hover:bg-white">Prețuri</Link>
+                <Link href="/preturi" onClick={closeAll} className="flex items-center gap-2 rounded-xl px-3 min-h-12 text-[15px] font-semibold text-ink hover:bg-paper">Prețuri</Link>
               </li>
               <li>
-                <Link href={user ? '/cont' : '/auth/login'} onClick={closeAll} className="flex items-center gap-2 rounded-xl px-3 min-h-12 text-[15px] font-bold text-ink hover:bg-white">
+                <Link href={user ? '/cont' : '/auth/login'} onClick={closeAll} className="flex items-center gap-2 rounded-xl px-3 min-h-12 text-[15px] font-semibold text-ink hover:bg-paper">
                   <LogIn className="w-4 h-4" aria-hidden /> {user ? 'Contul tău' : 'Intră în cont'}
                 </Link>
               </li>
