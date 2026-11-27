@@ -2,7 +2,8 @@
 
 import { SCHOOL_LEVELS, sheetCompetenceLabel } from '@/lib/curriculum/sheet';
 import { ForeignLettersNote } from '@/components/worksheet/foreign-letters-note';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { useTypedBeforeHydration } from '@/hooks/use-typed-before-hydration';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { CATEGORY_TABS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
 import { isItemAllowed } from '@/lib/access';
@@ -84,6 +85,8 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   } = useWorksheetStore();
 
   const [wordInput, setWordInput] = useState('');
+  const wordRef = useRef<HTMLInputElement>(null);
+  useTypedBeforeHydration(wordRef, setWordInput);
   const alphabet = config.alphabet ?? 'ro';
   const cursive = isCursive(config);
 
@@ -425,6 +428,7 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
           <label htmlFor="custom-word" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Cuvinte de trasat</label>
           <div className="flex gap-2">
             <input
+              ref={wordRef}
               id="custom-word"
               type="text"
               value={wordInput}
