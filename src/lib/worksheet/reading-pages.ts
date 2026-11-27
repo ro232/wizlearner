@@ -6,6 +6,7 @@ import { textWidthMm } from '@/lib/book/text';
 import { SLANT, cursiveWord } from '@/lib/glyphs/cursive';
 import { INK, ACCENT, PAPER, MUTED, guideOps, itemOps } from './rows';
 import { caseOf, glyphText, glyphTextWidth, inkExtent } from './phonology-pages';
+import { onePart, rowParts, type EvalArea, type EvalBlock } from './eval-block';
 import {
   COPY_SETS, DRAW_SETS, FILL_SETS, GAP_SETS, MATCH_SETS, ORDER_SETS, READING_LEVELS, READ_KINDS, READ_PICTURES, READ_SETS, TEXT_SETS,
   isReadingItem, readingParts, type FillSentence, type GapWord, type ReadKind, type ReadLevel, type ReadingText,
@@ -748,20 +749,10 @@ export function readingKeySection(config: WorksheetConfig, item: string): { titl
 
 // ───────────────────────── evaluation blocks ─────────────────────────
 
-interface Area { x: number; y: number; w: number; h: number }
+type Area = EvalArea;
 
 /** An item of an „Evaluare” (evaluation.ts reads it as one of its blocks). */
-export interface ReadingEvalBlock {
-  item: string;
-  title: string;
-  prompt: string;
-  height: number;
-  grow: number;
-  draw: (ops: DrawOp[], a: Area) => void;
-  answers: string[];
-  perLine: number;
-  score: number;
-}
+export type ReadingEvalBlock = EvalBlock;
 
 const evalLetter = (i: number) => `${String.fromCharCode(97 + i)})`;
 
@@ -796,13 +787,15 @@ export function readingEvalBlock(config: WorksheetConfig, item: string, used: Se
       const order = derangement(words.length, rng(seedOf(`eval:${item}`)));
       const pictures = order.map((i) => words[i]);
       return {
-        item, title: READ_KIND_TITLES.match, prompt: 'Unește fiecare cuvânt cu imaginea potrivită.', height: 62, grow: 12, perLine: 4, score: words.length,
+        item, title: READ_KIND_TITLES.match, prompt: 'Unește fiecare cuvânt cu imaginea potrivită.', perLine: 4, score: words.length,
         answers: words.map((w, i) => `${evalLetter(i)} ${rc(w)} – ${pictures.indexOf(w) + 1}`),
-        draw(ops, a) {
+        parts: onePart(62, 8, (ops: DrawOp[], a: Area) => {
           const cw = a.w / words.length;
           const cardH = 13;
           const size = Math.min(...words.map((w) => fitSize(rc(w), 6, cw - 12)));
-          const pic = Math.min(cw - 14, a.h - cardH - 22);
+          // between the words and the pictures: the room to draw the lines in (a tighter block gives up some of it first)
+          const between = Math.max(10, Math.min(16, a.h - 46));
+          const pic = Math.min(cw - 14, a.h - cardH - 6 - between);
           words.forEach((w, i) => {
             const x = a.x + i * cw;
             ops.push({ t: 'rect', x: x + 3, y: a.y, w: cw - 6, h: cardH, rx: 3, fill: SOFT, stroke: CELL_STROKE, strokeWidth: 0.5 });
@@ -818,15 +811,15 @@ export function readingEvalBlock(config: WorksheetConfig, item: string, used: Se
             ops.push({ t: 'text', x: x + 5.5, y: top + 4.6, text: String(i + 1), size: 3, fill: MUTED, weight: 'bold' });
             ops.push(...iconOps(READ_PICTURES[w], x + cw / 2, top + 3 + pic / 2, pic));
           });
-        },
+        }, 54),
       };
     }
     case 'gap': {
       const items = freshWords(gapLayout(n), 4, (g) => g.word, used);
       return {
-        item, title: READ_KIND_TITLES.gap, prompt: 'Scrie în căsuță litera care lipsește.', height: 52, grow: 10, perLine: 4, score: items.length,
+        item, title: READ_KIND_TITLES.gap, prompt: 'Scrie în căsuță litera care lipsește.', perLine: 4, score: items.length,
         answers: items.map((g, i) => `${evalLetter(i)} ${rc(g.word)} – ${rc(g.answer)}`),
-        draw(ops, a) {
+        parts: onePart(52, 6, (ops: DrawOp[], a: Area) => {
           const cw = a.w / items.length;
           const pic = Math.min(cw - 14, a.h - 30);
           const longest = Math.max(...items.map((g) => textW(rc(g.word), 1) + 1));
@@ -845,19 +838,20 @@ export function readingEvalBlock(config: WorksheetConfig, item: string, used: Se
               ops.push({ t: 'text', x: ox, y: a.y + a.h - 5.4, text: rc(o), size: 4.4, fill: INK, weight: 'bold', align: 'center' });
             });
           });
-        },
+        }, 47),
       };
     }
     case 'fill': {
       const items = fillLayout(n).slice(0, 3);
       const size = level === 'I' ? 5 : 4.6;
       return {
-        item, title: READ_KIND_TITLES.fill, prompt: 'Încercuiește cuvântul potrivit și scrie-l pe linie.', height: items.length * 21, grow: items.length * 4, perLine: 1, score: items.length,
+        item, title: READ_KIND_TITLES.fill, prompt: 'Încercuiește cuvântul potrivit și scrie-l pe linie.', perLine: 1, score: items.length,
         answers: items.map((f, i) => `${evalLetter(i)} ${f.text.replace(GAP_MARK, f.answer)}`),
-        draw(ops, a) {
-          const rh = a.h / items.length;
-          items.forEach((f, i) => {
-            const y = a.y + i * rh;
+        // a sentence a row: a page break may fall between two of them
+        parts: rowParts(items.length, 21, 19, 3, (ops, a, i) => {
+          const f = items[i];
+          {
+            const y = a.y;
             const gapW = Math.max(28, textW(f.answer, size) + 9);
             const placed = placeSentence(f.text, size, a.w - 10, gapW);
             const base = y + size + 1;
@@ -877,20 +871,20 @@ export function readingEvalBlock(config: WorksheetConfig, item: string, used: Se
               ops.push({ t: 'text', x: ox + w / 2, y: oy + os * 1.2, text: o, size: os, fill: INK, weight: 'bold', align: 'center' });
               ox += w + 6;
             }
-          });
-        },
+          }
+        }),
       };
     }
     case 'order': {
       const items = orderLayout(n).slice(1, 3);
       const s = level === 'I' ? 0.1 : 0.085;
       return {
-        item, title: READ_KIND_TITLES.order, prompt: 'Așază cuvintele în ordine și scrie propoziția.', height: items.length * 34, grow: items.length * 4, perLine: 1, score: items.length,
+        item, title: READ_KIND_TITLES.order, prompt: 'Așază cuvintele în ordine și scrie propoziția.', perLine: 1, score: items.length,
         answers: items.map((o, i) => `${evalLetter(i)} ${o.sentence}`),
-        draw(ops, a) {
-          const rh = a.h / items.length;
-          items.forEach(({ cards }, i) => {
-            const y = a.y + i * rh;
+        parts: rowParts(items.length, 34, 34, 3, (ops, a, i) => {
+          const { cards } = items[i];
+          {
+            const y = a.y;
             const pad = 5;
             const room = a.w - 8;
             const natural = (sz: number) => cards.reduce((t, c) => t + textW(c, sz) + pad, 0) + 3.5 * (cards.length - 1);
@@ -905,8 +899,8 @@ export function readingEvalBlock(config: WorksheetConfig, item: string, used: Se
               x += w + 3.5;
             }
             ops.push(...rulingOps(level, a.x + 8, a.w - 8, y + h + 4 + 100 * s, s));
-          });
-        },
+          }
+        }),
       };
     }
     case 'text': {
@@ -917,10 +911,11 @@ export function readingEvalBlock(config: WorksheetConfig, item: string, used: Se
       const qH = 15;
       const textH = (w: number) => 10 + size + measure(w).length * lh + 3;
       return {
-        item, title: `${READ_KIND_TITLES.text}: „${t.title}”`, prompt: 'Citește textul și încercuiește răspunsul corect.', height: textH(W - 2 * M) + 4 + t.questions.length * qH, grow: 8, perLine: 3, score: t.questions.length,
+        item, title: `${READ_KIND_TITLES.text}: „${t.title}”`, prompt: 'Citește textul și încercuiește răspunsul corect.', perLine: 3, score: t.questions.length,
         // the questions are numbered „1)”, their options lettered a, b, c
         answers: t.questions.map((q, i) => `${i + 1}) ${q.options ? `${LETTERS[q.answer]} – ${q.options[q.answer]}` : textAnswer(q)}`),
-        draw(ops, a) {
+        // in one piece: at this age the text stays on the same page as its questions
+        parts: onePart(textH(W - 2 * M) + 4 + t.questions.length * qH, 6, (ops: DrawOp[], a: Area) => {
           const lines = measure(a.w);
           const boxH = textH(a.w);
           ops.push({ t: 'rect', x: a.x, y: a.y, w: a.w, h: boxH, rx: 3.5, fill: SOFT, stroke: CELL_STROKE, strokeWidth: 0.5 });
@@ -947,7 +942,7 @@ export function readingEvalBlock(config: WorksheetConfig, item: string, used: Se
                 ops.push({ t: 'text', x: ox + 7.5, y: oy, text: o, size: 4, fill: INK, weight: 'bold', align: 'center' });
               });
           });
-        },
+        }, textH(W - 2 * M) + 4 + t.questions.length * (qH - 1.2)),
       };
     }
     default:

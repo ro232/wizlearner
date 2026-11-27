@@ -2,7 +2,7 @@ import type { DrawOp, Subpath } from '@/lib/glyphs/types';
 import type { Tier, WorksheetConfig } from '@/types';
 import { iconOps } from '@/lib/hints/icons';
 import { madeWith } from '@/lib/brand';
-import { textWidthMm } from '@/lib/book/text';
+import { textWidthMm, wrapText } from '@/lib/book/text';
 import { isItemAllowed } from '@/lib/access';
 import { countOf } from '@/components/worksheet/plural';
 import { sheetCompetences, type SchoolLevel } from '@/lib/curriculum/sheet';
@@ -22,6 +22,7 @@ import type { PhonoWord } from './phonology';
 import { SORT_SETS, oddRows, shapeOps, sortPictures, type OddRow, type SortPicture } from './sorting-pages';
 import { CATEGORY_NAMES } from './sorting';
 import { answerKeyPages, type KeyExtra, type KeySection, type SheetPage } from './answer-key';
+import { drawParts, onePart, rowParts, type EvalArea, type EvalBlock, type EvalPart } from './eval-block';
 import { hasIcon } from '@/lib/hints/icons';
 import { readingEvalBlock, readingPictureWords } from './reading-pages';
 import { m34EvalBlock } from './m34-pages';
@@ -30,17 +31,25 @@ import { r34EvalBlocks } from './r34-pages';
 import { isR34Item } from './r34';
 
 /**
- * „Evaluare”: a short test of the chosen exercise types, on two or three pages, then the answers.
+ * „Evaluare”: a short test of the chosen exercise types, on one or two pages, then the answers.
  *
  * It is a way of printing the items of one sheet (config.evaluation), not a new kind of sheet:
  * the math or game items the teacher chose each become one numbered item („1. Compară numerele.”)
  * with a handful of exercises, taken from the very generators of the ordinary pages (the first
  * exercises of the same seeded set, the first pictures of the same word set), so the evaluation and
  * its answers page always agree. The header names the subject and the class („Evaluare — Matematică
- * și explorarea mediului, clasa I”), the last page ends with a self-check row (optional, the
- * „Stelele de recompensă” setting), and the answers page — always printed — gives the teacher of
- * clasa pregătitoare, I or a II-a an orientative table of calificative (FB, B, S, I) by the number of
- * correct answers; at grădiniță there are no calificative, only an optional observation grid.
+ * și explorarea mediului, clasa I”), the last page ends with the total and the calificativ to fill in
+ * (clasa pregătitoare – a IV-a) and a self-check row (optional, the „Stelele de recompensă” setting),
+ * and the answers page gives the teacher an orientative table of calificative (FB, B, S, I) by the
+ * number of correct answers; at grădiniță there are no calificative, only an optional observation grid.
+ * The answers page is the teacher's: it is left out with config.evaluationAnswers = false, for the
+ * print run of the whole class.
+ *
+ * Paper: a class of 25 prints every pupil page 25 times, so the items are packed (see `plan`): as few
+ * pages as they fit on when drawn at their tightest still comfortable size, then as roomy as that
+ * number of pages allows; an item with several rows may go on on the next page (between two rows,
+ * its heading never alone at the bottom), and two items of small picture rows may stand side by side
+ * when that saves a page.
  *
  * Items without a short form (connect the dots, find the letter, group and count, orientation, read
  * and draw, copy) are left out of an evaluation; see isEvaluationItem.
@@ -52,35 +61,24 @@ const M = 12;
 const X0 = M;
 const X1 = W - M;
 /** Where the items start, under the header. */
-const TOP = M + 25;
+const TOP = M + 23;
 /** Bottom of the items: under it the page number and the curriculum line. */
 const BOTTOM = H - M - 7;
+/** Comfortable and tightest: the heading of an item, the gap between two items, the self-check row (mm). */
 const HEADING_H = 9;
+const HEADING_MIN = 7.5;
 const GAP = 5;
+const GAP_MIN = 3.5;
 const SELF_H = 23;
-/** The tallest body an item can have: one page from TOP to BOTTOM with its heading (the self-check row can move on). */
-const MAX_BODY = BOTTOM - TOP - HEADING_H;
+const SELF_MIN = 20;
+/** „Total: ____ / 19     Calificativ: ____”, over the self-check row. */
+const TOTAL_H = 7;
+/** Between two items side by side. */
+const PAIR_GUTTER = 6;
 const CELL_STROKE = '#E6DECD';
 const SOFT = '#FBF7EE';
 
-interface Area { x: number; y: number; w: number; h: number }
-
-interface EvalBlock {
-  item: string;
-  /** Short name, for the answers page („Compară numerele”). */
-  title: string;
-  /** The instruction after the item's number. */
-  prompt: string;
-  /** Height of the body (mm), without the heading. */
-  height: number;
-  /** How much taller it can usefully be drawn when the page has room. */
-  grow: number;
-  draw: (ops: DrawOp[], a: Area) => void;
-  answers: string[];
-  perLine: number;
-  /** How many answers the child gives (the count the calificative go by). */
-  score: number;
-}
+type Area = EvalArea;
 
 const letter = (i: number) => `${String.fromCharCode(97 + i)})`;
 
@@ -94,7 +92,7 @@ export function isEvaluationItem(item: string): boolean {
   if (/^read:(match|gap|fill|order|text):[1-6]$/.test(item)) return true; // „Citire și scriere” (reading-pages.ts)
   // clasa a III-a și a IV-a: the kinds with a short form (m34-pages.ts, r34-pages.ts)
   if (isM34Item(item)) return m34EvalBlock(item, X1 - X0) !== null;
-  if (isR34Item(item)) return r34EvalBlocks(item, X1 - X0, MAX_BODY).length > 0;
+  if (isR34Item(item)) return r34EvalBlocks(item, X1 - X0).length > 0;
   return /^(count:(5|10)|sound:[A-Z]|(first|syl|split|sort|odd):[1-6])$/.test(item);
 }
 
@@ -147,20 +145,29 @@ const SELF_CHECK: Record<'presc' | 'school', { title: string[]; faces: [string, 
   school: { title: ['Autoevaluare:', 'colorează fața potrivită.'], faces: [['Mi-a fost ușor', 1], ['Am avut nelămuriri', 0], ['Mi-a fost greu', -0.6]] },
 };
 
-/** The last row: three faces to colour, each with its words under it. */
-function selfCheck(ops: DrawOp[], presc: boolean): void {
-  const by = BOTTOM - SELF_H + 3;
-  const h = SELF_H - 3;
+/** The last row, `selfH` mm with the gap over it: three faces to colour, each with its words under it. */
+function selfCheck(ops: DrawOp[], presc: boolean, selfH: number): void {
+  const by = BOTTOM - selfH + 3;
+  const h = selfH - 3;
   const def = SELF_CHECK[presc ? 'presc' : 'school'];
   ops.push({ t: 'rect', x: X0, y: by, w: X1 - X0, h, rx: 2.5, fill: '#FFFBEB', stroke: '#FBBF24', strokeWidth: 0.4 });
   def.title.forEach((line, k) => ops.push({ t: 'text', x: X0 + 5, y: by + h / 2 - 1 + k * 5, text: line, size: 3.8, fill: '#92400E', weight: 'bold' }));
   const start = X0 + 5 + Math.max(...def.title.map((l) => textWidthMm(l, 3.8))) + 8;
   const cell = (X1 - 3 - start) / 3;
+  // the faces a little smaller in the tightest row, so their words keep their room
+  const r = Math.min(5, (h - 7.5) / 2.5);
   def.faces.forEach(([label, mood], i) => {
     const cx = start + (i + 0.5) * cell;
-    ops.push(...faceOps(cx, by + 7.5, 5, mood));
+    ops.push(...faceOps(cx, by + 2.5 + r, r, mood));
     ops.push({ t: 'text', x: cx, y: by + h - 2.6, text: label, size: fit(label, 3.1, cell - 3), fill: '#92400E', weight: 'bold', align: 'center' });
   });
+}
+
+/** „Total: ____ / 19” and „Calificativ: ____”, for the teacher to fill in: on the last page, its baseline at `y`. */
+function totalLine(ops: DrawOp[], total: number, y: number): void {
+  const grade = 'Calificativ: ________';
+  ops.push({ t: 'text', x: X1, y, text: grade, size: 3.8, fill: INK, weight: 'bold', align: 'right' });
+  ops.push({ t: 'text', x: X1 - textWidthMm(grade, 3.8) - 9, y, text: `Total: ____ / ${total}`, size: 3.8, fill: INK, weight: 'bold', align: 'right' });
 }
 
 function footer(ops: DrawOp[], tier: Tier, pageNo: number, pages: number): void {
@@ -204,47 +211,45 @@ function gridBlock(type: MathType, exercises: Exercise[], range: MathRange): Eva
   const big = isBigRange(range) && !isMulType(type);
   const cols = type === 'seq' || type === 'addpic' || (range === 1000000 && big && type !== 'nbr') ? 1 : 2;
   const rows = Math.ceil(exercises.length / cols);
-  const rowH = type === 'addpic' ? 22 : 15.5;
+  const pic = type === 'addpic';
+  // a row: comfortable, tightest (the answer box is 13 mm tall), and what it gains from a roomy page
+  const [rowH, rowMin, rowGrow] = pic ? [22, 19, 6] : [15.5, 14.5, 4];
+  const size = big ? 7.5 : type === 'seq' ? 8.5 : range >= 100 ? 8 : 8.5;
+  const exercise = (ops: DrawOp[], i: number, x: number, cy: number, colW: number) => {
+    const e = exercises[i];
+    ops.push({ t: 'text', x, y: cy + 1.4, text: letter(i), size: 3.6, fill: MUTED, weight: 'bold' });
+    ops.push(...exerciseOps(e, x + 8, cy, size, colW - 16, range === 1000, big ? bigBoxChars(e) : 0));
+  };
+  const pictures = (ops: DrawOp[], i: number, a: Area) => {
+    const pics = PICTURES.filter(hasIcon);
+    const e = exercises[i];
+    const cy = a.y + a.h / 2;
+    ops.push({ t: 'rect', x: a.x, y: a.y + 1, w: a.w, h: a.h - 2, rx: 4, fill: SOFT, stroke: CELL_STROKE, strokeWidth: 0.4 });
+    ops.push({ t: 'text', x: a.x + 4, y: cy + 1.4, text: letter(i), size: 3.6, fill: MUTED, weight: 'bold' });
+    const s = Math.min(8, (a.h - 6) / 2 - 1.2);
+    const groupW = 3 * (s + 1.2);
+    const [p, q] = e.pictures!;
+    const x = a.x + 11;
+    ops.push(...picturesOps(p, pics[i % pics.length], x, cy, s));
+    ops.push({ t: 'text', x: x + groupW + 5, y: cy + 3.2, text: '+', size: 9, fill: INK, weight: 'bold', align: 'center' });
+    ops.push(...picturesOps(q, pics[i % pics.length], x + groupW + 10, cy, s));
+    ops.push(...exerciseOps(e, x + 2 * groupW + 20, cy, 8.5, a.x + a.w - (x + 2 * groupW + 24)));
+  };
   return {
     item: type,
     title: MATH_LABELS[type].title,
     prompt: GRID_PROMPT[type]!,
-    height: rows * rowH,
-    grow: rows * (type === 'addpic' ? 6 : 4),
+    // one exercise a line: a page break may fall between two lines; two columns (lettered down each column) stay together
+    parts: cols === 1
+      ? rowParts(rows, rowH, rowMin, rowGrow, (ops, a, i) => (pic ? pictures(ops, i, a) : exercise(ops, i, a.x + 4, a.y + a.h / 2, a.w)))
+      : onePart(rows * rowH, rows * rowGrow, (ops, a) => {
+          const rh = a.h / rows;
+          const colW = a.w / cols;
+          exercises.forEach((_, i) => exercise(ops, i, a.x + Math.floor(i / rows) * colW + 4, a.y + (i % rows) * rh + rh / 2, colW));
+        }, rows * rowMin),
     answers: exercises.map((e, i) => `${letter(i)} ${solved(e)}`),
     perLine: big ? (type === 'seq' || type === 'nbr' ? 1 : type === 'cmp' ? 3 : 2) : type === 'seq' ? 2 : type === 'nbr' || type === 'addpic' ? 3 : 4,
     score: exercises.length,
-    draw(ops, a) {
-      const rh = a.h / rows;
-      const colW = a.w / cols;
-      if (type === 'addpic') {
-        const pics = PICTURES.filter(hasIcon);
-        exercises.forEach((e, i) => {
-          const y = a.y + i * rh;
-          const cy = y + rh / 2;
-          ops.push({ t: 'rect', x: a.x, y: y + 1, w: a.w, h: rh - 2, rx: 4, fill: SOFT, stroke: CELL_STROKE, strokeWidth: 0.4 });
-          ops.push({ t: 'text', x: a.x + 4, y: cy + 1.4, text: letter(i), size: 3.6, fill: MUTED, weight: 'bold' });
-          const s = Math.min(8, (rh - 6) / 2 - 1.2);
-          const groupW = 3 * (s + 1.2);
-          const [p, q] = e.pictures!;
-          const x = a.x + 11;
-          ops.push(...picturesOps(p, pics[i % pics.length], x, cy, s));
-          ops.push({ t: 'text', x: x + groupW + 5, y: cy + 3.2, text: '+', size: 9, fill: INK, weight: 'bold', align: 'center' });
-          ops.push(...picturesOps(q, pics[i % pics.length], x + groupW + 10, cy, s));
-          ops.push(...exerciseOps(e, x + 2 * groupW + 20, cy, 8.5, a.x + a.w - (x + 2 * groupW + 24)));
-        });
-        return;
-      }
-      const size = big ? 7.5 : type === 'seq' ? 8.5 : range >= 100 ? 8 : 8.5;
-      exercises.forEach((e, i) => {
-        const col = Math.floor(i / rows);
-        const row = i % rows;
-        const x = a.x + col * colW + 4;
-        const cy = a.y + row * rh + rh / 2;
-        ops.push({ t: 'text', x, y: cy + 1.4, text: letter(i), size: 3.6, fill: MUTED, weight: 'bold' });
-        ops.push(...exerciseOps(e, x + 8, cy, size, colW - 16, range === 1000, big ? bigBoxChars(e) : 0));
-      });
-    },
   };
 }
 
@@ -253,12 +258,16 @@ function problemsBlock(problems: WordProblem[], range: MathRange): EvalBlock {
     item: 'problems',
     title: MATH_LABELS.problems.title,
     prompt: range <= 5 ? 'Ascultă problema, numără imaginile și completează căsuțele.' : 'Rezolvă problemele.',
-    height: problemsHeight(problems, range, X0, X1),
-    grow: 10,
+    // each problem a row of its own height (its text, its pictures, its answer area)
+    parts: problems.map((p, i) => ({
+      height: problemsHeight([p], range, X0, X1),
+      min: problemsHeight([p], range, X0, X1),
+      grow: 5,
+      draw: (ops: DrawOp[], a: Area) => void ops.push(...problemsPageOps([p], range, a.x, a.x + a.w, a.y, a.y + a.h, () => letter(i))),
+    })),
     answers: problems.map((p, i) => `${letter(i)} ${problemAnswer(p, range)}`),
     perLine: 1,
     score: problems.length,
-    draw: (ops, a) => ops.push(...problemsPageOps(problems, range, a.x, a.x + a.w, a.y, a.y + a.h, letter)),
   };
 }
 
@@ -272,12 +281,11 @@ function moneyBlock(exercises: MoneyExercise[], range: MathRange): EvalBlock {
     item: 'money',
     title: MATH_LABELS.money.title,
     prompt: 'Numără, compară și schimbă banii.',
-    height: exercises.length * 34,
-    grow: exercises.length * 6,
+    // the banknotes keep their size: a row is never tighter than 34 mm
+    parts: rowParts(exercises.length, 34, 34, 6, (ops, a, i) => void ops.push(...moneyPageOps([exercises[i]], a.x, a.x + a.w, a.y, a.y + a.h, () => letter(i), range === 1000))),
     answers: exercises.map((e, i) => `${letter(i)} ${moneyAnswer(e)}`),
     perLine: 1,
     score: exercises.reduce((n, e) => n + (e.kind === 'exchange' ? e.pairs.length : 1), 0),
-    draw: (ops, a) => ops.push(...moneyPageOps(exercises, a.x, a.x + a.w, a.y, a.y + a.h, letter, range === 1000)),
   };
 }
 
@@ -287,12 +295,10 @@ function clockBlock(times: ClockTime[]): EvalBlock {
     item: 'clock',
     title: MATH_LABELS.clock.title,
     prompt: 'Cât este ceasul? Scrie ora în căsuțe.',
-    height: 50,
-    grow: 14,
+    parts: onePart(50, 2, (ops, a) => void ops.push(...clocksOps(times, true, a.x, a.x + a.w, a.y, a.y + a.h, times.length, letter)), 46),
     answers: times.map((t, i) => `${letter(i)} ${digital(t)} – ${timeWords(t)}`),
     perLine: 2,
     score: times.length,
-    draw: (ops, a) => ops.push(...clocksOps(times, true, a.x, a.x + a.w, a.y, a.y + a.h, times.length, letter)),
   };
 }
 
@@ -386,12 +392,8 @@ function soundBlock(item: string, sound: string, words: PhonoWord[]): EvalBlock 
     item,
     title: `Sunetul de la început: ${sound}`,
     prompt: `Încercuiește imaginile care încep cu sunetul ${sound}.`,
-    height: 54,
-    grow: 14,
-    answers: [`Se încercuiesc: ${yes.join(', ')}. Nu se încercuiesc: ${no.join(', ')}.`],
-    perLine: 1,
-    score: words.length,
-    draw(ops, a) {
+    // the letter, then the pictures in one row (as large as in two rows of three, in half the height)
+    parts: onePart(30, 4, (ops, a) => {
       const tileW = 30;
       const tileH = Math.min(a.h - 2, 40);
       const ty = a.y + (a.h - tileH) / 2;
@@ -400,17 +402,18 @@ function soundBlock(item: string, sound: string, words: PhonoWord[]): EvalBlock 
       const s = Math.min((tileH - 10) / (ext.bottom - ext.top), (tileW - 6) / glyphTextWidth(pair, 1));
       ops.push({ t: 'rect', x: a.x, y: ty, w: tileW, h: tileH, rx: 3, fill: '#FFF7ED', stroke: ACCENT, strokeWidth: 0.5 });
       ops.push(glyphText(pair, a.x + tileW / 2 - glyphTextWidth(pair, s) / 2, ty + tileH / 2 - ((ext.top + ext.bottom) / 2) * s, s));
-      const gx = a.x + tileW + 5;
-      const cw = (a.x + a.w - gx) / 3;
-      const ch = a.h / 2;
-      const size = Math.min(cw, ch) - 7;
+      const gx = a.x + tileW + 4;
+      const cw = (a.x + a.w - gx) / words.length;
+      const size = Math.min(cw - 5, a.h - 7);
       words.forEach((w, i) => {
-        const x = gx + (i % 3) * cw;
-        const y = a.y + Math.floor(i / 3) * ch;
-        cellRect(ops, x + 1.2, y + 1.2, cw - 2.4, ch - 2.4);
-        ops.push(...iconOps(w.picture, x + cw / 2, y + ch / 2, size));
+        const x = gx + i * cw;
+        cellRect(ops, x + 1.2, a.y + 1.2, cw - 2.4, a.h - 2.4);
+        ops.push(...iconOps(w.picture, x + cw / 2, a.y + a.h / 2, size));
       });
-    },
+    }, 27),
+    answers: [`Se încercuiesc: ${yes.join(', ')}. Nu se încercuiesc: ${no.join(', ')}.`],
+    perLine: 1,
+    score: words.length,
   };
 }
 
@@ -419,26 +422,26 @@ function firstBlock(item: string, config: WorksheetConfig, words: PhonoWord[]): 
     item,
     title: 'Primul sunet',
     prompt: 'Scrie în căsuță litera cu care începe cuvântul.',
-    height: 44,
-    grow: 10,
-    answers: words.map((w, i) => `${letter(i)} ${caseOf(config, w.word)} – ${caseOf(config, w.initial)}`),
-    perLine: 3,
-    score: words.length,
-    draw(ops, a) {
+    parts: onePart(44, 4, (ops, a) => {
       const cw = a.w / words.length;
       const box = 13;
-      const size = Math.min(cw - 11, a.h - box - 13);
+      // the picture between the letter of the cell (top left) and the box to write in
+      const room = a.h - box - 9.5;
+      const size = Math.min(cw - 11, room);
       words.forEach((w, i) => {
         const x = a.x + i * cw;
         cellRect(ops, x + 1.2, a.y, cw - 2.4, a.h);
         ops.push({ t: 'text', x: x + 3.5, y: a.y + 4.8, text: letter(i), size: 3, fill: MUTED, weight: 'bold' });
-        ops.push(...iconOps(w.picture, x + cw / 2, a.y + 6 + (a.h - box - 9) / 2, size));
+        ops.push(...iconOps(w.picture, x + cw / 2, a.y + 5 + room / 2, size));
         const bx = x + cw / 2 - box / 2;
         const by = a.y + a.h - box - 3;
         ops.push({ t: 'rect', x: bx, y: by, w: box, h: box, rx: 2, fill: PAPER, stroke: INK, strokeWidth: 0.6 });
         ops.push({ t: 'line', x1: bx + 2, y1: by + box / 2, x2: bx + box - 2, y2: by + box / 2, stroke: '#DCE6F2', strokeWidth: 0.3, dash: [1, 1] });
       });
-    },
+    }, 40),
+    answers: words.map((w, i) => `${letter(i)} ${caseOf(config, w.word)} – ${caseOf(config, w.initial)}`),
+    perLine: 3,
+    score: words.length,
   };
 }
 
@@ -448,18 +451,15 @@ function sylBlock(item: string, config: WorksheetConfig, words: PhonoWord[]): Ev
     item,
     title: 'Câte silabe?',
     prompt: 'Colorează câte o bulină pentru fiecare silabă.',
-    height: rows * 27,
-    grow: rows * 6,
-    answers: words.map((w, i) => `${letter(i)} ${caseOf(config, w.syllables.join('-'))} (${w.syllables.length})`),
-    perLine: 4,
-    score: words.length,
-    draw(ops, a) {
+    // two words a row
+    parts: rowParts(rows, 27, 23, 4, (ops, a, row) => {
       const cw = a.w / 2;
-      const ch = a.h / rows;
+      const ch = a.h;
       const size = Math.min(22, ch - 6);
-      words.forEach((w, i) => {
-        const x = a.x + (i % 2) * cw;
-        const y = a.y + Math.floor(i / 2) * ch;
+      words.slice(row * 2, row * 2 + 2).forEach((w, k) => {
+        const i = row * 2 + k;
+        const x = a.x + k * cw;
+        const y = a.y;
         cellRect(ops, x + 1.2, y + 1.2, cw - 2.4, ch - 2.4);
         ops.push({ t: 'text', x: x + 4, y: y + 6.2, text: letter(i), size: 3, fill: MUTED, weight: 'bold' });
         ops.push(...iconOps(w.picture, x + 9 + size / 2, y + ch / 2, size));
@@ -469,9 +469,12 @@ function sylBlock(item: string, config: WorksheetConfig, words: PhonoWord[]): Ev
         ops.push({ t: 'text', x: tx, y: y + ch / 2 - 3, text: word, size: fit(word, 5, room), fill: INK, weight: 'bold' });
         const gap = 3;
         const r = Math.min(3.6, (room - 3 * gap) / 8);
-        for (let k = 0; k < 4; k++) ops.push({ t: 'circle', cx: tx + r + k * (2 * r + gap), cy: y + ch / 2 + 6, r, fill: PAPER, stroke: INK, strokeWidth: 0.55 });
+        for (let c = 0; c < 4; c++) ops.push({ t: 'circle', cx: tx + r + c * (2 * r + gap), cy: y + ch / 2 + 6, r, fill: PAPER, stroke: INK, strokeWidth: 0.55 });
       });
-    },
+    }),
+    answers: words.map((w, i) => `${letter(i)} ${caseOf(config, w.syllables.join('-'))} (${w.syllables.length})`),
+    perLine: 4,
+    score: words.length,
   };
 }
 
@@ -480,35 +483,31 @@ function splitBlock(item: string, config: WorksheetConfig, words: PhonoWord[]): 
     item,
     title: 'Desparte în silabe',
     prompt: 'Desparte cuvântul în silabe: scrie fiecare silabă într-o căsuță.',
-    height: words.length * 20,
-    grow: words.length * 4,
-    answers: words.map((w, i) => `${letter(i)} ${caseOf(config, w.syllables.join('-'))}`),
-    perLine: 3,
-    score: words.length,
-    draw(ops, a) {
-      const rh = a.h / words.length;
+    parts: rowParts(words.length, 20, 17, 3, (ops, a, i, first) => {
+      const w = words[i];
+      const rh = a.h;
       const pic = Math.min(16, rh - 4);
       const left = a.x + 66;
       const sep = 7;
-      words.forEach((w, i) => {
-        const y = a.y + i * rh;
-        const cy = y + rh / 2;
-        if (i) ops.push({ t: 'line', x1: a.x, y1: y, x2: a.x + a.w, y2: y, stroke: CELL_STROKE, strokeWidth: 0.4 });
-        ops.push({ t: 'text', x: a.x + 1, y: cy + 1.2, text: letter(i), size: 3.4, fill: MUTED, weight: 'bold' });
-        ops.push(...iconOps(w.picture, a.x + 8 + pic / 2, cy, pic));
-        const word = caseOf(config, w.word);
-        ops.push({ t: 'text', x: a.x + 12 + pic, y: cy + 1.6, text: word, size: fit(word, 4.6, left - 4 - (a.x + 12 + pic)), fill: INK, weight: 'bold' });
-        const k = w.syllables.length;
-        const boxW = Math.min(30, (a.x + a.w - left - (k - 1) * sep) / k);
-        const boxH = Math.min(14, rh - 4);
-        for (let j = 0; j < k; j++) {
-          const bx = left + j * (boxW + sep);
-          ops.push({ t: 'rect', x: bx, y: cy - boxH / 2, w: boxW, h: boxH, rx: 2, fill: PAPER, stroke: INK, strokeWidth: 0.5 });
-          ops.push({ t: 'line', x1: bx + 2, y1: cy + boxH / 2 - 3, x2: bx + boxW - 2, y2: cy + boxH / 2 - 3, stroke: '#CBD5E1', strokeWidth: 0.35 });
-          if (j < k - 1) ops.push({ t: 'line', x1: bx + boxW + sep / 2 - 1.6, y1: cy, x2: bx + boxW + sep / 2 + 1.6, y2: cy, stroke: INK, strokeWidth: 0.6 });
-        }
-      });
-    },
+      const cy = a.y + rh / 2;
+      if (!first) ops.push({ t: 'line', x1: a.x, y1: a.y, x2: a.x + a.w, y2: a.y, stroke: CELL_STROKE, strokeWidth: 0.4 });
+      ops.push({ t: 'text', x: a.x + 1, y: cy + 1.2, text: letter(i), size: 3.4, fill: MUTED, weight: 'bold' });
+      ops.push(...iconOps(w.picture, a.x + 8 + pic / 2, cy, pic));
+      const word = caseOf(config, w.word);
+      ops.push({ t: 'text', x: a.x + 12 + pic, y: cy + 1.6, text: word, size: fit(word, 4.6, left - 4 - (a.x + 12 + pic)), fill: INK, weight: 'bold' });
+      const k = w.syllables.length;
+      const boxW = Math.min(30, (a.x + a.w - left - (k - 1) * sep) / k);
+      const boxH = Math.min(14, rh - 4);
+      for (let j = 0; j < k; j++) {
+        const bx = left + j * (boxW + sep);
+        ops.push({ t: 'rect', x: bx, y: cy - boxH / 2, w: boxW, h: boxH, rx: 2, fill: PAPER, stroke: INK, strokeWidth: 0.5 });
+        ops.push({ t: 'line', x1: bx + 2, y1: cy + boxH / 2 - 3, x2: bx + boxW - 2, y2: cy + boxH / 2 - 3, stroke: '#CBD5E1', strokeWidth: 0.35 });
+        if (j < k - 1) ops.push({ t: 'line', x1: bx + boxW + sep / 2 - 1.6, y1: cy, x2: bx + boxW + sep / 2 + 1.6, y2: cy, stroke: INK, strokeWidth: 0.6 });
+      }
+    }),
+    answers: words.map((w, i) => `${letter(i)} ${caseOf(config, w.syllables.join('-'))}`),
+    perLine: 3,
+    score: words.length,
   };
 }
 
@@ -525,16 +524,13 @@ function sortBlock(item: string, n: number, pics: SortPicture[]): EvalBlock {
     item,
     title: def.by === 'shape' ? `Sortează ${def.title}` : `Sortează: ${def.title}`,
     prompt: def.by === 'size' ? 'Unește fiecare imagine cu grupa ei: mare sau mică.' : 'Unește fiecare imagine cu grupa ei.',
-    height: 64,
-    grow: 12,
-    answers,
-    perLine: 1,
-    score: pics.length,
-    draw(ops, a) {
+    parts: onePart(64, 6, (ops, a) => {
       const cw = a.w / pics.length;
-      const cellH = Math.min(30, a.h - 36);
+      // the group boxes give up their height first, then the pictures; the room for the lines between them stays
+      const bh = Math.max(17, Math.min(22, a.h - 43));
+      const cellH = Math.min(30, a.h - bh - 13);
       // the picture under the line of its letter, never on it
-      const size = Math.min(cw - 12, cellH - 11);
+      const size = Math.min(cw - 12, cellH - 7);
       pics.forEach((p, i) => {
         const x = a.x + i * cw;
         cellRect(ops, x + 1.5, a.y, cw - 3, cellH);
@@ -547,7 +543,6 @@ function sortBlock(item: string, n: number, pics: SortPicture[]): EvalBlock {
         ops.push({ t: 'circle', cx, cy: a.y + cellH + 3, r: 1.2, fill: INK });
       });
       const g = def.groups.length;
-      const bh = 22;
       const gap = 10;
       const bw = Math.min(80, (a.w - (g - 1) * gap) / g);
       const bx0 = a.x + (a.w - (g * bw + (g - 1) * gap)) / 2;
@@ -555,7 +550,7 @@ function sortBlock(item: string, n: number, pics: SortPicture[]): EvalBlock {
       def.groups.forEach((grp, gi) => {
         const bx = bx0 + gi * (bw + gap);
         ops.push({ t: 'rect', x: bx, y: by, w: bw, h: bh, rx: 4, fill: BOX_FILLS[gi], stroke: BOX_STROKES[gi], strokeWidth: 0.8 });
-        const mark = grp.symbol || grp.shape ? 15 : 0;
+        const mark = grp.symbol || grp.shape ? Math.min(15, bh - 5) : 0;
         const label = grp.label.join(' ');
         const fs = fit(label, 5, bw - 8 - (mark ? mark + 3 : 0));
         const lw = textWidthMm(label, fs);
@@ -564,7 +559,10 @@ function sortBlock(item: string, n: number, pics: SortPicture[]): EvalBlock {
         if (grp.shape) ops.push(shapeOps(grp.shape, start + mark / 2, by + bh / 2, mark * 0.8, PAPER, INK, 0.8));
         ops.push({ t: 'text', x: start + (mark ? mark + 3 : 0), y: by + bh / 2 + fs * 0.36, text: label, size: fs, fill: INK, weight: 'bold' });
       });
-    },
+    }, 56),
+    answers,
+    perLine: 1,
+    score: pics.length,
   };
 }
 
@@ -573,27 +571,27 @@ function oddBlock(item: string, rows: OddRow[]): EvalBlock {
     item,
     title: 'Ce nu se potrivește?',
     prompt: 'Taie cu un X imaginea care nu se potrivește.',
-    height: rows.length * 21,
-    grow: rows.length * 5,
+    narrow: true,
+    parts: rowParts(rows.length, 21, 18, 5, (ops, a, r) => {
+      const row = rows[r];
+      const rh = a.h;
+      // in half the page width (two items side by side): a smaller letter, the pictures keep all the room there is
+      const half = a.w < 120;
+      const mark = half ? 3.4 : 4;
+      const left = a.x + 2 * mark + (half ? 1.6 : 3);
+      const cw = (a.x + a.w - left) / 4;
+      const size = Math.min(19, rh - 4.4, cw - (half ? 5.5 : 10));
+      ops.push({ t: 'circle', cx: a.x + mark + 0.5, cy: a.y + rh / 2, r: mark, fill: SOFT, stroke: CELL_STROKE, strokeWidth: 0.5 });
+      ops.push({ t: 'text', x: a.x + mark + 0.5, y: a.y + rh / 2 + 1.4, text: String.fromCharCode(97 + r), size: mark, fill: INK, weight: 'bold', align: 'center' });
+      row.objects.forEach((o, k) => {
+        const x = left + k * cw;
+        cellRect(ops, x + (half ? 0.8 : 1.5), a.y + 1.2, cw - (half ? 1.6 : 3), rh - 2.4);
+        ops.push(...iconOps(o.picture, x + cw / 2, a.y + rh / 2, size));
+      });
+    }),
     answers: rows.map((r, i) => `${letter(i)} ${r.objects[r.intruder].word} (celelalte: ${CATEGORY_NAMES[r.cat]})`),
     perLine: 2,
     score: rows.length,
-    draw(ops, a) {
-      const rh = a.h / rows.length;
-      const left = a.x + 11;
-      const cw = (a.x + a.w - left) / 4;
-      const size = Math.min(19, rh - 5, cw - 10);
-      rows.forEach((row, r) => {
-        const y = a.y + r * rh;
-        ops.push({ t: 'circle', cx: a.x + 4.5, cy: y + rh / 2, r: 4, fill: SOFT, stroke: CELL_STROKE, strokeWidth: 0.5 });
-        ops.push({ t: 'text', x: a.x + 4.5, y: y + rh / 2 + 1.4, text: String.fromCharCode(97 + r), size: 4, fill: INK, weight: 'bold', align: 'center' });
-        row.objects.forEach((o, k) => {
-          const x = left + k * cw;
-          cellRect(ops, x + 1.5, y + 1.2, cw - 3, rh - 2.4);
-          ops.push(...iconOps(o.picture, x + cw / 2, y + rh / 2, size));
-        });
-      });
-    },
   };
 }
 
@@ -604,28 +602,30 @@ function countBlock(item: string, max: number): EvalBlock {
     item,
     title: 'Numără și scrie',
     prompt: 'Numără imaginile și scrie numărul în căsuță.',
-    height: rows.length * 19,
-    grow: rows.length * 5,
+    // up to five pictures a row: they stay easy to count in half the page width too
+    narrow: max <= 5,
+    parts: rowParts(rows.length, 19, 16, 5, (ops, a, r) => {
+      const n = rows[r];
+      const rh = a.h;
+      const half = a.w < 120;
+      const cy = a.y + rh / 2;
+      const box = Math.min(half ? 13 : 16, rh - 4);
+      const areaW = a.w - box - (half ? 8 : 12);
+      const lead = half ? 8 : 10;
+      const between = half ? 1.8 : 2.5;
+      ops.push({ t: 'rect', x: a.x, y: a.y + 1.2, w: areaW, h: rh - 2.4, rx: 4, fill: SOFT, stroke: CELL_STROKE, strokeWidth: 0.4 });
+      ops.push({ t: 'text', x: a.x + 3.5, y: a.y + 5.6, text: letter(r), size: 3, fill: MUTED, weight: 'bold' });
+      const size = Math.min(12, rh - 5.5, (areaW - lead - 2) / n - between);
+      for (let i = 0; i < n; i++) ops.push(...iconOps(pictures[r % pictures.length], a.x + lead + size / 2 + i * (size + between), cy, size));
+      const bx = a.x + a.w - box;
+      ops.push({ t: 'rect', x: bx, y: cy - box / 2, w: box, h: box, rx: 2.5, fill: PAPER, stroke: INK, strokeWidth: 0.6 });
+      ops.push({ t: 'line', x1: bx + 2.5, y1: cy, x2: bx + box - 2.5, y2: cy, stroke: '#DCE6F2', strokeWidth: 0.3, dash: [1, 1] });
+      const tip = half ? 1.8 : 2.5;
+      ops.push({ t: 'polygon', points: [{ x: bx - tip * 2.8, y: cy - tip }, { x: bx - tip, y: cy }, { x: bx - tip * 2.8, y: cy + tip }], fill: ACCENT });
+    }),
     answers: rows.map((n, i) => `${letter(i)} ${n}`),
     perLine: 3,
     score: rows.length,
-    draw(ops, a) {
-      const rh = a.h / rows.length;
-      const box = Math.min(16, rh - 4);
-      const areaW = a.w - box - 12;
-      rows.forEach((n, r) => {
-        const y = a.y + r * rh;
-        const cy = y + rh / 2;
-        ops.push({ t: 'rect', x: a.x, y: y + 1.2, w: areaW, h: rh - 2.4, rx: 4, fill: SOFT, stroke: CELL_STROKE, strokeWidth: 0.4 });
-        ops.push({ t: 'text', x: a.x + 3.5, y: y + 5.6, text: letter(r), size: 3, fill: MUTED, weight: 'bold' });
-        const size = Math.min(12, rh - 7, (areaW - 14) / n - 2.5);
-        for (let i = 0; i < n; i++) ops.push(...iconOps(pictures[r % pictures.length], a.x + 10 + size / 2 + i * (size + 2.5), cy, size));
-        const bx = a.x + a.w - box;
-        ops.push({ t: 'rect', x: bx, y: cy - box / 2, w: box, h: box, rx: 2.5, fill: PAPER, stroke: INK, strokeWidth: 0.6 });
-        ops.push({ t: 'line', x1: bx + 2.5, y1: cy, x2: bx + box - 2.5, y2: cy, stroke: '#DCE6F2', strokeWidth: 0.3, dash: [1, 1] });
-        ops.push({ t: 'polygon', points: [{ x: bx - 7, y: cy - 2.5 }, { x: bx - 2.5, y: cy }, { x: bx - 7, y: cy + 2.5 }], fill: ACCENT });
-      });
-    },
   };
 }
 
@@ -641,7 +641,7 @@ function gameBlocks(config: WorksheetConfig, tier: Tier): EvalBlock[] {
     if (isM34Item(item)) {
       const b = m34EvalBlock(item, X1 - X0);
       if (b) blocks.push(b);
-    } else if (isR34Item(item)) blocks.push(...r34EvalBlocks(item, X1 - X0, MAX_BODY));
+    } else if (isR34Item(item)) blocks.push(...r34EvalBlocks(item, X1 - X0));
     else if (kind === 'count') blocks.push(countBlock(item, n));
     else if (kind === 'sound') {
       // three pictures that start with the sound and three that do not, in the order of the ordinary page
@@ -695,38 +695,158 @@ function pictureWords(item: string): string[] {
 
 // ───────────────────────── pages ─────────────────────────
 
-const need = (b: EvalBlock) => HEADING_H + b.height;
+const lerp = (a: number, b: number, c: number) => a + (b - a) * c;
+const PAIR_W = (X1 - X0 - PAIR_GUTTER) / 2;
+/** The second line of a heading (only two items side by side wrap theirs). */
+const HEAD_LINE = 5.2;
+const HEAD_SIZE = 4.3;
+/** The room of „____ / 6” at the right of a heading. */
+const SCORE_W = 24;
+
+/** What is laid out as one piece: an item, or two narrow items side by side. */
+interface Unit {
+  blocks: EvalBlock[];
+  /** The index of its first item (its number, less one). */
+  first: number;
+  parts: EvalPart[];
+  /** The lines of each heading. */
+  headings: string[][];
+}
+
+/** The rows `from` … `to` of a unit, on one page. */
+interface Segment { unit: Unit; from: number; to: number }
+
+/** The items as units; with `pairs`, two narrow items next to each other in the list stand side by side. */
+function unitsOf(blocks: EvalBlock[], pairs: boolean, scoreW: number): Unit[] {
+  const units: Unit[] = [];
+  for (let i = 0; i < blocks.length; i++) {
+    const b = blocks[i];
+    const next = blocks[i + 1];
+    if (pairs && b.narrow && next?.narrow) {
+      const both = [b, next];
+      const tallest = (f: (p: EvalPart) => number) => Math.max(...both.map((x) => x.parts.reduce((s, p) => s + f(p), 0)));
+      units.push({
+        blocks: both,
+        first: i,
+        headings: both.map((x, k) => wrapText(`${i + k + 1}. ${x.prompt}`, PAIR_W - scoreW - 2, HEAD_SIZE)),
+        // one piece: the two items share their rows' height
+        parts: [{
+          height: tallest((p) => p.height), min: tallest((p) => p.min), grow: tallest((p) => p.grow),
+          draw: (ops, a) => both.forEach((x, k) => drawParts(ops, x.parts, { x: a.x + k * (PAIR_W + PAIR_GUTTER), y: a.y, w: PAIR_W, h: a.h })),
+        }],
+      });
+      i++;
+    } else units.push({ blocks: [b], first: i, parts: b.parts, headings: [[`${i + 1}. ${b.prompt}`]] });
+  }
+  return units;
+}
+
+/** Heights at comfort `c`: 0 the tightest, 1 the comfortable ones. */
+const headingH = (u: Unit, c: number) => lerp(HEADING_MIN, HEADING_H, c) + (Math.max(...u.headings.map((l) => l.length)) - 1) * HEAD_LINE;
+const gapH = (c: number) => lerp(GAP_MIN, GAP, c);
+const partH = (p: EvalPart, c: number) => lerp(p.min, p.height, c);
+const ROOM = BOTTOM - TOP;
 
 /**
- * Blocks on pages: as few pages as fit, then evened out (the first pages are not crammed while the
- * last one is nearly empty). The self-check row needs its room on the last page.
+ * The units on pages at comfort `c`, in their order, each page filled before the next one starts. A unit that does
+ * not fit whole goes on on the next page from the first row that does not fit (its heading is repeated there); a
+ * heading always has its first row under it. `tail`: the height of the total line and the self-check row, which
+ * stay on the same page as the last row.
  */
-function paginate(blocks: EvalBlock[], selfH: number): EvalBlock[][] {
-  const room = BOTTOM - TOP;
-  const pack = (cap: number): EvalBlock[][] => {
-    const pages: EvalBlock[][] = [[]];
-    let used = 0;
-    for (const b of blocks) {
-      const h = need(b) + (pages[pages.length - 1].length ? GAP : 0);
-      if (used + h > cap && pages[pages.length - 1].length) {
-        pages.push([b]);
-        used = need(b);
-      } else {
-        pages[pages.length - 1].push(b);
+function pack(units: Unit[], c: number, tail: number): Segment[][] {
+  const pages: Segment[][] = [[]];
+  let used = 0;
+  units.forEach((unit, ui) => {
+    unit.parts.forEach((part, k) => {
+      const page = pages[pages.length - 1];
+      const open = page[page.length - 1];
+      const goesOn = !!open && open.unit === unit;
+      const h = partH(part, c);
+      const add = goesOn ? h : (page.length ? gapH(c) : 0) + headingH(unit, c) + h;
+      const lastRow = ui === units.length - 1 && k === unit.parts.length - 1;
+      if (page.length && used + add + (lastRow ? tail : 0) > ROOM + 0.01) {
+        pages.push([{ unit, from: k, to: k + 1 }]);
+        used = headingH(unit, c) + h;
+      } else if (goesOn) {
+        open.to = k + 1;
         used += h;
+      } else {
+        page.push({ unit, from: k, to: k + 1 });
+        used += add;
       }
-    }
-    // the self-check row counts on the last page, as one more thing that must fit
-    if (used + selfH > cap) pages.push([]);
-    return pages;
-  };
-  const fewest = pack(room);
-  const total = blocks.reduce((s, b) => s + need(b) + GAP, 0) + selfH;
-  for (let cap = Math.min(room, total / fewest.length); cap < room; cap += 4) {
-    const p = pack(cap);
-    if (p.length === fewest.length && p.every((pg) => pg.length)) return p;
-  }
-  return fewest;
+    });
+  });
+  // a last row as tall as the page: the total and the self-check row get a page of their own
+  if (used + tail > ROOM + 0.01 && tail > 0) pages.push([]);
+  return pages;
+}
+
+/**
+ * Where everything goes: the fewest pages the items fit on at their tightest (with two narrow items side by side
+ * only when that saves a page), then the most comfortable sizes that still need no more pages.
+ */
+function plan(blocks: EvalBlock[], tail: (c: number) => number, scoreW: number): Segment[][] {
+  const STEPS = 20;
+  const tries = (units: Unit[]) => Array.from({ length: STEPS + 1 }, (_, k) => pack(units, 1 - k / STEPS, tail(1 - k / STEPS)));
+  const fewest = (all: Segment[][][]) => Math.min(...all.map((p) => p.length));
+  const single = tries(unitsOf(blocks, false, scoreW));
+  const paired = blocks.some((b, i) => b.narrow && blocks[i + 1]?.narrow) ? tries(unitsOf(blocks, true, scoreW)) : null;
+  const best = paired && fewest(paired) < fewest(single) ? paired : single;
+  return best.find((p) => p.length === fewest(best))!;
+}
+
+/** A page of the plan with its final sizes. */
+interface Settled {
+  segments: Segment[];
+  /** The comfort its heights are drawn at, the height each row gains over that, and the gap between items. */
+  comfort: number;
+  growth: number[][];
+  gap: number;
+  /** The share of the page's height its items take (with the total and the self-check row on the last page). */
+  fill: number;
+}
+
+/** The sizes of a page: as comfortable as it has room for, then the rows a little taller, then the gaps wider. */
+function settle(segments: Segment[], tail: (c: number) => number): Settled {
+  const rows = (g: Segment) => g.unit.parts.slice(g.from, g.to);
+  const used = (c: number) => segments.reduce((s, g) => s + headingH(g.unit, c) + rows(g).reduce((t, p) => t + partH(p, c), 0), 0) + gapH(c) * Math.max(0, segments.length - 1) + tail(c);
+  const lo = used(0);
+  const hi = used(1);
+  const comfort = hi <= ROOM ? 1 : hi - lo < 0.001 ? 0 : Math.max(0, Math.min(1, (ROOM - lo) / (hi - lo)));
+  const spare = Math.max(0, ROOM - used(comfort));
+  const count = segments.reduce((n, g) => n + g.to - g.from, 0);
+  const growth = segments.map((g) => rows(g).map((p) => Math.min(p.grow, spare / Math.max(1, count))));
+  const grown = growth.flat().reduce((s, x) => s + x, 0);
+  const gap = gapH(comfort) + (segments.length > 1 ? Math.min(10, (spare - grown) / (segments.length - 1)) : 0);
+  return { segments, comfort, growth, gap, fill: Math.min(1, (used(comfort) + grown) / ROOM) };
+}
+
+interface Layout { blocks: EvalBlock[]; pages: Settled[]; school: boolean; presc: boolean; withSelf: boolean; total: number }
+
+function layoutOf(config: WorksheetConfig, tier: Tier): Layout | null {
+  const blocks = config.category === 'math' ? mathBlocks(config, tier) : config.category === 'games' ? gameBlocks(config, tier) : [];
+  if (!blocks.length) return null;
+  const presc = config.curriculumLevel === 'presc';
+  const school = config.curriculumLevel === 'CP' || config.curriculumLevel === 'I' || config.curriculumLevel === 'II' || config.curriculumLevel === 'III' || config.curriculumLevel === 'IV';
+  const withSelf = config.showRewardSection !== false;
+  const tail = (c: number) => (school ? TOTAL_H : 0) + (withSelf ? lerp(SELF_MIN, SELF_H, c) : 0);
+  const pages = plan(blocks, tail, school ? SCORE_W : 0);
+  return { blocks, school, presc, withSelf, total: blocks.reduce((s, b) => s + b.score, 0), pages: pages.map((segments, p) => settle(segments, p === pages.length - 1 ? tail : () => 0)) };
+}
+
+/** The pupil pages of an evaluation as planned (for the tests and the print hint): the rows of each item on each page, and how full the page is. */
+export interface EvaluationPagePlan {
+  items: { number: number; item: string; from: number; to: number; rows: number }[];
+  fill: number;
+}
+
+export function evaluationPlan(config: WorksheetConfig, tier: Tier): EvaluationPagePlan[] {
+  const layout = layoutOf(config, tier);
+  if (!layout) return [];
+  return layout.pages.map((page) => ({
+    fill: page.fill,
+    items: page.segments.flatMap((g) => g.unit.blocks.map((b, k) => ({ number: g.unit.first + k + 1, item: b.item, from: g.unit.blocks.length > 1 ? 0 : g.from, to: g.unit.blocks.length > 1 ? b.parts.length : g.to, rows: b.parts.length }))),
+  }));
 }
 
 function calificativExtra(total: number): KeyExtra {
@@ -805,45 +925,84 @@ function keySections(blocks: EvalBlock[]): KeySection[] {
   return blocks.map((b, i) => ({ title: `${i + 1}. ${b.title} (${countOf(b.score, 'răspuns', 'răspunsuri')})`, entries: b.answers, perLine: b.perLine }));
 }
 
-/** The pages of an evaluation, then its answers; empty when none of the chosen items has a short form. */
+/** The heading of an item, its first line's baseline `base` mm under `y`: the lines, then at the right the score to fill in or a note. */
+function headingOps(ops: DrawOp[], lines: string[], x: number, w: number, y: number, base: number, right: { text: string; size: number; bold: boolean } | null): void {
+  const rightW = right ? textWidthMm(right.text, right.size) + 5 : 0;
+  lines.forEach((line, k) => ops.push({ t: 'text', x, y: y + base + k * HEAD_LINE, text: line, size: fit(line, HEAD_SIZE, w - (k === 0 ? rightW : 0)), fill: INK, weight: 'bold' }));
+  if (right) ops.push({ t: 'text', x: x + w, y: y + base, text: right.text, size: right.size, fill: MUTED, align: 'right', ...(right.bold ? { weight: 'bold' as const } : {}) });
+}
+
+/** The pages of an evaluation, then its answers (unless left out); empty when none of the chosen items has a short form. */
 export function buildEvaluationPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
-  const blocks = config.category === 'math' ? mathBlocks(config, tier) : config.category === 'games' ? gameBlocks(config, tier) : [];
-  if (!blocks.length) return [];
-  const presc = config.curriculumLevel === 'presc';
-  const school = config.curriculumLevel === 'CP' || config.curriculumLevel === 'I' || config.curriculumLevel === 'II' || config.curriculumLevel === 'III' || config.curriculumLevel === 'IV';
-  const withSelf = config.showRewardSection !== false;
+  const layout = layoutOf(config, tier);
+  if (!layout) return [];
+  const { blocks, school, presc, withSelf, total } = layout;
   const title = evaluationTitle(config);
-  const layout = paginate(blocks, withSelf ? SELF_H : 0);
-  let number = 0;
-  const pages: SheetPage[] = layout.map((onPage, p) => {
+  /** The page each item starts on (where its text is, for the items that go on). */
+  const startPage = new Map<EvalBlock, number>();
+  const pages: SheetPage[] = layout.pages.map((page, p) => {
     const ops: DrawOp[] = [];
     header(ops, config, title);
-    const last = p === layout.length - 1;
-    const bottom = last && withSelf ? BOTTOM - SELF_H : BOTTOM;
-    const used = onPage.reduce((s, b) => s + need(b), 0) + GAP * Math.max(0, onPage.length - 1);
-    const spare = Math.max(0, bottom - TOP - used);
-    // the room left: first to the blocks that can use it (bigger pictures), the rest between them
-    const growth = onPage.map((b) => Math.min(b.grow, spare / onPage.length));
-    const gap = onPage.length > 1 ? GAP + Math.min(10, (spare - growth.reduce((s, g) => s + g, 0)) / (onPage.length - 1)) : GAP;
+    const last = p === layout.pages.length - 1;
+    const c = page.comfort;
+    const base = 5 - (HEADING_H - lerp(HEADING_MIN, HEADING_H, c)) / 3;
     let y = TOP;
-    onPage.forEach((b, i) => {
-      number++;
-      if (i) ops.push({ t: 'line', x1: X0, y1: y - gap / 2, x2: X1, y2: y - gap / 2, stroke: CELL_STROKE, strokeWidth: 0.4 });
-      const scoreW = school ? 24 : 0;
-      const heading = `${number}. ${b.prompt}`;
-      ops.push({ t: 'text', x: X0, y: y + 5, text: heading, size: fit(heading, 4.3, X1 - X0 - scoreW), fill: INK, weight: 'bold' });
-      if (school) ops.push({ t: 'text', x: X1, y: y + 5, text: `____ / ${b.score}`, size: 3.4, fill: MUTED, weight: 'bold', align: 'right' });
-      const h = b.height + growth[i];
-      b.draw(ops, { x: X0, y: y + HEADING_H, w: X1 - X0, h });
-      y += HEADING_H + h + gap;
+    page.segments.forEach(({ unit, from, to }, i) => {
+      if (i) ops.push({ t: 'line', x1: X0, y1: y - page.gap / 2, x2: X1, y2: y - page.gap / 2, stroke: CELL_STROKE, strokeWidth: 0.4 });
+      const head = headingH(unit, c);
+      const heights = unit.parts.slice(from, to).map((part, k) => partH(part, c) + page.growth[i][k]);
+      const body = heights.reduce((s, h) => s + h, 0);
+      const pair = unit.blocks.length > 1;
+      unit.blocks.forEach((b, k) => {
+        if (from === 0) startPage.set(b, p + 1);
+        // an item that goes on: its instruction again, and where its text is
+        const right = from > 0
+          ? { text: b.hasText ? `continuare · Textul este pe pagina ${startPage.get(b)}` : 'continuare', size: 3.2, bold: false }
+          : school ? { text: `____ / ${b.score}`, size: 3.4, bold: true } : null;
+        headingOps(ops, unit.headings[k], X0 + k * (PAIR_W + PAIR_GUTTER), pair ? PAIR_W : X1 - X0, y, base, right);
+      });
+      if (pair) ops.push({ t: 'line', x1: W / 2, y1: y + 1, x2: W / 2, y2: y + head + body - 1, stroke: CELL_STROKE, strokeWidth: 0.4 });
+      let py = y + head;
+      unit.parts.slice(from, to).forEach((part, k) => {
+        part.draw(ops, { x: X0, y: py, w: X1 - X0, h: heights[k] }, k === 0);
+        py += heights[k];
+      });
+      y = py + page.gap;
     });
-    if (last && withSelf) selfCheck(ops, presc);
-    return { width: W, height: H, ops, competenceItems: onPage.map((b) => b.item) };
+    if (last) {
+      const selfH = withSelf ? lerp(SELF_MIN, SELF_H, c) : 0;
+      if (school) totalLine(ops, total, BOTTOM - selfH - 1.6);
+      if (withSelf) selfCheck(ops, presc, selfH);
+    }
+    return { width: W, height: H, ops, competenceItems: page.segments.flatMap((g) => g.unit.blocks.map((b) => b.item)) };
   });
-  const total = blocks.reduce((s, b) => s + b.score, 0);
-  const extras = school ? [calificativExtra(total)] : presc ? [observationExtra(blocks)] : [];
-  const instruction = presc ? 'Pentru educatoare sau părinte: răspunsurile, item cu item.' : 'Pentru cadrul didactic: răspunsurile corecte, item cu item.';
-  for (const ops of answerKeyPages(config, keySections(blocks), extras, instruction)) pages.push({ width: W, height: H, ops, answerKey: true });
+  if (config.evaluationAnswers !== false) {
+    const extras = school ? [calificativExtra(total)] : presc ? [observationExtra(blocks)] : [];
+    const instruction = presc ? 'Pentru educatoare sau părinte: răspunsurile, item cu item.' : 'Pentru cadrul didactic: răspunsurile corecte, item cu item.';
+    for (const ops of answerKeyPages(config, keySections(blocks), extras, instruction)) pages.push({ width: W, height: H, ops, answerKey: true });
+  }
   pages.forEach((page, i) => footer(page.ops, tier, i + 1, pages.length));
   return pages;
+}
+
+/** How many pages of an evaluation are the pupils' and how many the teacher's (the answers); null when it is not an evaluation. */
+export function evaluationPageSplit(config: WorksheetConfig, tier: Tier): { pupil: number; key: number } | null {
+  if (!config.evaluation || (config.category !== 'math' && config.category !== 'games')) return null;
+  const pages = buildEvaluationPages(config, tier);
+  if (!pages.length) return null;
+  const key = pages.filter((p) => p.answerKey).length;
+  return { pupil: pages.length - key, key };
+}
+
+const pageRange = (from: number, to: number) => (from === to ? `Pagina ${from} este` : `Paginile ${from}–${to} sunt`);
+
+/**
+ * What to print for whom, next to the download button: „Paginile 1–2 sunt pentru elevi; pagina 3 este pentru tine.”
+ * (a class set is the pupils' pages times the number of pupils, the answers once).
+ */
+export function evaluationPrintHint(split: { pupil: number; key: number }): string {
+  const pupils = `${pageRange(1, split.pupil)} pentru elevi`;
+  if (!split.key) return `${pupils}; pagina de răspunsuri nu este inclusă.`;
+  const mine = pageRange(split.pupil + 1, split.pupil + split.key);
+  return `${pupils}; ${mine.charAt(0).toLowerCase()}${mine.slice(1)} pentru tine.`;
 }

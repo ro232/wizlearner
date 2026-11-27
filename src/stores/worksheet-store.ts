@@ -24,6 +24,8 @@ interface WorksheetState {
   newMathSet: () => void;
   toggleMathAnswers: () => void;
   toggleEvaluation: () => void;
+  /** An evaluation with or without its answers page (the class set is printed without it). */
+  toggleEvaluationAnswers: () => void;
   setAlphabet: (alphabet: Alphabet) => void;
   setLetterMode: (mode: LetterMode) => void;
   toggleItem: (item: string) => void;
@@ -95,6 +97,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
     // an evaluation is a way of printing math or game items: another category starts as an ordinary sheet
     const config = { ...state.config, category, selectedItems: [] };
     delete config.evaluation;
+    delete config.evaluationAnswers;
     return { config };
   }),
   setMathRange: (mathRange) => set((state) => ({ config: { ...state.config, mathRange } })),
@@ -105,6 +108,11 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   newMathSet: () => set((state) => ({ config: { ...state.config, mathSeed: (state.config.mathSeed ?? 1) + 1 } })),
   toggleMathAnswers: () => set((state) => ({ config: { ...state.config, mathAnswers: !state.config.mathAnswers } })),
   toggleEvaluation: () => set((state) => ({ config: { ...state.config, evaluation: !state.config.evaluation } })),
+  toggleEvaluationAnswers: () =>
+    set((state) => {
+      const { evaluationAnswers, ...config } = state.config;
+      return { config: evaluationAnswers === false ? config : { ...config, evaluationAnswers: false } };
+    }),
   setAlphabet: (alphabet) => set((state) => {
     // Keep only the letters that exist in the newly chosen alphabet.
     const allowed = new Set(ALPHABETS[alphabet]);
