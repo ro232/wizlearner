@@ -4,6 +4,7 @@ import { buildWorksheetPages } from '@/lib/worksheet/layout';
 import { drawPageToPdf, type PdfFontSet } from '@/lib/glyphs/backends/pdf';
 import type { PageOps } from '@/lib/glyphs/types';
 import { FontLoadError } from './errors';
+import { BRAND_NAME } from '@/lib/brand';
 
 /**
  * PDF export. Pages come from the shared layout (same as the live preview), so
@@ -122,7 +123,7 @@ export function safeFilename(name: string): string {
 export function worksheetFilename(config: WorksheetConfig): string {
   const dateStr = new Date().toISOString().split('T')[0];
   const childNamePart = config.childName ? `-${config.childName.trim().replace(/\s+/g, '-')}` : '';
-  return `WorksheetWiz${childNamePart}-${dateStr}.pdf`;
+  return `${BRAND_NAME}${childNamePart}-${dateStr}.pdf`;
 }
 
 /** Generate and download the worksheet PDF in the browser. */

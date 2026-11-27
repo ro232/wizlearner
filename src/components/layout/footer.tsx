@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Logo } from './logo';
 import { OPERATOR, operatorDetails } from '@/lib/legal';
+import { BRAND_NAME } from '@/lib/brand';
 
 /** Where consumers can take a dispute (ANPC, Ordinul 449/2022). Text links only. */
 export const ANPC_SAL_URL = 'https://reclamatiisal.anpc.ro/';
@@ -28,14 +29,14 @@ export function Footer() {
             <Link href="/fise-de-lucru" className="hover:text-pen">Fișe de lucru pe clase</Link>
             <Link href="/programa" className="hover:text-pen">Fișe pe programă</Link>
             <Link href="/planificare" className="hover:text-pen">Planificare calendaristică</Link>
-            <Link href="/advent" className="hover:text-pen">Calendar de Advent</Link>
+            <Link href="/advent" prefetch={false} className="hover:text-pen">Calendar de Advent</Link>
             <Link href="/planse" className="hover:text-pen">Planșe și diplome</Link>
-            <Link href="/book" className="hover:text-pen">Caiet KDP</Link>
+            <Link href="/book" prefetch={false} className="hover:text-pen">Caiet KDP</Link>
             <Link href="/preturi" className="hover:text-pen">Prețuri</Link>
             <Link href="/confidentialitate" className="hover:text-pen">Confidențialitate</Link>
             <Link href="/termeni" className="hover:text-pen">Termeni</Link>
             {OPERATOR.email && (
-              <a href={`mailto:${OPERATOR.email}?subject=WorksheetWiz`} className="hover:text-pen">
+              <a href={`mailto:${OPERATOR.email}?subject=${BRAND_NAME}`} className="hover:text-pen">
                 Ai o idee? Scrie-ne
               </a>
             )}
@@ -57,7 +58,7 @@ export function Footer() {
             <a href={ANPC_URL} className={link} target="_blank" rel="noopener noreferrer">anpc.ro</a>
           </p>
           <p>
-            Făcut pentru cei mici, în România · © 2026 WorksheetWiz · Imagini:{' '}
+            Făcut pentru cei mici, în România · © 2026 {BRAND_NAME} · Imagini:{' '}
             <a href="https://github.com/jdecked/twemoji" className={link} target="_blank" rel="noopener noreferrer">Twemoji</a>, CC-BY 4.0
           </p>
         </div>

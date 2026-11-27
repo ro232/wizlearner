@@ -302,7 +302,7 @@ describe('documents', () => {
     const files = unzipSync(await planDocxBuffer(plan, { ...meta, withSheets: true }));
     expect(Object.keys(files)).toEqual(expect.arrayContaining(['[Content_Types].xml', 'word/document.xml', 'word/styles.xml']));
     const xml = strFromU8(files['word/document.xml']);
-    for (const s of ['Unitatea de învățământ', 'Cadrul didactic', 'Clasa', 'Disciplina', 'An școlar', '2026–2027', 'Nr. ore/săptămână', 'Avizat director', 'Avizat responsabil comisie metodică / șef de catedră', 'PLANIFICARE CALENDARISTICĂ', 'Comunicare în limba română', 'Competențe specifice', 'Conținuturi', 'Fișe WorksheetWiz', 'MODULUL 5', 'Vacanța de iarnă', 'Nu este un document aprobat', meta.school.replace('„', '„').replace('”', '”'), meta.teacher]) {
+    for (const s of ['Unitatea de învățământ', 'Cadrul didactic', 'Clasa', 'Disciplina', 'An școlar', '2026–2027', 'Nr. ore/săptămână', 'Avizat director', 'Avizat responsabil comisie metodică / șef de catedră', 'PLANIFICARE CALENDARISTICĂ', 'Comunicare în limba română', 'Competențe specifice', 'Conținuturi', 'Fișe Liniatura', 'MODULUL 5', 'Vacanța de iarnă', 'Nu este un document aprobat', meta.school.replace('„', '„').replace('”', '”'), meta.teacher]) {
       expect(xml, s).toContain(s.replace(/&/g, '&amp;'));
     }
     expect(xml).toMatch(/[șț]/);

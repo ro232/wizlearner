@@ -4,6 +4,7 @@ import { Logo, PencilMark } from '@/components/layout/logo';
 import { Footer } from '@/components/layout/footer';
 import { HomeworkDownload } from '@/components/homework/homework-download';
 import { homeworkKeys, verifyHomeworkToken } from '@/lib/homework/token';
+import { BRAND_NAME } from '@/lib/brand';
 
 /**
  * „Temă pentru acasă”: the page a parent opens from the teacher's link (see src/lib/homework).
@@ -30,11 +31,11 @@ export function generateMetadata({ params }: { params: { token: string } }): Met
   const title = res.ok && res.homework.title ? `Temă pentru acasă: ${res.homework.title}` : 'Temă pentru acasă';
   const description = 'Fișa de lucru trimisă de cadrul didactic. Scrieți numele copilului dacă doriți și descărcați PDF-ul, gratuit și fără cont.';
   return {
-    title: { absolute: `${title} · WorksheetWiz` },
+    title: { absolute: `${title} · ${BRAND_NAME}` },
     description,
     robots: NOINDEX,
     referrer: 'no-referrer',
-    openGraph: { title, description, type: 'website', siteName: 'WorksheetWiz', locale: 'ro_RO' },
+    openGraph: { title, description, type: 'website', siteName: BRAND_NAME, locale: 'ro_RO' },
   };
 }
 
@@ -67,7 +68,7 @@ function Unavailable({ expired }: { expired: boolean }) {
       </p>
       <div className="mt-8 flex flex-col gap-3 items-center">
         <Link href="/fise" data-btn="primary" className="inline-flex items-center justify-center h-12 px-6 rounded-xl text-base">Fișe gratuite</Link>
-        <Link href="/" className="font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">Prima pagină WorksheetWiz</Link>
+        <Link href="/" className="font-extrabold text-ink underline decoration-pen decoration-2 underline-offset-4 hover:text-pen">Prima pagină {BRAND_NAME}</Link>
       </div>
     </div>
   );

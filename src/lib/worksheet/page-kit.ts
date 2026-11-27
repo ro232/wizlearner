@@ -1,6 +1,6 @@
 import type { DrawOp } from '@/lib/glyphs/types';
 import type { Tier, WorksheetConfig } from '@/types';
-import { madeWith } from '@/lib/brand';
+import { madeWith, BRAND_NAME } from '@/lib/brand';
 import { textWidthMm } from '@/lib/book/text';
 import { ACCENT, INK, MUTED } from './rows';
 import { textW } from './reading-pages';
@@ -57,7 +57,7 @@ export function frame(ops: DrawOp[], config: WorksheetConfig, title: string, ins
   const size = Math.min(6.5, (6.5 * room) / Math.max(1, textWidthMm(title, 6.5) * 1.06));
   ops.push({ t: 'text', x: M, y: M + 6.5, text: title, size, fill: INK, weight: 'bold' });
   ops.push({ t: 'text', x: M, y: M + 14.5, text: `Nume: ${config.childName?.trim() || '______________'}     Data: ____________`, size: 3.6, fill: '#334155' });
-  ops.push({ t: 'text', x: W - M, y: M + 6, text: 'WorksheetWiz', size: 3.2, fill: MUTED, weight: 'bold', align: 'right' });
+  ops.push({ t: 'text', x: W - M, y: M + 6, text: BRAND_NAME, size: 3.2, fill: MUTED, weight: 'bold', align: 'right' });
   ops.push({ t: 'line', x1: M, y1: M + 18.5, x2: W - M, y2: M + 18.5, stroke: ACCENT, strokeWidth: 0.6 });
   ops.push({ t: 'text', x: M, y: M + 28, text: instruction, size: fitSize(instruction, 4.6, W - 2 * M), fill: INK, weight: 'bold' });
   if (!help) return M + 34;

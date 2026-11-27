@@ -98,7 +98,7 @@ describe('company identification', () => {
   });
 
   it('names the company in full when the fields are set', () => {
-    expect(operatorSentence(full)).toBe('WorksheetWiz este un serviciu al Exemplu S.R.L., cu sediul în Str. Exemplu 1, București, înregistrată la Registrul Comerțului sub nr. J40/1/2020, CUI RO123.');
+    expect(operatorSentence(full)).toBe('Liniatura este un serviciu al Exemplu S.R.L., cu sediul în Str. Exemplu 1, București, înregistrată la Registrul Comerțului sub nr. J40/1/2020, CUI RO123.');
     expect(operatorDetails(full).map((d) => d.label)).toEqual(['CUI', 'Nr. Reg. Com.', 'Sediu']);
     expect(missingOperatorFields(full)).toEqual([]);
   });
@@ -109,7 +109,7 @@ describe('company identification', () => {
       const text = operatorSentence(op) + operatorDetails(op).map((d) => d.value).join(' ');
       expect(text).not.toMatch(/[[\]]|undefined|null/);
     }
-    expect(operatorSentence(readOperator({}))).toBe('WorksheetWiz este un serviciu online de fișe de lucru pentru copii.');
+    expect(operatorSentence(readOperator({}))).toBe('Liniatura este un serviciu online de fișe de lucru pentru copii.');
     expect(operatorDetails(readOperator({}))).toEqual([]);
     for (const f of ['src/lib/legal.ts', 'src/app/termeni/page.tsx', 'src/app/confidentialitate/page.tsx', 'src/components/layout/footer.tsx']) {
       expect(readFileSync(f, 'utf8'), f).not.toMatch(/\|\| '\[/);

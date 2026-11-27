@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { expectNoSidewaysScroll, watchErrors } from './helpers';
 
-const PAGES = ['/', '/generator', '/caiete', '/nume', '/grupa', '/book', '/fise', '/fise/litera-m', '/fise/litera-m-de-mana', '/preturi', '/cont', '/auth/login', '/confidentialitate', '/termeni'];
+const PAGES = ['/', '/panou/cadru', '/panou/parinte', '/generator', '/caiete', '/nume', '/grupa', '/book', '/fise', '/fise/litera-m', '/fise/litera-m-de-mana', '/preturi', '/cont', '/auth/login', '/confidentialitate', '/termeni'];
 
 for (const path of PAGES) {
   test(`${path} opens cleanly`, async ({ page }) => {
@@ -70,7 +70,7 @@ test('no page scrolls sideways at any common width', async ({ page }, info) => {
   test.slow();
   for (const width of [320, 360, 390, 768, 810, 1024, 1280]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const path of ['/', '/generator', '/caiete', '/nume', '/grupa', '/planse', '/programa', '/planificare', '/book', '/fise', '/preturi', '/cont']) {
+    for (const path of ['/', '/panou/cadru', '/panou/parinte', '/generator', '/caiete', '/nume', '/grupa', '/planse', '/programa', '/planificare', '/book', '/fise', '/preturi', '/cont']) {
       await page.goto(path, { waitUntil: 'networkidle' });
       const extra = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(extra, `${path} at ${width}px scrolls sideways`).toBeLessThanOrEqual(1);

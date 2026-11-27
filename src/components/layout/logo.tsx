@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BRAND_NAME, BRAND_WORDMARK } from '@/lib/brand';
 
 /** The pencil mark: yellow body, red eraser band, navy outline. */
 export function PencilMark({ size = 32 }: { size?: number }) {
@@ -16,12 +17,12 @@ export function PencilMark({ size = 32 }: { size?: number }) {
 
 export function Logo({ small = false }: { small?: boolean }) {
   return (
-    <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="WorksheetWiz, prima pagină">
+    <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label={`${BRAND_NAME}, prima pagină`}>
       <span className="transition-transform group-hover:-rotate-6">
         <PencilMark size={small ? 26 : 32} />
       </span>
       <span className={`font-display font-extrabold tracking-tight text-ink ${small ? 'text-lg' : 'text-[22px]'}`}>
-        Worksheet<span className="text-pen">Wiz</span>
+        {BRAND_WORDMARK[0]}<span className="text-pen">{BRAND_WORDMARK[1]}</span>
       </span>
     </Link>
   );

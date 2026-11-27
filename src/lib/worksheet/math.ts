@@ -1,7 +1,7 @@
 import type { DrawOp } from '@/lib/glyphs/types';
 import type { Tier, WorksheetConfig } from '@/types';
 import { hasIcon, iconOps } from '@/lib/hints/icons';
-import { madeWith } from '@/lib/brand';
+import { madeWith, BRAND_NAME } from '@/lib/brand';
 import { isItemAllowed } from '@/lib/access';
 import { textWidthMm } from '@/lib/book/text';
 import { ACCENT, INK, MUTED, PAPER, starPoints } from './rows';
@@ -623,7 +623,7 @@ function frame(ops: DrawOp[], config: WorksheetConfig, title: string, instructio
   const size = Math.max(4, Math.min(6.5, (6.5 * room) / Math.max(1, textWidthMm(title, 6.5) * 1.08)));
   ops.push({ t: 'text', x: M, y: M + 6.5, text: title, size, fill: INK, weight: 'bold' });
   ops.push({ t: 'text', x: M, y: M + 14.5, text: `Nume: ${config.childName?.trim() || '______________'}     Data: ____________`, size: 3.6, fill: '#334155' });
-  ops.push({ t: 'text', x: W - M, y: M + 6, text: 'WorksheetWiz', size: 3.2, fill: MUTED, weight: 'bold', align: 'right' });
+  ops.push({ t: 'text', x: W - M, y: M + 6, text: BRAND_NAME, size: 3.2, fill: MUTED, weight: 'bold', align: 'right' });
   ops.push({ t: 'line', x1: M, y1: M + 18.5, x2: W - M, y2: M + 18.5, stroke: ACCENT, strokeWidth: 0.6 });
   ops.push({ t: 'text', x: M, y: M + 28, text: instruction, size: 4.6, fill: INK, weight: 'bold' });
   return M + 34;

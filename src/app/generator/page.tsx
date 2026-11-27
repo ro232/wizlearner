@@ -14,7 +14,8 @@ import { pagini } from '@/components/worksheet/plural';
 import { track } from '@/lib/analytics';
 import { logDownload } from '@/lib/projects';
 import { PaywallModal } from '@/components/worksheet/paywall-modal';
-import { useWorksheetStore } from '@/stores/worksheet-store';
+import { hasStoredSheet, useWorksheetStore } from '@/stores/worksheet-store';
+import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
 import { generateWorksheetPDF, printWorksheetPDF } from '@/lib/pdf/actions';
 import { countWorksheetPages, hasContent } from '@/lib/worksheet/layout';
 import { configForSaving, defaultSheetName } from '@/lib/worksheet/saved';
@@ -30,6 +31,14 @@ import { itemConfig, parseItemParam } from '@/lib/catalog/item-link';
 import { HomeworkButton, type HomeworkRequest } from '@/components/homework/homework-dialog';
 import { nameRowIndex } from '@/lib/homework/pages';
 import { evaluationPageSplit, evaluationPrintHint } from '@/lib/worksheet/evaluation';
+
+/**
+ * The sheet a first visit starts with, instead of an empty page: three free letters, at the first
+ * level. Free content only, so it downloads without an account.
+ */
+const EXAMPLE_CONFIG: WorksheetConfig = { ...DEFAULT_CONFIG, selectedItems: ['A', 'B', 'C'] };
+/** Offered once per page load, also where the browser keeps nothing (private windows). */
+let exampleOffered = false;
 
 export default function GeneratorPage() {
   const [showPaywall, setShowPaywall] = useState(false);
@@ -110,6 +119,27 @@ export default function GeneratorPage() {
     if (useWorksheetStore.persist.hasHydrated()) apply();
     else return useWorksheetStore.persist.onFinishHydration(apply);
   }, []);
+
+  // A first visit starts with a filled example sheet. Only when nothing is kept in this browser
+  // (a sheet made earlier, even one emptied on purpose, is never replaced), nothing was handed over
+  // by another page and the address does not ask for a sheet (?fisa=, ?item=: the effect above).
+  const [example, setExample] = useState<WorksheetConfig | null>(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('fisa') || params.has('item')) return;
+    const apply = () => {
+      if (exampleOffered || hasStoredSheet()) return;
+      exampleOffered = true;
+      if (hasContent(useWorksheetStore.getState().config, 'full')) return;
+      useWorksheetStore.setState({ nameSlot: null, config: EXAMPLE_CONFIG });
+      // the store keeps its own (checked) copy: that is the one to compare with
+      setExample(useWorksheetStore.getState().config);
+    };
+    if (useWorksheetStore.persist.hasHydrated()) apply();
+    else return useWorksheetStore.persist.onFinishHydration(apply);
+  }, []);
+  // still the untouched example: the ready-made starts stay in view above it
+  const isExample = example !== null && config === example;
 
   // Ctrl/⌘+S downloads and Ctrl/⌘+P prints the sheet (not the web page around it).
   useEffect(() => {
@@ -261,7 +291,7 @@ export default function GeneratorPage() {
             className="order-1 lg:order-2 lg:w-[54%] lg:sticky lg:top-20 lg:self-start space-y-4 lg:space-y-3 scroll-mt-20 lg:[--sheet-fit:calc(100dvh-25rem)]"
           >
             <LockedNotice />
-            {empty ? <QuickStart /> : <SheetContentBar />}
+            {empty ? <QuickStart /> : isExample ? <QuickStart example /> : <SheetContentBar />}
             {/* phones: no big blank page while the sheet is empty, the choices come first */}
             <div ref={deskRef} className={`rounded-2xl overflow-hidden desk border-2 border-ink p-4 sm:p-8 lg:p-4 xl:p-5 justify-center ${empty ? 'hidden lg:flex' : 'flex'}`}>
               <WorksheetPreview config={config} tier={tier} />

@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { PencilMark } from '@/components/layout/logo';
+import { BRAND_NAME } from '@/lib/brand';
 
 export const metadata: Metadata = {
-  title: 'Pagina nu a fost găsită · WorksheetWiz',
+  title: `Pagina nu a fost găsită · ${BRAND_NAME}`,
   description: 'Pagina pe care o cauți nu există. Fă o fișă nouă sau alege una din fișele gratuite.',
   robots: { index: false, follow: true },
 };

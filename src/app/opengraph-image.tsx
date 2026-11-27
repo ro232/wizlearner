@@ -5,12 +5,13 @@ import { DEFAULT_CONFIG, type WorksheetConfig } from '@/types';
 import { buildWorksheetPages } from '@/lib/worksheet/layout';
 import { flattenOps } from '@/lib/glyphs/geometry';
 import { opToSvg } from '@/lib/glyphs/backends/svg';
+import { BRAND_NAME, BRAND_WORDMARK } from '@/lib/brand';
 
 /**
  * The picture shown when a link to the site is shared (WhatsApp, Facebook…): logo, one line of
  * text and a strip of a real sheet, drawn by the same engine as the PDFs. Built once, at build time.
  */
-export const alt = 'WorksheetWiz – fișe de lucru pe programă, de la grădiniță la clasa a IV-a';
+export const alt = `${BRAND_NAME} – fișe de lucru pe programă, de la grădiniță la clasa a IV-a`;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -53,8 +54,8 @@ export default async function OpengraphImage() {
               </g>
             </svg>
             <div style={{ display: 'flex', marginLeft: 14, fontFamily: 'Fraunces', fontSize: 54, letterSpacing: -1 }}>
-              <span>Worksheet</span>
-              <span style={{ color: PEN }}>Wiz</span>
+              <span>{BRAND_WORDMARK[0]}</span>
+              <span style={{ color: PEN }}>{BRAND_WORDMARK[1]}</span>
             </div>
           </div>
           <div style={{ display: 'flex', marginTop: 34, fontFamily: 'Fraunces', fontSize: 58, lineHeight: 1.08, letterSpacing: -1.5 }}>

@@ -1,3 +1,4 @@
+import { BRAND_NAME } from '@/lib/brand';
 /**
  * Who runs the site (Legea 365/2002 art. 5, OUG 34/2014 art. 6): shown in the footer and on the
  * legal pages. Each field comes from an environment variable; a field that is not set is simply
@@ -83,13 +84,13 @@ export function operatorDetails(op: Operator = OPERATOR): { label: string; value
  * without it, a neutral sentence — the page must never print „[Denumirea firmei]”.
  */
 export function operatorSentence(op: Operator = OPERATOR): string {
-  if (!op.name) return 'WorksheetWiz este un serviciu online de fișe de lucru pentru copii.';
+  if (!op.name) return `${BRAND_NAME} este un serviciu online de fișe de lucru pentru copii.`;
   const parts = [
     op.address && `cu sediul în ${op.address}`,
     op.regCom && `înregistrată la Registrul Comerțului sub nr. ${op.regCom}`,
     op.cui && `CUI ${op.cui}`,
   ].filter(Boolean);
-  return `WorksheetWiz este un serviciu al ${op.name}${parts.length ? `, ${parts.join(', ')}` : ''}.`;
+  return `${BRAND_NAME} este un serviciu al ${op.name}${parts.length ? `, ${parts.join(', ')}` : ''}.`;
 }
 
 let warned = false;

@@ -297,8 +297,8 @@ describe('free-sheet footer', () => {
 
   it('names the site only when its address is configured', () => {
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', '');
-    expect(madeWith('ro')).toBe('Creat cu WorksheetWiz');
-    expect(madeWith('en')).toBe('Made with WorksheetWiz');
+    expect(madeWith('ro')).toBe('Creat cu Liniatura');
+    expect(madeWith('en')).toBe('Made with Liniatura');
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://www.fise-exemplu.ro/');
     expect(madeWith('ro')).toBe('Creat cu fise-exemplu.ro');
     expect(madeWith('en')).toBe('Made with fise-exemplu.ro');
@@ -309,7 +309,7 @@ describe('free-sheet footer', () => {
   it('is what every kind of free sheet prints, and never a domain we do not own', () => {
     for (const url of ['', 'https://exemplu.ro']) {
       vi.stubEnv('NEXT_PUBLIC_SITE_URL', url);
-      const want = url ? 'Creat cu exemplu.ro' : 'Creat cu WorksheetWiz';
+      const want = url ? 'Creat cu exemplu.ro' : 'Creat cu Liniatura';
       const sheets = [
         { ...DEFAULT_CONFIG, alphabet: 'ro' as const, selectedItems: ['A'] },
         { ...DEFAULT_CONFIG, category: 'math' as const, selectedItems: ['add'] },
@@ -321,7 +321,7 @@ describe('free-sheet footer', () => {
           expect(texts, config.category).toContain(want);
           expect(texts.join(' ').toLowerCase()).not.toContain('worksheetwiz.com');
         }
-      expect(JSON.stringify(buildWorksheetPages({ ...DEFAULT_CONFIG, alphabet: 'en', selectedItems: ['A'] }, 'free'))).toContain(url ? 'Made with exemplu.ro' : 'Made with WorksheetWiz"');
+      expect(JSON.stringify(buildWorksheetPages({ ...DEFAULT_CONFIG, alphabet: 'en', selectedItems: ['A'] }, 'free'))).toContain(url ? 'Made with exemplu.ro' : 'Made with Liniatura"');
       expect(JSON.stringify(buildWorksheetPages(sheets[0], 'full'))).not.toContain('Creat cu');
     }
   });

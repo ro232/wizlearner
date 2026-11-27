@@ -5,6 +5,7 @@ import { ForeignLettersNote } from '@/components/worksheet/foreign-letters-note'
 import React, { useRef, useState } from 'react';
 import { useTypedBeforeHydration } from '@/hooks/use-typed-before-hydration';
 import { useWorksheetStore } from '@/stores/worksheet-store';
+import { useRoleStore } from '@/stores/role-store';
 import { CATEGORY_TABS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
 import { isItemAllowed } from '@/lib/access';
 import { isWordAllowed } from '@/lib/worksheet/layout';
@@ -76,6 +77,28 @@ function Slider({ label, value, min, max, onChange, left, right }: { label: stri
   );
 }
 
+type GroupId = 'continut' | 'nivel' | 'aspect' | 'avansat';
+
+/**
+ * One of the four groups of settings (Conținut, Nivel, Aspect, Avansat): a heading that opens and
+ * closes what is under it. A native <details>, so it works with the keyboard and before the
+ * page's scripts have loaded; its state is kept in React so the defaults can depend on the role.
+ */
+function SettingsGroup({ id, title, hint, open, onToggle, children }: { id: GroupId; title: string; hint: string; open: boolean; onToggle: (id: GroupId, open: boolean) => void; children: React.ReactNode }) {
+  return (
+    <details data-group={id} open={open} onToggle={(e) => onToggle(id, e.currentTarget.open)} className="group/set rounded-xl border-2 border-slate-200 open:border-slate-300">
+      <summary className="flex min-h-12 cursor-pointer select-none items-center justify-between gap-3 rounded-xl px-4 py-2 hover:bg-slate-50 focus-visible:outline-ink [&::-webkit-details-marker]:hidden list-none">
+        <span className="min-w-0">
+          <span className="text-base font-extrabold text-slate-900">{title}</span>
+          <span className="ml-2 text-xs text-slate-600 group-open/set:hidden">{hint}</span>
+        </span>
+        <ChevronDown className="w-4 h-4 shrink-0 text-slate-700 transition-transform group-open/set:rotate-180" aria-hidden />
+      </summary>
+      <div className="space-y-5 px-4 pb-4 pt-2">{children}</div>
+    </details>
+  );
+}
+
 export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   const {
     config, tier, setCategory, setAlphabet, setLetterMode, toggleItem, addItems, removeAllItems,
@@ -84,6 +107,13 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
     toggleArrows, toggleStartDots, toggleEmoji, toggleReward, toggleFullPage, toggleLeftHanded,
     toggleFillPage, setChildName, resetConfig, setCurriculumLevel,
   } = useWorksheetStore();
+
+  // The four groups of settings. „Avansat” starts closed; for a parent „Nivel” too (fewer decisions
+  // on the first screen). What the visitor opens or closes by hand wins over these defaults.
+  const parent = useRoleStore((s) => s.role) === 'parinte';
+  const [toggled, setToggled] = useState<Partial<Record<GroupId, boolean>>>({});
+  const isOpen = (id: GroupId) => toggled[id] ?? (id === 'avansat' ? false : id === 'nivel' ? !parent : true);
+  const toggleGroup = (id: GroupId, open: boolean) => setToggled((t) => (t[id] === open ? t : { ...t, [id]: open }));
 
   const [wordInput, setWordInput] = useState('');
   // the long groups of sets (citire, mediu, comunicare) show a few sets until „Arată toate” is pressed
@@ -142,10 +172,12 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   // The example in the box must be one the visitor can really trace: on the free plan that means
   // words made of A–E (with Ă, Â); „MAMA” there led straight to the plans window.
   const wordExample = tier === 'free' ? (alphabet === 'ro' ? 'ex. BEC, ac' : 'e.g. BED, cab') : alphabet === 'ro' ? 'ex. MAMA, toamna' : 'e.g. CAT';
+  // letters, numbers, shapes and patterns are traced; math and games draw their own pages
+  const traced = config.category !== 'games' && config.category !== 'math';
   const pickTitle = { letters: 'Alege literele', numbers: 'Alege cifrele', shapes: 'Alege formele', prewrite: 'Alege exercițiile', math: 'Matematică', games: 'Alege jocurile' }[config.category as 'letters'] ?? 'Alege';
 
   return (
-    <div className="w-full bg-white rounded-2xl shadow-lg p-5 sm:p-6 space-y-6">
+    <div className="w-full bg-white rounded-2xl shadow-lg p-5 sm:p-6 space-y-4">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-xl font-bold text-slate-900">Fișa ta</h2>
         <Button variant="outline" size="sm" onClick={resetConfig} className="h-9 gap-1.5 text-xs" title="Pornește de la zero">
@@ -153,6 +185,8 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
         </Button>
       </div>
 
+      {/* Conținut: what is on the sheet */}
+      <SettingsGroup id="continut" title="Conținut" hint="ce exersăm, numele copilului" open={isOpen('continut')} onToggle={toggleGroup}>
       {/* 1. What we practise */}
       <div>
         <SectionLabel>Ce exersăm</SectionLabel>
@@ -503,105 +537,114 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
         </div>
       </div>
 
-      {/* 4. Level (not used by the games) */}
-      <div className={config.category === 'games' || config.category === 'math' ? 'hidden' : undefined}>
-        <SectionLabel>Nivel</SectionLabel>
-        <div className="grid grid-cols-3 gap-2">
-          {([
-            ['beginner', '🌱', 'Început', 'cu mult ajutor'],
-            ['intermediate', '🌿', 'Mijlociu', 'ajutor parțial'],
-            ['advanced', '🌳', 'Avansat', 'mai mult singur'],
-          ] as const).map(([d, icon, label, sub]) => (
-            <Choice key={d} active={config.difficulty === d} onClick={() => setDifficulty(d)}>
-              <div className="text-lg" aria-hidden>{icon}</div>
-              <div className="text-xs font-semibold">{label}</div>
-              <div className="text-[10px] text-slate-500">{sub}</div>
-            </Choice>
-          ))}
-        </div>
-      </div>
+      </SettingsGroup>
 
-      {/* 4b. How the letters to trace look (shown, not named) */}
-      <div className={config.category === 'games' || config.category === 'math' ? 'hidden' : undefined}>
-        <SectionLabel>Cum arată literele de trasat</SectionLabel>
-        <TraceStylePicker />
-      </div>
-
-      {/* 5. Everything else */}
-      <details className="group rounded-xl border border-slate-200">
-        <summary className="flex items-center justify-between cursor-pointer select-none px-4 py-3 text-sm font-semibold text-slate-700">
-          Mai multe opțiuni
-          <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" aria-hidden />
-        </summary>
-        <div className="px-4 pb-4 space-y-5">
-          <div>
-            <SectionLabel>Competența din programă</SectionLabel>
-            <label htmlFor="curriculum-level" className="sr-only">Clasa pentru care se tipărește competența</label>
-            <select id="curriculum-level" value={config.curriculumLevel ?? ''}
-              onChange={(e) => setCurriculumLevel((e.target.value || null) as typeof config.curriculumLevel | null)}
-              className="w-full min-h-11 px-3 border border-slate-300 rounded-xl bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Nu o tipări</option>
-              {SCHOOL_LEVELS.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
-            </select>
-            {config.curriculumLevel && (
-              <p className="mt-1.5 text-xs text-slate-600" data-competence-label>
-                {sheetCompetenceLabel(config, config.curriculumLevel) ?? 'Fișa aceasta nu se potrivește cu o competență din programa clasei alese, așa că nu tipărim niciun cod.'}
-              </p>
-            )}
-            {!config.curriculumLevel && <p className="mt-1.5 text-xs text-slate-500">Alegi clasa, iar codul competenței se tipărește jos, pe fiecare pagină: util pentru portofoliu și planificare.</p>}
-            <a href="/programa" className="mt-1 inline-block text-xs font-bold text-blue-700 underline">Toate competențele clasei, cu fișele lor</a>
-            <a href="/planificare" className="mt-1 block text-xs font-bold text-blue-700 underline">Planificarea calendaristică 2026–2027</a>
-          </div>
-          <div>
-            <SectionLabel>Mărimea literelor</SectionLabel>
-            <div className="grid grid-cols-3 gap-2">
-              {([['small', 'Mici', 14], ['medium', 'Medii', 18], ['large', 'Mari', 22]] as const).map(([v, l, px]) => (
-                <Choice key={v} active={config.letterSize === v} onClick={() => setLetterSize(v)}>
-                  <div className="font-bold" style={{ fontSize: px }}>A</div>
-                  <div className="text-[11px]">{l}</div>
-                </Choice>
-              ))}
-            </div>
-          </div>
-          <Slider label="Rânduri pe pagină" value={config.rowsPerPage} min={3} max={8} onChange={setRowsPerPage} left="3" right="8" />
-          <Slider label="Rânduri pentru fiecare" value={config.repetitionsPerItem} min={1} max={5} onChange={setRepetitionsPerItem} left="1" right="5" />
-          <Slider label="Cât de vizibil e modelul" value={config.tracingVisibility} min={1} max={10} onChange={setVisibility} left="abia se vede" right="foarte clar" />
-          <div>
-            <SectionLabel>Fundal</SectionLabel>
-            <div className="grid grid-cols-3 gap-2">
-              {([['guides', 'Liniatură'], ['dictando', 'Dictando'], ['patratele', 'Pătrățele'], ['lines', 'Linii'], ['grid', 'Grilă'], ['blank', 'Alb']] as const).map(([v, l]) => (
-                <Choice key={v} active={config.backgroundPattern === v} onClick={() => setBackgroundPattern(v)}><span className="text-xs">{l}</span></Choice>
-              ))}
-            </div>
-          </div>
-          <div>
-            <SectionLabel>Culoarea liniilor</SectionLabel>
-            <div className="flex gap-3">
-              {([['blue', '#29B6E8', 'albastru'], ['gray', '#9CA3AF', 'gri'], ['green', '#10B981', 'verde'], ['orange', '#F97316', 'portocaliu'], ['purple', '#A855F7', 'mov']] as const).map(([c, hex, name]) => (
-                <button key={c} type="button" onClick={() => setGuideColor(c)} aria-label={`Linii ${name}`} aria-pressed={config.guideColor === c}
-                  className={`w-8 h-8 rounded-full border-2 transition-all ${config.guideColor === c ? 'border-slate-900 scale-110' : 'border-slate-300'}`} style={{ backgroundColor: hex }} />
-              ))}
-            </div>
-          </div>
-          <div className="space-y-1 pt-3 border-t border-slate-200">
+      {/* Nivel: how much help the child gets, and the class */}
+      <SettingsGroup id="nivel" title="Nivel" hint="cât ajutor primește copilul, clasa" open={isOpen('nivel')} onToggle={toggleGroup}>
+        {/* (the level is not used by the games) */}
+        <div className={traced ? undefined : 'hidden'}>
+          <SectionLabel>Cât ajutor primește</SectionLabel>
+          <div className="grid grid-cols-3 gap-2">
             {([
-              ['Imagini lângă litere', config.showLetterIcons, toggleEmoji],
-              ['Săgeți de direcție', config.showDirectionalArrows, toggleArrows],
-              ['Puncte de start numerotate', config.showStartDots !== false, toggleStartDots],
-              ['Liniatură', config.showGuideLines, toggleGuideLines],
-              ['Umple pagina cu repetiții', config.fillPage !== false, toggleFillPage],
-              [config.evaluation ? 'Rândul de autoevaluare' : 'Stelele de recompensă', config.showRewardSection, toggleReward],
-              ['Fără antet (doar rânduri)', config.fullPageMode, toggleFullPage],
-              ['Pentru stângaci', config.leftHandedMode, toggleLeftHanded],
-            ] as [string, boolean, () => void][]).map(([label, checked, onChange]) => (
-              <label key={label} className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition-colors">
-                <input type="checkbox" checked={checked} onChange={onChange} className="w-4 h-4 rounded border-slate-300 cursor-pointer" />
-                <span className="text-sm text-slate-700">{label}</span>
-              </label>
+              ['beginner', '🌱', 'Început', 'cu mult ajutor'],
+              ['intermediate', '🌿', 'Mijlociu', 'ajutor parțial'],
+              ['advanced', '🌳', 'Avansat', 'mai mult singur'],
+            ] as const).map(([d, icon, label, sub]) => (
+              <Choice key={d} active={config.difficulty === d} onClick={() => setDifficulty(d)}>
+                <div className="text-lg" aria-hidden>{icon}</div>
+                <div className="text-xs font-semibold">{label}</div>
+                <div className="text-[10px] text-slate-500">{sub}</div>
+              </Choice>
             ))}
           </div>
         </div>
-      </details>
+        <div>
+          {/* a parent chooses the child's class; the school words (the competence, the programme) are for teachers */}
+          <SectionLabel>{parent ? 'Clasa copilului' : 'Competența din programă'}</SectionLabel>
+          <label htmlFor="curriculum-level" className="sr-only">{parent ? 'Clasa pentru care este fișa' : 'Clasa pentru care se tipărește competența'}</label>
+          <select id="curriculum-level" value={config.curriculumLevel ?? ''}
+            onChange={(e) => setCurriculumLevel((e.target.value || null) as typeof config.curriculumLevel | null)}
+            className="w-full min-h-11 px-3 border border-slate-300 rounded-xl bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">{parent ? 'Nu o tipări pe fișă' : 'Nu o tipări'}</option>
+            {SCHOOL_LEVELS.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
+          </select>
+          {parent ? (
+            <p className="mt-1.5 text-xs text-slate-500">Alegi clasa, iar jos, pe fiecare pagină, se tipărește ce se exersează la școală cu fișa aceasta.</p>
+          ) : (
+            <>
+              {config.curriculumLevel && (
+                <p className="mt-1.5 text-xs text-slate-600" data-competence-label>
+                  {sheetCompetenceLabel(config, config.curriculumLevel) ?? 'Fișa aceasta nu se potrivește cu o competență din programa clasei alese, așa că nu tipărim niciun cod.'}
+                </p>
+              )}
+              {!config.curriculumLevel && <p className="mt-1.5 text-xs text-slate-500">Alegi clasa, iar codul competenței se tipărește jos, pe fiecare pagină: util pentru portofoliu și planificare.</p>}
+              <a href="/programa" className="mt-1 inline-block text-xs font-bold text-blue-700 underline">Toate competențele clasei, cu fișele lor</a>
+              <a href="/planificare" className="mt-1 block text-xs font-bold text-blue-700 underline">Planificarea calendaristică 2026–2027</a>
+            </>
+          )}
+        </div>
+      </SettingsGroup>
+
+      {/* Aspect: how the page and the letters look */}
+      <SettingsGroup id="aspect" title="Aspect" hint="literele de trasat, mărimea, fundalul" open={isOpen('aspect')} onToggle={toggleGroup}>
+        {/* how the letters to trace look (shown, not named) */}
+        <div className={traced ? undefined : 'hidden'}>
+          <SectionLabel>Cum arată literele de trasat</SectionLabel>
+          <TraceStylePicker />
+        </div>
+        <div>
+          <SectionLabel>Mărimea literelor</SectionLabel>
+          <div className="grid grid-cols-3 gap-2">
+            {([['small', 'Mici', 14], ['medium', 'Medii', 18], ['large', 'Mari', 22]] as const).map(([v, l, px]) => (
+              <Choice key={v} active={config.letterSize === v} onClick={() => setLetterSize(v)}>
+                <div className="font-bold" style={{ fontSize: px }}>A</div>
+                <div className="text-[11px]">{l}</div>
+              </Choice>
+            ))}
+          </div>
+        </div>
+        <Slider label="Cât de vizibil e modelul" value={config.tracingVisibility} min={1} max={10} onChange={setVisibility} left="abia se vede" right="foarte clar" />
+        <div>
+          <SectionLabel>Fundal</SectionLabel>
+          <div className="grid grid-cols-3 gap-2">
+            {([['guides', 'Liniatură'], ['dictando', 'Dictando'], ['patratele', 'Pătrățele'], ['lines', 'Linii'], ['grid', 'Grilă'], ['blank', 'Alb']] as const).map(([v, l]) => (
+              <Choice key={v} active={config.backgroundPattern === v} onClick={() => setBackgroundPattern(v)}><span className="text-xs">{l}</span></Choice>
+            ))}
+          </div>
+        </div>
+        <div>
+          <SectionLabel>Culoarea liniilor</SectionLabel>
+          <div className="flex gap-3">
+            {([['blue', '#29B6E8', 'albastru'], ['gray', '#9CA3AF', 'gri'], ['green', '#10B981', 'verde'], ['orange', '#F97316', 'portocaliu'], ['purple', '#A855F7', 'mov']] as const).map(([c, hex, name]) => (
+              <button key={c} type="button" onClick={() => setGuideColor(c)} aria-label={`Linii ${name}`} aria-pressed={config.guideColor === c}
+                className={`w-8 h-8 rounded-full border-2 transition-all ${config.guideColor === c ? 'border-slate-900 scale-110' : 'border-slate-300'}`} style={{ backgroundColor: hex }} />
+            ))}
+          </div>
+        </div>
+      </SettingsGroup>
+
+      {/* Avansat: rows, repetitions and the switches; closed until asked for */}
+      <SettingsGroup id="avansat" title="Avansat" hint="rânduri, săgeți, antet, stângaci" open={isOpen('avansat')} onToggle={toggleGroup}>
+        <Slider label="Rânduri pe pagină" value={config.rowsPerPage} min={3} max={8} onChange={setRowsPerPage} left="3" right="8" />
+        <Slider label="Rânduri pentru fiecare" value={config.repetitionsPerItem} min={1} max={5} onChange={setRepetitionsPerItem} left="1" right="5" />
+        <div className="space-y-1 pt-3 border-t border-slate-200">
+          {([
+            ['Imagini lângă litere', config.showLetterIcons, toggleEmoji],
+            ['Săgeți de direcție', config.showDirectionalArrows, toggleArrows],
+            ['Puncte de start numerotate', config.showStartDots !== false, toggleStartDots],
+            ['Liniatură', config.showGuideLines, toggleGuideLines],
+            ['Umple pagina cu repetiții', config.fillPage !== false, toggleFillPage],
+            [config.evaluation ? 'Rândul de autoevaluare' : 'Stelele de recompensă', config.showRewardSection, toggleReward],
+            ['Fără antet (doar rânduri)', config.fullPageMode, toggleFullPage],
+            ['Pentru stângaci', config.leftHandedMode, toggleLeftHanded],
+          ] as [string, boolean, () => void][]).map(([label, checked, onChange]) => (
+            <label key={label} className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition-colors">
+              <input type="checkbox" checked={checked} onChange={onChange} className="w-4 h-4 rounded border-slate-300 cursor-pointer" />
+              <span className="text-sm text-slate-700">{label}</span>
+            </label>
+          ))}
+        </div>
+      </SettingsGroup>
     </div>
   );
 }

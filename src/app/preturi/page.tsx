@@ -7,8 +7,9 @@ import { SubscribeButton } from '@/components/billing/subscribe-button';
 import { CheckoutCancelTracker } from '@/components/billing/checkout-return';
 import { PLANS, billingConfigured, planPriceId, warnIfBillingHalfConfigured } from '@/lib/billing/plans';
 import { stripe } from '@/lib/stripe';
+import { BRAND_NAME } from '@/lib/brand';
 
-export const metadata: Metadata = { title: 'Prețuri · WorksheetWiz' };
+export const metadata: Metadata = { title: `Prețuri · ${BRAND_NAME}` };
 export const revalidate = 3600; // prices come from Stripe; refresh hourly
 
 const FREE = [

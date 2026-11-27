@@ -32,7 +32,7 @@ const NUNITO_WOFF2 = "/fonts/nunito-v3602-latin-ext-wght.woff2";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  // No title template for now: /preturi/page.tsx writes „Prețuri · WorksheetWiz” in full and a template would
+  // No title template for now: /preturi/page.tsx writes „Prețuri · <brand>” in full and a template would
   // add the site name twice. Pages build their complete title with pageMetadata().
   title: DEFAULT_TITLE,
   description: DEFAULT_DESCRIPTION,

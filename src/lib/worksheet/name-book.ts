@@ -4,6 +4,7 @@ import { cursiveWord } from '@/lib/glyphs/cursive';
 import { lettersOfWord, normalizeKey } from '@/lib/glyphs/data';
 import { buildWorksheetPages, glyphsForWord, wordInCase } from './layout';
 import { INK, ACCENT, PAPER, MUTED, itemOps, itemWidth, starPoints } from './rows';
+import { BRAND_NAME } from '@/lib/brand';
 
 /**
  * "Caietul cu numele lui": a small personalised workbook for one child.
@@ -57,7 +58,7 @@ function titlePage(name: string, script: Script): PageOps {
   bigWord(ops, wordInCase(name, 'paired'), W / 2, script === 'cursive' ? 92 : 100, W - 60, script === 'cursive' ? 56 : 42, 'outline', script);
   for (let i = 0; i < 5; i++) ops.push({ t: 'polygon', points: starPoints(W / 2 - 40 + i * 20, 200, i === 2 ? 7 : 5), stroke: '#D97706', strokeWidth: 0.6, fill: '#FDE68A' });
   ops.push({ t: 'text', x: W / 2, y: 230, text: 'Colorează literele numelui tău!', size: 4.6, fill: INK, weight: 'bold', align: 'center' });
-  ops.push({ t: 'text', x: W / 2, y: H - 26, text: 'WorksheetWiz', size: 3.2, fill: MUTED, weight: 'bold', align: 'center' });
+  ops.push({ t: 'text', x: W / 2, y: H - 26, text: BRAND_NAME, size: 3.2, fill: MUTED, weight: 'bold', align: 'center' });
   return { width: W, height: H, ops };
 }
 

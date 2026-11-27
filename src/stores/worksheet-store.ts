@@ -90,6 +90,16 @@ const safeStorage: StateStorage = {
   },
 };
 
+const STORAGE_KEY = 'wizlearner-last-sheet';
+
+/**
+ * Is there a sheet kept in this browser (even an emptied one)? The generator shows its example
+ * sheet only to someone who has none: what a person made, or cleared on purpose, is never replaced.
+ */
+export function hasStoredSheet(): boolean {
+  return safeStorage.getItem(STORAGE_KEY) !== null;
+}
+
 export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   config: { ...DEFAULT_CONFIG },
   tier: OPEN_ACCESS ? 'full' : 'free',
@@ -244,7 +254,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   setTier: (tier) => set({ tier: OPEN_ACCESS ? 'full' : tier }),
   setLanguage: (language) => set({ language }),
 }), {
-  name: 'wizlearner-last-sheet',
+  name: STORAGE_KEY,
   version: 2,
   storage: createJSONStorage(() => safeStorage),
   // Only the sheet is remembered, in this browser. The plan comes from the account, never from storage.

@@ -2,7 +2,7 @@ import type { WorksheetConfig, Tier } from '@/types';
 import { sheetCompetenceLabel } from '@/lib/curriculum/sheet';
 import type { DrawOp, Glyph, PageOps } from '@/lib/glyphs/types';
 import { getGlyph, hintFor, normalizeKey, traceLetters, type Alphabet } from '@/lib/glyphs/data';
-import { madeWith } from '@/lib/brand';
+import { madeWith, BRAND_NAME } from '@/lib/brand';
 import { isProperNoun } from '@/lib/themes';
 import { cursiveGlyph, cursiveWord } from '@/lib/glyphs/cursive';
 import type { TraceVariant } from '@/lib/glyphs/render';
@@ -378,7 +378,7 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
       if (config.dateField) fields.push(`${L.date}: ____________`);
       if (config.schoolName?.trim()) fields.push(`${L.school}: ${config.schoolName.trim()}`);
       ops.push({ t: 'text', x: margin, y: margin + 14.5, text: fields.join('     '), size: 3.6, fill: '#334155' });
-      ops.push({ t: 'text', x: W - margin, y: margin + 6, text: 'WorksheetWiz', size: 3.2, fill: MUTED, weight: 'bold', align: 'right' });
+      ops.push({ t: 'text', x: W - margin, y: margin + 6, text: BRAND_NAME, size: 3.2, fill: MUTED, weight: 'bold', align: 'right' });
       ops.push({ t: 'line', x1: margin, y1: margin + 18.5, x2: W - margin, y2: margin + 18.5, stroke: ACCENT, strokeWidth: 0.6 });
     }
 

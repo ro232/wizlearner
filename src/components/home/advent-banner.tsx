@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CalendarDays } from 'lucide-react';
-import { adventBannerVisible } from '@/lib/worksheet/advent';
+import { adventBannerVisible } from '@/lib/advent-season';
 
 /**
  * SEASONAL (Advent 2026): the home page card that points to /advent. It hides itself from
@@ -16,7 +16,7 @@ export function AdventBanner() {
   if (!visible) return null;
   return (
     <section className="px-4 sm:px-6 pt-10" aria-label="Calendarul de Advent">
-      <Link href="/advent" className="group max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border-2 border-ink bg-white p-5 sm:p-6 shadow-md hover:bg-paper">
+      <Link href="/advent" prefetch={false} className="group max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border-2 border-ink bg-white p-5 sm:p-6 shadow-md hover:bg-paper">
         <span className="shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-xl bg-pencil border-2 border-ink" aria-hidden>
           <CalendarDays className="w-6 h-6 text-ink" />
         </span>
