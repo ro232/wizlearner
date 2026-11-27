@@ -684,11 +684,11 @@ describe('the competences', () => {
     }
   });
 
-  it('„Avem fișe pentru X din Y”: grădiniță 13 din 23, CP 25 din 32, I 26 din 33, II 26 din 33', () => {
+  it('„Avem fișe pentru X din Y”: grădiniță 16 din 23, CP 25 din 32, I 26 din 33, II 26 din 33', () => {
     const at = (slug: string) => {
       const items = headlineItems(CLASS_PAGES.find((c) => c.slug === slug)!);
       return [items.filter((i) => i.presets.length).length, items.length];
     };
-    expect(['gradinita', 'clasa-pregatitoare', 'clasa-1', 'clasa-2'].map(at)).toEqual([[13, 23], [25, 32], [26, 33], [26, 33]]);
+    expect(['gradinita', 'clasa-pregatitoare', 'clasa-1', 'clasa-2'].map(at)).toEqual([[16, 23], [25, 32], [26, 33], [26, 33]]);
   });
 });

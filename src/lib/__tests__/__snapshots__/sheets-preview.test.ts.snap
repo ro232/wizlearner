@@ -13,6 +13,20 @@ exports[`how every kind of sheet looks > arte-vizuale 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > asculta-si-raspunde 1`] = `
+[
+  "5d8fe6f8e999cd96",
+  "8cc7d502720945bd",
+  "0754dceeb98975e7",
+  "43cba15cc77d2c1a",
+  "2a238fb015e690f8",
+  "e2afc8eafe70d36b",
+  "819a235478c3e73a",
+  "7b5c7a09a5fd520e",
+  "fc3e8f5115d1c146",
+]
+`;
+
 exports[`how every kind of sheet looks > bani-5 1`] = `
 [
   "cb996012625a7e44",
@@ -212,6 +226,39 @@ exports[`how every kind of sheet looks > citire-mana 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > citire-noi-1 1`] = `
+[
+  "3fa3b83dad142194",
+  "4916af7d8ca8b3bb",
+  "362e02def17e9a4f",
+  "4fb17d54f9ebfa0e",
+  "0491f4eba699ee78",
+  "bfecfa0350b384e1",
+  "c6772408fa001130",
+]
+`;
+
+exports[`how every kind of sheet looks > citire-noi-2 1`] = `
+[
+  "333942605f9334e9",
+  "7ddf84d18fffedf1",
+  "fa933bcfa9e58585",
+  "ac2a764d7cff3398",
+  "84931c63fd4f248a",
+  "53840c30bd7fe3c7",
+]
+`;
+
+exports[`how every kind of sheet looks > citire-noi-cp 1`] = `
+[
+  "e3519b7d65ba45e6",
+  "f341969542beb0b6",
+  "31905b29f31216a6",
+  "2dae5807292b45f4",
+  "8d0f70b203af4df3",
+]
+`;
+
 exports[`how every kind of sheet looks > comunicare-2 1`] = `
 [
   "0259859dfcc1e02e",
@@ -231,6 +278,21 @@ exports[`how every kind of sheet looks > comunicare-cp 1`] = `
   "650a796d18c85a55",
   "954c49f3f22c53d0",
   "0725671da0a11614",
+]
+`;
+
+exports[`how every kind of sheet looks > comunicare-noi 1`] = `
+[
+  "e819df7895428124",
+  "efcc63001e386086",
+  "a2df0c3acd46f935",
+  "6c24cecddc9b82e0",
+  "231324040c258268",
+  "c1b9033f4736b8fb",
+  "fe27512bba6098e5",
+  "a9d2141c177bddf4",
+  "a84ad5c1f452519c",
+  "77c6fa6b7210e415",
 ]
 `;
 
@@ -385,6 +447,50 @@ exports[`how every kind of sheet looks > evaluare-romana-34-IV 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > explorare-noi-presc 1`] = `
+[
+  "9e89728ee98bc84c",
+  "44a5e320b15142ff",
+  "1de5430f1418bf27",
+  "8d585c009043e7f6",
+  "2913645b6c6cc6c2",
+  "0de588c842a32584",
+  "7aef1ed711882144",
+  "28cd48f32b20e7c9",
+  "b3f3de8c025ed0cf",
+  "4645c93e3b566dda",
+  "5672cdeec099f0d2",
+  "b3cfdb5e116f3214",
+  "362538a19afc841f",
+  "908c8362100ad958",
+  "fcc69ffc729b06ef",
+  "60796412ebfaa884",
+]
+`;
+
+exports[`how every kind of sheet looks > explorare-noi-scoala 1`] = `
+[
+  "58a920f7f0ff186c",
+  "4c78ca1f825c6de4",
+  "9cb5011e63d86183",
+  "dda469035795db66",
+  "70fb39fd6c54a120",
+  "e0ae1956b0db97ae",
+  "9903c627368338c9",
+  "84e5c8611f64dc3a",
+  "09b4baa8ce89aeb6",
+  "2efb8856721d7750",
+  "371808fd4a2c1190",
+  "b3c345e2f5cefa62",
+  "32daadb3f385444f",
+  "237bb0d782f8bd8c",
+  "f0b311ddba6a1781",
+  "aba43bca04013ebe",
+  "0794dc97c99df9cc",
+  "03836bdc0583230f",
+]
+`;
+
 exports[`how every kind of sheet looks > explorare-presc 1`] = `
 [
   "1e6a2030f10cecb7",
@@ -407,6 +513,16 @@ exports[`how every kind of sheet looks > explorare-scoala 1`] = `
   "0c1b61df6a0f87f6",
   "57cf21683a3c511d",
   "72bc62b268cf805f",
+]
+`;
+
+exports[`how every kind of sheet looks > fisa-cartii 1`] = `
+[
+  "c019a7e24e622808",
+  "0d3f9ad2cc160475",
+  "0b1e88d20dfbe1ac",
+  "71ab5b6cf530c898",
+  "6f34ce6d3e452b8b",
 ]
 `;
 

@@ -103,6 +103,10 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'ce-iei-cu-tine', title: 'Ce iei cu tine?', text: 'Dacă plouă, iei umbrela: unește vremea cu ce îți trebuie.', config: { category: 'games', selectedItems: ['wear:1'] }, levels: ['presc', 'CP'] },
   { id: 'apa-solida-lichida', title: 'Apa: solidă sau lichidă?', text: 'Gheață, zăpadă, ploaie, valuri: încercuiește cum este apa.', config: { category: 'games', selectedItems: ['water:1'] }, levels: ['I'] },
   { id: 'ce-se-intampla-cu-apa', title: 'Ce se întâmplă cu apa?', text: 'Se topește, îngheață, fierbe sau se evaporă: citește și încercuiește.', config: { category: 'games', selectedItems: ['melt:1'] }, levels: ['I'] },
+  // „Explorarea mediului”, the kinds added later: only the three that cover a behaviour no other sheet covers (the others are in the generator)
+  { id: 'calendarul-vremii', title: 'Calendarul vremii', text: 'O săptămână de observații: în fiecare zi, copilul desenează semnul vremii, apoi numără zilele cu soare, cu ploaie, cu vânt.', config: { category: 'games', selectedItems: ['obs:1'] }, levels: ['presc'] },
+  { id: 'pamant-soare-luna', title: 'Pământul, Soarele și Luna', text: 'Soarele este fierbinte, Pământul are forma unei mingi: copilul ascultă propoziția, încercuiește cuvântul potrivit și o spune întreagă.', config: { category: 'games', selectedItems: ['space:1'] }, levels: ['presc'] },
+  { id: 'ce-este-viu', title: 'Ce este viu?', text: 'Copilul, câinele, copacul, peștele: încercuiește tot ce este viu, printre obiecte.', config: { category: 'games', selectedItems: ['alive:1'] }, levels: ['presc'] },
   // The sheets that fill the gaps of the programme (clr-pages.ts, mem-pages.ts): the free set of each class
   { id: 'povestea-in-imagini', title: 'Povestea în imagini', text: 'Patru imagini de pus în ordine, titlul potrivit de încercuit, sfârșitul de desenat.', config: { category: 'games', selectedItems: ['story:1'] }, levels: ['CP'] },
   {

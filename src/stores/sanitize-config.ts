@@ -32,7 +32,7 @@ const SORTING_ITEM = /^(sort|odd|group|pos):[1-6]$/;
 const READING_ITEM = /^read:((match|draw|fill|order):([1-9]|1[0-6])|(gap|copy):([1-9]|1\d|2[0-4])|text:([1-9]|1\d|20))$/;
 // the fun preschool sheets (fun.ts: isFunItem) and „Explorarea mediului” (explore.ts: isExploreItem)
 const FUN_ITEM = /^(color|colsum|maze|diff|trace|shadow):[1-6]$/;
-const EXPLORE_ITEM = /^((plant|body|senses|habitat|move|weather|wear|water|melt):1|(home|baby):[12]|season:[1-5])$/;
+const EXPLORE_ITEM = /^((plant|body|senses|home|habitat|move|baby|weather|wear|melt|cycle|cover|eat|tame|alive|food|mat|recycle|day|obs):[1-3]|(water|space):[1-4]|season:[1-7])$/;
 // Arte vizuale, Dezvoltare personală, limba engleză (subjects.ts: isSubjectItem)
 const SUBJECT_ITEM = /^((sym|model|en):[1-3]|(cut|lines|feel):[12]|(me|hyg|habit|job|jobuse|rules):1)$/;
 // the sheets that fill the gaps of the programme (clr.ts: isClrItem, mem.ts: isMemItem)

@@ -45,6 +45,15 @@ sheet('fun-labirint-diferente', { category: 'games', selectedItems: ['maze:1', '
 sheet('fun-linii-umbre', { category: 'games', selectedItems: ['trace:3', 'trace:6', 'shadow:1', 'shadow:6'], curriculumLevel: 'presc' });
 sheet('explorare-presc', { category: 'games', selectedItems: ['plant:1', 'body:1', 'home:1', 'move:1', 'baby:1', 'season:1', 'season:5', 'weather:1', 'wear:1'], curriculumLevel: 'presc', mathAnswers: true });
 sheet('explorare-scoala', { category: 'games', selectedItems: ['senses:1', 'habitat:1', 'water:1', 'melt:1'], curriculumLevel: 'I', mathAnswers: true });
+// the sets and kinds added later: reading, „Ascultă și răspunde” (with the adult's page), „Fișa cărții”, the environment
+sheet('citire-noi-cp', { category: 'games', selectedItems: ['read:match:7', 'read:gap:12', 'read:draw:11', 'read:copy:9'], curriculumLevel: 'CP', mathAnswers: true });
+sheet('citire-noi-1', { category: 'games', selectedItems: ['read:match:16', 'read:fill:7', 'read:order:11', 'read:copy:18', 'read:text:7', 'read:text:13'], curriculumLevel: 'I', mathAnswers: true });
+sheet('citire-noi-2', { category: 'games', selectedItems: ['read:gap:24', 'read:fill:16', 'read:order:12', 'read:text:14', 'read:text:20'], curriculumLevel: 'II', mathAnswers: true });
+sheet('comunicare-noi', { category: 'games', selectedItems: ['story:5', 'story:12', 'sign:4', 'sign:7', 'sign:9', 'note:4', 'note:10', 'msg:4', 'msg:9'], curriculumLevel: 'II', mathAnswers: true });
+sheet('asculta-si-raspunde', { category: 'games', selectedItems: ['listen:1', 'listen:7', 'listen:13', 'listen:18'], curriculumLevel: 'CP', mathAnswers: true });
+sheet('fisa-cartii', { category: 'games', selectedItems: ['book:1', 'book:2', 'book:3', 'book:4', 'book:6'], curriculumLevel: 'I' });
+sheet('explorare-noi-presc', { category: 'games', selectedItems: ['plant:2', 'body:2', 'senses:2', 'water:2', 'cycle:1', 'cycle:3', 'eat:2', 'alive:1', 'mat:3', 'day:1', 'space:1', 'space:2', 'obs:1', 'obs:3'], curriculumLevel: 'presc', mathAnswers: true });
+sheet('explorare-noi-scoala', { category: 'games', selectedItems: ['body:3', 'habitat:3', 'weather:3', 'wear:3', 'water:4', 'melt:3', 'cover:2', 'tame:1', 'food:3', 'recycle:2', 'recycle:3', 'day:3', 'space:3', 'space:4', 'obs:2'], curriculumLevel: 'II', mathAnswers: true });
 // Arte vizuale și abilități practice, Dezvoltare personală, limba engleză (subjects-pages.ts), with their answers
 sheet('arte-vizuale', { category: 'games', selectedItems: ['sym:1', 'sym:3', 'model:3', 'cut:1', 'cut:2', 'lines:1', 'lines:2'], curriculumLevel: 'CP', mathAnswers: true });
 sheet('dezvoltare-personala', { category: 'games', selectedItems: ['feel:1', 'feel:2', 'me:1', 'hyg:1', 'habit:1', 'job:1', 'jobuse:1', 'rules:1'], curriculumLevel: 'I', childName: 'Ioana', mathAnswers: true });
