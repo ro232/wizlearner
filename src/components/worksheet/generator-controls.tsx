@@ -10,7 +10,8 @@ import { isItemAllowed } from '@/lib/access';
 import { isWordAllowed } from '@/lib/worksheet/layout';
 import { uppercaseLetters, lowercaseLetters, pairedLetters, hintFor } from '@/lib/glyphs/data';
 import { PATTERN_IDS, PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
-import { COUNT_RANGES, DOT_SHAPES, DOT_SHAPE_LABELS } from '@/lib/worksheet/activities';
+import { COUNT_RANGES, DOT_SHAPES, DOT_SHAPE_LABELS, activityLabel } from '@/lib/worksheet/activities';
+import { fold } from '@/lib/catalog/search';
 import { PHONO_KIND_TITLES, phonologyItems } from '@/lib/worksheet/phonology-pages';
 import { SORTING_KIND_TITLES, sortingItems, sortingShortLabel } from '@/lib/worksheet/sorting-pages';
 import { READ_KIND_TITLES, readingItems, readingShortLabel } from '@/lib/worksheet/reading-pages';
@@ -87,6 +88,9 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
   const [wordInput, setWordInput] = useState('');
   // the long groups of sets (citire, mediu, comunicare) show a few sets until „Arată toate” is pressed
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  // „Jocuri”: what is typed above the groups keeps only the sets whose name fits (diacritics do not matter)
+  const [setFilter, setSetFilter] = useState('');
+  const wanted = fold(setFilter).trim();
   const wordRef = useRef<HTMLInputElement>(null);
   useTypedBeforeHydration(wordRef, setWordInput);
   const alphabet = config.alphabet ?? 'ro';
@@ -209,6 +213,11 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
           <MathPicker onShowPaywall={onShowPaywall} />
         ) : config.category === 'games' ? (
           <div className="space-y-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+            <div>
+              <label htmlFor="set-filter" className="sr-only">Caută un set după nume</label>
+              <input id="set-filter" type="search" value={setFilter} onChange={(e) => setSetFilter(e.target.value.slice(0, 40))} placeholder="Caută un set: silabe, toamnă, labirint…" autoComplete="off"
+                className="w-full h-10 rounded-lg border-2 border-slate-300 bg-white px-3 text-sm text-slate-800 placeholder:text-slate-500 focus:border-blue-500" />
+            </div>
             {[
               { title: 'Găsește litera', text: 'O grilă de litere: copilul o colorează pe cea cerută.', items: allItems.filter((i) => i.startsWith('find:')), cols: 'grid-cols-8 sm:grid-cols-11', show: (i: string) => i.slice(5) },
               { title: 'Numără și scrie', text: 'Imagini de numărat și căsuța pentru număr.', items: [...COUNT_RANGES] as string[], cols: 'grid-cols-2', show: (i: string) => `1–${i.slice(6)}` },
@@ -326,11 +335,14 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               .sort((a, b) => (upper ? Number(UPPER_GROUP.test(b.title)) - Number(UPPER_GROUP.test(a.title)) : 0))
               .map((group) => {
                 // a long group: the free sets and the chosen ones stay in sight, with the first sets, six in all; the rest after „Arată toate”
-                const folds = 'fold' in group && group.items.length > 9;
+                // typed in the box above: only the sets whose name fits, all of them in sight
+                const found = wanted ? group.items.filter((i) => fold(`${group.title} ${group.show(i)} ${activityLabel(i)}`).includes(wanted)) : null;
+                if (found && !found.length) return null;
+                const folds = !found && 'fold' in group && group.items.length > 9;
                 const open = !folds || openGroups.includes(group.title);
                 const kept = group.items.filter((i) => isFree(i) || config.selectedItems.includes(i));
                 const lead = group.items.filter((i) => !kept.includes(i)).slice(0, Math.max(0, 6 - kept.length));
-                const shown = open ? group.items : group.items.filter((i) => kept.includes(i) || lead.includes(i));
+                const shown = found ?? (open ? group.items : group.items.filter((i) => kept.includes(i) || lead.includes(i)));
                 return (
               <div key={group.title}>
                 <div className="font-extrabold text-ink">{group.title}</div>
@@ -359,6 +371,12 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
               </div>
                 );
               })}
+            {/* nothing fits: this line is then the second child, right after the box (the groups above render nothing) */}
+            {wanted && (
+              <p data-no-sets className="hidden [&:nth-child(2)]:block text-sm text-slate-700">
+                Niciun set cu acest nume aici. <a href={`/cauta?q=${encodeURIComponent(setFilter.trim())}`} className="font-bold text-blue-700 underline underline-offset-2">Caută în toate fișele</a>
+              </p>
+            )}
           </div>
         ) : (
         <div className={`grid gap-1.5 p-2 bg-slate-50 rounded-lg border border-slate-200 ${config.category === 'prewrite' || config.category === 'shapes' ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-6 sm:grid-cols-7 lg:grid-cols-8'}`}>

@@ -26,6 +26,7 @@ import { useToast } from '@/components/ui/toast';
 import { presetById, presetConfig } from '@/lib/curriculum/presets';
 import { isSchoolLevel } from '@/lib/curriculum/sheet';
 import { sanitizeConfig } from '@/stores/sanitize-config';
+import { itemConfig, parseItemParam } from '@/lib/catalog/item-link';
 import { HomeworkButton, type HomeworkRequest } from '@/components/homework/homework-dialog';
 import { nameRowIndex } from '@/lib/homework/pages';
 import { evaluationPageSplit, evaluationPrintHint } from '@/lib/worksheet/evaluation';
@@ -86,19 +87,25 @@ export default function GeneratorPage() {
     [empty, runDownload, config, tier, pages],
   );
 
-  // Opened from „Fișe pe programă” (/generator?fisa=…&clasa=…): start from that sheet, for that
-  // class. Applied after the saved sheet is restored, so the restore does not overwrite it; the
+  // Opened from „Fișe pe programă” (/generator?fisa=…&clasa=…) or from „Caută fișe”
+  // (/generator?item=<category>:<item>&clasa=…, catalog/item-link.ts): start from that sheet, for
+  // that class. Applied after the saved sheet is restored, so the restore does not overwrite it; the
   // address is then cleaned so a reload keeps the teacher's own changes.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const preset = presetById(params.get('fisa') ?? '');
+    const item = preset ? null : parseItemParam(params.get('item'));
     const level = params.get('clasa');
-    if (!preset || !isSchoolLevel(level)) return;
+    if ((!preset && !item) || !isSchoolLevel(level)) return;
+    const opened = sanitizeConfig(preset ? presetConfig(preset, level) : itemConfig(item!, level));
+    // an item the generator cannot draw is dropped by sanitizeConfig: the address is ignored
+    if (!opened.selectedItems.length) return;
     const apply = () => {
       const { childName } = useWorksheetStore.getState().config;
-      useWorksheetStore.setState({ nameSlot: null, config: sanitizeConfig({ ...presetConfig(preset, level), childName }) });
+      useWorksheetStore.setState({ nameSlot: null, config: sanitizeConfig({ ...opened, childName }) });
       window.history.replaceState(null, '', '/generator');
-      track('curriculum_preset', { preset: preset.id, level: level.toLowerCase() });
+      if (preset) track('curriculum_preset', { preset: preset.id, level: level.toLowerCase() });
+      else track('catalog_item', { category: opened.category, level: level.toLowerCase() });
     };
     if (useWorksheetStore.persist.hasHydrated()) apply();
     else return useWorksheetStore.persist.onFinishHydration(apply);

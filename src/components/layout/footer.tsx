@@ -23,6 +23,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-5">
           <Logo small />
           <nav aria-label="Pagini legale" className="flex flex-wrap justify-center gap-x-5 text-sm font-bold text-slate-600 [&>a]:py-2.5">
+            <Link href="/cauta" className="hover:text-pen">Caută fișe</Link>
             <Link href="/fise" className="hover:text-pen">Fișe gratuite</Link>
             <Link href="/fise-de-lucru" className="hover:text-pen">Fișe de lucru pe clase</Link>
             <Link href="/programa" className="hover:text-pen">Fișe pe programă</Link>

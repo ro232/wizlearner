@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogIn, LogOut, User, Menu, X, ChevronDown } from 'lucide-react';
+import { LogIn, LogOut, User, Menu, X, ChevronDown, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from './logo';
 import { Badge } from '@/components/ui/badge';
@@ -204,6 +204,12 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* „Caută fișe”: every sheet, with search and filters (/cauta) */}
+          <Link href="/cauta" aria-label="Caută fișe" title="Caută fișe" aria-current={isCurrent(pathname, '/cauta') ? 'page' : undefined}
+            className={cn('inline-flex items-center justify-center gap-1.5 h-10 lg:h-9 min-w-10 lg:min-w-9 rounded-lg px-2 xl:px-2.5 text-[13px] font-bold text-ink hover:bg-white', isCurrent(pathname, '/cauta') && topCurrent)}>
+            <Search className="w-[18px] h-[18px] lg:w-4 lg:h-4" aria-hidden />
+            <span className="hidden xl:inline">Caută</span>
+          </Link>
           {user && (
             <Badge variant="outline" className={cn('hidden sm:inline-flex text-xs font-medium', tier === 'free' && 'border-blue-200 text-blue-700 bg-blue-50/50', tier === 'starter' && 'border-green-200 text-green-700 bg-green-50/50', tier === 'full' && 'border-orange-200 text-orange-700 bg-orange-50/50')}>
               {TIER_LABEL[tier]}
@@ -257,6 +263,15 @@ export function Navbar() {
       {open && (
         <div id="mobile-menu" className="lg:hidden border-t-2 border-ink bg-paper max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 grid gap-x-6 sm:grid-cols-2">
+            {/* first in the phone menu: the search box (a plain form, so it works from any page, /cauta included) */}
+            <form action="/cauta" method="get" role="search" aria-label="Caută fișe" className="sm:col-span-2 mb-3 flex gap-2">
+              <label htmlFor="mm-cauta" className="sr-only">Caută fișe</label>
+              <input id="mm-cauta" type="search" name="q" placeholder="Caută fișe: adunări, silabe…" autoComplete="off" enterKeyHint="search"
+                className="min-w-0 flex-1 h-12 rounded-xl border-2 border-ink bg-white px-3 text-[15px] font-semibold text-ink placeholder:font-normal placeholder:text-slate-500" />
+              <button type="submit" aria-label="Caută" className="shrink-0 w-12 h-12 rounded-xl border-2 border-ink bg-ink text-white flex items-center justify-center">
+                <Search className="w-5 h-5" aria-hidden />
+              </button>
+            </form>
             <ul className="sm:col-span-2 grid grid-cols-2 gap-2 pb-3 border-b border-ink/15">
               {NAV_ITEMS.filter((i) => i.kind === 'link' && i.href !== '/preturi').map((i) =>
                 i.kind === 'link' ? (
