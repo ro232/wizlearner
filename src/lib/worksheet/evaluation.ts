@@ -29,6 +29,7 @@ import { m34EvalBlock } from './m34-pages';
 import { isM34Item } from './m34';
 import { r34EvalBlocks } from './r34-pages';
 import { isR34Item } from './r34';
+import { isReadingItem } from './reading';
 
 /**
  * „Evaluare”: a short test of the chosen exercise types, on one or two pages, then the answers.
@@ -89,7 +90,7 @@ const EVAL_LESS_MATH = new Set<string>(['groups', 'clockdraw', 'week', 'months',
 export function isEvaluationItem(item: string): boolean {
   // of the other math topics: multiplication, division and reading the clock
   if (isMathType(item)) return !EVAL_LESS_MATH.has(item);
-  if (/^read:(match|gap|fill|order|text):[1-6]$/.test(item)) return true; // „Citire și scriere” (reading-pages.ts)
+  if (/^read:(match|gap|fill|order|text):/.test(item)) return isReadingItem(item); // „Citire și scriere”: every set there is (reading-pages.ts)
   // clasa a III-a și a IV-a: the kinds with a short form (m34-pages.ts, r34-pages.ts)
   if (isM34Item(item)) return m34EvalBlock(item, X1 - X0) !== null;
   if (isR34Item(item)) return r34EvalBlocks(item, X1 - X0).length > 0;

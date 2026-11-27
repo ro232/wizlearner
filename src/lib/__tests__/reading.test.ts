@@ -506,11 +506,10 @@ describe('the competences', () => {
 
 describe('the evaluation', () => {
   it('match, gap, fill, order and text have a short form; draw and copy do not', () => {
-    // (the sets added after the first six have no short form yet: evaluation.ts names the sets 1–6)
-    for (const it of ITEMS) {
-      if (/^read:(draw|copy):/.test(it)) expect(isEvaluationItem(it), it).toBe(false);
-      else if (Number(it.split(':')[2]) <= 6) expect(isEvaluationItem(it), it).toBe(true);
-    }
+    // every set there is, the ones added after the first six too
+    for (const it of ITEMS) expect(isEvaluationItem(it), it).toBe(!/^read:(draw|copy):/.test(it));
+    expect(ITEMS.filter(isEvaluationItem).some((it) => Number(it.split(':')[2]) > 6)).toBe(true);
+    for (const it of ['read:text:0', 'read:text:99', 'read:gap:25', 'read:match:17', 'read:listen:1']) expect(isEvaluationItem(it), it).toBe(false);
   });
 
   it('the answers of the evaluation are those of the sheets', () => {
