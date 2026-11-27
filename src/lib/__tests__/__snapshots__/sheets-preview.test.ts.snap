@@ -353,97 +353,92 @@ exports[`how every kind of sheet looks > diplome-grupa 1`] = `
 
 exports[`how every kind of sheet looks > evaluare-citire-I 1`] = `
 [
-  "542b7a46c387bf91",
-  "90d5c7480adc8563",
+  "b15551765be854bc",
+  "9de2c63afefec01d",
   "41ae0540857e93a0",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-citire-II 1`] = `
 [
-  "078b5d1c36066c6f",
-  "bec388881d2c2560",
+  "16ba1363c55a8fab",
+  "2d92f849a509f70a",
   "005b25619d46ee79",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-clr-CP 1`] = `
 [
-  "48a8695c4a26e95e",
-  "becd7ccf766cd68e",
-  "8e6e135d02827cc7",
+  "2d92e80c3181b983",
+  "276d008a7a238488",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-clr-I 1`] = `
 [
-  "de1e4c333e95d4ae",
-  "148c3785c6ce1f02",
-  "467ec3b45a1b56d5",
+  "df5cca7248f78dcd",
+  "68ac1dd09f3c4f2d",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-gradinita-presc 1`] = `
 [
-  "9501e6f8629a51ac",
-  "d42e8c2306b88c43",
-  "4626f0343a7e6edd",
+  "a6fd3f13830468f1",
+  "6d0bd2f33db5b7b5",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-mate-34-III 1`] = `
 [
-  "458ad74f614befa4",
-  "2c29b4f3eaf39e7d",
-  "67964467b9832a14",
+  "394aeecc9d7c1450",
+  "6887488f3b3c950a",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-mate-34-IV 1`] = `
 [
-  "f1ceffc9ceaaf9a6",
-  "8e1793c3b33665f0",
-  "0cdfb747df2ae30d",
+  "5d23f6d3a07ce945",
+  "903a4546d0103f42",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-mate-CP 1`] = `
 [
-  "2c1df659bd0f8587",
-  "13e1c02cd3022663",
+  "1b4b213c733245b0",
+  "552cdb7a3e6fca31",
   "ba8646eeabf63ede",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-mate-I 1`] = `
 [
-  "5fcc0ab39387765b",
-  "644fbe3de7c31002",
+  "31c0db9888f73f92",
+  "94115148d06ca6ed",
   "e2c550bec5a16cc3",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-mate-II 1`] = `
 [
-  "a5ba9a656e8fb738",
-  "392369500af269a9",
+  "e25a97c11a9e1e57",
+  "25bfcc3b0891d87c",
   "30862684c45c3673",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-romana-34-III 1`] = `
 [
-  "f4d704d49bdc4ee1",
-  "9e6dc4c2f9d8322b",
+  "7398b537988a5b4f",
+  "9685642d9168f919",
   "37dd12220c05c59e",
 ]
 `;
 
 exports[`how every kind of sheet looks > evaluare-romana-34-IV 1`] = `
 [
-  "529762bcebaf7dd0",
-  "39e1d466f2c482c4",
-  "ca46f87daf9a1727",
+  "cbf056e54cef1f32",
+  "dfa9c99cbac157e6",
+  "353ac818b343911f",
 ]
 `;
 
@@ -923,8 +918,8 @@ exports[`how every kind of sheet looks > matematica-calendar 1`] = `
 [
   "15ec37a4c98acd97",
   "083c568fb2e62f16",
-  "b902c1f38a628110",
-  "0026b26beb20accd",
+  "504f32f7f39c69b7",
+  "639215378e6a7913",
 ]
 `;
 
@@ -971,11 +966,11 @@ exports[`how every kind of sheet looks > matematica-inmultire 1`] = `
 
 exports[`how every kind of sheet looks > matematica-masurari 1`] = `
 [
-  "416ebd08a2be3572",
-  "a8476a7f438863fc",
+  "144537fa200dbff5",
+  "d1239df290f7e9b7",
   "48a531df815ce3e2",
   "1ace86f98eac6690",
-  "da3271c8f88339f7",
+  "937666885b80cdfe",
 ]
 `;
 
@@ -1199,6 +1194,58 @@ exports[`how every kind of sheet looks > sunete-silabe 1`] = `
   "60c833ee48c81cf2",
   "e8285a12ecb9e5f6",
   "e1297fe9d5c7eb52",
+]
+`;
+
+exports[`how every kind of sheet looks > varianta-3-evaluare 1`] = `
+[
+  "9c8a9fa7830faf3a",
+  "607ee64c909cb2f2",
+  "f812158ddef47e3b",
+]
+`;
+
+exports[`how every kind of sheet looks > varianta-7-gradinita 1`] = `
+[
+  "50178efae3a55ac1",
+  "a2c377efca08098d",
+  "79f9cf03cc143640",
+  "6b87d0943420eb82",
+  "6e7548cc47e06208",
+  "909524af29f2beae",
+  "6a729afe43936270",
+  "10199552cae12262",
+  "0e65a1246524ad1e",
+  "580e24804f0622b0",
+  "25cc245f7c44e4f9",
+  "0265c3dbe0a8fd7d",
+  "4fc094d9f7c8b273",
+  "8746050b025227be",
+  "5023d78e2c1caaa1",
+  "4b4ab33252f82222",
+  "9481d9668b6f245c",
+  "0f3fcf38dd0c546b",
+]
+`;
+
+exports[`how every kind of sheet looks > varianta-12-scoala 1`] = `
+[
+  "786e8c1c24591c44",
+  "c6a0e29c74e74b03",
+  "91f8ac0df248eb5f",
+  "fb36699576ff551b",
+  "c6c01449f96b316c",
+  "1183ded4fc7394e8",
+  "d9d6b27fe383655d",
+  "a000aca9c65c3563",
+  "353e243ae76418f8",
+  "ec6cf554ef88d435",
+  "e9fad9de89b52635",
+  "eef92e7037d25029",
+  "83b85b7656417052",
+  "f418013137ad4b1f",
+  "33a9ba49df4adf7b",
+  "c1e179b4dd431b12",
 ]
 `;
 

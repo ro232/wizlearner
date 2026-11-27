@@ -59,13 +59,17 @@ export interface WorksheetConfig {
   mathRange?: number;
   /** Math sheets: which random set of exercises (changed by „Alte exerciții”). */
   mathSeed?: number;
+  /** Games: which variant of the picture and logic sheets (changed by „Altă variantă”); unset = 1, the sheet as it always was. */
+  variantSeed?: number;
   /**
    * „Pagină cu răspunsuri la final”: a page with the answers, for the math sheets and the games that
    * have answers (the name stays from when only math had it, so saved sheets keep the setting).
    */
   mathAnswers?: boolean;
-  /** Math and games: print the chosen items as a short „Evaluare”, always with its answers page. */
+  /** Math and games: print the chosen items as a short „Evaluare”, with its answers page (see evaluationAnswers). */
   evaluation?: boolean;
+  /** An evaluation without its answers page (false), for printing the class set; unset: the answers page is printed. */
+  evaluationAnswers?: boolean;
   /** Math sheets from 0–20 up: additions and subtractions „fără” / „cu trecere peste ordin”, or both (unset: as the range always did). */
   mathCarry?: 'without' | 'with' | 'mixed';
   /** Multiplication and division sheets: one table (2–10) or all of them mixed (0 / unset). */

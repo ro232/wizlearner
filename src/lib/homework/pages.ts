@@ -47,6 +47,7 @@ export function homeworkPages(hw: Homework, rawName: string): PageOps[] {
       difficulty: g.difficulty,
       withFindPages: g.withFind,
       ...(g.curriculumLevel ? { curriculumLevel: g.curriculumLevel } : {}),
+      ...(g.variantSeed ? { variantSeed: g.variantSeed } : {}),
     }).pages;
   }
   return buildWorksheetPages(homeworkSheetConfig(hw, rawName), hw.tier);

@@ -4,6 +4,7 @@ import { INK, MUTED, PAPER, starPoints } from './rows';
 import type { KeySection } from './answer-key';
 import { CELL_STROKE, SOFT, fitSize } from './page-kit';
 import { blockAnswers, blockHeight, blockScore, buildBlocksPage, drawBlock, tw, writeRowsOps, type Block } from './blocks34';
+import type { EvalArea, EvalBlock, EvalPart } from './eval-block';
 import { DICT_SETS, FUNC_FORMS, R34_KINDS, R34_SETS, R34_TITLES, dictPlain, isR34Item, r34Parts, r34Sheet, ruling, type FuncForm, type Level34, type R34Kind } from './r34';
 
 /**
@@ -167,66 +168,51 @@ export function r34KeySection(item: string): KeySection | null {
   return { title: r34Label(item), entries, perLine: 1 };
 }
 
-/** The block an evaluation takes from an item (the same shape as evaluation.ts EvalBlock). */
-export interface R34EvalBlock {
-  item: string;
-  title: string;
-  prompt: string;
-  height: number;
-  grow: number;
-  draw: (ops: DrawOp[], a: { x: number; y: number; w: number; h: number }) => void;
-  answers: string[];
-  perLine: number;
-  score: number;
-}
+/** The block an evaluation takes from an item. */
+export type R34EvalBlock = EvalBlock;
 
 /** Which page and task of each kind an evaluation uses (lect: the text with its detail questions, as one block). */
 const EVAL_PICK: Partial<Record<R34Kind, { page: number; block: number; take?: number }>> = {
   orto: { page: 0, block: 0, take: 6 }, parti: { page: 0, block: 1 }, punct: { page: 0, block: 0, take: 4 }, voc: { page: 0, block: 1, take: 3 },
 };
 
-/**
- * The evaluation items of an item, `w` mm wide, each at most `maxH` mm tall (the room of one evaluation page): a block taller
- * than a page could not be moved to the next one and would run into the footer.
- */
-export function r34EvalBlocks(item: string, w: number, maxH = Infinity): R34EvalBlock[] {
+/** The evaluation items of an item, `w` mm wide. */
+export function r34EvalBlocks(item: string, w: number): R34EvalBlock[] {
   if (!isR34Item(item)) return [];
   const [kind] = r34Parts(item);
   const pages = r34Pages(item);
   const title = R34_TITLES[kind];
-  /** One evaluation item: the first part without its heading (the prompt says it), the next ones with theirs. */
-  const one = (parts: Block[], prompt: string): R34EvalBlock => {
-    const shown = parts.map((b, i) => (i === 0 && 'heading' in b ? ({ ...b, heading: '' } as Block) : b));
-    const heights = shown.map((b) => blockHeight(b, w) + 3);
-    const answers = parts.flatMap(blockAnswers);
-    return {
-      item, title, prompt,
-      height: heights.reduce((s, h) => s + h, 0),
-      grow: 4,
-      draw: (ops, a) => {
-        let y = a.y;
-        shown.forEach((b, i) => {
-          drawBlock(ops, b, a.x, y, a.w, heights[i] - 3, i > 0 || b.t === 'text');
-          y += heights[i];
+  /**
+   * One evaluation item: the first task without its heading (the prompt says it), the next ones with theirs. `rows`: the
+   * questions and the true / false sentences are rows a page break may fall between (the text stays whole, and so does
+   * each question; a heading stays over its first row).
+   */
+  const one = (tasks: Block[], prompt: string, rows = false): R34EvalBlock => {
+    const shown = tasks.map((b, i) => (i === 0 && 'heading' in b ? ({ ...b, heading: '' } as Block) : b));
+    const parts: EvalPart[] = shown.flatMap((b, i) => {
+      const titled = i > 0 || b.t === 'text';
+      if (rows && (b.t === 'mc' || b.t === 'tf') && b.items.length > 1)
+        return b.items.map((_, k): EvalPart => {
+          const row = { ...b, heading: k === 0 ? b.heading : '', items: [b.items[k]] } as Block;
+          const height = blockHeight(row, w) + (k === b.items.length - 1 ? 3 : 0);
+          return { height, min: height, grow: 0, draw: (ops, a) => drawBlock(ops, row, a.x, a.y, a.w, a.h, titled, k) };
         });
-      },
-      answers,
+      const height = blockHeight(b, w) + 3;
+      return [{ height, min: height, grow: i === shown.length - 1 ? 4 : 0, draw: (ops: DrawOp[], a: EvalArea) => drawBlock(ops, b, a.x, a.y, a.w, height - 3, titled) }];
+    });
+    const answers = tasks.flatMap(blockAnswers);
+    return {
+      item, title, prompt, parts, answers,
       perLine: Math.max(...answers.map((x) => x.length)) > 34 ? 1 : 2,
-      score: Math.max(1, parts.reduce((s, b) => s + blockScore(b), 0)),
+      score: Math.max(1, tasks.reduce((s, b) => s + blockScore(b), 0)),
+      ...(tasks[0]?.t === 'text' ? { hasText: true } : {}),
     };
   };
   if (kind === 'lect') {
-    // the text, its detail questions and the true / false sentences: one item
-    // (a long text: fewer true / false sentences, then fewer questions, until the item fits on one page)
+    // the text, its detail questions and the true / false sentences: one item, all of them (a long text: the last rows go
+    // on on the next page, where a note says on which page the text is)
     const [text, details, tf] = pages[0].blocks as [Block, Extract<Block, { t: 'mc' }>, Extract<Block, { t: 'tf' }>];
-    const prompt = 'Citește textul, apoi răspunde la întrebări.';
-    for (let d = details.items.length; d >= 1; d--)
-      for (let f = tf.items.length; f >= 0; f--) {
-        const parts: Block[] = [text, { ...details, items: details.items.slice(0, d) }, ...(f ? [{ ...tf, items: tf.items.slice(0, f) }] : [])];
-        const block = one(parts, prompt);
-        if (block.height <= maxH) return [block];
-      }
-    return [one([text, details], prompt)];
+    return [one([text, details, tf], 'Citește textul, apoi răspunde la întrebări.', true)];
   }
   const pick = EVAL_PICK[kind];
   if (!pick) return [];

@@ -31,6 +31,8 @@ export interface HomeworkGroup {
   difficulty: Difficulty;
   withFind: boolean;
   curriculumLevel?: SchoolLevel;
+  /** „Altă variantă” of the „Găsește litera” pages, so the parent prints the teacher's variant. */
+  variantSeed?: number;
 }
 
 export type HomeworkSheet =
@@ -95,3 +97,15 @@ export function homeworkShareText(url: string, title: string): string {
 }
 
 export const whatsappLink = (text: string) => `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+/**
+ * An evaluation as it goes to the parents: without its answers page (the answers and the calificative are the
+ * teacher's) unless the teacher asks for it. The link carries the choice (config.evaluationAnswers); the links made
+ * before this choice existed keep their answers page, as they were sent.
+ */
+export function evaluationHomeworkConfig(config: unknown, withAnswers: boolean): unknown {
+  if (!config || typeof config !== 'object' || Array.isArray(config)) return config;
+  const { evaluationAnswers: _, ...rest } = config as Record<string, unknown>;
+  void _;
+  return withAnswers ? rest : { ...rest, evaluationAnswers: false };
+}

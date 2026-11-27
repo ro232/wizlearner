@@ -5,6 +5,7 @@ import { madeWith } from '@/lib/brand';
 import { textWidthMm, wrapText } from '@/lib/book/text';
 import { INK, ACCENT, PAPER, MUTED } from './rows';
 import { CATEGORY_FAMILY, CATEGORY_NAMES, GROUP_SYMBOLS, obj, objectsOf, type SortCategory, type SortObject } from './sorting';
+import { currentVariant, vkey } from './variant';
 
 /**
  * Sorting, grouping and spatial orientation: full-page picture activities, one page per item,
@@ -19,9 +20,10 @@ import { CATEGORY_FAMILY, CATEGORY_NAMES, GROUP_SYMBOLS, obj, objectsOf, type So
  *               3–4: a 3 × 3 grid (corners, above, under, left, right, between, middle), with three
  *               pictures to circle for each question; 5–6: „Desenează … deasupra casei” in six boxes.
  *
- * Everything is seeded by the item, so the preview and the PDF are the same sheet every time. The
- * layouts are computed by the exported functions (sortLayout, oddRows, groupSet, sceneLayout,
- * gridLayout, drawPanels), which the tests read to check the answers against the drawing.
+ * Everything is seeded by the item and the variant of the sheet („Altă variantă”, variant.ts), so the
+ * preview and the PDF are the same sheet every time. The layouts are computed by the exported functions
+ * (sortLayout, oddRows, groupSet, sceneLayout, gridLayout, drawPanels), which the tests read to check
+ * the answers against the drawing. Every variant is drawn from the same pools under the same rules.
  */
 
 export const SORTING_SETS = 6;
@@ -199,9 +201,9 @@ export interface SortPicture {
 const SIZE_OBJECTS = ['minge', 'măr', 'stea', 'floare', 'pește', 'balon', 'inimă', 'pară'];
 
 /** The pictures of a sorting page, top to bottom: four per group (three with three groups). */
-export function sortPictures(n: number): SortPicture[] {
+export function sortPictures(n: number, variant = currentVariant()): SortPicture[] {
   const def = SORT_SETS[n - 1];
-  const rand = rng(seedOf(`sort:${n}`));
+  const rand = rng(seedOf(vkey(`sort:${n}`, variant)));
   const per = def.groups.length === 2 ? 4 : 3;
   let pics: SortPicture[] = [];
   if (def.by === 'category') {
@@ -238,9 +240,9 @@ export interface SortLayout {
 }
 
 /** Where everything goes on a sorting page (`top`: the top of the activity area). */
-export function sortLayout(n: number, top: number): SortLayout {
+export function sortLayout(n: number, top: number, variant = currentVariant()): SortLayout {
   const def = SORT_SETS[n - 1];
-  const pics = sortPictures(n);
+  const pics = sortPictures(n, variant);
   const rowH = (BOTTOM - top) / pics.length;
   const size = Math.min(21, rowH - 5);
   if (def.groups.length === 2) {
@@ -361,8 +363,8 @@ export function secondGroupLink(objects: SortObject[]): boolean {
 }
 
 /** Six rows: sets 1–3 put a picture of another kind of thing among three of a kind; 4–6 a neighbour. */
-export function oddRows(n: number): OddRow[] {
-  const rand = rng(seedOf(`odd:${n}`));
+export function oddRows(n: number, variant = currentVariant()): OddRow[] {
+  const rand = rng(seedOf(vkey(`odd:${n}`, variant)));
   const close = n >= 4;
   const mains = shuffle(close ? CLOSE_CATEGORIES : ODD_CATEGORIES, rand);
   const used = new Set<string>();
@@ -451,9 +453,9 @@ export interface GroupSet {
 }
 
 /** The kinds, their counts and the place of every picture (`top`: the top of the activity area). */
-export function groupSet(n: number, top: number): GroupSet {
+export function groupSet(n: number, top: number, variant = currentVariant()): GroupSet {
   const def = GROUP_SETS[n - 1];
-  const rand = rng(seedOf(`group:${n}`));
+  const rand = rng(seedOf(vkey(`group:${n}`, variant)));
   const objects = shuffle(objectsOf(def.cat), rand).slice(0, def.kinds);
   const counts = shuffle(Array.from({ length: def.max - def.min + 1 }, (_, i) => def.min + i), rand).slice(0, def.kinds);
   const kinds = objects.map((object, i) => ({ object, count: counts[i] }));
@@ -548,8 +550,8 @@ export interface SceneLayout {
 }
 
 /** The scene of pos:1 / pos:2 and its five questions (`top`: the top of the scene). */
-export function sceneLayout(n: number, top: number): SceneLayout {
-  const rand = rng(seedOf(`pos:${n}`));
+export function sceneLayout(n: number, top: number, variant = currentVariant()): SceneLayout {
+  const rand = rng(seedOf(vkey(`pos:${n}`, variant)));
   const floor = top + SCENE_H - 6;
   const table = { x0: 64, x1: 124, top: floor - 36 };
   const box = { x0: 138, x1: 172, top: floor - 14 };
@@ -739,8 +741,8 @@ function gridQuestions(cells: SortObject[][], rand: () => number): Question[] {
 }
 
 /** The grid of pos:3 / pos:4 and its five questions (`top`: the top of the grid). */
-export function gridLayout(n: number, top: number): GridLayout {
-  const rand = rng(seedOf(`pos:${n}`));
+export function gridLayout(n: number, top: number, variant = currentVariant()): GridLayout {
+  const rand = rng(seedOf(vkey(`pos:${n}`, variant)));
   const nine = shuffle(GRID_POOL, rand).slice(0, 9).map(obj);
   const cells = [0, 1, 2].map((r) => nine.slice(r * 3, r * 3 + 3));
   let questions = gridQuestions(cells, rand);
@@ -809,8 +811,8 @@ const PANEL_TEXT_H = 13;
 const REF_SIZE = 22;
 
 /** The six boxes of pos:5 / pos:6 (`top`: the top of the activity area). */
-export function drawPanels(n: number, top: number): DrawPanel[] {
-  const rand = rng(seedOf(`pos:${n}`));
+export function drawPanels(n: number, top: number, variant = currentVariant()): DrawPanel[] {
+  const rand = rng(seedOf(vkey(`pos:${n}`, variant)));
   // six of the seven relations, a different one left out on each sheet
   const rels = shuffle(DRAW_RELATIONS.filter((r) => r !== (n === 5 ? 'langa' : 'pe')), rand);
   const refs = shuffle(REFS, rand);

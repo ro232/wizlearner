@@ -11,7 +11,7 @@ import { answerKeyPages, type KeySection, type SheetPage } from './answer-key';
 import { FREE_MATH_TABLE, groupsAnswer, groupsInstruction, groupsItems, groupsPageOps, groupsTitle, groupsWithProduct, isMulType, mathTableOf, mulExercises, mulTitle } from './multiply';
 import { FREE_CLOCK_STEPS, clockStepOf, clockTimes, clockTitle, clocksOps, digital, handsWords, timeWords, type ClockStep } from './clock';
 import { CALENDAR_TITLES, calendarAnswers, calendarOps, calmonthSheet, monthsSheet, weekSheet, type CalendarSheet } from './calendar-pages';
-import { UNIT_NAMES, lengthAnswers, lengthOps, lengthSheet, massAnswers, massItems, massOps, rulerAnswers, rulerSheet, rulerSheetOps, unitsAnswers, unitsOps, unitsSheet } from './measure';
+import { UNIT_NAMES, lengthAnswers, lengthOps, lengthSheet, lengthSheetII, massAnswers, massAnswersII, massItems, massOps, massOpsII, massSheetII, rulerAnswers, rulerSheet, rulerSheetOps, unitsAnswers, unitsOps, unitsSheet } from './measure';
 import { fracAnswers, fracOps, fracSheet } from './fractions';
 import { figuresAnswers, figuresOps, figuresSheet } from './figures';
 
@@ -782,6 +782,11 @@ function problemsPage(config: WorksheetConfig, range: MathRange, problems: WordP
   return ops;
 }
 
+/** Clasa a II-a: the same two sheets, harder (measure.ts). */
+const INSTRUCTION_LENGTH_II = 'Numără câte unități are fiecare obiect, apoi compară obiectele.';
+const INSTRUCTION_MASS_II = 'Balanța este în echilibru. Scrie cât cântărește fiecare obiect.';
+export const MASS_TITLE_II = 'Cât cântărește? Kilograme și grame';
+
 /** One topic page: its title, instruction, drawing and answers (multiply.ts, clock.ts …). */
 interface TopicPage {
   title: string;
@@ -792,7 +797,7 @@ interface TopicPage {
 }
 
 /** The page of a topic sheet, seeded by the topic, its option and the seed (the range only for groups). */
-function topicPage(type: MathType, range: MathRange, seed: number, opts: { table: number; clock: ClockStep }): TopicPage | null {
+function topicPage(type: MathType, range: MathRange, seed: number, opts: { table: number; clock: ClockStep; level?: WorksheetConfig['curriculumLevel'] }): TopicPage | null {
   const rand = rng(seedOf(type === 'groups' ? `${type}:${range}:${seed}` : type === 'clock' || type === 'clockdraw' ? `${type}:${opts.clock}:${seed}` : `${type}:${seed}`));
   const title = mathTitle(type, range, 'mixed', opts);
   const page = (instruction: string, stars: number, answers: string[], draw: TopicPage['draw']): TopicPage => ({ title, instruction, stars, answers, draw });
@@ -817,11 +822,17 @@ function topicPage(type: MathType, range: MathRange, seed: number, opts: { table
       return page(INSTRUCTIONS[type], sheet.sections.length, calendarAnswers(sheet), (t, b) => calendarOps(sheet, X0, X1, t, b));
     }
     case 'length': {
-      const sheet = lengthSheet(rand);
+      // clasa a II-a: longer objects and two of them compared (measure.ts); the other classes as always
+      const sheet = opts.level === 'II' ? lengthSheetII(rand) : lengthSheet(rand);
       // „Lungimi: măsoară cu cuburi” / „… cu agrafe”, the unit of this sheet
-      return { ...page(INSTRUCTIONS.length, sheet.items.length, lengthAnswers(sheet), (t, b) => lengthOps(sheet, X0, X1, t, b)), title: `Lungimi: măsoară cu ${UNIT_NAMES[sheet.unit].many}` };
+      return { ...page(sheet.compare ? INSTRUCTION_LENGTH_II : INSTRUCTIONS.length, sheet.items.length, lengthAnswers(sheet), (t, b) => lengthOps(sheet, X0, X1, t, b)), title: `Lungimi: măsoară cu ${UNIT_NAMES[sheet.unit].many}` };
     }
     case 'mass': {
+      if (opts.level === 'II') {
+        // clasa a II-a: kilograms and grams on a balance in equilibrium, masses compared (II 6.4)
+        const sheet = massSheetII(rand);
+        return { ...page(INSTRUCTION_MASS_II, sheet.items.length + sheet.compare.length, massAnswersII(sheet), (t, b) => massOpsII(sheet, X0, X1, t, b)), title: MASS_TITLE_II };
+      }
       const items = massItems(rand);
       return page(INSTRUCTIONS.mass, items.length, massAnswers(items), (t, b) => massOps(items, X0, X1, t, b));
     }
@@ -879,7 +890,7 @@ export function buildMathPages(config: WorksheetConfig, tier: Tier): SheetPage[]
   const small = typeRange('money', range);
   const money = types.includes('money') ? moneyExercises(small, rng(seedOf(`money:${small}:${seed}`))) : [];
   const problems = types.includes('problems') ? wordProblems(small, rng(seedOf(`problems:${small}:${seed}`))) : [];
-  const topics = new Map(types.map((t) => [t, topicPage(t, typeRange(t, range), seed, opts)] as const));
+  const topics = new Map(types.map((t) => [t, topicPage(t, typeRange(t, range), seed, { ...opts, level: config.curriculumLevel })] as const));
   const sets = types.map((type) => {
     const topic = topics.get(type);
     return {

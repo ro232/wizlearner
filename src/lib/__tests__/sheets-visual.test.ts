@@ -107,6 +107,10 @@ sheet('romana-4-scriere', { category: 'games', selectedItems: ['comp:3', 'comp:4
 // „Pagină cu răspunsuri”: the games, and math with a class (no curriculum line on the answers)
 sheet('jocuri-raspunsuri', { category: 'games', selectedItems: ['find:Ș', 'count:10', 'sound:A', 'first:1', 'syl:1', 'split:1', 'sort:1', 'sort:5', 'odd:4', 'group:1', 'pos:1', 'pos:3'], mathAnswers: true, curriculumLevel: 'CP' });
 sheet('matematica-raspunsuri-clasa', { category: 'math', selectedItems: [...MATH_TYPES], mathRange: 10, mathAnswers: true, curriculumLevel: 'CP' });
+// „Altă variantă” (variant.ts): another draw of the picture and logic sheets, with its answers, and of an evaluation
+sheet('varianta-7-gradinita', { category: 'games', selectedItems: ['find:A', 'count:10', 'dots:star', 'sort:1', 'odd:4', 'group:1', 'pos:1', 'pos:3', 'color:2', 'maze:2', 'diff:1', 'trace:4', 'shadow:1', 'around:1', 'pict:1', 'more:1'], curriculumLevel: 'presc', mathAnswers: true, variantSeed: 7 });
+sheet('varianta-12-scoala', { category: 'games', selectedItems: ['sound:M', 'first:2', 'syl:3', 'split:4', 'colsum:3', 'terms:5', 'place:2', 'coord:1', 'sides:1', 'solid:1', 'regular:1', 'regular:4', 'sort2:2'], curriculumLevel: 'II', mathAnswers: true, variantSeed: 12 });
+sheet('varianta-3-evaluare', { category: 'games', selectedItems: ['count:10', 'sound:A', 'first:1', 'syl:1', 'sort:1', 'odd:1'], curriculumLevel: 'CP', evaluation: true, variantSeed: 3 });
 // „Evaluare”: every class that has one
 for (const p of SHEET_PRESETS.filter((x) => x.evaluation)) for (const level of p.levels ?? []) SAMPLES[`${p.id}-${level}`] = () => buildWorksheetPages(presetConfig(p, level), 'full');
 sheet('caiet-alfabet-mana', { letterMode: 'paired', script: 'cursive', selectedItems: ['Aa', 'Bb', 'Șș'], pagePerItem: true, itemWords: true, fillPage: false });

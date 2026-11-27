@@ -97,6 +97,7 @@ export function homeworkGroup(raw: unknown): HomeworkGroup {
   const out: HomeworkGroup = { letters: g.letters, letterMode: g.letterMode, script: g.script, difficulty: g.difficulty, withFind: g.withFind };
   if (g.themeId) out.themeId = g.themeId;
   if (isSchoolLevel(level)) out.curriculumLevel = level;
+  if (g.variantSeed) out.variantSeed = g.variantSeed;
   return out;
 }
 

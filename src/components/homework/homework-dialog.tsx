@@ -13,6 +13,7 @@ import {
   HOMEWORK_TITLE_MAX,
   QR_MAX_URL,
   homeworkShareText,
+  evaluationHomeworkConfig,
   sanitizeHomeworkTitle,
   whatsappLink,
   type HomeworkDays,
@@ -71,6 +72,9 @@ function HomeworkDialog({ request, level: initialLevel, category, onClose, onSho
   const [title, setTitle] = useState('');
   const [days, setDays] = useState<HomeworkDays>(DEFAULT_HOMEWORK_DAYS);
   const [level, setLevel] = useState<SchoolLevel | ''>(initialLevel ?? '');
+  // an evaluation: the answers page (with the calificative) is the teacher's, so the parents get it only when asked for
+  const isEvaluation = request.kind === 'sheet' && !!request.config && typeof request.config === 'object' && (request.config as { evaluation?: unknown }).evaluation === true;
+  const [withAnswers, setWithAnswers] = useState(false);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<{ text: string; signIn?: boolean } | null>(null);
   const [result, setResult] = useState<Result | null>(null);
@@ -121,11 +125,12 @@ function HomeworkDialog({ request, level: initialLevel, category, onClose, onSho
     e.preventDefault();
     setBusy(true);
     setProblem(null);
+    const sent = isEvaluation && request.kind === 'sheet' ? { ...request, config: evaluationHomeworkConfig(request.config, withAnswers) } : request;
     try {
       const res = await fetch('/api/tema', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...request, title: sanitizeHomeworkTitle(title), days, ...(level ? { level } : {}) }),
+        body: JSON.stringify({ ...sent, title: sanitizeHomeworkTitle(title), days, ...(level ? { level } : {}) }),
       });
       const data = (await res.json().catch(() => ({}))) as { token?: string; expiresAt?: number; error?: string };
       if (res.ok && data.token && data.expiresAt) {
@@ -207,6 +212,15 @@ function HomeworkDialog({ request, level: initialLevel, category, onClose, onSho
                 ))}
               </div>
             </fieldset>
+            {isEvaluation && (
+              <label className="flex items-start gap-3 cursor-pointer" data-homework-answers>
+                <input type="checkbox" checked={withAnswers} onChange={(e) => setWithAnswers(e.target.checked)} className="mt-0.5 w-5 h-5 shrink-0 accent-blue-600" />
+                <span className="min-w-0">
+                  <span className="block text-sm font-extrabold text-ink">Trimite și pagina de răspunsuri</span>
+                  <span className="block text-xs text-slate-600">Evaluarea ajunge la părinți fără răspunsuri și calificative. Bifează dacă vrei să le primească și ei.</span>
+                </span>
+              </label>
+            )}
             {problem && (
               <p role="alert" className="text-sm font-semibold text-pen">
                 {problem.text}{' '}

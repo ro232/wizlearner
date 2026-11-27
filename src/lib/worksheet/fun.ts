@@ -337,6 +337,65 @@ export const SCENES: Scene[] = [
   },
 ];
 
+/**
+ * „Altă variantă”: the other pictures a picture of a scene can be swapped for, by scene and by the index
+ * of the picture, each with its line of the answers page written out whole (no form is derived). A swap
+ * is never a picture the scene already has (see fun.test.ts).
+ */
+export const SCENE_SWAPS: Record<number, [string, string][]>[] = [
+  // în curte
+  {
+    0: [['🌙', 'Luna în loc de soare.']],
+    3: [['🌲', 'Un brad în loc de copac.']],
+    4: [['🐱', 'O pisică în loc de cățel.'], ['🐇', 'Un iepure în loc de cățel.']],
+    5: [['🌼', 'O floare galbenă în loc de lalea.']],
+    6: [['🎈', 'Un balon în loc de minge.']],
+    7: [['🐝', 'O albină în loc de fluture.'], ['🐦', 'O pasăre în loc de fluture.']],
+  },
+  // la mare
+  {
+    1: [['🐙', 'O caracatiță în loc de pește.'], ['🐢', 'O broască țestoasă în loc de pește.']],
+    2: [['🦈', 'Un rechin în loc de delfin.'], ['🐳', 'O balenă în loc de delfin.']],
+    3: [['🐌', 'Un melc în loc de crab.']],
+    5: [['⭐', 'O stea în loc de scoică.']],
+  },
+  // în parc
+  {
+    0: [['🌲', 'Un brad în loc de copac.']],
+    1: [['✈️', 'Un avion în loc de zmeu.']],
+    3: [['🛴', 'O trotinetă în loc de bicicletă.']],
+    4: [['🦋', 'Un fluture în loc de pasăre.'], ['🐝', 'O albină în loc de pasăre.']],
+    6: [['⚽', 'O minge în loc de balon.']],
+    7: [['🌼', 'O floare galbenă în loc de lalea.']],
+  },
+  // la fermă
+  {
+    1: [['🐎', 'Un cal în loc de vacă.']],
+    2: [['🐐', 'O capră în loc de oaie.']],
+    3: [['🦆', 'O rață în loc de găină.']],
+    4: [['🚗', 'O mașină în loc de tractor.']],
+    7: [['🐕', 'Un câine în loc de porc.']],
+  },
+  // în pădure
+  {
+    2: [['🐻', 'Un urs în loc de vulpe.'], ['🐺', 'Un lup în loc de vulpe.']],
+    3: [['🐌', 'Un melc în loc de arici.']],
+    4: [['🌷', 'O lalea în loc de ciupercă.']],
+    5: [['🐇', 'Un iepure în loc de veveriță.']],
+    6: [['🐦', 'O pasăre în loc de bufniță.']],
+    7: [['🦋', 'Un fluture în loc de albină.']],
+  },
+  // iarna
+  {
+    0: [['🎅', 'Moș Crăciun în loc de omul de zăpadă.']],
+    2: [['⛸️', 'O patină în loc de sanie.']],
+    4: [['☁️', 'Un nor în loc de fulg.']],
+    5: [['🔔', 'Un clopoțel în loc de cadou.']],
+    6: [['🦌', 'Un ren în loc de pinguin.']],
+    7: [['🌙', 'Luna în loc de stea.']],
+  },
+];
+
 // ───────────────────────── „Urmărește linia” ─────────────────────────
 
 export type TracePattern = 'horizontal' | 'waves' | 'zigzag' | 'cups' | 'castle' | 'loops';
@@ -356,6 +415,13 @@ export const TRACE_SETS: TraceSet[] = [
   { short: 'bucle', patterns: ['loops'], pairs: [['🐝', '🌻'], ['🪁', '☁️'], ['🐦', '🪺'], ['🐿️', '🌳'], ['🦋', '🌼']] },
   { short: 'iarna', patterns: ['horizontal', 'waves', 'zigzag', 'cups', 'loops'], pairs: [['🎅', '🎄'], ['🦌', '🛷'], ['⛄', '🥕'], ['🐧', '🐟'], ['🐻‍❄️', '🧊']] },
 ];
+
+/**
+ * „Altă variantă”: the pairs the rows of a variant are drawn from. Sets 1–5 share the pairs of all five
+ * (each still a story: the rabbit goes to the carrot); the winter set has its own.
+ */
+export const TRACE_PAIRS: [string, string][] = TRACE_SETS.slice(0, 5).flatMap((t) => t.pairs).filter((p, i, all) => all.findIndex((q) => q[0] === p[0] && q[1] === p[1]) === i);
+export const TRACE_WINTER_PAIRS: [string, string][] = [...TRACE_SETS[5].pairs, ['🎅', '🎁'], ['⛄', '🧣'], ['🐧', '🧊'], ['🦌', '🎄']];
 
 // ───────────────────────── „Umbre” ─────────────────────────
 
@@ -382,4 +448,18 @@ export const SHADOW_SETS: ShadowSet[] = [
   { short: 'sălbatice', title: 'animale sălbatice', pictures: [['🦋', 'fluture'], ['🐢', 'țestoasă'], ['🐿️', 'veveriță'], ['🐊', 'crocodil'], ['🦘', 'cangur'], ['🦀', 'crab']] },
   // the „Crăciun” theme of the group sheets (themes.ts): the same six pictures
   { short: 'Crăciun', title: 'de Crăciun', pictures: (CRACIUN?.words ?? []).map((w) => [w.emoji, themeName(w.word, w.proper)] as [string, string]) },
+];
+
+/**
+ * „Altă variantă”: more pictures of each set's kind, to draw six from. Only pictures whose shadow is
+ * a shape of its own (a whole animal, not a face; no boat on a band of water). `alike` lists the pictures
+ * whose shadows resemble each other: a page takes at most one of each list.
+ */
+export const SHADOW_POOLS: { more: [string, string][]; alike: string[][] }[] = [
+  { more: [['🐎', 'cal'], ['🐈', 'pisică'], ['🐕', 'câine'], ['🐖', 'porc'], ['🦆', 'rață'], ['🐐', 'capră'], ['🐒', 'maimuță']], alike: [['🐄', '🐖'], ['🐕', '🐐']] },
+  { more: [['🍓', 'căpșună'], ['🍍', 'ananas'], ['🍒', 'cireșe'], ['🍆', 'vânătă'], ['🫑', 'ardei'], ['🍎', 'măr'], ['🧄', 'usturoi']], alike: [['🍆', '🍌', '🥕'], ['🍎', '🍓', '🫑', '🧄', '🍐']] },
+  { more: [['🚗', 'mașină'], ['🚌', 'autobuz'], ['🚜', 'tractor'], ['🚢', 'vapor'], ['🚑', 'ambulanță'], ['🪂', 'parașută']], alike: [['🚗', '🚌', '🚑'], ['⛵', '🚢']] },
+  { more: [['🥁', 'tobă'], ['🎺', 'trompetă'], ['🔔', 'clopoțel'], ['🧹', 'mătură'], ['✂️', 'foarfecă'], ['🪣', 'găleată'], ['🎩', 'pălărie'], ['🪜', 'scară']], alike: [['🥁', '🪣', '🎩']] },
+  { more: [['🦔', 'arici'], ['🦉', 'bufniță'], ['🐍', 'șarpe'], ['🦈', 'rechin'], ['🐙', 'caracatiță'], ['🦢', 'lebădă'], ['🐧', 'pinguin'], ['🦏', 'rinocer']], alike: [['🦉', '🐧']] },
+  { more: [['⛄', 'om de zăpadă'], ['❄️', 'fulg de zăpadă'], ['🕯️', 'lumânare'], ['🍬', 'bomboană'], ['🧣', 'fular'], ['⛸️', 'patină']], alike: [['⭐', '❄️']] },
 ];

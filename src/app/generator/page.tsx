@@ -29,6 +29,7 @@ import { sanitizeConfig } from '@/stores/sanitize-config';
 import { itemConfig, parseItemParam } from '@/lib/catalog/item-link';
 import { HomeworkButton, type HomeworkRequest } from '@/components/homework/homework-dialog';
 import { nameRowIndex } from '@/lib/homework/pages';
+import { evaluationPageSplit, evaluationPrintHint } from '@/lib/worksheet/evaluation';
 
 export default function GeneratorPage() {
   const [showPaywall, setShowPaywall] = useState(false);
@@ -64,6 +65,13 @@ export default function GeneratorPage() {
     () => ({ empty: !hasContent(config, tier), pages: countWorksheetPages(config, tier) }),
     [config, tier],
   );
+
+  // an evaluation: which pages are the pupils' and which the teacher's (the class set is printed from the first ones)
+  const printHint = useMemo(() => {
+    const split = empty ? null : evaluationPageSplit(config, tier);
+    return split ? evaluationPrintHint(split) : null;
+  }, [config, tier, empty]);
+  const hint = printHint && <p data-print-hint className="text-center text-xs font-semibold text-slate-700">{printHint}</p>;
 
   const run = useCallback(
     (what: 'download' | 'print') => {
@@ -185,7 +193,9 @@ export default function GeneratorPage() {
   const homeworkRequest = (): HomeworkRequest => {
     const current = useWorksheetStore.getState().config;
     const nameAt = nameRowIndex(current);
-    return { kind: 'sheet', config: configForSaving(current), ...(nameAt !== undefined ? { nameAt } : {}) };
+    // an evaluation goes to the parents without its answers page, unless the teacher asks for it in the dialog
+    const sheet = current.evaluation ? { ...configForSaving(current), evaluationAnswers: false } : configForSaving(current);
+    return { kind: 'sheet', config: sheet, ...(nameAt !== undefined ? { nameAt } : {}) };
   };
   const homework = (className: string) => (
     <HomeworkButton
@@ -261,6 +271,7 @@ export default function GeneratorPage() {
             {/* stays in view even when the column cannot shrink any further (a long notice, a very low window) */}
             <div className="hidden lg:block space-y-1.5 lg:sticky lg:bottom-0 lg:z-10 lg:bg-paper lg:pt-1 lg:pb-2">
               <DownloadError message={error} />
+              {hint}
               {actions}
               {homework('w-full h-10 text-sm')}
               <p className="text-center text-xs text-slate-600">
@@ -288,6 +299,7 @@ export default function GeneratorPage() {
           </button>
         )}
         <DownloadError message={error} className="mb-2" />
+        {hint && <div className="mb-2">{hint}</div>}
         {actions}
       </div>
     </div>
