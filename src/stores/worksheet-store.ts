@@ -4,6 +4,7 @@ import { persist, createJSONStorage, type StateStorage } from 'zustand/middlewar
 import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, Script, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
 import { ALPHABETS, normalizeKey } from '@/lib/glyphs/data';
 import { cleanWord, itemFitsCategory, sanitizeConfig } from './sanitize-config';
+import { clampRows, isRowCategory, pruneRowsByItem } from '@/lib/worksheet/item-rows';
 
 interface WorksheetState {
   config: WorksheetConfig;
@@ -44,7 +45,10 @@ interface WorksheetState {
   setBackgroundPattern: (pattern: BackgroundPattern) => void;
   setGuideColor: (color: GuideColor) => void;
   setRowsPerPage: (rows: number) => void;
+  /** „Toate la fel”: the same number of rows for every item (the items' own counts are dropped). */
   setRepetitionsPerItem: (reps: number) => void;
+  /** Rows for one chosen item (1–10); the others keep theirs. */
+  setItemRows: (item: string, rows: number) => void;
   toggleGuideLines: () => void;
   toggleArrows: () => void;
   toggleStartDots: () => void;
@@ -108,7 +112,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
 
   setCategory: (category) => set((state) => {
     // an evaluation is a way of printing math or game items: another category starts as an ordinary sheet
-    const config = { ...state.config, category, selectedItems: [] };
+    const config = pruneRowsByItem({ ...state.config, category, selectedItems: [] });
     delete config.evaluation;
     delete config.evaluationAnswers;
     return { config };
@@ -139,15 +143,16 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
     const selectedItems = state.config.category === 'letters'
       ? state.config.selectedItems.filter((item) => allowed.has(normalizeKey(item)[0].toUpperCase()))
       : state.config.selectedItems;
-    return { config: { ...state.config, alphabet, selectedItems } };
+    return { config: pruneRowsByItem({ ...state.config, alphabet, selectedItems }) };
   }),
   setLetterMode: (mode) => set((state) => ({
-    config: { ...state.config, letterMode: mode, selectedItems: [] }
+    config: pruneRowsByItem({ ...state.config, letterMode: mode, selectedItems: [] })
   })),
   // Only what the category on screen can draw gets on the sheet ("add" is an exercise, not letters).
   toggleItem: (item) => set((state) => {
     const { selectedItems, category } = state.config;
-    if (selectedItems.includes(item)) return { config: { ...state.config, selectedItems: selectedItems.filter((i) => i !== item) } };
+    // taken off the sheet, the item loses its own count of rows: put back, it starts from the count for all
+    if (selectedItems.includes(item)) return { config: pruneRowsByItem({ ...state.config, selectedItems: selectedItems.filter((i) => i !== item) }) };
     if (!itemFitsCategory(item, category)) return state;
     return { config: { ...state.config, selectedItems: [...selectedItems, item] } };
   }),
@@ -158,7 +163,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
     }
   })),
   removeAllItems: () => set((state) => ({
-    config: { ...state.config, selectedItems: [] }
+    config: pruneRowsByItem({ ...state.config, selectedItems: [] })
   })),
   // A word or name becomes its own tracing row (the whole word), not a list of letters.
   // Words are traced on letter sheets: coming from Cifre, Forme, Matematică … the sheet becomes a
@@ -176,6 +181,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
         category: 'letters',
         selectedItems: c.category === 'letters' ? c.selectedItems : [],
         customWords: known ? c.customWords : [...c.customWords, clean],
+        ...(c.category === 'letters' && c.rowsByItem ? { rowsByItem: c.rowsByItem } : {}),
       },
     };
   }),
@@ -198,8 +204,11 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
       const c = state.config;
       // Handwriting is taught with small letters joined: all-capitals would come out as separate capitals.
       if (script === 'cursive' && c.letterMode === 'uppercase') {
-        const selectedItems = c.category === 'letters' ? c.selectedItems.map((i) => (i.length === 1 ? `${i.toUpperCase()}${i.toLowerCase()}` : i)) : c.selectedItems;
-        return { config: { ...c, script, letterMode: 'paired', selectedItems } };
+        const pair = (i: string) => (i.length === 1 ? `${i.toUpperCase()}${i.toLowerCase()}` : i);
+        const selectedItems = c.category === 'letters' ? c.selectedItems.map(pair) : c.selectedItems;
+        // the letters' own counts follow them („A” becomes „Aa”)
+        const rowsByItem = c.rowsByItem && c.category === 'letters' ? Object.fromEntries(Object.entries(c.rowsByItem).map(([i, n]) => [pair(i), n])) : c.rowsByItem;
+        return { config: pruneRowsByItem({ ...c, script, letterMode: 'paired' as const, selectedItems, ...(rowsByItem ? { rowsByItem } : {}) }) };
       }
       return { config: { ...c, script, ...(script === 'print' && c.fontStyle === 'cursive' ? { fontStyle: 'dashed' as const } : {}) } };
     }),
@@ -208,7 +217,16 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   setBackgroundPattern: (backgroundPattern) => set((state) => ({ config: { ...state.config, backgroundPattern } })),
   setGuideColor: (guideColor) => set((state) => ({ config: { ...state.config, guideColor } })),
   setRowsPerPage: (rowsPerPage) => set((state) => ({ config: { ...state.config, rowsPerPage } })),
-  setRepetitionsPerItem: (repetitionsPerItem) => set((state) => ({ config: { ...state.config, repetitionsPerItem } })),
+  setRepetitionsPerItem: (reps) => set((state) => {
+    const { rowsByItem: _own, ...config } = state.config;
+    void _own;
+    return { config: { ...config, repetitionsPerItem: clampRows(reps) } };
+  }),
+  setItemRows: (item, rows) => set((state) => {
+    const c = state.config;
+    if (!isRowCategory(c.category) || !c.selectedItems.includes(item)) return state;
+    return { config: { ...c, rowsByItem: { ...c.rowsByItem, [item]: clampRows(rows) } } };
+  }),
   toggleGuideLines: () => set((state) => ({ config: { ...state.config, showGuideLines: !state.config.showGuideLines } })),
   toggleArrows: () => set((state) => ({ config: { ...state.config, showDirectionalArrows: !state.config.showDirectionalArrows } })),
   toggleStartDots: () => set((state) => ({ config: { ...state.config, showStartDots: !state.config.showStartDots } })),

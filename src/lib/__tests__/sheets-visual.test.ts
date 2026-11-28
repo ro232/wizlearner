@@ -115,6 +115,9 @@ sheet('varianta-3-evaluare', { category: 'games', selectedItems: ['count:10', 's
 for (const p of SHEET_PRESETS.filter((x) => x.evaluation)) for (const level of p.levels ?? []) SAMPLES[`${p.id}-${level}`] = () => buildWorksheetPages(presetConfig(p, level), 'full');
 sheet('caiet-alfabet-mana', { letterMode: 'paired', script: 'cursive', selectedItems: ['Aa', 'Bb', 'Șș'], pagePerItem: true, itemWords: true, fillPage: false });
 sheet('optiuni', { letterMode: 'paired', selectedItems: ['Aa'], leftHandedMode: true, orientation: 'landscape', backgroundPattern: 'dictando', guideColor: 'blue', traceDensity: 'dense', customTitle: 'Fișă de lucru pentru grupa mare – săptămâna 12' });
+// „Rânduri pentru fiecare”: items with their own number of rows (rowsByItem), pages added as needed
+sheet('randuri-pe-element-litere', { letterMode: 'paired', selectedItems: ['Aa', 'Ăă', 'Șș'], customWords: ['casa'], repetitionsPerItem: 2, rowsByItem: { Ăă: 4, Șș: 1 } });
+sheet('randuri-pe-element-grafice', { category: 'prewrite', selectedItems: ['zigzag', 'waves', 'loops'], rowsByItem: { waves: 3, loops: 5 }, fillPage: false });
 SAMPLES['grupa'] = () => buildGroupPages({ names: ['Ana', 'Ștefan'], themeId: THEMES[0].id, letters: ['M'], letterMode: 'uppercase', difficulty: 'beginner', withFindPages: true }).pages;
 SAMPLES['caiet-nume'] = () => buildNameBookPages('Ioana', 'print');
 SAMPLES['caiet-kdp'] = () => buildBookPages(DEFAULT_BOOK_CONFIG).filter((_, i) => i % 7 === 0);

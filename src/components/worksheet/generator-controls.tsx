@@ -6,7 +6,7 @@ import React, { useRef, useState } from 'react';
 import { useTypedBeforeHydration } from '@/hooks/use-typed-before-hydration';
 import { useWorksheetStore } from '@/stores/worksheet-store';
 import { useRoleStore } from '@/stores/role-store';
-import { CATEGORY_TABS, NUMBERS, SHAPES, THEME } from '@/lib/constants';
+import { CATEGORY_TABS, NUMBERS, SHAPES, SHAPE_LABELS, THEME } from '@/lib/constants';
 import { isItemAllowed } from '@/lib/access';
 import { isWordAllowed } from '@/lib/worksheet/layout';
 import { uppercaseLetters, lowercaseLetters, pairedLetters, hintFor } from '@/lib/glyphs/data';
@@ -32,18 +32,16 @@ import { Lock, RotateCcw, Plus, X, ChevronDown, UserRound } from 'lucide-react';
 import { isCursive } from '@/lib/worksheet/layout';
 import { cleanWord } from '@/stores/sanitize-config';
 import { alese } from './plural';
+import { ItemRows } from './item-rows';
 
 /** The groups of „Jocuri” written for clasa a III-a and a IV-a (r34-pages.ts, m34-pages.ts). */
 const UPPER_GROUP = /^(Limba română|Matematică): /;
 
 interface GeneratorControlsProps {
   onShowPaywall: () => void;
+  /** Pages of the sheet as the preview has it (for „Ies N pagini”). */
+  pages?: number;
 }
-
-const SHAPE_LABELS: Record<string, string> = {
-  circle: 'cerc', square: 'pătrat', triangle: 'triunghi', rectangle: 'dreptunghi', oval: 'oval',
-  diamond: 'romb', star: 'stea', heart: 'inimă', hexagon: 'hexagon', pentagon: 'pentagon',
-};
 
 function SectionLabel({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) {
   return (
@@ -99,11 +97,11 @@ function SettingsGroup({ id, title, hint, open, onToggle, children }: { id: Grou
   );
 }
 
-export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
+export function GeneratorControls({ onShowPaywall, pages }: GeneratorControlsProps) {
   const {
     config, tier, setCategory, setAlphabet, setLetterMode, toggleItem, addItems, removeAllItems,
     addCustomWord, removeCustomWord, setDifficulty, setScript, setLetterSize, setVisibility,
-    setBackgroundPattern, setGuideColor, setRowsPerPage, setRepetitionsPerItem, toggleGuideLines,
+    setBackgroundPattern, setGuideColor, setRowsPerPage, toggleGuideLines,
     toggleArrows, toggleStartDots, toggleEmoji, toggleReward, toggleFullPage, toggleLeftHanded,
     toggleFillPage, setChildName, resetConfig, setCurriculumLevel,
   } = useWorksheetStore();
@@ -471,6 +469,9 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
         )}
       </div>
 
+      {/* 2b. How many rows each chosen item gets (traced categories only) */}
+      {traced && <ItemRows pages={pages} />}
+
       {/* 3. Child's name and words */}
       <div className="rounded-xl border border-line bg-paper p-4 space-y-3">
         <div>
@@ -623,10 +624,9 @@ export function GeneratorControls({ onShowPaywall }: GeneratorControlsProps) {
         </div>
       </SettingsGroup>
 
-      {/* Avansat: rows, repetitions and the switches; closed until asked for */}
+      {/* Avansat: rows per page and the switches; closed until asked for (the rows of each item are under the picker) */}
       <SettingsGroup id="avansat" title="Avansat" hint="rânduri, săgeți, antet, stângaci" open={isOpen('avansat')} onToggle={toggleGroup}>
         <Slider label="Rânduri pe pagină" value={config.rowsPerPage} min={3} max={8} onChange={setRowsPerPage} left="3" right="8" />
-        <Slider label="Rânduri pentru fiecare" value={config.repetitionsPerItem} min={1} max={5} onChange={setRepetitionsPerItem} left="1" right="5" />
         <div className="space-y-1 pt-3 border-t border-slate-200">
           {([
             ['Imagini lângă litere', config.showLetterIcons, toggleEmoji],

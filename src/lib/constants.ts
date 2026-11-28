@@ -31,6 +31,11 @@ export const LOWERCASE_LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split('');
 export const PAIRED_LETTERS = UPPERCASE_LETTERS.map((l, i) => `${l}${LOWERCASE_LETTERS[i]}`);
 export const NUMBERS = Array.from({ length: 21 }, (_, i) => String(i));
 export const SHAPES = ['circle', 'square', 'triangle', 'rectangle', 'oval', 'diamond', 'star', 'heart', 'hexagon', 'pentagon'];
+/** The shapes' names as the generator shows them. */
+export const SHAPE_LABELS: Record<string, string> = {
+  circle: 'cerc', square: 'pătrat', triangle: 'triunghi', rectangle: 'dreptunghi', oval: 'oval',
+  diamond: 'romb', star: 'stea', heart: 'inimă', hexagon: 'hexagon', pentagon: 'pentagon',
+};
 
 export const FREE_LIMITS = {
   letters: ['A', 'B', 'C', 'D', 'E'], // diacritic forms of a free letter (Ă, Â) are free too

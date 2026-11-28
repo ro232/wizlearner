@@ -2,6 +2,7 @@ import { DEFAULT_CONFIG, type ContentCategory, type WorksheetConfig } from '@/ty
 import { normalizeKey } from '@/lib/glyphs/data';
 import { PATTERN_IDS } from '@/lib/glyphs/patterns';
 import { SHAPES } from '@/lib/constants';
+import { ROWS_MAX, ROWS_MIN, isRowCategory } from '@/lib/worksheet/item-rows';
 
 /**
  * A sheet configuration that comes from outside the running page — the browser's storage,
@@ -135,7 +136,7 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
     guideColor: oneOf(r.guideColor, ['blue', 'gray', 'green', 'orange', 'purple'] as const, d.guideColor),
     backgroundPattern: oneOf(r.backgroundPattern, ['blank', 'grid', 'guides', 'patratele', 'dictando', 'lines'] as const, d.backgroundPattern),
     rowsPerPage: int(r.rowsPerPage, 1, 12, d.rowsPerPage),
-    repetitionsPerItem: int(r.repetitionsPerItem, 1, 5, d.repetitionsPerItem),
+    repetitionsPerItem: int(r.repetitionsPerItem, ROWS_MIN, ROWS_MAX, d.repetitionsPerItem),
     showGuideLines: bool(r.showGuideLines, d.showGuideLines),
     showDirectionalArrows: bool(r.showDirectionalArrows, d.showDirectionalArrows),
     showStartDots: bool(r.showStartDots, d.showStartDots),
@@ -168,5 +169,14 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
   if (r.mathClock === 'hour' || r.mathClock === 'half' || r.mathClock === 'quarter' || r.mathClock === 'five') config.mathClock = r.mathClock;
   if (r.curriculumLevel === 'presc' || r.curriculumLevel === 'CP' || r.curriculumLevel === 'I' || r.curriculumLevel === 'II' || r.curriculumLevel === 'III' || r.curriculumLevel === 'IV') config.curriculumLevel = r.curriculumLevel;
   if (wordPictures) config.wordPictures = wordPictures;
+  // „Rânduri pentru fiecare”: only for items on this sheet, traced in rows, each 1–10 (unset when none is left)
+  if (r.rowsByItem && typeof r.rowsByItem === 'object' && !Array.isArray(r.rowsByItem) && isRowCategory(category)) {
+    const chosen = new Set(selectedItems);
+    const pairs = Object.entries(r.rowsByItem as Record<string, unknown>)
+      .filter((e): e is [string, number] => chosen.has(e[0]) && typeof e[1] === 'number' && Number.isFinite(e[1]))
+      .slice(0, MAX_ITEMS)
+      .map(([item, n]) => [item, int(n, ROWS_MIN, ROWS_MAX, ROWS_MIN)] as const);
+    if (pairs.length) config.rowsByItem = Object.fromEntries(pairs);
+  }
   return config;
 }

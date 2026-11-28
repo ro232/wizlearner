@@ -311,7 +311,7 @@ export default function GeneratorPage() {
           </section>
 
           <section aria-label="Setări" className="order-2 lg:order-1 lg:w-[46%]">
-            <GeneratorControls onShowPaywall={() => setShowPaywall(true)} />
+            <GeneratorControls onShowPaywall={() => setShowPaywall(true)} pages={empty ? 0 : pages} />
           </section>
         </div>
       </main>
