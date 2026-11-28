@@ -36,7 +36,13 @@ export interface WorksheetConfig {
   guideColor: GuideColor;
   backgroundPattern: BackgroundPattern;
   rowsPerPage: number;
-  repetitionsPerItem: number; // how many rows of practice per letter/item (1-5)
+  /** How many rows of practice each letter/item gets (1-10), unless rowsByItem says otherwise for it. */
+  repetitionsPerItem: number;
+  /**
+   * Rows for single items, keyed by the item exactly as in selectedItems ("Ă", "Șș", "12", "circle", "zigzag"), 1-10.
+   * An item without a key gets repetitionsPerItem. Unset (the usual case): every item gets repetitionsPerItem.
+   */
+  rowsByItem?: Record<string, number>;
 
   // Features
   showGuideLines: boolean;

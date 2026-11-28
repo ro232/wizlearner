@@ -29,6 +29,35 @@ test.describe('generator', () => {
     expect(errors).toEqual([]);
   });
 
+  test('rows for each letter: one raised to 4 rows adds a page, then the PDF', async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.goto('/generator');
+    await page.locator('[data-ready]').waitFor();
+    await page.getByRole('button', { name: 'Golește', exact: true }).click();
+    await page.getByRole('button', { name: 'A', exact: true }).first().click();
+    await page.getByRole('button', { name: 'B', exact: true }).first().click();
+    const list = page.locator('[data-item-rows]');
+    await expect(list.locator('[data-item]')).toHaveCount(2);
+    await expect(list.locator('[data-page-count]')).toHaveText('Iese o pagină');
+    const more = page.getByRole('button', { name: 'Mai multe rânduri pentru B' });
+    // a real button, big enough to tap
+    const box = (await more.boundingBox())!;
+    expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
+    for (let i = 0; i < 3; i++) await more.click();
+    await expect(list.locator('[data-item="B"] output')).toHaveText('4');
+    await expect(list.locator('[data-item="A"] output')).toHaveText('1');
+    await expect(list.locator('[data-page-count]')).toHaveText('Ies 2 pagini');
+    await expect(page.getByRole('button', { name: 'Mai puține rânduri pentru A' })).toBeDisabled();
+    await expectPdfDownload(page, () => download(page).click());
+    // „Toate la fel” gives every letter the same count again
+    await page.getByRole('button', { name: 'Mai multe rânduri pentru toate' }).click();
+    await expect(list.locator('[data-item="B"] output')).toHaveText('2');
+    await expect(list.locator('[data-item="A"] output')).toHaveText('2');
+    await expect(list.locator('[data-page-count]')).toHaveText('Iese o pagină');
+    await expectNoSidewaysScroll(page);
+    expect(errors).toEqual([]);
+  });
+
   test('a locked letter opens the plans, not a broken sheet', async ({ page }) => {
     await page.goto('/generator');
     await page.locator('[data-ready]').waitFor();

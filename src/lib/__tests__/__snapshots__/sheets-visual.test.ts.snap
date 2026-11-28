@@ -1095,6 +1095,22 @@ exports[`how every kind of sheet looks > probleme-1000 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > randuri-pe-element-grafice 1`] = `
+[
+  "612a4515cd5b81a6",
+  "95d4bc1f603baf91",
+  "e5136ae981ed2c6f",
+]
+`;
+
+exports[`how every kind of sheet looks > randuri-pe-element-litere 1`] = `
+[
+  "fe41a19b70285431",
+  "21db8ec0984b7d8d",
+  "e51eaf8f2614bb66",
+]
+`;
+
 exports[`how every kind of sheet looks > romana-3-lectura 1`] = `
 [
   "cfbc7f3619d10952",

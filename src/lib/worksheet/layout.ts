@@ -13,6 +13,7 @@ import { buildMathPages, isMathType } from './math';
 import { buildEvaluationPages } from './evaluation';
 import { gameAnswerPages } from './game-keys';
 import { variantOf, withVariant } from './variant';
+import { globalRows, rowsFor } from './item-rows';
 import { clrTeacherPages } from './clr-pages';
 import type { SheetPage } from './answer-key';
 import { textWidthMm } from '@/lib/book/text';
@@ -157,19 +158,21 @@ export function glyphsForItem(item: string, category: WorksheetConfig['category'
 
 export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[] {
   if (config.category === 'games' || config.category === 'math') return [];
-  const reps = Math.max(1, config.repetitionsPerItem || 1);
+  // words (and every item without its own count) get the count for all; an item may have its own (rowsByItem)
+  const reps = globalRows(config);
   const cursive = isCursive(config);
   const rows: RowItem[] = [];
   for (const item of config.selectedItems) {
     if (!isItemAllowed(item, config.category, tier)) continue;
+    const itemReps = rowsFor(config, item);
     if (config.category === 'prewrite') {
       if (!isPatternId(item)) continue;
-      for (let r = 0; r < reps; r++) rows.push({ item, glyphs: [], pattern: item });
+      for (let r = 0; r < itemReps; r++) rows.push({ item, glyphs: [], pattern: item });
       continue;
     }
     const glyphs = glyphsForItem(item, config.category, cursive);
     if (glyphs.length === 0) continue;
-    for (let r = 0; r < reps; r++) rows.push({ item, glyphs });
+    for (let r = 0; r < itemReps; r++) rows.push({ item, glyphs });
   }
   if (config.category === 'letters') {
     // The child's own name is free on every tier (it is what parents look for first);
