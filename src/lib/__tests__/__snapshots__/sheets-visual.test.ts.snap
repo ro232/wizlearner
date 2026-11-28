@@ -310,6 +310,28 @@ exports[`how every kind of sheet looks > coperta-kdp-mana 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > cuvinte-rand-liber-dictando 1`] = `
+[
+  "2b57913785effaa7",
+  "997532a490ae749c",
+]
+`;
+
+exports[`how every kind of sheet looks > cuvinte-rand-liber-mana 1`] = `
+[
+  "d66baefc2d71f6f5",
+  "9e41ecb07d180126",
+]
+`;
+
+exports[`how every kind of sheet looks > cuvinte-rand-liber-umple-tipar 1`] = `
+[
+  "92bad5964d84bf79",
+  "c3b64edc88326c03",
+  "a083fe7a6b3834af",
+]
+`;
+
 exports[`how every kind of sheet looks > dezvoltare-personala 1`] = `
 [
   "fed535e417ec6048",

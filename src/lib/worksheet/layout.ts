@@ -26,6 +26,7 @@ import {
   buildPatternRow,
   rowHeightMm,
   rowExtents,
+  guideOps,
   itemWidth,
   cellPad,
   starPoints,
@@ -89,6 +90,11 @@ export interface RowItem {
   word?: boolean;
   /** Picture drawn next to a word row (theme words). */
   picture?: string;
+  /**
+   * „Rând liber după cuvânt”: the empty row after a word row (same glyphs, so the same size and
+   * ruling), where the child writes the word alone. Nothing is drawn on it but the ruling.
+   */
+  blank?: boolean;
 }
 
 /** A word-space: no strokes, just room between the words of a name ("Ana Maria"). */
@@ -187,7 +193,11 @@ export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[
       const glyphs = cursive ? (joined ? [joined] : []) : glyphsForWord(text);
       if (glyphs.length === 0) continue;
       const picture = config.wordPictures?.[raw];
-      for (let r = 0; r < reps; r++) rows.push({ item: text, glyphs, word: true, ...(picture ? { picture } : {}) });
+      for (let r = 0; r < reps; r++) {
+        rows.push({ item: text, glyphs, word: true, ...(picture ? { picture } : {}) });
+        // „Rând liber după cuvânt”: an empty row of the same ruling after every traced row of the word
+        if (config.wordCopyRow) rows.push({ item: text, glyphs, word: true, blank: true });
+      }
     }
   }
   return rows;
@@ -292,6 +302,7 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
     leftHanded: config.leftHandedMode,
     guideColor: config.showGuideLines ? guide : null,
     cursive,
+    ...(config.wordFillRow ? { fillWord: true } : {}),
   };
 
   // ── split rows into pages ──
@@ -338,8 +349,24 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
       pageTitles.push(kind ? `${kind} ${row.item}` : row.item);
     }
   }
-  for (const row of config.pagePerItem ? [] : rows) {
+  const flowRows = config.pagePerItem ? [] : rows;
+  for (let i = 0; i < flowRows.length; i++) {
+    const row = flowRows[i];
     const h = heightOf(row);
+    // A word row and its empty row stay on the same page (when the two fit on a page at all).
+    const partner = !row.blank && flowRows[i + 1]?.blank ? flowRows[i + 1] : null;
+    const pairH = partner ? h + rowGap + heightOf(partner) : 0;
+    if (partner && maxRows >= 2 && contentTop + pairH <= contentBottom) {
+      if (!(y + pairH <= contentBottom && current.length + 2 <= maxRows) && current.length > 0) {
+        pages.push(current);
+        current = [];
+        y = contentTop;
+      }
+      current.push(row, partner);
+      y += pairH + rowGap;
+      i++;
+      continue;
+    }
     const fits = y + h <= contentBottom && current.length < maxRows;
     if (!fits && current.length > 0) {
       pages.push(current);
@@ -363,6 +390,16 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
       const row = cycle[i % cycle.length];
       const h = heightOf(row);
       if (y + h > contentBottom) break;
+      // a word row comes back with its empty row, or not at all
+      const partner = !row.blank && cycle.length > 1 && cycle[(i + 1) % cycle.length].blank ? cycle[(i + 1) % cycle.length] : null;
+      if (partner) {
+        const pairH = h + rowGap + heightOf(partner);
+        if (page.length + 2 > maxRows || y + pairH > contentBottom) break;
+        page.push(row, partner);
+        y += pairH + rowGap;
+        i += 2;
+        continue;
+      }
       page.push(row);
       y += h + rowGap;
       i++;
@@ -405,6 +442,9 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
       const geom = { x: rowX, width: rowW, baseline };
       if (row.pattern) {
         buildPatternRow(ops, row.pattern, geom, rowStyle);
+      } else if (row.blank) {
+        // the empty row to write the word alone: only the ruling of the row above it
+        if (rowStyle.guideColor) ops.push(...guideOps(geom, rs, rowStyle.guideColor, cursive));
       } else {
         buildTraceRow(ops, row.glyphs, geom, {
           ...rowStyle,
