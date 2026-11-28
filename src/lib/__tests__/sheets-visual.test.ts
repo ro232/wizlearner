@@ -118,6 +118,10 @@ sheet('optiuni', { letterMode: 'paired', selectedItems: ['Aa'], leftHandedMode: 
 // „Rânduri pentru fiecare”: items with their own number of rows (rowsByItem), pages added as needed
 sheet('randuri-pe-element-litere', { letterMode: 'paired', selectedItems: ['Aa', 'Ăă', 'Șș'], customWords: ['casa'], repetitionsPerItem: 2, rowsByItem: { Ăă: 4, Șș: 1 } });
 sheet('randuri-pe-element-grafice', { category: 'prewrite', selectedItems: ['zigzag', 'waves', 'loops'], rowsByItem: { waves: 3, loops: 5 }, fillPage: false });
+// „Cuvinte de trasat”: an empty row after each word („Rând liber după cuvânt”), short words across the row („Umple rândul”)
+sheet('cuvinte-rand-liber-umple-tipar', { selectedItems: ['Ș'], customWords: ['școală', 'mama', 'pisică', 'ELEFANT', 'Ana'], childName: 'Ana', wordCopyRow: true, wordFillRow: true });
+sheet('cuvinte-rand-liber-mana', { script: 'cursive', letterMode: 'paired', customWords: ['mama', 'toamna', 'Bogdan'], wordCopyRow: true });
+sheet('cuvinte-rand-liber-dictando', { letterMode: 'lowercase', backgroundPattern: 'dictando', customWords: ['măr', 'pară', 'prună'], wordCopyRow: true, wordFillRow: true, leftHandedMode: true });
 SAMPLES['grupa'] = () => buildGroupPages({ names: ['Ana', 'Ștefan'], themeId: THEMES[0].id, letters: ['M'], letterMode: 'uppercase', difficulty: 'beginner', withFindPages: true }).pages;
 SAMPLES['caiet-nume'] = () => buildNameBookPages('Ioana', 'print');
 SAMPLES['caiet-kdp'] = () => buildBookPages(DEFAULT_BOOK_CONFIG).filter((_, i) => i % 7 === 0);

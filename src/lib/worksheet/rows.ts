@@ -68,6 +68,11 @@ export interface RowStyle {
   hint?: { word: string; emoji: string } | null;
   /** Handwriting row: four lines (ascender, x-height, baseline, descender) and slanted guides. */
   cursive?: boolean;
+  /**
+   * „Umple rândul”: a word that would be traced once (the model itself, with room left over) is traced
+   * as many whole times as fit across the row instead. Rows with a model and copies are unchanged.
+   */
+  fillWord?: boolean;
   ink?: string;
   accent?: string;
   paper?: string;
@@ -225,6 +230,13 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
   if (isWordish(glyphs) && copies < 2 && st.maxCopies === 0 && !st.maxTraced && st.tracedShare === undefined) copies = 0;
   const top = baseline - 100 * s;
 
+  if (st.fillWord && st.showModel && copies === 0 && isWordish(glyphs)) {
+    // Every copy is traced, one word-gap (the two cell pads) apart; the picture, if any, after the first.
+    // Whole copies only: n·cell (+ picture) never passes the row's width.
+    const n = hint ? 1 + Math.max(0, Math.floor((width - modelW) / cellMm)) : Math.max(1, Math.floor(width / cellMm));
+    if (n > 1) return fillWordRow(ops, glyphs, geom, st, n, cellMm, hint, hintW);
+  }
+
   const modelX = st.leftHanded ? x + width - cellMm : x;
   if (st.showModel) {
     // When nothing else fits on the row (a long name), the model itself is drawn to be traced:
@@ -256,6 +268,27 @@ export function buildTraceRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry,
     ops.push({ t: 'group', tx: firstCopyX + k * cellMm + pad * s, ty: top, scale: s, ops: itemOps(glyphs, copyStyle(st, fade)) });
   }
   return traced;
+}
+
+/** „Umple rândul”: n traced copies of a word across the row (left-handed: flush right). */
+function fillWordRow(ops: DrawOp[], glyphs: Glyph[], geom: RowGeometry, st: RowStyle, n: number, cellMm: number, hint: RowStyle['hint'], hintW: number): number {
+  const { s } = st;
+  const pad = cellPad(glyphs);
+  const top = geom.baseline - 100 * s;
+  const used = n * cellMm + (hint ? hintW + 3 : 0);
+  const start = st.leftHanded ? geom.x + geom.width - used : geom.x;
+  let cx = start;
+  for (let k = 0; k < n; k++) {
+    const fade = 1 - (1 - st.fadeTo) * (k / (n - 1));
+    ops.push({ t: 'group', tx: cx + pad * s, ty: top, scale: s, ops: itemOps(glyphs, copyStyle(st, fade)) });
+    cx += cellMm;
+    if (k === 0 && hint) {
+      // picture only (theme words): the same place as next to a model
+      ops.push(...iconOps(hint.emoji, cx + 3 + hintW / 2, geom.baseline - 55 * s, Math.min(12, 75 * s)));
+      cx += hintW + 3;
+    }
+  }
+  return n;
 }
 
 /**

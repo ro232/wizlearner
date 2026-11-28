@@ -86,6 +86,10 @@ export interface WorksheetConfig {
   curriculumLevel?: 'presc' | 'CP' | 'I' | 'II' | 'III' | 'IV';
   /** Pictures next to traced words (theme words): word as typed → emoji. */
   wordPictures?: Record<string, string>;
+  /** „Rând liber după cuvânt”: after every traced word row, an empty row of the same ruling to write the word alone. Unset = off. */
+  wordCopyRow?: boolean;
+  /** „Umple rândul”: a short word is traced again and again across its row (whole copies only). Unset = off. */
+  wordFillRow?: boolean;
 
   // Header
   childName: string;

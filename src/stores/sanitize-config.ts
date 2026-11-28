@@ -46,7 +46,8 @@ const R34_ITEM = /^(lect:[1-6]|(parti|orto|comp|func):[1-4]|(aud|punct|voc|dict|
 const MATH_RANGES: readonly number[] = [5, 10, 20, 31, 100, 1000, 10000, 1000000];
 
 const MAX_ITEMS = 120;
-const MAX_WORDS = 60;
+/** At most this many words to trace on one sheet. */
+export const MAX_WORDS = 60;
 const MAX_TEXT = 80;
 
 /** A word or name as it is kept on the sheet: one form for ş/ș, single spaces, no edges. */
@@ -169,6 +170,9 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
   if (r.mathClock === 'hour' || r.mathClock === 'half' || r.mathClock === 'quarter' || r.mathClock === 'five') config.mathClock = r.mathClock;
   if (r.curriculumLevel === 'presc' || r.curriculumLevel === 'CP' || r.curriculumLevel === 'I' || r.curriculumLevel === 'II' || r.curriculumLevel === 'III' || r.curriculumLevel === 'IV') config.curriculumLevel = r.curriculumLevel;
   if (wordPictures) config.wordPictures = wordPictures;
+  // the two options of the words to trace: written only when on (off = the sheet as it always was)
+  if (r.wordCopyRow === true) config.wordCopyRow = true;
+  if (r.wordFillRow === true) config.wordFillRow = true;
   // „Rânduri pentru fiecare”: only for items on this sheet, traced in rows, each 1–10 (unset when none is left)
   if (r.rowsByItem && typeof r.rowsByItem === 'object' && !Array.isArray(r.rowsByItem) && isRowCategory(category)) {
     const chosen = new Set(selectedItems);

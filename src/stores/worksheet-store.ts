@@ -3,7 +3,7 @@ import { OPEN_ACCESS } from '@/lib/open-access';
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, Script, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
 import { ALPHABETS, normalizeKey } from '@/lib/glyphs/data';
-import { cleanWord, itemFitsCategory, sanitizeConfig } from './sanitize-config';
+import { MAX_WORDS, cleanWord, itemFitsCategory, sanitizeConfig } from './sanitize-config';
 import { clampRows, isRowCategory, pruneRowsByItem } from '@/lib/worksheet/item-rows';
 
 interface WorksheetState {
@@ -36,6 +36,8 @@ interface WorksheetState {
   addItems: (items: string[]) => void;
   removeAllItems: () => void;
   addCustomWord: (word: string) => void;
+  /** Several words at once (a ready-made list), in order, skipping the ones already there, up to MAX_WORDS. */
+  addCustomWords: (words: string[]) => void;
   removeCustomWord: (word: string) => void;
   setDifficulty: (difficulty: Difficulty) => void;
   setFontStyle: (style: FontStyle) => void;
@@ -57,6 +59,10 @@ interface WorksheetState {
   toggleFullPage: () => void;
   toggleLeftHanded: () => void;
   toggleFillPage: () => void;
+  /** „Rând liber după cuvânt”. */
+  toggleWordCopyRow: () => void;
+  /** „Umple rândul”. */
+  toggleWordFillRow: () => void;
   setChildName: (name: string) => void;
   setCustomTitle: (title: string) => void;
   setSchoolName: (name: string) => void;
@@ -174,6 +180,8 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
     if (!clean) return state;
     const known = c.customWords.some((w) => cleanWord(w) === clean);
     if (known && c.category === 'letters') return state;
+    // a sheet holds at most MAX_WORDS words (as sanitizeConfig keeps them)
+    if (!known && c.customWords.length >= MAX_WORDS) return state;
     return {
       nameSlot: null,
       config: {
@@ -181,6 +189,29 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
         category: 'letters',
         selectedItems: c.category === 'letters' ? c.selectedItems : [],
         customWords: known ? c.customWords : [...c.customWords, clean],
+        ...(c.category === 'letters' && c.rowsByItem ? { rowsByItem: c.rowsByItem } : {}),
+      },
+    };
+  }),
+  addCustomWords: (words) => set((state) => {
+    const c = state.config;
+    const have = new Set(c.customWords.map(cleanWord));
+    const added: string[] = [];
+    for (const word of words) {
+      const clean = cleanWord(word);
+      if (!clean || have.has(clean) || clean.length > 80) continue;
+      if (c.customWords.length + added.length >= MAX_WORDS) break;
+      have.add(clean);
+      added.push(clean);
+    }
+    if (!added.length && c.category === 'letters') return state;
+    return {
+      nameSlot: null,
+      config: {
+        ...c,
+        category: 'letters',
+        selectedItems: c.category === 'letters' ? c.selectedItems : [],
+        customWords: [...c.customWords, ...added],
         ...(c.category === 'letters' && c.rowsByItem ? { rowsByItem: c.rowsByItem } : {}),
       },
     };
@@ -235,6 +266,15 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   toggleFullPage: () => set((state) => ({ config: { ...state.config, fullPageMode: !state.config.fullPageMode } })),
   toggleLeftHanded: () => set((state) => ({ config: { ...state.config, leftHandedMode: !state.config.leftHandedMode } })),
   toggleFillPage: () => set((state) => ({ config: { ...state.config, fillPage: state.config.fillPage === false } })),
+  // off = the field is removed, so a sheet without the option stays exactly as it was saved
+  toggleWordCopyRow: () => set((state) => {
+    const { wordCopyRow, ...config } = state.config;
+    return { config: wordCopyRow ? config : { ...config, wordCopyRow: true } };
+  }),
+  toggleWordFillRow: () => set((state) => {
+    const { wordFillRow, ...config } = state.config;
+    return { config: wordFillRow ? config : { ...config, wordFillRow: true } };
+  }),
   setCurriculumLevel: (level) =>
     set((state) => {
       const config = { ...state.config };
