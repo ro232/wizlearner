@@ -115,6 +115,8 @@ export default function GroupPage() {
   }, []);
   const namesRef = useRef<HTMLTextAreaElement>(null);
   useTypedBeforeHydration(namesRef, setNamesText);
+  const groupNameRef = useRef<HTMLInputElement>(null);
+  useTypedBeforeHydration(groupNameRef, setGroupName);
 
   // …and is written back at every change. Nothing here is sent anywhere.
   useEffect(() => {
@@ -272,7 +274,7 @@ export default function GroupPage() {
             <div className="flex flex-wrap items-end gap-2">
               <div className="flex-1 min-w-[160px]">
                 <label htmlFor="group-name" className={label}>Grupa</label>
-                <input id="group-name" value={groupName} onChange={(e) => setGroupName(e.target.value)} placeholder="ex. Grupa mare Fluturașii" autoComplete="off"
+                <input ref={groupNameRef} id="group-name" value={groupName} onChange={(e) => setGroupName(e.target.value)} placeholder="ex. Grupa mare Fluturașii" autoComplete="off"
                   className="mt-2 w-full h-11 px-3 rounded-xl border border-slate-300 bg-white focus:border-line focus:outline-none" />
               </div>
               {groups.length > 0 && (
