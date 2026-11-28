@@ -8,6 +8,8 @@ import { countWorksheetPages, rowItems } from '@/lib/worksheet/layout';
 import { activityLabel, isActivityItem } from '@/lib/worksheet/activities';
 import { MATH_LABELS, isMathType } from '@/lib/worksheet/math';
 import { VariantButton } from './variant-button';
+import { groupOf } from '@/lib/worksheet/letter-groups';
+import { GROUP_HINTS } from '@/lib/worksheet/lesson-text';
 
 /** What is on the sheet right now, with one-click removal. */
 export const SheetContentBar = () => {
@@ -17,7 +19,8 @@ export const SheetContentBar = () => {
   const removeCustomWord = useWorksheetStore((state) => state.removeCustomWord);
 
   const { rows, pages } = useMemo(() => ({ rows: rowItems(config, tier).length, pages: countWorksheetPages(config, tier) }), [config, tier]);
-  const words = config.category === 'letters' ? config.customWords : [];
+  // a lesson does not print the words to trace (it has its own)
+  const words = config.category === 'letters' && !config.lesson ? config.customWords : [];
   const isEmpty = config.selectedItems.length === 0 && words.length === 0;
   const alphabet = config.alphabet ?? 'ro';
 
@@ -39,7 +42,7 @@ export const SheetContentBar = () => {
       </div>
       <div className="flex flex-wrap gap-2">
         {config.selectedItems.map((item) => {
-          const icon = isPatternId(item) ? PATTERN_ICONS[item] : isActivityItem(item) ? '🧩' : isMathType(item) ? MATH_LABELS[item].icon : hintFor(item, alphabet)?.emoji;
+          const icon = isPatternId(item) ? PATTERN_ICONS[item] : isActivityItem(item) ? '🧩' : isMathType(item) ? MATH_LABELS[item].icon : groupOf(item) ? GROUP_HINTS[groupOf(item)!].emoji : hintFor(item, alphabet)?.emoji;
           const label = isPatternId(item) ? PATTERN_LABELS[alphabet][item] : isActivityItem(item) ? activityLabel(item) : isMathType(item) ? MATH_LABELS[item].title : item;
           return (
             <button key={item} type="button" onClick={() => toggleItem(item)} aria-label={`Scoate ${label}`}

@@ -59,6 +59,15 @@ export function configForSaving(config: WorksheetConfig): WorksheetConfig {
   if (config.wordPictures) {
     out.wordPictures = Object.fromEntries(Object.entries(config.wordPictures).filter(([w]) => !isChildName(w, name)));
   }
+  if (config.lesson) {
+    // „Lecția literei”: neither a word nor the sentence may carry the name („Ana are mere.”)
+    const { sentence, words, ...lesson } = config.lesson;
+    out.lesson = {
+      ...lesson,
+      ...(words ? { words: words.filter((w) => !isChildName(w, name)) } : {}),
+      ...(sentence && !mentionsName(sentence, name) ? { sentence } : {}),
+    };
+  }
   return out;
 }
 
@@ -78,8 +87,10 @@ const KIND: Partial<Record<WorksheetConfig['category'], string>> = {
  */
 export function defaultSheetName(config: WorksheetConfig): string {
   const safe = configForSaving(config);
-  const kind = safe.evaluation && (safe.category === 'math' || safe.category === 'games') ? 'Evaluare' : KIND[safe.category] ?? 'Fișă';
-  const words = safe.category === 'letters' ? safe.customWords : [];
+  const lesson = safe.category === 'letters' && !!safe.lesson;
+  const kind = lesson ? 'Lecția literei' : safe.evaluation && (safe.category === 'math' || safe.category === 'games') ? 'Evaluare' : KIND[safe.category] ?? 'Fișă';
+  // a lesson prints its own words, not the words to trace
+  const words = safe.category === 'letters' && !lesson ? safe.customWords : [];
   // what the person chose, in words: "Adunări", not the internal "add"
   const label = (i: string) =>
     safe.category === 'math' && isMathType(i) ? MATH_LABELS[i].title

@@ -11,21 +11,23 @@ import { countOf } from './plural';
 
 const cuvinte = (n: number) => countOf(n, 'cuvânt', 'cuvinte');
 
-type Lists = { letters: readonly WordList[]; themes: readonly WordList[] };
+type Lists = { letters: readonly WordList[]; themes: readonly WordList[]; groups: readonly WordList[] };
+type Kind = keyof Lists;
 // the lists are loaded once, when first opened (they are not needed to draw a sheet)
 let loaded: Promise<Lists> | null = null;
 const loadLists = () =>
-  (loaded ??= import('@/lib/curriculum/data/cuvinte').then((m) => ({ letters: m.LETTER_LISTS, themes: m.THEME_LISTS })));
+  (loaded ??= import('@/lib/curriculum/data/cuvinte').then((m) => ({ letters: m.LETTER_LISTS, themes: m.THEME_LISTS, groups: m.GROUP_LISTS })));
 
 /**
  * The two options of the words to trace, under the words: an empty row after each word, and short
- * words repeated across their row. Shown when the sheet has words.
+ * words repeated across their row. Shown when the sheet has words (`lesson`: the words of „Lecția literei”).
  */
-export function WordOptions() {
+export function WordOptions({ lesson = false }: { lesson?: boolean }) {
   const config = useWorksheetStore((s) => s.config);
   const toggleCopy = useWorksheetStore((s) => s.toggleWordCopyRow);
   const toggleFill = useWorksheetStore((s) => s.toggleWordFillRow);
-  if (config.category !== 'letters' || config.customWords.length === 0) return null;
+  if (config.category !== 'letters') return null;
+  if (lesson ? !config.lesson?.words?.length : !!config.lesson || config.customWords.length === 0) return null;
   const options: [string, string, boolean, () => void, string][] = [
     ['Rând liber după cuvânt', 'copilul scrie cuvântul singur, pe rândul de sub el', !!config.wordCopyRow, toggleCopy, 'copy'],
     ['Umple rândul', 'un cuvânt scurt se repetă pe tot rândul', !!config.wordFillRow, toggleFill, 'fill'],
@@ -56,7 +58,7 @@ export function WordLists({ onShowPaywall }: { onShowPaywall: () => void }) {
   const removeCustomWord = useWorksheetStore((s) => s.removeCustomWord);
   const [open, setOpen] = useState(false);
   const [lists, setLists] = useState<Lists | null>(null);
-  const [kind, setKind] = useState<'letters' | 'themes'>('letters');
+  const [kind, setKind] = useState<Kind>('letters');
   const [picked, setPicked] = useState<string>('');
 
   useEffect(() => {
@@ -80,7 +82,7 @@ export function WordLists({ onShowPaywall }: { onShowPaywall: () => void }) {
   const on = new Set(config.category === 'letters' ? config.customWords.map(cleanWord) : []);
   const count = config.category === 'letters' ? config.customWords.length : 0;
   const room = Math.max(0, MAX_WORDS - count);
-  const list = lists ? (kind === 'letters' ? lists.letters : lists.themes).find((l) => l.id === picked) : undefined;
+  const list = lists ? lists[kind].find((l) => l.id === picked) : undefined;
   const missing = list ? list.words.filter((w) => !on.has(w)) : [];
   const usable = missing.filter((w) => isWordAllowed(w, tier));
 
@@ -100,7 +102,7 @@ export function WordLists({ onShowPaywall }: { onShowPaywall: () => void }) {
     if (!isWordAllowed(w, tier)) return onShowPaywall();
     if (room > 0) addCustomWords([w]);
   };
-  const chooseKind = (k: 'letters' | 'themes') => {
+  const chooseKind = (k: Kind) => {
     setKind(k);
     setPicked(k === 'letters' ? firstSheetLetter : '');
   };
@@ -119,6 +121,7 @@ export function WordLists({ onShowPaywall }: { onShowPaywall: () => void }) {
           <div className="flex gap-2" role="group" aria-label="Fel de listă">
             <button type="button" className={tab(kind === 'letters')} aria-pressed={kind === 'letters'} onClick={() => chooseKind('letters')}>Pe litere</button>
             <button type="button" className={tab(kind === 'themes')} aria-pressed={kind === 'themes'} onClick={() => chooseKind('themes')}>Pe teme</button>
+            <button type="button" className={tab(kind === 'groups')} aria-pressed={kind === 'groups'} onClick={() => chooseKind('groups')}>Grupuri de litere</button>
           </div>
           {!lists ? (
             <p className="text-xs text-slate-500" aria-live="polite">Se încarcă listele…</p>
@@ -135,11 +138,11 @@ export function WordLists({ onShowPaywall }: { onShowPaywall: () => void }) {
                   ))}
                 </div>
               )}
-              <label htmlFor="word-list-pick" className="sr-only">{kind === 'letters' ? 'Alege litera' : 'Alege tema'}</label>
+              <label htmlFor="word-list-pick" className="sr-only">{kind === 'letters' ? 'Alege litera' : kind === 'groups' ? 'Alege grupul de litere' : 'Alege tema'}</label>
               <select id="word-list-pick" value={picked} onChange={(e) => setPicked(e.target.value)}
                 className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">{kind === 'letters' ? 'Alege litera…' : 'Alege tema…'}</option>
-                {(kind === 'letters' ? lists.letters : lists.themes).map((l) => (
+                <option value="">{kind === 'letters' ? 'Alege litera…' : kind === 'groups' ? 'Alege grupul…' : 'Alege tema…'}</option>
+                {lists[kind].map((l) => (
                   <option key={l.id} value={l.id}>{l.title}{l.inside ? ' (în cuvânt)' : ''} · {cuvinte(l.words.length)}</option>
                 ))}
               </select>

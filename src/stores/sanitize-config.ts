@@ -3,6 +3,8 @@ import { normalizeKey } from '@/lib/glyphs/data';
 import { PATTERN_IDS } from '@/lib/glyphs/patterns';
 import { SHAPES } from '@/lib/constants';
 import { ROWS_MAX, ROWS_MIN, isRowCategory } from '@/lib/worksheet/item-rows';
+import { isGroupItem } from '@/lib/worksheet/letter-groups';
+import { sanitizeLesson } from '@/lib/worksheet/lesson';
 
 /**
  * A sheet configuration that comes from outside the running page — the browser's storage,
@@ -60,6 +62,8 @@ export function itemFitsCategory(item: unknown, category: ContentCategory): item
   if (typeof item !== 'string' || !item || item.length > 24) return false;
   switch (category) {
     case 'letters': {
+      // a group of letters: ce, CE, Ce … (letter-groups.ts)
+      if (isGroupItem(item)) return true;
       // one letter, or a capital with its small letter ("Aa", "Șș")
       const chars = [...normalizeKey(item)];
       if (chars.length === 1) return /^\p{L}$/u.test(chars[0]);
@@ -121,11 +125,13 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
     wordPictures = Object.fromEntries(pairs.slice(0, MAX_WORDS));
   }
 
+  const alphabet = oneOf(r.alphabet, ['ro', 'en'] as const, d.alphabet);
   const config: WorksheetConfig = {
     category,
-    alphabet: oneOf(r.alphabet, ['ro', 'en'] as const, d.alphabet),
+    alphabet,
     letterMode: oneOf(r.letterMode, ['uppercase', 'lowercase', 'paired'] as const, d.letterMode),
-    selectedItems,
+    // the groups of letters are Romanian: not on a sheet of the English alphabet
+    selectedItems: alphabet === 'en' ? selectedItems.filter((i) => !isGroupItem(i)) : selectedItems,
     customWords,
     difficulty: oneOf(r.difficulty, ['beginner', 'intermediate', 'advanced'] as const, d.difficulty),
     fontStyle: oneOf(r.fontStyle, ['dashed', 'dotted', 'outline', 'cursive'] as const, d.fontStyle),
@@ -175,12 +181,18 @@ export function sanitizeConfig(raw: unknown): WorksheetConfig {
   if (r.wordFillRow === true) config.wordFillRow = true;
   // „Rânduri pentru fiecare”: only for items on this sheet, traced in rows, each 1–10 (unset when none is left)
   if (r.rowsByItem && typeof r.rowsByItem === 'object' && !Array.isArray(r.rowsByItem) && isRowCategory(category)) {
-    const chosen = new Set(selectedItems);
+    const chosen = new Set(config.selectedItems);
     const pairs = Object.entries(r.rowsByItem as Record<string, unknown>)
       .filter((e): e is [string, number] => chosen.has(e[0]) && typeof e[1] === 'number' && Number.isFinite(e[1]))
       .slice(0, MAX_ITEMS)
       .map(([item, n]) => [item, int(n, ROWS_MIN, ROWS_MAX, ROWS_MIN)] as const);
     if (pairs.length) config.rowsByItem = Object.fromEntries(pairs);
+  }
+  // „Lecția literei”: Romanian letters only, one letter or group (the first chosen); the rows are counted by the lesson
+  if (category === 'letters' && alphabet === 'ro' && r.lesson && typeof r.lesson === 'object' && !Array.isArray(r.lesson)) {
+    config.lesson = sanitizeLesson(r.lesson);
+    config.selectedItems = config.selectedItems.slice(0, 1);
+    delete config.rowsByItem;
   }
   return config;
 }

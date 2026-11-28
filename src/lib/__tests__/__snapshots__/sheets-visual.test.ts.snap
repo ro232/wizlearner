@@ -592,6 +592,13 @@ exports[`how every kind of sheet looks > grupa 1`] = `
 ]
 `;
 
+exports[`how every kind of sheet looks > grupuri-de-litere 1`] = `
+[
+  "84c24ea56434c5ed",
+  "4e9dcc081dda6936",
+]
+`;
+
 exports[`how every kind of sheet looks > jetoane-litere-mari 1`] = `
 [
   "863b1ac0abf4f642",
@@ -640,6 +647,34 @@ exports[`how every kind of sheet looks > jocuri-raspunsuri 1`] = `
   "1d4674ab99b8b765",
   "3aca9b17fae82d45",
   "c14cb4ceeaedc6ea",
+]
+`;
+
+exports[`how every kind of sheet looks > lectia-A-mana 1`] = `
+[
+  "561ff7c07531f327",
+  "09d171423af51161",
+]
+`;
+
+exports[`how every kind of sheet looks > lectia-M-mari 1`] = `
+[
+  "c54fc1b9a8431a79",
+  "82755c1c477ded48",
+]
+`;
+
+exports[`how every kind of sheet looks > lectia-che-mici 1`] = `
+[
+  "8fb6dbdda3984103",
+  "bc616f5df72e0be8",
+]
+`;
+
+exports[`how every kind of sheet looks > lectia-dictando 1`] = `
+[
+  "088e1e9f53303b22",
+  "aa259173b923bdac",
 ]
 `;
 
