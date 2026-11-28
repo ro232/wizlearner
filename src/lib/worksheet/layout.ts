@@ -260,6 +260,10 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
   const footerH = 8;
   const contentX = margin;
   const contentW = W - margin * 2;
+  // Dictando paper has a red margin 6 mm in: the rows start to the right of it, like in a real notebook.
+  const marginGap = config.backgroundPattern === 'dictando' ? 9 : 0;
+  const rowX = contentX + marginGap;
+  const rowW = contentW - marginGap;
   const contentTop = margin + headerH;
   const contentBottom = H - margin - rewardH - footerH;
 
@@ -301,9 +305,9 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
     const modelW = (itemWidth(row.glyphs) + cellPad(row.glyphs) * 2) * s;
     // Handwriting words: small enough for the model and two copies to trace on the same line.
     const cells = cursive ? 3 : 1;
-    const fit = Math.min(s, s * ((contentW - pictureW - 3) / (modelW * cells)));
+    const fit = Math.min(s, s * ((rowW - pictureW - 3) / (modelW * cells)));
     // A long name in handwriting would shrink to a scribble: write it once, across the row, instead.
-    if (cursive && fit < s * 0.55) return Math.min(s, s * ((contentW - pictureW - 3) / modelW));
+    if (cursive && fit < s * 0.55) return Math.min(s, s * ((rowW - pictureW - 3) / modelW));
     return fit;
   };
   const heightOf = (row: RowItem) => rowHeightMm(row.glyphs, scaleOf(row), stroke, cursive && !row.pattern);
@@ -398,7 +402,7 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
       const e = rowExtents(row.glyphs, stroke, cursive && !row.pattern);
       const rs = scaleOf(row);
       const baseline = ry + (e.ascent + 100) * rs;
-      const geom = { x: contentX, width: contentW, baseline };
+      const geom = { x: rowX, width: rowW, baseline };
       if (row.pattern) {
         buildPatternRow(ops, row.pattern, geom, rowStyle);
       } else {
