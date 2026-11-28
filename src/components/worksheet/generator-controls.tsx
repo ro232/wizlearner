@@ -30,9 +30,10 @@ import { AnswerOptions } from './answer-options';
 import { TraceStylePicker } from './trace-style-picker';
 import { Lock, RotateCcw, Plus, X, ChevronDown, UserRound } from 'lucide-react';
 import { isCursive } from '@/lib/worksheet/layout';
-import { cleanWord } from '@/stores/sanitize-config';
+import { MAX_WORDS, cleanWord } from '@/stores/sanitize-config';
 import { alese } from './plural';
 import { ItemRows } from './item-rows';
+import { WordLists, WordOptions } from './word-lists';
 
 /** The groups of „Jocuri” written for clasa a III-a and a IV-a (r34-pages.ts, m34-pages.ts). */
 const UPPER_GROUP = /^(Limba română|Matematică): /;
@@ -535,6 +536,11 @@ export function GeneratorControls({ onShowPaywall, pages }: GeneratorControlsPro
               ))}
             </div>
           )}
+          {config.customWords.length >= MAX_WORDS && (
+            <p className="mt-1.5 text-[11px] font-semibold text-amber-700" data-word-max>Fișa are {MAX_WORDS} de cuvinte, cât încap. Scoate câteva ca să adaugi altele.</p>
+          )}
+          <WordOptions />
+          <WordLists onShowPaywall={onShowPaywall} />
         </div>
       </div>
 
