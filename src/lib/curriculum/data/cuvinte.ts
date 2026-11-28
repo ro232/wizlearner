@@ -55,6 +55,21 @@ export const LETTER_LISTS: readonly WordList[] = [
   { id: 'Z', title: 'Litera Z', words: ['zebră', 'zmeu', 'zar', 'zăpadă', 'zahăr', 'zid', 'zână', 'zmeură', 'ziar', 'zambilă', 'zi', 'zâmbet'] },
 ];
 
+/**
+ * „Grupuri de litere”: ce, ci, ge, gi, che, chi, ghe, ghi (clasa pregătitoare, clasa I). Every word has
+ * its group (not always at the start: arici, ureche, unghie).
+ */
+export const GROUP_LISTS: readonly WordList[] = [
+  { id: 'ce', title: 'Grupul ce', words: ['ceas', 'cer', 'ceapă', 'cerc', 'ceai', 'cercel', 'ceață', 'cerneală', 'dulceață', 'rece'] },
+  { id: 'ci', title: 'Grupul ci', words: ['cireș', 'cireașă', 'ciocan', 'cioară', 'ciorap', 'ciupercă', 'cinci', 'cizme', 'arici', 'ciocolată'] },
+  { id: 'ge', title: 'Grupul ge', words: ['gem', 'geam', 'geantă', 'ger', 'genunchi', 'îngeraș', 'mărgele', 'degete', 'fulger'] },
+  { id: 'gi', title: 'Grupul gi', words: ['girafă', 'gimnastică', 'regină', 'pagină', 'fragi', 'mingi', 'magician', 'argint', 'magie'] },
+  { id: 'che', title: 'Grupul che', words: ['cheie', 'chec', 'ureche', 'ochelari', 'pereche', 'ridiche', 'chenar', 'buchet', 'veche'] },
+  { id: 'chi', title: 'Grupul chi', words: ['chitară', 'ochi', 'rochie', 'unchi', 'chiflă', 'chioșc', 'urechi', 'chipiu', 'chiuvetă', 'genunchi'] },
+  { id: 'ghe', title: 'Grupul ghe', words: ['gheață', 'gheată', 'ghete', 'ghem', 'gheară', 'ghepard', 'ghețar', 'înghețată'] },
+  { id: 'ghi', title: 'Grupul ghi', words: ['ghindă', 'ghiocel', 'ghiozdan', 'unghie', 'ghimpe', 'ghidon', 'ghicitoare', 'ghirlandă', 'ghiveci'] },
+];
+
 /** Themes of the programme for grădiniță and clasa pregătitoare. */
 export const THEME_LISTS: readonly WordList[] = [
   { id: 'toamna', title: 'Toamna', words: ['frunză', 'ploaie', 'umbrelă', 'struguri', 'dovleac', 'măr', 'pară', 'nucă', 'ghindă', 'castană', 'ciupercă', 'vânt', 'nor', 'gutuie'] },

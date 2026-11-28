@@ -1,10 +1,15 @@
 import { create } from 'zustand';
 import { OPEN_ACCESS } from '@/lib/open-access';
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
-import { WorksheetConfig, DEFAULT_CONFIG, Tier, ContentCategory, LetterMode, FontStyle, Script, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
+import { WorksheetConfig, DEFAULT_CONFIG, Tier, LessonConfig, ContentCategory, LetterMode, FontStyle, Script, LetterSize, Difficulty, GuideColor, BackgroundPattern, Alphabet } from '@/types';
 import { ALPHABETS, normalizeKey } from '@/lib/glyphs/data';
 import { MAX_WORDS, cleanWord, itemFitsCategory, sanitizeConfig } from './sanitize-config';
 import { clampRows, isRowCategory, pruneRowsByItem } from '@/lib/worksheet/item-rows';
+import { isGroupItem, itemInMode } from '@/lib/worksheet/letter-groups';
+import {
+  LESSON_DEFAULT_COUNTS, LESSON_DEFAULT_COUNTS_CURSIVE, LESSON_MAX_WORDS, clampLessonCount, cleanLessonSentence, cleanLessonWord,
+  hasLessonLetter, type LessonSection,
+} from '@/lib/worksheet/lesson';
 
 interface WorksheetState {
   config: WorksheetConfig;
@@ -63,6 +68,15 @@ interface WorksheetState {
   toggleWordCopyRow: () => void;
   /** „Umple rândul”. */
   toggleWordFillRow: () => void;
+  /** „Lecția literei” on (the first chosen letter stays, the others go) or off (the sheet of letters as before). */
+  setLessonMode: (on: boolean) => void;
+  /** The letter or group of the lesson, with its words (unset: chosen by the lesson panel when its lists load). */
+  setLessonItem: (item: string, words?: string[]) => void;
+  setLessonCount: (section: LessonSection, n: number) => void;
+  setLessonSentence: (text: string) => void;
+  setLessonWords: (words: string[]) => void;
+  /** A word of the lesson on or off (added at the end, at most LESSON_MAX_WORDS). */
+  toggleLessonWord: (word: string) => void;
   setChildName: (name: string) => void;
   setCustomTitle: (title: string) => void;
   setSchoolName: (name: string) => void;
@@ -121,6 +135,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
     const config = pruneRowsByItem({ ...state.config, category, selectedItems: [] });
     delete config.evaluation;
     delete config.evaluationAnswers;
+    delete config.lesson;
     return { config };
   }),
   setMathRange: (mathRange) => set((state) => ({ config: { ...state.config, mathRange } })),
@@ -146,14 +161,22 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   setAlphabet: (alphabet) => set((state) => {
     // Keep only the letters that exist in the newly chosen alphabet.
     const allowed = new Set(ALPHABETS[alphabet]);
+    // the groups of letters (ce, chi …) are Romanian only
     const selectedItems = state.config.category === 'letters'
-      ? state.config.selectedItems.filter((item) => allowed.has(normalizeKey(item)[0].toUpperCase()))
+      ? state.config.selectedItems.filter((item) => allowed.has(normalizeKey(item)[0].toUpperCase()) && (alphabet === 'ro' || !isGroupItem(item)))
       : state.config.selectedItems;
-    return { config: pruneRowsByItem({ ...state.config, alphabet, selectedItems }) };
+    const config = pruneRowsByItem({ ...state.config, alphabet, selectedItems });
+    // „Lecția literei” is a Romanian lesson (syllables, words, sentences)
+    if (alphabet === 'en') delete config.lesson;
+    return { config };
   }),
-  setLetterMode: (mode) => set((state) => ({
-    config: pruneRowsByItem({ ...state.config, letterMode: mode, selectedItems: [] })
-  })),
+  setLetterMode: (mode) => set((state) => {
+    // a lesson keeps its letter, written in the new mode („M” → „m”, „CHE” → „che”)
+    if (state.config.lesson && state.config.category === 'letters') {
+      return { config: { ...state.config, letterMode: mode, selectedItems: state.config.selectedItems.slice(0, 1).map((i) => itemInMode(i, mode)) } };
+    }
+    return { config: pruneRowsByItem({ ...state.config, letterMode: mode, selectedItems: [] }) };
+  }),
   // Only what the category on screen can draw gets on the sheet ("add" is an exercise, not letters).
   toggleItem: (item) => set((state) => {
     const { selectedItems, category } = state.config;
@@ -235,7 +258,7 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
       const c = state.config;
       // Handwriting is taught with small letters joined: all-capitals would come out as separate capitals.
       if (script === 'cursive' && c.letterMode === 'uppercase') {
-        const pair = (i: string) => (i.length === 1 ? `${i.toUpperCase()}${i.toLowerCase()}` : i);
+        const pair = (i: string) => (i.length === 1 || isGroupItem(i) ? itemInMode(i, 'paired') : i);
         const selectedItems = c.category === 'letters' ? c.selectedItems.map(pair) : c.selectedItems;
         // the letters' own counts follow them („A” becomes „Aa”)
         const rowsByItem = c.rowsByItem && c.category === 'letters' ? Object.fromEntries(Object.entries(c.rowsByItem).map(([i, n]) => [pair(i), n])) : c.rowsByItem;
@@ -274,6 +297,58 @@ export const useWorksheetStore = create<WorksheetState>()(persist((set) => ({
   toggleWordFillRow: () => set((state) => {
     const { wordFillRow, ...config } = state.config;
     return { config: wordFillRow ? config : { ...config, wordFillRow: true } };
+  }),
+  setLessonMode: (on) => set((state) => {
+    const c = state.config;
+    if (!on) {
+      const { lesson: _off, ...config } = c;
+      void _off;
+      return { config };
+    }
+    if (c.lesson) return state;
+    const counts = { ...(c.script === 'cursive' || c.fontStyle === 'cursive' ? LESSON_DEFAULT_COUNTS_CURSIVE : LESSON_DEFAULT_COUNTS) };
+    const { rowsByItem: _own, ...rest } = c;
+    void _own;
+    // the first chosen letter (or group) becomes the lesson's; its words come with the lesson panel
+    return { config: { ...rest, category: 'letters', selectedItems: c.category === 'letters' ? c.selectedItems.slice(0, 1) : [], lesson: { counts } } };
+  }),
+  setLessonItem: (item, words) => set((state) => {
+    const c = state.config;
+    if (!c.lesson || c.category !== 'letters' || !itemFitsCategory(item, 'letters')) return state;
+    const lesson: LessonConfig = { counts: c.lesson.counts };
+    const clean = words?.map(cleanLessonWord).filter(Boolean);
+    if (clean) lesson.words = Array.from(new Set(clean)).slice(0, LESSON_MAX_WORDS);
+    // the teacher's sentence stays while it has the new letter too
+    if (c.lesson.sentence && hasLessonLetter(c.lesson.sentence, item)) lesson.sentence = c.lesson.sentence;
+    return { config: { ...c, selectedItems: [item], lesson } };
+  }),
+  setLessonCount: (section, n) => set((state) => {
+    const c = state.config;
+    if (!c.lesson) return state;
+    return { config: { ...c, lesson: { ...c.lesson, counts: { ...c.lesson.counts, [section]: clampLessonCount(n) } } } };
+  }),
+  setLessonSentence: (text) => set((state) => {
+    const c = state.config;
+    if (!c.lesson) return state;
+    // typed as it comes (spaces kept while typing); the sheet and every copy that leaves the page are cleaned
+    const sentence = text.replace(/[\u0000-\u001f\u007f]/g, ' ').slice(0, 80);
+    const { sentence: _old, ...lesson } = c.lesson;
+    void _old;
+    return { config: { ...c, lesson: cleanLessonSentence(sentence) ? { ...lesson, sentence } : lesson } };
+  }),
+  setLessonWords: (words) => set((state) => {
+    const c = state.config;
+    if (!c.lesson) return state;
+    const clean = Array.from(new Set(words.map(cleanLessonWord).filter(Boolean))).slice(0, LESSON_MAX_WORDS);
+    return { config: { ...c, lesson: { ...c.lesson, words: clean } } };
+  }),
+  toggleLessonWord: (word) => set((state) => {
+    const c = state.config;
+    const clean = cleanLessonWord(word);
+    if (!c.lesson || !clean) return state;
+    const have = c.lesson.words ?? [];
+    const words = have.includes(clean) ? have.filter((w) => w !== clean) : have.length >= LESSON_MAX_WORDS ? have : [...have, clean];
+    return { config: { ...c, lesson: { ...c.lesson, words } } };
   }),
   setCurriculumLevel: (level) =>
     set((state) => {

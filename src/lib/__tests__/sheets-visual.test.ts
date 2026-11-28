@@ -122,6 +122,14 @@ sheet('randuri-pe-element-grafice', { category: 'prewrite', selectedItems: ['zig
 sheet('cuvinte-rand-liber-umple-tipar', { selectedItems: ['Ș'], customWords: ['școală', 'mama', 'pisică', 'ELEFANT', 'Ana'], childName: 'Ana', wordCopyRow: true, wordFillRow: true });
 sheet('cuvinte-rand-liber-mana', { script: 'cursive', letterMode: 'paired', customWords: ['mama', 'toamna', 'Bogdan'], wordCopyRow: true });
 sheet('cuvinte-rand-liber-dictando', { letterMode: 'lowercase', backgroundPattern: 'dictando', customWords: ['măr', 'pară', 'prună'], wordCopyRow: true, wordFillRow: true, leftHandedMode: true });
+// „Lecția literei”: a consonant in capitals, a vowel in handwriting, a group with the empty row after each word, on dictando
+const lesson = (letter: number, syll: number, words: number, sentence: number) => ({ letter, syll, words, sentence });
+sheet('lectia-M-mari', { selectedItems: ['M'], lesson: { counts: lesson(4, 1, 3, 2), words: ['măr', 'mamă', 'masă', 'melc', 'mare'], sentence: 'Mama are mere.' } });
+sheet('lectia-A-mana', { script: 'cursive', letterMode: 'paired', selectedItems: ['Aa'], lesson: { counts: lesson(3, 1, 2, 2), words: ['ac', 'apă', 'avion', 'albină'], sentence: 'Ana are un ac.' } });
+sheet('lectia-che-mici', { letterMode: 'lowercase', selectedItems: ['che'], wordCopyRow: true, lesson: { counts: lesson(3, 1, 2, 2), words: ['cheie', 'chec', 'ureche', 'ochelari'], sentence: 'Cheia e mică.' } });
+sheet('lectia-dictando', { letterMode: 'paired', selectedItems: ['Șș'], backgroundPattern: 'dictando', variantSeed: 2, lesson: { counts: lesson(2, 2, 2, 1), words: ['șal', 'școală', 'șarpe'], sentence: 'Am o șapcă.' } });
+// „Grupuri de litere” chosen like letters
+sheet('grupuri-de-litere', { letterMode: 'lowercase', selectedItems: ['ce', 'ci', 'ge', 'gi', 'che', 'chi', 'ghe', 'ghi'] });
 SAMPLES['grupa'] = () => buildGroupPages({ names: ['Ana', 'Ștefan'], themeId: THEMES[0].id, letters: ['M'], letterMode: 'uppercase', difficulty: 'beginner', withFindPages: true }).pages;
 SAMPLES['caiet-nume'] = () => buildNameBookPages('Ioana', 'print');
 SAMPLES['caiet-kdp'] = () => buildBookPages(DEFAULT_BOOK_CONFIG).filter((_, i) => i % 7 === 0);

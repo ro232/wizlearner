@@ -34,6 +34,15 @@ import { MAX_WORDS, cleanWord } from '@/stores/sanitize-config';
 import { alese } from './plural';
 import { ItemRows } from './item-rows';
 import { WordLists, WordOptions } from './word-lists';
+import dynamic from 'next/dynamic';
+import { groupItems, groupOf } from '@/lib/worksheet/letter-groups';
+import { GROUP_HINTS } from '@/lib/worksheet/lesson-text';
+
+// „Lecția literei”: loaded when a lesson is first opened (most sheets are free letters)
+const LessonPanel = dynamic(() => import('./lesson-panel').then((m) => m.LessonPanel), {
+  ssr: false,
+  loading: () => <p className="text-xs text-slate-500" aria-live="polite">Se încarcă lecția…</p>,
+});
 
 /** The groups of „Jocuri” written for clasa a III-a and a IV-a (r34-pages.ts, m34-pages.ts). */
 const UPPER_GROUP = /^(Limba română|Matematică): /;
@@ -104,7 +113,7 @@ export function GeneratorControls({ onShowPaywall, pages }: GeneratorControlsPro
     addCustomWord, removeCustomWord, setDifficulty, setScript, setLetterSize, setVisibility,
     setBackgroundPattern, setGuideColor, setRowsPerPage, toggleGuideLines,
     toggleArrows, toggleStartDots, toggleEmoji, toggleReward, toggleFullPage, toggleLeftHanded,
-    toggleFillPage, setChildName, resetConfig, setCurriculumLevel,
+    toggleFillPage, setChildName, resetConfig, setCurriculumLevel, setLessonMode, setLessonItem,
   } = useWorksheetStore();
 
   // The four groups of settings. „Avansat” starts closed; for a parent „Nivel” too (fewer decisions
@@ -145,10 +154,16 @@ export function GeneratorControls({ onShowPaywall, pages }: GeneratorControlsPro
   const isFree = (item: string) => isItemAllowed(item, config.category, tier);
   const upper = config.curriculumLevel === 'III' || config.curriculumLevel === 'IV';
   const usable = allItems.filter(isFree);
+  // „Lecția literei” (lesson-panel.tsx): one letter or group, the sheet built in four parts
+  const lesson = config.category === 'letters' && !!config.lesson;
+  // „Grupuri de litere”: ce, ci, ge, gi, che, chi, ghe, ghi (Romanian alphabet), in the letter mode of the sheet
+  const groups = config.category === 'letters' && alphabet === 'ro' ? groupItems(config.letterMode) : [];
 
   const handleItemClick = (item: string) => {
     if (!isFree(item)) onShowPaywall();
-    else toggleItem(item);
+    else if (lesson) {
+      if (config.selectedItems[0] !== item) setLessonItem(item);
+    } else toggleItem(item);
   };
 
   const addWord = (word: string, isName = false) => {
@@ -165,7 +180,7 @@ export function GeneratorControls({ onShowPaywall, pages }: GeneratorControlsPro
   const cleanName = cleanWord(config.childName);
   const nameAdded = !!cleanName && config.customWords.some((w) => cleanWord(w) === cleanName);
   // Math and game pages draw themselves: no traced words there, so no „Trasează-l” either.
-  const wordsFit = config.category !== 'games' && config.category !== 'math';
+  const wordsFit = config.category !== 'games' && config.category !== 'math' && !lesson;
   // exerciții, jocuri: „1 ales”; litere, cifre, forme: „1 aleasă”
   const pickedGender = config.category === 'prewrite' || config.category === 'games' || config.category === 'math' ? 'n' : 'f';
   // The example in the box must be one the visitor can really trace: on the free plan that means
@@ -173,7 +188,7 @@ export function GeneratorControls({ onShowPaywall, pages }: GeneratorControlsPro
   const wordExample = tier === 'free' ? (alphabet === 'ro' ? 'ex. BEC, ac' : 'e.g. BED, cab') : alphabet === 'ro' ? 'ex. MAMA, toamna' : 'e.g. CAT';
   // letters, numbers, shapes and patterns are traced; math and games draw their own pages
   const traced = config.category !== 'games' && config.category !== 'math';
-  const pickTitle = { letters: 'Alege literele', numbers: 'Alege cifrele', shapes: 'Alege formele', prewrite: 'Alege exercițiile', math: 'Matematică', games: 'Alege jocurile' }[config.category as 'letters'] ?? 'Alege';
+  const pickTitle = lesson ? 'Alege litera lecției' : { letters: 'Alege literele', numbers: 'Alege cifrele', shapes: 'Alege formele', prewrite: 'Alege exercițiile', math: 'Matematică', games: 'Alege jocurile' }[config.category as 'letters'] ?? 'Alege';
 
   return (
     <div className="w-full bg-white rounded-2xl border border-line p-5 sm:p-6 space-y-4">
@@ -235,6 +250,22 @@ export function GeneratorControls({ onShowPaywall, pages }: GeneratorControlsPro
               <Choice active={config.letterMode === 'lowercase'} onClick={() => setLetterMode('lowercase')}><div className="text-sm font-bold">a b</div><div className="text-[11px] text-slate-500">mici</div></Choice>
               <Choice active={config.letterMode === 'paired'} onClick={() => setLetterMode('paired')}><div className="text-sm font-bold">Aa</div><div className="text-[11px] text-slate-500">perechi</div></Choice>
             </div>
+          </div>
+        </div>
+      )}
+
+      {config.category === 'letters' && alphabet === 'ro' && (
+        <div data-sheet-kind>
+          <SectionLabel>Fișa</SectionLabel>
+          <div className="grid grid-cols-2 gap-2">
+            <Choice active={!lesson} onClick={() => setLessonMode(false)}>
+              <div className="text-sm font-bold">Litere la alegere</div>
+              <div className="text-[11px] text-slate-500">{parent ? 'câte litere vrei, rând după rând' : 'una sau mai multe, rând după rând'}</div>
+            </Choice>
+            <Choice active={lesson} onClick={() => setLessonMode(true)}>
+              <div className="text-sm font-bold">Lecția literei</div>
+              <div className="text-[11px] text-slate-500">{parent ? 'o literă: silabe, cuvinte, propoziție' : 'litera, silabe, cuvinte, propoziție'}</div>
+            </Choice>
           </div>
         </div>
       )}
@@ -446,7 +477,31 @@ export function GeneratorControls({ onShowPaywall, pages }: GeneratorControlsPro
           })}
         </div>
         )}
-        <div className="flex gap-2 mt-2">
+        {groups.length > 0 && (
+          <div className="mt-2" data-letter-groups>
+            <div className="mb-1 text-xs font-semibold text-slate-700">Grupuri de litere</div>
+            <div className="grid grid-cols-4 gap-1.5 p-2 bg-slate-50 rounded-lg border border-slate-200 sm:grid-cols-8">
+              {groups.map((item) => {
+                const free = isFree(item);
+                const selected = config.selectedItems.includes(item);
+                const g = groupOf(item);
+                const hint = config.showLetterIcons && g ? GROUP_HINTS[g] : undefined;
+                return (
+                  <button key={item} type="button" onClick={() => handleItemClick(item)} aria-pressed={selected}
+                    aria-label={`Grupul ${item}${free ? '' : ' (varianta completă)'}`}
+                    className={`relative min-h-[3rem] p-1 rounded-lg border transition-all flex flex-col items-center justify-center text-sm font-bold ${
+                      selected ? 'border-blue-500 bg-blue-50 text-blue-700' : free ? 'border-slate-300 bg-white text-slate-700 hover:border-blue-300' : 'border-slate-200 bg-slate-100 text-slate-400'
+                    }`}>
+                    {hint && <span className="text-[11px] leading-none mb-0.5" aria-hidden>{hint.emoji}</span>}
+                    <span>{item}</span>
+                    {!free && <Lock className="absolute top-0.5 right-0.5 w-3 h-3 text-amber-600" aria-hidden />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        <div className={`flex gap-2 mt-2 ${lesson ? 'hidden' : ''}`}>
           <Button size="sm" variant="outline" onClick={() => addItems(usable)} className="flex-1 text-xs">
             {tier === 'free' ? `Adaugă toate gratuite (${usable.length})` : `Adaugă toate (${usable.length})`}
           </Button>
@@ -470,8 +525,8 @@ export function GeneratorControls({ onShowPaywall, pages }: GeneratorControlsPro
         )}
       </div>
 
-      {/* 2b. How many rows each chosen item gets (traced categories only) */}
-      {traced && <ItemRows pages={pages} />}
+      {/* 2b. How many rows each chosen item gets (traced categories only); a lesson counts its rows by part */}
+      {traced && (lesson ? <LessonPanel pages={pages} onShowPaywall={onShowPaywall} /> : <ItemRows pages={pages} />)}
 
       {/* 3. Child's name and words */}
       <div className="rounded-xl border border-line bg-paper p-4 space-y-3">
@@ -500,7 +555,7 @@ export function GeneratorControls({ onShowPaywall, pages }: GeneratorControlsPro
           </p>
           <ForeignLettersNote text={config.childName} className="mt-1.5" />
         </div>
-        {/* Games draw their own page: no extra words to trace there. */}
+        {/* Games draw their own page, a lesson has its own words: no extra words to trace there. */}
         <div className={wordsFit ? undefined : 'hidden'}>
           <label htmlFor="custom-word" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Cuvinte de trasat</label>
           <div className="flex gap-2">

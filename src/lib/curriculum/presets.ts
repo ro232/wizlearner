@@ -28,6 +28,24 @@ export const SHEET_PRESETS: SheetPreset[] = [
   { id: 'litere-tipar', title: 'Litere de tipar de trasat', text: 'Litera, apoi rânduri de urmărit și de scris singur.', config: { category: 'letters', selectedItems: ['A', 'B', 'C'], letterMode: 'uppercase', script: 'print' } },
   { id: 'litere-perechi', title: 'Litere mari și mici de tipar', text: 'Aa, Bb, Cc: litera mare și cea mică pe același rând.', config: { category: 'letters', selectedItems: ['Aa', 'Bb', 'Cc'], letterMode: 'paired', script: 'print' } },
   { id: 'litere-mana', title: 'Litere de mână', text: 'Scrisul de mână de la școală, pe liniatură tip I.', config: { category: 'letters', selectedItems: ['Aa', 'Bb', 'Cc'], letterMode: 'paired', script: 'cursive' } },
+  // „Lecția literei”: the letter, its syllables, words with it, a sentence (worksheet/lesson.ts); the words: lessonWords(LETTER_LISTS M)
+  {
+    id: 'lectia-literei',
+    title: 'Lecția literei',
+    text: 'O literă pe o fișă: litera, silabele, cuvinte cu ea și o propoziție de scris.',
+    levels: ['CP', 'I'],
+    config: {
+      category: 'letters', selectedItems: ['M'], letterMode: 'uppercase', script: 'print',
+      lesson: { counts: { letter: 4, syll: 1, words: 3, sentence: 2 }, words: ['măr', 'mamă', 'masă', 'melc', 'mare', 'minge', 'munte', 'miere', 'mașină', 'morcov', 'mănuși', 'mătură'], sentence: 'Mama are mere.' },
+    },
+    byLevel: {
+      // clasa I: handwriting, as „Litere de mână”
+      I: {
+        selectedItems: ['Mm'], letterMode: 'paired', script: 'cursive',
+        lesson: { counts: { letter: 3, syll: 1, words: 2, sentence: 2 }, words: ['măr', 'mamă', 'masă', 'melc', 'mare', 'minge', 'munte', 'miere', 'mașină', 'morcov', 'mănuși', 'mătură'], sentence: 'Mama are mere.' },
+      },
+    },
+  },
   { id: 'grafisme', title: 'Elemente grafice', text: 'Linii, zigzag, valuri: mâna se pregătește pentru litere.', config: { category: 'prewrite', selectedItems: ['vertical', 'zigzag', 'waves'] } },
   { id: 'cifre', title: 'Cifre de trasat', text: 'Cifrele cu ordinea liniilor, de urmărit și de scris.', config: { category: 'numbers', selectedItems: ['1', '2', '3'] } },
   { id: 'forme', title: 'Forme geometrice de trasat', text: 'Cerc, pătrat, triunghi, dreptunghi.', config: { category: 'shapes', selectedItems: ['circle', 'square', 'triangle', 'rectangle'] } },

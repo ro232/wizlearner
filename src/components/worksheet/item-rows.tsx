@@ -7,20 +7,21 @@ import { isItemAllowed } from '@/lib/access';
 import { SHAPE_LABELS } from '@/lib/constants';
 import { PATTERN_ICONS, PATTERN_LABELS, isPatternId } from '@/lib/glyphs/patterns';
 import { ROWS_MAX, ROWS_MIN, globalRows, isRowCategory, rowsFor } from '@/lib/worksheet/item-rows';
+import { isLesson } from '@/lib/worksheet/lesson';
 import { pagini } from './plural';
 
 /** −  n  + with real buttons, big enough to tap (44 px). */
-function Stepper({ value, name, onChange }: { value: number; name: string; onChange: (n: number) => void }) {
+export function Stepper({ value, name, onChange, min = ROWS_MIN, max = ROWS_MAX }: { value: number; name: string; onChange: (n: number) => void; min?: number; max?: number }) {
   const btn = 'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 hover:border-blue-400 hover:text-blue-700 disabled:opacity-40 disabled:hover:border-slate-300 disabled:hover:text-slate-700';
   return (
     <div className="flex items-center gap-0.5">
-      <button type="button" className={btn} aria-label={`Mai puține rânduri pentru ${name}`} disabled={value <= ROWS_MIN} onClick={() => onChange(value - 1)}>
+      <button type="button" className={btn} aria-label={`Mai puține rânduri pentru ${name}`} disabled={value <= min} onClick={() => onChange(value - 1)}>
         <Minus className="h-4 w-4" aria-hidden />
       </button>
       <output aria-live="polite" aria-label={`${name}: ${value} ${value === 1 ? 'rând' : 'rânduri'}`} className="w-6 text-center text-base font-bold tabular-nums text-slate-900">
         {value}
       </output>
-      <button type="button" className={btn} aria-label={`Mai multe rânduri pentru ${name}`} disabled={value >= ROWS_MAX} onClick={() => onChange(value + 1)}>
+      <button type="button" className={btn} aria-label={`Mai multe rânduri pentru ${name}`} disabled={value >= max} onClick={() => onChange(value + 1)}>
         <Plus className="h-4 w-4" aria-hidden />
       </button>
     </div>
@@ -38,7 +39,8 @@ export function ItemRows({ pages }: { pages?: number }) {
   const setItemRows = useWorksheetStore((s) => s.setItemRows);
   const setAll = useWorksheetStore((s) => s.setRepetitionsPerItem);
   const parent = useRoleStore((s) => s.role) === 'parinte';
-  if (!isRowCategory(config.category)) return null;
+  // „Lecția literei” counts its rows by part (lesson-panel.tsx)
+  if (!isRowCategory(config.category) || isLesson(config)) return null;
 
   const alphabet = config.alphabet ?? 'ro';
   // what is printed: an item of the full version on the free plan is not on the sheet

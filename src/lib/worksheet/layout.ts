@@ -14,6 +14,9 @@ import { buildEvaluationPages } from './evaluation';
 import { gameAnswerPages } from './game-keys';
 import { variantOf, withVariant } from './variant';
 import { globalRows, rowsFor } from './item-rows';
+import { groupOf } from './letter-groups';
+import { isLesson } from './lesson';
+import { GROUP_HINTS, lessonCase, lessonSyllables, lessonTitle } from './lesson-text';
 import { clrTeacherPages } from './clr-pages';
 import type { SheetPage } from './answer-key';
 import { textWidthMm } from '@/lib/book/text';
@@ -56,6 +59,11 @@ export const GUIDE_COLORS: Record<string, string> = {
 };
 
 const CAP_HEIGHT_MM: Record<string, number> = { small: 10, medium: 14, large: 19 };
+/**
+ * Room for the heading of a part of „Lecția literei” (mm): more over a letter row, whose model has
+ * stroke numbers and arrows above the letter.
+ */
+const lessonTitleH = (row: RowItem): number => (!row.title ? 0 : row.word ? 5 : 9);
 const ROW_GAP_MM: Record<string, number> = { tight: 4, normal: 7, wide: 11 };
 
 const LABELS: Record<Alphabet, Record<string, string>> = {
@@ -95,6 +103,8 @@ export interface RowItem {
    * ruling), where the child writes the word alone. Nothing is drawn on it but the ruling.
    */
   blank?: boolean;
+  /** „Lecția literei”: the small heading over the first row of a part („Silabe”, „Cuvinte”). */
+  title?: string;
 }
 
 /** A word-space: no strokes, just room between the words of a name ("Ana Maria"). */
@@ -154,6 +164,11 @@ export function glyphsForItem(item: string, category: WorksheetConfig['category'
     return g ? [g] : [];
   }
   if (category === 'prewrite') return [];
+  // a group of letters in handwriting is written joined, as in a word („che”)
+  if (cursive && category === 'letters' && groupOf(item)) {
+    const joined = cursiveWord(item);
+    return joined ? [joined] : [];
+  }
   const out: Glyph[] = [];
   for (const ch of normalizeKey(item)) {
     const g = cursive && category === 'letters' ? cursiveGlyph(ch) : getGlyph(ch);
@@ -162,8 +177,88 @@ export function glyphsForItem(item: string, category: WorksheetConfig['category'
   return out;
 }
 
+/** The picture and word next to the model of a letter row; a group of letters has its own („cheie” for che). */
+export function itemHint(item: string, alphabet: Alphabet): { word: string; emoji: string } | undefined {
+  const group = groupOf(item);
+  return group ? GROUP_HINTS[group] : hintFor(item, alphabet);
+}
+
+/**
+ * A glyph with the full stop after it, drawn as the dot of i is, on the baseline: part of the last
+ * letter (or of the joined handwriting line), so it sits close to it and the line stays what it was.
+ */
+function withFullStop(g: Glyph, gap: number): Glyph {
+  const x = g.bbox.maxX + gap;
+  const dot = { subpaths: [{ start: { x, y: 96 }, segs: [{ kind: 'L' as const, p: { x, y: 96.01 } }] }], arrowAt: null, mark: true };
+  return { ...g, key: `${g.key}.`, strokes: [...g.strokes, dot], width: Math.max(g.width, x - g.bbox.minX), bbox: { ...g.bbox, maxX: x } };
+}
+
+/** Glyphs of a line of text (syllables, a sentence): print letters side by side, or one joined handwriting line; a final „.” is traced too. */
+function lineGlyphs(text: string, cursive: boolean): Glyph[] {
+  const stop = /\.\s*$/.test(text);
+  const glyphs = cursive ? [cursiveWord(text)].filter((g): g is Glyph => !!g) : glyphsForWord(text);
+  if (!stop || !glyphs.length) return glyphs;
+  // print letters end on a full-width bar (E, L) or a round (o): a wider gap keeps the dot apart
+  return [...glyphs.slice(0, -1), withFullStop(glyphs[glyphs.length - 1], cursive ? 12 : 22)];
+}
+
+/**
+ * „Lecția literei” (lesson.ts): the rows of the four parts, in order — the letter, its syllables (all on
+ * one line), the words (one per row, from the lesson's words; „Altă variantă” starts further on in
+ * the list), the sentence. A part with 0 rows, or with nothing to show, is left out. On the free
+ * plan what has a letter of the full version is left out, as everywhere.
+ */
+function lessonRows(config: WorksheetConfig, tier: Tier): RowItem[] {
+  const lesson = config.lesson;
+  const item = config.selectedItems[0];
+  if (!lesson || !item) return [];
+  const cursive = isCursive(config);
+  // handwriting is not written in capitals at school (as for the words)
+  const mode = cursive && config.letterMode === 'uppercase' ? 'paired' : config.letterMode;
+  const { counts } = lesson;
+  const rows: RowItem[] = [];
+  const part = (title: string, n: number, make: (k: number) => RowItem[]) => {
+    const start = rows.length;
+    for (let k = 0; k < n; k++) rows.push(...make(k));
+    if (rows.length > start) rows[start] = { ...rows[start], title };
+  };
+  // 1. the letter (or the group), as a letter row
+  if (isItemAllowed(item, 'letters', tier)) {
+    const glyphs = glyphsForItem(item, 'letters', cursive);
+    if (glyphs.length) part(groupOf(item) ? 'Grupul de litere' : 'Litera', counts.letter, () => [{ item, glyphs }]);
+  }
+  // 2. the syllables, all of them on each row
+  const syllables = lessonSyllables(item).filter((x) => isWordAllowed(x, tier));
+  if (syllables.length) {
+    const text = lessonCase(syllables.join(' '), config.letterMode === 'uppercase' && !cursive ? 'uppercase' : 'lowercase');
+    const glyphs = lineGlyphs(text, cursive);
+    if (glyphs.length) part('Silabe', counts.syll, () => [{ item: text, glyphs, word: true }]);
+  }
+  // 3. the words, a different one on each row
+  const words = (lesson.words ?? []).filter((w) => isWordAllowed(w, tier));
+  if (words.length) {
+    const offset = ((variantOf(config) - 1) * Math.max(1, counts.words)) % words.length;
+    part('Cuvinte', counts.words, (k) => {
+      const text = wordInCase(words[(offset + k) % words.length], mode, 'theme');
+      const glyphs = cursive ? (cursiveWord(text) ? [cursiveWord(text)!] : []) : glyphsForWord(text);
+      if (!glyphs.length) return [];
+      const row: RowItem = { item: text, glyphs, word: true };
+      return config.wordCopyRow ? [row, { ...row, blank: true }] : [row];
+    });
+  }
+  // 4. the sentence, the same on each row
+  const sentence = lesson.sentence?.trim();
+  if (sentence && isWordAllowed(sentence, tier)) {
+    const text = config.letterMode === 'uppercase' && !cursive ? lessonCase(sentence, 'uppercase') : sentence;
+    const glyphs = lineGlyphs(text, cursive);
+    if (glyphs.length) part('Propoziția', counts.sentence, () => [{ item: text, glyphs, word: true }]);
+  }
+  return rows;
+}
+
 export function rowItems(config: WorksheetConfig, tier: Tier = 'full'): RowItem[] {
   if (config.category === 'games' || config.category === 'math') return [];
+  if (isLesson(config)) return lessonRows(config, tier);
   // words (and every item without its own count) get the count for all; an item may have its own (rowsByItem)
   const reps = globalRows(config);
   const cursive = isCursive(config);
@@ -278,7 +373,9 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
   const contentBottom = H - margin - rewardH - footerH;
 
   const rows = rowItems(config, tier);
-  const maxRows = Math.max(1, config.rowsPerPage || 6);
+  const lesson = isLesson(config);
+  // a lesson counts its own rows (four parts): its pages fill by height, without repeats
+  const maxRows = lesson ? Infinity : Math.max(1, config.rowsPerPage || 6);
   const variant: TraceVariant = config.fontStyle === 'cursive' ? 'dashed' : (config.fontStyle as TraceVariant);
   const vis = Math.max(1, Math.min(10, config.tracingVisibility || 7)) / 10;
   const showHint = config.showLetterIcons && config.category === 'letters';
@@ -321,14 +418,14 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
     if (cursive && fit < s * 0.55) return Math.min(s, s * ((rowW - pictureW - 3) / modelW));
     return fit;
   };
-  const heightOf = (row: RowItem) => rowHeightMm(row.glyphs, scaleOf(row), stroke, cursive && !row.pattern);
+  const heightOf = (row: RowItem) => rowHeightMm(row.glyphs, scaleOf(row), stroke, cursive && !row.pattern) + lessonTitleH(row);
   // Workbook: one page per item, the item on every row, its word on the last two rows.
   const pageTitles: string[] = [];
-  if (config.pagePerItem) {
+  if (config.pagePerItem && !lesson) {
     for (const row of rows) {
       if (row.word) continue;
       const page: RowItem[] = [];
-      const word = config.itemWords && config.category === 'letters' ? hintFor(row.item, alphabet) : undefined;
+      const word = config.itemWords && config.category === 'letters' ? itemHint(row.item, alphabet) : undefined;
       let wordRow: RowItem | null = null;
       if (word?.word) {
         const text = wordInCase(word.word, cursive && config.letterMode === 'uppercase' ? 'paired' : config.letterMode, 'theme');
@@ -345,11 +442,12 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
       }
       if (!page.length) page.push(row);
       pages.push([...page, ...tail]);
-      const kind = config.category === 'numbers' ? (row.item.length > 1 ? 'Numărul' : 'Cifra') : config.category === 'letters' ? 'Litera' : '';
+      const kind = config.category === 'numbers' ? (row.item.length > 1 ? 'Numărul' : 'Cifra') : config.category === 'letters' ? (groupOf(row.item) ? 'Grupul de litere' : 'Litera') : '';
       pageTitles.push(kind ? `${kind} ${row.item}` : row.item);
     }
   }
-  const flowRows = config.pagePerItem ? [] : rows;
+  const perItem = config.pagePerItem && !lesson;
+  const flowRows = perItem ? [] : rows;
   for (let i = 0; i < flowRows.length; i++) {
     const row = flowRows[i];
     const h = heightOf(row);
@@ -376,12 +474,12 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
     current.push(row);
     y += h + rowGap;
   }
-  if (!config.pagePerItem && (current.length > 0 || pages.length === 0)) pages.push(current);
-  if (config.pagePerItem && pages.length === 0) pages.push([]);
+  if (!perItem && (current.length > 0 || pages.length === 0)) pages.push(current);
+  if (perItem && pages.length === 0) pages.push([]);
 
   // A short (last) page: repeat its rows, in order, until the page is full, so no sheet
   // comes out half empty. With one page that is every chosen row.
-  if (config.fillPage !== false && rows.length > 0 && !config.pagePerItem) {
+  if (config.fillPage !== false && rows.length > 0 && !perItem && !lesson) {
     const page = pages[pages.length - 1];
     const cycle = page.slice();
     y = contentTop + page.reduce((acc, r) => acc + heightOf(r) + rowGap, 0);
@@ -412,7 +510,7 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
 
     // header
     if (!config.fullPageMode) {
-      const title = pageTitles[pageIndex] ?? (config.customTitle?.trim() || L.title);
+      const title = pageTitles[pageIndex] ?? (config.customTitle?.trim() || (lesson ? lessonTitle(config.selectedItems[0]) : L.title));
       // A long title gets smaller so it never runs into the brand or off the page.
       const titleRoom = W - margin * 2 - 26;
       const titleSize = Math.max(3.6, Math.min(6.5, 6.5 * (titleRoom / Math.max(1, textWidthMm(title, 6.5) * 1.08))));
@@ -436,6 +534,11 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
     const extraGap = pageRows.length > 1 ? Math.min(leftover / (pageRows.length - 1), avgRowH * 0.8) : 0;
     let ry = contentTop;
     for (const row of pageRows) {
+      if (row.title) {
+        // „Lecția literei”: the part's heading, small, over its first row
+        ops.push({ t: 'text', x: rowX, y: ry + 3.4, text: row.title, size: 3.4, fill: MUTED, weight: 'bold' });
+        ry += lessonTitleH(row);
+      }
       const e = rowExtents(row.glyphs, stroke, cursive && !row.pattern);
       const rs = scaleOf(row);
       const baseline = ry + (e.ascent + 100) * rs;
@@ -449,12 +552,12 @@ function buildSheetPages(config: WorksheetConfig, tier: Tier): SheetPage[] {
         buildTraceRow(ops, row.glyphs, geom, {
           ...rowStyle,
           s: rs,
-          hint: row.word ? (row.picture ? { word: '', emoji: row.picture } : null) : showHint ? hintFor(row.item, alphabet) : null,
+          hint: row.word ? (row.picture ? { word: '', emoji: row.picture } : null) : showHint ? itemHint(row.item, alphabet) : null,
           // A whole word with a numbered dot on every letter is too busy to read; letters rows teach the order.
           ...(row.word ? { modelDots: false, modelArrows: false } : {}),
         });
       }
-      ry += heightOf(row) + rowGap + extraGap;
+      ry += heightOf(row) - lessonTitleH(row) + rowGap + extraGap;
     }
 
     // reward box
@@ -496,4 +599,24 @@ export function hasContent(config: WorksheetConfig, tier: Tier): boolean {
   if (config.category === 'games') return buildActivityPages(config, tier, (item) => isItemAllowed(item, 'games', tier)).length > 0;
   if (config.category === 'math') return config.selectedItems.some(isMathType);
   return rowItems(config, tier).length > 0;
+}
+
+/**
+ * „Lecția literei”: how big the sentence comes out, against the letter size chosen (1 = full size).
+ * The sentence is shrunk to fit on its row; under LESSON_SENTENCE_SMALL the controls suggest a shorter one.
+ * Null when the sheet has no sentence.
+ */
+export function lessonSentenceFit(config: WorksheetConfig): number | null {
+  const sentence = config.lesson?.sentence?.trim();
+  if (!isLesson(config) || !sentence) return null;
+  const cursive = isCursive(config);
+  const text = config.letterMode === 'uppercase' && !cursive ? lessonCase(sentence, 'uppercase') : sentence;
+  const glyphs = lineGlyphs(text, cursive);
+  if (!glyphs.length) return null;
+  const size = PAGE_SIZES_MM[config.pageSize] ?? PAGE_SIZES_MM.a4;
+  const W = config.orientation === 'landscape' ? size.height : size.width;
+  const rowW = W - 24 - (config.backgroundPattern === 'dictando' ? 9 : 0);
+  const s = ((CAP_HEIGHT_MM[config.letterSize] ?? 14) / 100) * (cursive ? 1.3 : 1);
+  const modelW = (itemWidth(glyphs) + cellPad(glyphs) * 2) * s;
+  return Math.min(1, (rowW - 3) / modelW);
 }

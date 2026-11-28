@@ -15,6 +15,22 @@ export type ContentCategory = 'letters' | 'numbers' | 'shapes' | 'prewrite' | 'm
 /** Which alphabet the letter grid offers: Romanian (with Ă Â Î Ș Ț) or English. */
 export type Alphabet = 'ro' | 'en';
 
+/** Rows of each part of „Lecția literei” (0–8; 0 leaves the part out). */
+export interface LessonCounts {
+  letter: number;
+  syll: number;
+  words: number;
+  sentence: number;
+}
+
+export interface LessonConfig {
+  counts: LessonCounts;
+  /** The words to trace, in order; the sheet traces `counts.words` of them (another variant: the next ones). Unset: not chosen yet. */
+  words?: string[];
+  /** „Propoziția”, written by the teacher (≤ 80 characters). */
+  sentence?: string;
+}
+
 export interface WorksheetConfig {
   // Content
   category: ContentCategory;
@@ -90,6 +106,11 @@ export interface WorksheetConfig {
   wordCopyRow?: boolean;
   /** „Umple rândul”: a short word is traced again and again across its row (whole copies only). Unset = off. */
   wordFillRow?: boolean;
+  /**
+   * „Lecția literei”: the sheet is one lesson of the letter (or group) in selectedItems[0], in four parts:
+   * the letter, its syllables, words with it, a sentence. Unset (the usual case): the sheet is built as always.
+   */
+  lesson?: LessonConfig;
 
   // Header
   childName: string;
